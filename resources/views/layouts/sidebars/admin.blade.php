@@ -36,18 +36,12 @@
         </a>
     </li>
 
-    <li class="nav-item">
-        <a href="{{ route('admin.dashboard') }}" class="nav-link" target="_blank">
-            <span class="pcoded-micon"><i class="feather icon-map-pin"></i></span>
-            <span class="pcoded-mtext">Countries</span>
-        </a>
-    </li>
-
-    <li class="nav-item">
-        <a href="{{ route('admin.dashboard') }}" class="nav-link" target="_blank">
-            <span class="pcoded-micon"><i class="feather icon-map"></i></span>
-            <span class="pcoded-mtext">Regions</span>
-        </a>
+    <li class="nav-item pcoded-hasmenu">
+        <a href="javascript:void(0);" class="nav-link"><span class="pcoded-micon"><i class="feather icon-map"></i></span><span class="pcoded-mtext">Geo Management</span></a>
+        <ul class="pcoded-submenu">
+            <li class=""><a href="javascript:void(0);" class="">Countries</a></li>
+            <li class=""><a href="javascript:void(0);" class="">Regions</a></li>
+        </ul>
     </li>
 
     <li class="nav-item">
