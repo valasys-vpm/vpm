@@ -35,6 +35,9 @@ Route::prefix('admin')->middleware(['web', 'check.admin'])->name('admin.')->grou
 
     //Role Management Routes
     include('admin/role_routes.php');
+
+    //Geo Management Routes
+    include('admin/geo_routes.php');
 });
 
 Route::prefix('manager')->middleware(['web', 'check.manager'])->name('manager.')->group(function (){

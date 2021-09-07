@@ -20,8 +20,7 @@ class RoleController extends Controller
 
     public function index()
     {
-        $this->data['resultRoles'] = [];
-        return view('admin.role.list', $this->data);
+        return view('admin.role.list');
     }
 
     public function create()

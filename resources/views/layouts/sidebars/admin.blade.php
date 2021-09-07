@@ -40,7 +40,7 @@
         <a href="javascript:void(0);" class="nav-link"><span class="pcoded-micon"><i class="feather icon-map"></i></span><span class="pcoded-mtext">Geo Management</span></a>
         <ul class="pcoded-submenu">
             <li class=""><a href="javascript:void(0);" class="">Countries</a></li>
-            <li class=""><a href="javascript:void(0);" class="">Regions</a></li>
+            <li class=""><a href="{{ route('admin.geo.region.list') }}" class="">Regions</a></li>
         </ul>
     </li>
 
