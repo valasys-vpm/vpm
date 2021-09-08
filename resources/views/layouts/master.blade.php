@@ -18,6 +18,7 @@
     <meta name="author" content="Valasys Media" />
 
     <meta name="csrf-token" content="{{ csrf_token() }}" />
+    <meta name="base-path" content="{{ url('/') }}" />
 
     <!-- Favicon icon -->
     <link rel="icon" href="{{ asset('public/template') }}/assets/images/favicon.ico" type="image/x-icon">
@@ -320,6 +321,9 @@
 
 <!-- pnotify Js -->
 <script src="{{ asset('public/template') }}/assets/plugins/pnotify/js/pnotify.custom.min.js"></script>
+
+<!-- Moment Js -->
+<script src="https://momentjs.com/downloads/moment-with-locales.min.js"></script>
 
 <!-- dashboard-custom js -->
 <script src="{{ asset('public/template') }}/assets/js/pages/dashboard-crypto.js"></script>

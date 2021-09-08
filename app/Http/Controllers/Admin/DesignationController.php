@@ -3,30 +3,30 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Role;
-use App\Repository\RoleRepository\RoleRepository;
+use App\Models\Designation;
+use App\Repository\DesignationRepository\DesignationRepository;
 use Illuminate\Http\Request;
 
-class RoleController extends Controller
+class DesignationController extends Controller
 {
     private $data;
-    private $roleRepository;
+    private $designationRepository;
 
-    public function __construct(RoleRepository $roleRepository)
+    public function __construct(DesignationRepository $designationRepository)
     {
         $this->data = array();
-        $this->roleRepository = $roleRepository;
+        $this->designationRepository = $designationRepository;
     }
 
     public function index()
     {
-        return view('admin.role.list');
+        return view('admin.designation.list');
     }
 
     public function store(Request $request): \Illuminate\Http\JsonResponse
     {
         $attributes = $request->all();
-        $response = $this->roleRepository->store($attributes);
+        $response = $this->designationRepository->store($attributes);
         if($response['status'] == TRUE) {
             return response()->json(array('status' => true, 'message' => $response['message']));
         } else {
@@ -36,9 +36,9 @@ class RoleController extends Controller
 
     public function edit($id): \Illuminate\Http\JsonResponse
     {
-        $resultRole = $this->roleRepository->find(base64_decode($id));
-        if(!empty($resultRole)) {
-            return response()->json(array('status' => true, 'data' => $resultRole));
+        $resultDepartment = $this->designationRepository->find(base64_decode($id));
+        if(!empty($resultDepartment)) {
+            return response()->json(array('status' => true, 'data' => $resultDepartment));
         } else {
             return response()->json(array('status' => false, 'message' => 'Data not found'));
         }
@@ -47,7 +47,7 @@ class RoleController extends Controller
     public function update($id, Request $request): \Illuminate\Http\JsonResponse
     {
         $attributes = $request->all();
-        $response = $this->roleRepository->update(base64_decode($id),$attributes);
+        $response = $this->designationRepository->update(base64_decode($id),$attributes);
         if($response['status'] == TRUE) {
             return response()->json(array('status' => true, 'message' => $response['message']));
         } else {
@@ -57,7 +57,7 @@ class RoleController extends Controller
 
     public function destroy($id): \Illuminate\Http\JsonResponse
     {
-        $response = $this->roleRepository->destroy(base64_decode($id));
+        $response = $this->designationRepository->destroy(base64_decode($id));
         if($response['status'] == TRUE) {
             return response()->json(array('status' => true, 'message' => $response['message']));
         } else {
@@ -65,7 +65,7 @@ class RoleController extends Controller
         }
     }
 
-    public function getRoles(Request $request): \Illuminate\Http\JsonResponse
+    public function getDesignations(Request $request): \Illuminate\Http\JsonResponse
     {
         $filters = array_filter(json_decode($request->get('filters'), true));
         $search_data = $request->get('search');
@@ -75,13 +75,12 @@ class RoleController extends Controller
         $limit = $request->get("length"); // Rows display per page
         $offset = $request->get("start");
 
-        $query = Role::query();
+        $query = Designation::query();
         $totalRecords = $query->count();
 
         //Search Data
         if(isset($searchValue) && $searchValue != "") {
             $query->where("name", "like", "%$searchValue%");
-            //$query->orWhere("slug", "like", "%$searchValue%");
         }
         //Filters
         if(!empty($filters)) { }
@@ -93,6 +92,8 @@ class RoleController extends Controller
         switch ($orderColumn) {
             case '0': $query->orderBy('name', $orderDirection); break;
             case '1': $query->orderBy('status', $orderDirection); break;
+            case '2': $query->orderBy('created_at', $orderDirection); break;
+            case '3': $query->orderBy('updated_at', $orderDirection); break;
             default: $query->orderBy('name'); break;
         }
 
@@ -110,4 +111,5 @@ class RoleController extends Controller
 
         return response()->json($ajaxData);
     }
+
 }

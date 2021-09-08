@@ -1,27 +1,27 @@
 <?php
 
-namespace App\Repository\RoleRepository;
+namespace App\Repository\DepartmentRepository;
 
-use App\Models\Role;
+use App\Models\Department;
 use Illuminate\Support\Facades\DB;
 
-class RoleRepository implements RoleInterface
+class DepartmentRepository implements DepartmentInterface
 {
-    private $role;
+    private $department;
 
-    public function __construct(Role $role)
+    public function __construct(Department $department)
     {
-        $this->role = $role;
+        $this->department = $department;
     }
 
     public function get($filters = array())
     {
-        return $this->role->get();
+        return $this->department->get();
     }
 
     public function find($id)
     {
-        return $this->role->findOrFail($id);
+        return $this->department->findOrFail($id);
     }
 
     public function store($attributes): array
@@ -29,14 +29,14 @@ class RoleRepository implements RoleInterface
         $response = array('status' => FALSE, 'message' => 'Something went wrong, please try again.');
         try {
             DB::beginTransaction();
-            $role = new Role();
-            $role->name = $attributes['name'];
-            $role->slug = str_replace(' ', '_', trim(strtolower($attributes['name'])));
-            $role->status = $attributes['status'];
-            $role->save();
-            if($role->id) {
+            $department = new Department();
+            $department->name = $attributes['name'];
+            $department->slug = str_replace(' ', '_', trim(strtolower($attributes['name'])));
+            $department->status = $attributes['status'];
+            $department->save();
+            if($department->id) {
                 DB::commit();
-                $response = array('status' => TRUE, 'message' => 'Role added successfully');
+                $response = array('status' => TRUE, 'message' => 'Department added successfully');
             } else {
                 throw new \Exception('Something went wrong, please try again.', 1);
             }
@@ -52,13 +52,13 @@ class RoleRepository implements RoleInterface
         $response = array('status' => FALSE, 'message' => 'Something went wrong, please try again.');
         try {
             DB::beginTransaction();
-            $role = $this->find($id);
-            $role->name = $attributes['name'];
-            $role->status = $attributes['status'];
-            $role->update();
-            if($role->id) {
+            $department = $this->find($id);
+            $department->name = $attributes['name'];
+            $department->status = $attributes['status'];
+            $department->update();
+            if($department->id) {
                 DB::commit();
-                $response = array('status' => TRUE, 'message' => 'Role updated successfully');
+                $response = array('status' => TRUE, 'message' => 'Department updated successfully');
             } else {
                 throw new \Exception('Something went wrong, please try again.', 1);
             }
@@ -74,10 +74,10 @@ class RoleRepository implements RoleInterface
         $response = array('status' => FALSE, 'message' => 'Something went wrong, please try again.');
         try {
             DB::beginTransaction();
-            $role = $this->find($id);
-            if($role->delete()) {
+            $department = $this->find($id);
+            if($department->delete()) {
                 DB::commit();
-                $response = array('status' => TRUE, 'message' => 'Role deleted successfully');
+                $response = array('status' => TRUE, 'message' => 'Department deleted successfully');
             } else {
                 throw new \Exception('Something went wrong, please try again.', 1);
             }
