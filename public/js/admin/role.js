@@ -8,7 +8,7 @@ $(function (){
         "processing": true,
         "serverSide": true,
         "ajax": {
-            "url": '../../admin/role/get-roles',
+            "url": BASE_PATH + '/admin/role/get-roles',
             data: {
                 filters: function (){
                     let obj = {

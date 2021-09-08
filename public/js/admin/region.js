@@ -1,44 +1,45 @@
-let ROLE_TABLE;
 
-$(function() {
+let REGIONS_TABLE;
 
-    ROLE_TABLE = $('#table-roles').DataTable({
-        "lengthMenu": [
-            [5, 10, 20, 30, 'all'],
-            [5, 10, 20, 30, 'All']
-        ],
+$(function (){
+
+    REGIONS_TABLE = $('#table-regions').DataTable({
+        "lengthMenu": [ [5,10,20,30,'all'], [5,10,20,30,'All'] ],
         "processing": true,
         "serverSide": true,
         "ajax": {
-            "url": '../../admin/role/get-roles',
+            "url": BASE_PATH + '/admin/geo/region/get-regions',
             data: {
-                filters: function() {
-                    let obj = {};
+                filters: function (){
+                    let obj = {
+                    };
                     localStorage.setItem("filters", JSON.stringify(obj));
                     return JSON.stringify(obj);
                 }
             },
             error: function(jqXHR, textStatus, errorThrown) { checkSession(jqXHR); }
         },
-        "columns": [{
+        "columns": [            
+            {
+                data: 'abbreviation',
+            },
+            {
                 data: 'name',
             },
             {
-                render: function(data, type, row) {
+                render: function (data, type, row) {
                     switch (row.status) {
-                        case 1:
-                            return '<span class="badge badge-pill badge-success" style="padding: 5px;min-width:50px;">Active</span>';
-                        case 0:
-                            return '<span class="badge badge-pill badge-danger" style="padding: 5px;min-width:50px;">Inactive</span>';
+                        case 1: return '<span class="badge badge-pill badge-success" style="padding: 5px;min-width:50px;">Active</span>';
+                        case 0: return '<span class="badge badge-pill badge-danger" style="padding: 5px;min-width:50px;">Inactive</span>';
                     }
                 }
             },
             {
                 orderable: false,
-                render: function(data, type, row) {
+                render: function (data, type, row) {
                     let html = '';
-                    html += '<button class="btn btn-outline-dark btn-sm" title="Edit Role" onclick="editRole(' + row.id + ')"><i class="feather icon-edit mr-0"></i></button>';
-                    html += '<button class="btn btn-outline-danger btn-sm" title="Delete Role" onclick="deleteRole(' + row.id + ')"><i class="feather icon-trash-2 mr-0"></i></button>';
+                    html += '<button class="btn btn-outline-dark btn-sm" title="Edit Region" onclick="editRegion('+row.id+')"><i class="feather icon-edit mr-0"></i></button>';
+                    html += '<button class="btn btn-outline-danger btn-sm" title="Delete Region" onclick="deleteRegion('+row.id+')"><i class="feather icon-trash-2 mr-0"></i></button>';
                     return html;
                 }
             },
@@ -80,6 +81,8 @@ function addRegion() {
     resetModalForm();
     $('#modalRole').modal('show');
 }
+
+
 
 function editRole(id) {
     $.ajax({

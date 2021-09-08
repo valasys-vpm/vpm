@@ -37,22 +37,23 @@
                                 <div class="col-sm-12">
                                     <div class="card">
                                         <div class="card-header">
-                                            <h5>Roles</h5>
+                                            <h5>Region</h5>
                                             <div class="float-right">
-                                                <button type="button" class="btn btn-primary btn-square btn-sm" onclick="addRole();"><i class="feather icon-plus"></i>New Role</button>
+                                                <button type="button" class="btn btn-primary btn-square btn-sm" onclick="addRegion();"><i class="feather icon-plus"></i>New Region</button>
                                             </div>
                                         </div>
                                         <div class="card-block">
                                             <div class="table-responsive">
-                                                <table id="table-roles" class="display table nowrap table-striped table-hover">
+                                                <table id="table-regions" class="display table nowrap table-striped table-hover">
                                                     <thead>
                                                     <tr>
+                                                        <th>abbreviation</th>
                                                         <th>Name</th>
-                                                        <th class="text-center">Status</th>
-                                                        <th class="text-center" style="width: 20%;">Action</th>
+                                                        <th>Status</th>
+                                                        <th>Action</th>
                                                     </tr>
                                                     </thead>
-                                                    <tbody>
+                                                    <tbody id="tbody-region">
                                                     </tbody>
                                                 </table>
                                             </div>
