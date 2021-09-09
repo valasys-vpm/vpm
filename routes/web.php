@@ -49,6 +49,8 @@ Route::prefix('admin')->middleware(['web', 'check.admin'])->name('admin.')->grou
 
     //Site Setting Routes
     include('admin/site_setting_routes.php');
+    //Holiday Management Routes
+    include('admin/holiday_routes.php');
 });
 
 Route::prefix('manager')->middleware(['web', 'check.manager'])->name('manager.')->group(function (){
