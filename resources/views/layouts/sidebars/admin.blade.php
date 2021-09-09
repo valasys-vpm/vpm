@@ -51,7 +51,7 @@
     </li>
 
     <li class="nav-item @if(Request::route()->getName() == '') active @endif">
-        <a href="{{ route('admin.dashboard') }}" class="nav-link">
+        <a href="{{ route('admin.site_settings.list') }}" class="nav-link">
             <span class="pcoded-micon"><i class="feather icon-settings"></i></span>
             <span class="pcoded-mtext">Site Settings</span>
         </a>

@@ -5,7 +5,7 @@
             <div class="b-bg">
                 <i class="feather icon-trending-up"></i>
             </div>
-            <span class="b-title">VM - CM</span>
+            <span class="b-title">Valasys Media - CRM</span>
         </a>
     </div>
     <a class="mobile-menu" id="mobile-header" href="#!">
@@ -13,7 +13,7 @@
     </a>
     <div class="collapse navbar-collapse">
         <ul class="navbar-nav mr-auto">
-<!--            <li><a href="#!" class="full-screen" onclick="javascript:toggleFullScreen()"><i class="feather icon-maximize"></i></a></li>-->
+            <li><span class="text-secondary"><small>Version 2.0</small></span></li>
         </ul>
         <ul class="navbar-nav ml-auto">
             <li>
@@ -23,7 +23,7 @@
                     </a>
                     <div class="dropdown-menu dropdown-menu-right profile-notification">
                         <div class="pro-head">
-                            <img src="{{ asset('public/template') }}/assets/images/user/avatar-1.jpg" class="img-radius" alt="User-Profile-Image">
+                            <img src="{{ asset('public/template') }}/assets/images/user/avatar-2.jpg" class="img-radius" alt="User-Profile-Image">
                             <span>{{Auth::user()->email}}</span>
                             <a href="{{ route('logout') }}" class="dud-logout" title="Logout">
                                 <i class="feather icon-log-out"></i>

@@ -101,7 +101,7 @@ $(document).ready(function() {
         });
     }
     // Friend scroll
-    if (vw >= 1024) {
+    /*if (vw >= 1024) {
         var px = new PerfectScrollbar('.main-friend-cont', {
             wheelSpeed: .5,
             swipeEasing: 0,
@@ -116,7 +116,7 @@ $(document).ready(function() {
             wheelPropagation: 1,
             minScrollbarLength: 40,
         });
-    }
+    }*/
     // Menu scroll
     if (!$('.pcoded-navbar').hasClass('theme-horizontal')) {
         var vw = $(window)[0].innerWidth;
@@ -184,10 +184,10 @@ $(document).ready(function() {
         }, 3000);
     };
 
-    function fsc() {
+    /*function fsc() {
         var tmph = $('.header-chat .main-friend-chat');
         $('.main-chat-cont.scroll-div').scrollTop(tmph.outerHeight());
-    }
+    }*/
 
     // close card
     $(".card-option .close-card").on('click', function() {

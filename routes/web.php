@@ -46,6 +46,9 @@ Route::prefix('admin')->middleware(['web', 'check.admin'])->name('admin.')->grou
 
     //Geo Management Routes
     include('admin/geo_routes.php');
+
+    //Site Setting Routes
+    include('admin/site_setting_routes.php');
 });
 
 Route::prefix('manager')->middleware(['web', 'check.manager'])->name('manager.')->group(function (){
