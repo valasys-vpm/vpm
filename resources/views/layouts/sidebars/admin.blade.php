@@ -38,7 +38,7 @@
     <li class="nav-item pcoded-hasmenu @if(Request::route()->getName() == 'admin.geo.region.list' || Request::route()->getName() == 'admin.geo.region.list') active pcoded-trigger @endif">
         <a href="javascript:void(0);" class="nav-link"><span class="pcoded-micon"><i class="feather icon-map"></i></span><span class="pcoded-mtext">Geo Management</span></a>
         <ul class="pcoded-submenu">
-            <li class="@if(Request::route()->getName() == '') active @endif"><a href="javascript:void(0);" class="">Countries</a></li>
+            <li class="@if(Request::route()->getName() == 'admin.geo.country.list') active @endif"><a href="{{ route('admin.geo.country.list') }}" class="">Countries</a></li>
             <li class="@if(Request::route()->getName() == 'admin.geo.region.list') active @endif"><a href="{{ route('admin.geo.region.list') }}" class="">Regions</a></li>
         </ul>
     </li>
