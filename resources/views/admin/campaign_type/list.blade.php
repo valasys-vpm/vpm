@@ -17,12 +17,12 @@
                             <div class="row align-items-center">
                                 <div class="col-md-12">
                                     <div class="page-header-title">
-                                        <h5 class="m-b-10">Department Management</h5>
+                                        <h5 class="m-b-10">Campaign Type Management</h5>
                                     </div>
                                     <ul class="breadcrumb">
                                         <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}"><i class="feather icon-home"></i></a></li>
-                                        <li class="breadcrumb-item"><a href="javascript:void(0);">User Settings</a></li>
-                                        <li class="breadcrumb-item"><a href="javascript:void(0);">Department Management</a></li>
+                                        <li class="breadcrumb-item"><a href="javascript:void(0);">Campaign Settings</a></li>
+                                        <li class="breadcrumb-item"><a href="javascript:void(0);">Campaign Type Management</a></li>
                                     </ul>
                                 </div>
                             </div>
@@ -38,17 +38,18 @@
                                     <div class="card">
                                         <div class="card-header">
                                             @include('layouts.alert')
-                                            <h5>Departments</h5>
+                                            <h5>Campaign Types</h5>
                                             <div class="float-right">
-                                                <button type="button" class="btn btn-primary btn-square btn-sm" onclick="addDepartment();"><i class="feather icon-plus"></i>New Department</button>
+                                                <button type="button" class="btn btn-primary btn-square btn-sm" onclick="addCampaignType();"><i class="feather icon-plus"></i>New Campaign Type</button>
                                             </div>
                                         </div>
                                         <div class="card-block">
                                             <div class="table-responsive">
-                                                <table id="table-departments" class="display table nowrap table-striped table-hover">
+                                                <table id="table-campaign-types" class="display table nowrap table-striped table-hover">
                                                     <thead>
                                                     <tr>
                                                         <th>Name</th>
+                                                        <th>Full Name</th>
                                                         <th class="text-center">Status</th>
                                                         <th class="text-center">Created At</th>
                                                         <th class="text-center">Updated At</th>
@@ -72,20 +73,24 @@
         </div>
     </section>
 
-    <div id="modalDepartment" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+    <div id="modalCampaignType" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title h4" id="modal-heading">Add new department</h5>
+                    <h5 class="modal-title h4" id="modal-heading">Add new campaign type</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                 </div>
                 <div class="modal-body">
-                    <form id="modal-department-form">
-                        <input type="hidden" name="department_id" id="department_id" value="">
+                    <form id="modal-campaign-type-form">
+                        <input type="hidden" name="campaign_type_id" id="campaign_type_id" value="">
                         <div class="row">
                             <div class="col-md-12 form-group">
-                                <label for="name">Department Name</label>
-                                <input type="text" class="form-control btn-square" id="name" name="name" placeholder="Enter department name" required>
+                                <label for="name">Campaign Type Name</label>
+                                <input type="text" class="form-control btn-square" id="name" name="name" placeholder="Enter campaign type name" required>
+                            </div>
+                            <div class="col-md-12 form-group">
+                                <label for="full_name">Campaign Type Full Name</label>
+                                <input type="text" class="form-control btn-square" id="full_name" name="full_name" placeholder="Enter campaign type full name" required>
                             </div>
                         </div>
                         <div class="row">
@@ -112,7 +117,7 @@
     @parent
     <!-- datatable Js -->
     <script src="{{ asset('public/template/assets/plugins/data-tables/js/datatables.min.js') }}"></script>
-    <script src="{{ asset('public/js/admin/department.js?='.time()) }}"></script>
+    <script src="{{ asset('public/js/admin/campaign_type.js?='.time()) }}"></script>
 @append
 
 

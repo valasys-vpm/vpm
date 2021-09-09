@@ -40,6 +40,10 @@ Route::prefix('admin')->middleware(['web', 'check.admin'])->name('admin.')->grou
     //Designation Management Routes
     include('admin/designation_routes.php');
 
+    //Campaign Settings Routes
+    include('admin/campaign_filter_routes.php');
+    include('admin/campaign_type_routes.php');
+
     //Geo Management Routes
     include('admin/geo_routes.php');
 });
