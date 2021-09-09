@@ -27,11 +27,11 @@
         </ul>
     </li>
 
-    <li class="nav-item pcoded-hasmenu @if(Request::route()->getName() == '' || Request::route()->getName() == '') active pcoded-trigger @endif">
+    <li class="nav-item pcoded-hasmenu @if(Request::route()->getName() == 'admin.campaign_settings.campaign_type.list' || Request::route()->getName() == 'admin.campaign_settings.campaign_filter.list') active pcoded-trigger @endif">
         <a href="javascript:void(0);" class="nav-link"><span class="pcoded-micon"><i class="feather icon-layers"></i></span><span class="pcoded-mtext">Campaign Settings</span></a>
         <ul class="pcoded-submenu">
-            <li class="@if(Request::route()->getName() == '') active @endif"><a href="javascript:void(0);" class="">Campaign Types</a></li>
-            <li class="@if(Request::route()->getName() == '') active @endif"><a href="javascript:void(0);" class="">Campaign Filters</a></li>
+            <li class="@if(Request::route()->getName() == 'admin.campaign_settings.campaign_filter.list') active @endif"><a href="{{ route('admin.campaign_settings.campaign_filter.list') }}" class="">Campaign Filters</a></li>
+            <li class="@if(Request::route()->getName() == 'admin.campaign_settings.campaign_type.list') active @endif"><a href="{{ route('admin.campaign_settings.campaign_type.list') }}" class="">Campaign Types</a></li>
         </ul>
     </li>
 
