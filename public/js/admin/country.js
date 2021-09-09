@@ -1,14 +1,14 @@
 
-let REGION_TABLE;
+let COUNTRY_TABLE;
 
 $(function (){
 
-    REGION_TABLE = $('#table-regions').DataTable({
-        "lengthMenu": [ [5,10,20,30,'all'], [5,10,20,30,'All'] ],
+    COUNTRY_TABLE = $('#table-countries').DataTable({
+        "lengthMenu": [ [10,10,20,30,'all'], [10,10,20,30,'All'] ],
         "processing": true,
         "serverSide": true,
         "ajax": {
-            "url": $('meta[name="base-path"]').attr('content') + '/admin/geo/region/get-regions',
+            "url": $('meta[name="base-path"]').attr('content') + '/admin/geo/country/get-countries',
             data: {
                 filters: function (){
                     let obj = {
@@ -21,10 +21,10 @@ $(function (){
         },
         "columns": [            
             {
-                data: 'abbreviation',
+                data: 'name',
             },
             {
-                data: 'name',
+                data: 'region.name',
             },
             {
                 render: function (data, type, row) {
@@ -38,8 +38,8 @@ $(function (){
                 orderable: false,
                 render: function (data, type, row) {
                     let html = '';
-                    html += '<button class="btn btn-outline-dark btn-sm" title="Edit Region" onclick="editRegion('+row.id+')"><i class="feather icon-edit mr-0"></i></button>';
-                    html += '<button class="btn btn-outline-danger btn-sm" title="Delete Region" onclick="deleteRegion('+row.id+')"><i class="feather icon-trash-2 mr-0"></i></button>';
+                    html += '<button class="btn btn-outline-dark btn-sm" title="Edit Country" onclick="editCountry('+row.id+')"><i class="feather icon-edit mr-0"></i></button>';
+                    html += '<button class="btn btn-outline-danger btn-sm" title="Delete Country" onclick="deleteCountry('+row.id+')"><i class="feather icon-trash-2 mr-0"></i></button>';
                     return html;
                 }
             },
@@ -50,9 +50,9 @@ $(function (){
         e.preventDefault();
         let url = '';
         if ($(this).text() === 'Save') {
-            url = $('meta[name="base-path"]').attr('content') +'/admin/geo/region/store';
+            url = $('meta[name="base-path"]').attr('content') +'/admin/geo/country/store';
         } else if ($(this).text() === 'Update') {
-            url = $('meta[name="base-path"]').attr('content') +'/admin/geo/region/update/' + $('#region_id').val();
+            url = $('meta[name="base-path"]').attr('content') +'/admin/geo/country/update/' + $('#country_id').val();
         } else {
             resetModalForm();
             trigger_pnofify('error', 'Something went wrong', 'Please try again');
@@ -65,39 +65,39 @@ $(function (){
             success: function(response) {
                 if (response.status === true) {
                     resetModalForm();
-                    $('#modalRegion').modal('hide');
+                    $('#modalCountry').modal('hide');
                     trigger_pnofify('success', 'Successful', response.message);
                 } else {
                     trigger_pnofify('error', 'Something went wrong', response.message);
                 }
-                REGION_TABLE.ajax.reload();
+                COUNTRY_TABLE.ajax.reload();
             }
         });
 
     });
 });
 
-function addRegion() {
+function addCountry() {
     resetModalForm();
-    $('#modalRegion').modal('show');
+    $('#modalCountry').modal('show');
 }
 
 
 
-function editRegion(id) {
+function editCountry(id) {
     $.ajax({
         type: 'post',
-        url: $('meta[name="base-path"]').attr('content') +'/admin/geo/region/edit/' + btoa(id),
+        url: $('meta[name="base-path"]').attr('content') +'/admin/geo/country/edit/' + btoa(id),
         dataType: 'json',
         success: function(response) {
             if (response.status === true) {
-                $('#modal-heading').text('Edit Region');
+                $('#modal-heading').text('Edit Country');
                 $('#modal-form-button-submit').text('Update');
-                $('#region_id').val(btoa(response.data.id));
+                $('#country_id').val(btoa(response.data.id));
                 $('#name').val(response.data.name);
-                $('#abbreviation').val(response.data.abbreviation);
+                $('#region_id').val(response.data.region_id);
                 $('#status').val(response.data.status);
-                $('#modalRegion').modal('show');
+                $('#modalCountry').modal('show');
             } else {
                 resetModalForm();
                 trigger_pnofify('error', 'Something went wrong', response.message);
@@ -107,11 +107,11 @@ function editRegion(id) {
     });
 }
 
-function deleteRegion(id) {
-    if (confirm('Are you sure to delete this region?')) {
+function deleteCountry(id) {
+    if (confirm('Are you sure to delete this country?')) {
         $.ajax({
             type: 'post',
-            url: $('meta[name="base-path"]').attr('content') +'/admin/geo/region/destroy/' + btoa(id),
+            url: $('meta[name="base-path"]').attr('content') +'/admin/geo/country/destroy/' + btoa(id),
             dataType: 'json',
             success: function(response) {
                 if (response.status === true) {
@@ -119,7 +119,7 @@ function deleteRegion(id) {
                 } else {
                     trigger_pnofify('error', 'Something went wrong', response.message);
                 }
-                REGION_TABLE.ajax.reload();
+                COUNTRY_TABLE.ajax.reload();
             }
         });
     } else {
@@ -129,10 +129,10 @@ function deleteRegion(id) {
 }
 
 function resetModalForm() {
-    $('#modal-heading').text('Add new region');
+    $('#modal-heading').text('Add new Country');
     $('#modal-form-button-submit').text('Save');
-    $('#region_id').val('');
+    $('#country_id').val('');
     $('#name').val('');
-    $('#abbreviation').val('');
+    $('#region_id').val('');
     $('#status').val('1');
 }

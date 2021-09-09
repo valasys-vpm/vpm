@@ -11,4 +11,10 @@ class Country extends Model
     use SoftDeletes;
     protected $guarded = array();
     public $timestamps = true;
+
+    public function region()
+    {
+        return $this->hasOne(Region::class, 'id', 'region_id');
+    }
 }
+
