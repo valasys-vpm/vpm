@@ -44,7 +44,7 @@
     </li>
 
     <li class="nav-item @if(Request::route()->getName() == '') active @endif">
-        <a href="{{ route('admin.dashboard') }}" class="nav-link">
+        <a href="{{ route('admin.holiday.list') }}" class="nav-link">
             <span class="pcoded-micon"><i class="feather icon-calendar"></i></span>
             <span class="pcoded-mtext">Holidays</span>
         </a>

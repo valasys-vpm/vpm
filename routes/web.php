@@ -42,6 +42,9 @@ Route::prefix('admin')->middleware(['web', 'check.admin'])->name('admin.')->grou
 
     //Geo Management Routes
     include('admin/geo_routes.php');
+
+    //Holiday Management Routes
+    include('admin/holiday_routes.php');
 });
 
 Route::prefix('manager')->middleware(['web', 'check.manager'])->name('manager.')->group(function (){
