@@ -27,11 +27,12 @@
         </ul>
     </li>
 
-    <li class="nav-item pcoded-hasmenu @if(Request::route()->getName() == 'admin.campaign_settings.campaign_type.list' || Request::route()->getName() == 'admin.campaign_settings.campaign_filter.list') active pcoded-trigger @endif">
+    <li class="nav-item pcoded-hasmenu @if(Request::route()->getName() == 'admin.campaign_settings.campaign_type.list' || Request::route()->getName() == 'admin.campaign_settings.campaign_filter.list' || Request::route()->getName() == 'admin.campaign_settings.campaign_status.list') active pcoded-trigger @endif">
         <a href="javascript:void(0);" class="nav-link"><span class="pcoded-micon"><i class="feather icon-layers"></i></span><span class="pcoded-mtext">Campaign Settings</span></a>
         <ul class="pcoded-submenu">
             <li class="@if(Request::route()->getName() == 'admin.campaign_settings.campaign_filter.list') active @endif"><a href="{{ route('admin.campaign_settings.campaign_filter.list') }}" class="">Campaign Filters</a></li>
             <li class="@if(Request::route()->getName() == 'admin.campaign_settings.campaign_type.list') active @endif"><a href="{{ route('admin.campaign_settings.campaign_type.list') }}" class="">Campaign Types</a></li>
+            <li class="@if(Request::route()->getName() == 'admin.campaign_settings.campaign_status.list') active @endif"><a href="{{ route('admin.campaign_settings.campaign_status.list') }}" class="">Campaign Statuses</a></li>
         </ul>
     </li>
 

@@ -46,6 +46,7 @@ Route::prefix('admin')->middleware(['web', 'check.admin'])->name('admin.')->grou
     //Campaign Settings Routes
     include('admin/campaign_filter_routes.php');
     include('admin/campaign_type_routes.php');
+    include('admin/campaign_status_routes.php');
 
     //Geo Management Routes
     include('admin/geo_routes.php');
@@ -60,6 +61,9 @@ Route::prefix('admin')->middleware(['web', 'check.admin'])->name('admin.')->grou
 Route::prefix('manager')->middleware(['web', 'check.manager'])->name('manager.')->group(function (){
 
     Route::get('/dashboard', [App\Http\Controllers\Manager\DashboardController::class, 'index'])->name('dashboard');
+
+    //Campaign Management Routes
+    include('manager/campaign_routes.php');
 
 });
 

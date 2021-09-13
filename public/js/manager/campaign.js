@@ -1,15 +1,15 @@
 
-let USER_TABLE;
+let CAMPAIGN_TABLE;
 let URL = $('meta[name="base-path"]').attr('content');
 
 $(function (){
 
-    USER_TABLE = $('#table-users').DataTable({
+    CAMPAIGN_TABLE = $('#table-campaigns').DataTable({
         "lengthMenu": [ [10,20,50,100,'all'], [10,20,50,100,'All'] ],
         "processing": true,
         "serverSide": true,
         "ajax": {
-            "url": URL + '/admin/user/get-users',
+            "url": URL + '/manager/campaign/get-campaigns',
             data: {
                 filters: function (){
                     let obj = {
@@ -72,14 +72,12 @@ $(function (){
                     let html = '';
 
                     html += '<div id="toolbar-options-'+row.id+'" class="hidden">';
-                    html += '<a href="javascript:;" onclick="editUser('+row.id+')"><i class="feather icon-edit"></i></a>';
-                    html += '<a href="javascript:;" onclick="deleteUser('+row.id+')"><i class="feather icon-trash-2"></i></a>';
+                    html += '<a href="javascript:;" onclick="editCampaign('+row.id+')"><i class="feather icon-edit"></i></a>';
+                    html += '<a href="javascript:;" onclick="deleteCampaign('+row.id+')"><i class="feather icon-trash-2"></i></a>';
                     html += '</div>';
 
-                    html += '<div data-toolbar="user-options" class="btn-toolbar btn-dark btn-toolbar-dark dark-left-toolbar" id="dark-left-toolbar-'+row.id+'" data-id="'+row.id+'"><i class="feather icon-settings"></i></div>';
+                    html += '<div data-toolbar="campaign-options" class="btn-toolbar btn-dark btn-toolbar-dark dark-left-toolbar" id="dark-left-toolbar-'+row.id+'" data-id="'+row.id+'"><i class="feather icon-settings"></i></div>';
 
-                    //html += '<button class="btn btn-outline-dark btn-sm" title="Edit User" onclick="editUser('+row.id+')"><i class="feather icon-edit mr-0"></i></button>';
-                    //html += '<button class="btn btn-outline-danger btn-sm" title="Delete User" onclick="deleteUser('+row.id+')"><i class="feather icon-trash-2 mr-0"></i></button>';
                     return html;
                 }
             },
@@ -98,12 +96,12 @@ $(function (){
 
     $('#modal-form-button-submit').on('click', function (e) {
         e.preventDefault();
-        if($("#modal-user-form").valid()) {
+        if($("#modal-campaign-form").valid()) {
             let url = '';
             if($(this).text() === 'Save') {
-                url = URL + '/admin/user/store';
+                url = URL + '/manager/campaign/store';
             } else if ($(this).text() === 'Update') {
-                url = URL + '/admin/user/update/'+$('#user_id').val();
+                url = URL + '/manager/campaign/update/'+$('#campaign_id').val();
             } else {
                 resetModalForm();
                 trigger_pnofify('error', 'Something went wrong', 'Please try again');
@@ -112,16 +110,16 @@ $(function (){
             $.ajax({
                 type: 'post',
                 url: url,
-                data: $('#modal-user-form').serialize(),
+                data: $('#modal-campaign-form').serialize(),
                 success: function (response) {
                     if(response.status === true) {
                         resetModalForm();
-                        $('#modalUser').modal('hide');
+                        $('#modalCampaign').modal('hide');
                         trigger_pnofify('success', 'Successful', response.message);
                     } else {
                         trigger_pnofify('error', 'Something went wrong', response.message);
                     }
-                    USER_TABLE.ajax.reload();
+                    CAMPAIGN_TABLE.ajax.reload();
                 }
             });
 
@@ -141,7 +139,7 @@ $(function (){
         }
     }, "Please enter valid data");
 
-    $("#modal-user-form").validate({
+    $("#modal-campaign-form").validate({
         focusInvalid: false,
         rules: {
             'first_name' : {
@@ -158,7 +156,7 @@ $(function (){
             'employee_code' : {
                 required : true,
                 remote : {
-                    url : URL + '/admin/user/validate-employee-code',
+                    url : URL + '/manager/campaign/validate-employee-code',
                     data : {
                         employee_code : function(){
                             return $("#employee_code").val();
@@ -245,41 +243,31 @@ $(function (){
     });
 });
 
-function addUser()
+function addCampaign()
 {
     resetModalForm();
-    $('#modalUser').modal('show');
+    $('#modalCampaign').modal('show');
 }
 
-function editUser(id)
+function editCampaign(id)
 {
     $.ajax({
         type: 'post',
-        url: URL + '/admin/user/edit/'+btoa(id),
+        url: URL + '/manager/campaign/edit/'+btoa(id),
         dataType: 'json',
         success: function (response) {
             resetModalForm();
             if(response.status === true) {
-                $('#modal-heading').text('Edit user');
+                $('#modal-heading').text('Edit campaign');
                 $('#modal-form-button-submit').text('Update');
 
-                $('#user_id').val(btoa(response.data.id));
+                $('#campaign_id').val(btoa(response.data.id));
 
-                $('#first_name').val(response.data.first_name);
-                $('#middle_name').val(response.data.middle_name);
-                $('#last_name').val(response.data.last_name);
-
-                $('#employee_code').val(response.data.employee_code);
-                $('#email').val(response.data.email);
-                $('#reporting_user_id').val(response.data.reporting_user_id);
-
-                $('#role_id').val(response.data.role_id);
-                $('#department_id').val(response.data.department_id);
                 $('#designation_id').val(response.data.designation_id);
 
                 $('#status').val(response.data.status);
 
-                $('#modalUser').modal('show');
+                $('#modalCampaign').modal('show');
             } else {
                 trigger_pnofify('error', 'Something went wrong', response.message);
             }
@@ -287,12 +275,12 @@ function editUser(id)
     });
 }
 
-function deleteUser(id)
+function deleteCampaign(id)
 {
-    if(confirm('Are you sure to delete this user?')) {
+    if(confirm('Are you sure to delete this campaign?')) {
         $.ajax({
             type: 'post',
-            url: URL + '/admin/user/destroy/'+btoa(id),
+            url: URL + '/manager/campaign/destroy/'+btoa(id),
             dataType: 'json',
             success: function (response) {
                 if(response.status === true) {
@@ -300,7 +288,7 @@ function deleteUser(id)
                 } else {
                     trigger_pnofify('error', 'Something went wrong', response.message);
                 }
-                USER_TABLE.ajax.reload();
+                CAMPAIGN_TABLE.ajax.reload();
             }
         });
     } else {
@@ -311,8 +299,8 @@ function deleteUser(id)
 
 function resetModalForm()
 {
-    $('#modal-user-form').find("input,textarea,select").val('').removeClass('is-invalid').end().find("input[type=checkbox], input[type=radio]").prop("checked", "").removeClass('is-invalid').end();
-    $('#modal-heading').text('Add new user');
+    $('#modal-campaign-form').find("input,textarea,select").val('').removeClass('is-invalid').end().find("input[type=checkbox], input[type=radio]").prop("checked", "").removeClass('is-invalid').end();
+    $('#modal-heading').text('Add new campaign');
     $('#modal-form-button-submit').text('Save');
     $('#status').val('1');
 }

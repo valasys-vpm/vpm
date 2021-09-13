@@ -44,9 +44,9 @@ class UserRepository implements UserInterface
             $user->department_id = $attributes['department_id'];
             $user->designation_id = $attributes['designation_id'];
             $user->employee_code = $attributes['employee_code'];
-            $user->first_name = $attributes['name'];
-            $user->middle_name = $attributes['name'];
-            $user->last_name = $attributes['name'];
+            $user->first_name = $attributes['first_name'];
+            $user->middle_name = $attributes['middle_name'];
+            $user->last_name = $attributes['last_name'];
             $user->email = $attributes['email'];
             if(isset($attributes['password']) && !empty($attributes['password'])) {
                 $user->password = $attributes['password'];
