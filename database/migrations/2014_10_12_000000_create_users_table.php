@@ -37,7 +37,7 @@ class CreateUsersTable extends Migration
             $table->dateTime('logged_on')->nullable();
             $table->rememberToken();
 
-            $table->enum('status', ['0', '1'])->default('1')->comment('1-Active, 0-Inactive');
+            $table->tinyInteger('status')->default('1')->comment('1-Active, 0-Inactive');
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent();
             $table->softDeletes();

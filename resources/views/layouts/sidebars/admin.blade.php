@@ -8,8 +8,8 @@
         </a>
     </li>
 
-    <li class="nav-item @if(Request::route()->getName() == '') active @endif">
-        <a href="{{ route('admin.dashboard') }}" class="nav-link">
+    <li class="nav-item @if(Request::route()->getName() == 'admin.user.list') active @endif">
+        <a href="{{ route('admin.user.list') }}" class="nav-link">
             <span class="pcoded-micon"><i class="feather icon-user"></i></span>
             <span class="pcoded-mtext">User Management</span>
         </a>
@@ -43,14 +43,14 @@
         </ul>
     </li>
 
-    <li class="nav-item @if(Request::route()->getName() == '') active @endif">
+    <li class="nav-item @if(Request::route()->getName() == 'admin.holiday.list') active @endif">
         <a href="{{ route('admin.holiday.list') }}" class="nav-link">
             <span class="pcoded-micon"><i class="feather icon-calendar"></i></span>
             <span class="pcoded-mtext">Holidays</span>
         </a>
     </li>
 
-    <li class="nav-item @if(Request::route()->getName() == '') active @endif">
+    <li class="nav-item @if(Request::route()->getName() == 'admin.site_settings.list') active @endif">
         <a href="{{ route('admin.site_settings.list') }}" class="nav-link">
             <span class="pcoded-micon"><i class="feather icon-settings"></i></span>
             <span class="pcoded-mtext">Site Settings</span>

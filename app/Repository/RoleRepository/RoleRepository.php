@@ -16,7 +16,13 @@ class RoleRepository implements RoleInterface
 
     public function get($filters = array())
     {
-        return $this->role->get();
+        $query = Role::query();
+
+        if(isset($filters['status'])) {
+            $query->whereStatus($filters['status']);
+        }
+
+        return $query->get();
     }
 
     public function find($id)

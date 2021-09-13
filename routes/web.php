@@ -33,6 +33,9 @@ Route::prefix('admin')->middleware(['web', 'check.admin'])->name('admin.')->grou
 
     Route::get('/dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
 
+    //User Management Routes
+    include('admin/user_routes.php');
+
     //Role Management Routes
     include('admin/role_routes.php');
     //Department Management Routes
@@ -49,6 +52,7 @@ Route::prefix('admin')->middleware(['web', 'check.admin'])->name('admin.')->grou
 
     //Site Setting Routes
     include('admin/site_setting_routes.php');
+
     //Holiday Management Routes
     include('admin/holiday_routes.php');
 });
@@ -56,7 +60,6 @@ Route::prefix('admin')->middleware(['web', 'check.admin'])->name('admin.')->grou
 Route::prefix('manager')->middleware(['web', 'check.manager'])->name('manager.')->group(function (){
 
     Route::get('/dashboard', [App\Http\Controllers\Manager\DashboardController::class, 'index'])->name('dashboard');
-
 
 });
 

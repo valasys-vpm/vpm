@@ -54,4 +54,19 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function role(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(Role::class, 'id', 'role_id');
+    }
+
+    public function department(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(Department::class, 'id', 'department_id');
+    }
+
+    public function designation(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(Designation::class, 'id', 'designation_id');
+    }
 }

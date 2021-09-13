@@ -16,7 +16,13 @@ class DepartmentRepository implements DepartmentInterface
 
     public function get($filters = array())
     {
-        return $this->department->get();
+        $query = Department::query();
+
+        if(isset($filters['status'])) {
+            $query->whereStatus($filters['status']);
+        }
+
+        return $query->get();
     }
 
     public function find($id)
