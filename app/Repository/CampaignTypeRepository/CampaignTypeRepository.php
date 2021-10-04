@@ -16,7 +16,13 @@ class CampaignTypeRepository implements CampaignTypeInterface
 
     public function get($filter = array())
     {
-        return $this->campaign_type->get();
+        $query = CampaignType::query();
+
+        if(isset($filters['status'])) {
+            $query->whereStatus($filters['status']);
+        }
+
+        return $query->get();
     }
 
     public function find($id)

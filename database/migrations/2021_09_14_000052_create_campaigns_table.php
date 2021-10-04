@@ -47,7 +47,7 @@ class CreateCampaignsTable extends Migration
         });
 
         Schema::table('campaigns', function (Blueprint $table){
-            $table->unsignedInteger('parent_id');
+            $table->unsignedInteger('parent_id')->nullable();
             $table->foreign('parent_id')->references('id')->on('campaigns')->onUpdate('cascade')->onDelete('restrict');
         });
     }

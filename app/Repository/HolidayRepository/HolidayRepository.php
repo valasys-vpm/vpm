@@ -16,7 +16,13 @@ class HolidayRepository implements HolidayInterface
 
     public function get($filters = array())
     {
-        return $this->holiday->get();
+        $query = Holiday::query();
+
+        if(isset($filters['status'])) {
+            $query->whereStatus($filters['status']);
+        }
+
+        return $query->get();
     }
 
     public function find($id)

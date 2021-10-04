@@ -16,7 +16,13 @@ class CountryRepository implements CountryInterface
 
     public function get($filters = array())
     {
-        // TODO: Implement get() method.
+        $query = Country::query();
+
+        if(isset($filters['status'])) {
+            $query->whereStatus($filters['status']);
+        }
+
+        return $query->get();
     }
 
     public function find($id)

@@ -126,43 +126,6 @@
     $(".alert-auto-dismiss").fadeTo(5000,500).slideUp(500,function(){$(".alert-auto-dismiss").slideUp(500)});
 </script>
 
-<script>
-    (function ($) {
-        $.fn.doubleClickToGo = function () {
-            var secondForDoubleClick = .5; //Add more seconds to increase the interval when two click are considered double click
-            var firstClickTime = null;
-            var secondClickTime = null;
-            this.filter("a").each(function () {
-                $(this).click(function (e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    var currentTime = new Date().getTime() / 1000;
-                    if ((currentTime - firstClickTime > secondForDoubleClick)){
-                        firstClickTime = null;
-                    }
-                    if (firstClickTime == null) {
-                        firstClickTime = currentTime
-                        secondClickTime = null;
-                    } else {
-                        secondClickTime = currentTime
-                        console.log((secondClickTime - firstClickTime))
-                        if ((secondClickTime - firstClickTime) <= secondForDoubleClick) {
-                            firstClickTime = null;
-                            secondClickTime = null;
-                            var link = $(this);
-                            var url = link.attr("href");
-                            window.location.href = url;
-                        }
-                        firstClickTime = null;
-                        secondClickTime = null;
-                    }
-                })
-            });
-            return this;
-        };
-    }(jQuery));
-</script>
-
 <script type="text/javascript">
     $.ajaxSetup({
         headers: {
@@ -170,7 +133,12 @@
         }
     });
     $(function () {
-        $('.double-click').doubleClickToGo();
+        $('.double-click').click(function() {
+            return false;
+        }).dblclick(function() {
+            window.location = this.href;
+            return false;
+        });
     });
 </script>
 
@@ -178,6 +146,28 @@
 
 @yield('javascript')
 
+<script>
+    $(function (){
+        @if(session('default'))
+        trigger_pnofify('default', '{{ session('default')['title'] }}', '{{ session('default')['message'] }}');
+        @endif
+        @if(session('primary'))
+        trigger_pnofify('primary', '{{ session('primary')['title'] }}', '{{ session('primary')['message'] }}');
+        @endif
+        @if(session('success'))
+        trigger_pnofify('success', '{{ session('success')['title'] }}', '{{ session('success')['message'] }}');
+        @endif
+        @if(session('info'))
+        trigger_pnofify('info', '{{ session('info')['title'] }}', '{{ session('info')['message'] }}');
+        @endif
+        @if(session('error'))
+        trigger_pnofify('error', '{{ session('error')['title'] }}', '{{ session('error')['message'] }}');
+        @endif
+        @if(session('warning'))
+        trigger_pnofify('warning', '{{ session('warning')['title'] }}', '{{ session('warning')['message'] }}');
+        @endif
+    });
+</script>
 
 
 </body>

@@ -16,7 +16,13 @@ class RegionRepository implements RegionInterface
 
     public function get($filters = array())
     {
-        return $this->region->get();
+        $query = Region::query();
+
+        if(isset($filters['status'])) {
+            $query->whereStatus($filters['status']);
+        }
+
+        return $query->get();
     }
 
     public function find($id)

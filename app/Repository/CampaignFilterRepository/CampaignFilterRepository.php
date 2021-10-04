@@ -16,7 +16,13 @@ class CampaignFilterRepository implements CampaignFilterInterface
 
     public function get($filter = array())
     {
-        return $this->campaign_filter->get();
+        $query = CampaignFilter::query();
+
+        if(isset($filters['status'])) {
+            $query->whereStatus($filters['status']);
+        }
+
+        return $query->get();
     }
 
     public function find($id)

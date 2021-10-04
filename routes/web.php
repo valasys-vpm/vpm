@@ -65,6 +65,9 @@ Route::prefix('manager')->middleware(['web', 'check.manager'])->name('manager.')
     //Campaign Management Routes
     include('manager/campaign_routes.php');
 
+    //Holiday Routes
+    include('manager/holiday_routes.php');
+
 });
 
 Route::prefix('team-leader')->middleware(['web', 'check.team_leader'])->name('team_leader.')->group(function (){

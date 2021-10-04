@@ -1,11 +1,15 @@
+/* ------------------------------------
+    Campaign List Custom Javascript
+------------------------------------ */
 
 let CAMPAIGN_TABLE;
 let URL = $('meta[name="base-path"]').attr('content');
+let MONTHS = ['Jan','Feb','Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
 $(function (){
 
     CAMPAIGN_TABLE = $('#table-campaigns').DataTable({
-        "lengthMenu": [ [10,20,50,100,'all'], [10,20,50,100,'All'] ],
+        "lengthMenu": [ [500,400,300,200,100,-1], [500,400,300,200,100,'All'] ],
         "processing": true,
         "serverSide": true,
         "ajax": {
@@ -22,48 +26,52 @@ $(function (){
         },
         "columns": [
             {
+                data: 'campaign_id'
+            },
+            {
                 render: function (data, type, row) {
-                    if(row.logged_on) {
-                        return '<i class="fas fa-circle text-c-green m-r-15" style="font-size: 20px;" title="Online" data-toggle="tooltip" data-placement="top"></i>';
+                    return '<a href="'+URL+'/manager/campaign/view-details/'+btoa(row.id)+'" class="text-dark double-click" title="View campaign details">'+row.name+'</a>';
+                }
+            },
+            {
+                render: function (data, type, row) {
+                    var percentage = (row.deliver_count/row.allocation)*100;
+                    percentage = percentage.toFixed(2);
+                    return '<div class="progress" style="height: 20px;width:100px;border:1px solid lightgrey;"><div class="progress-bar bg-warning text-dark" role="progressbar" aria-valuenow="'+percentage+'" aria-valuemin="0" aria-valuemax="100" style="width: '+percentage+'%;font-weight:bold;">&nbsp;'+percentage+'%</div></div>';
+                }
+            },
+            {
+                render: function (data, type, row) {
+                    var date = new Date(row.start_date);
+                    return (date.getDate() <= 9 ? '0'+date.getDate() : date.getDate())+'/'+MONTHS[date.getMonth()]+'/'+date.getFullYear();
+                }
+            },
+            {
+                render: function (data, type, row) {
+                    var date = new Date(row.end_date);
+                    return (date.getDate() <= 9 ? '0'+date.getDate() : date.getDate())+'/'+MONTHS[date.getMonth()]+'/'+date.getFullYear();
+                }
+            },
+            {
+                render: function (data, type, row) {
+                    if(row.campaign_status_id === 6) {
+                        return row.deliver_count+' <span class="text-danger" title="Shortfall Count">('+row.shortfall_count+')</span>'+' / '+row.allocation;
                     } else {
-                        return '<i class="fas fa-circle text-c-red m-r-15" style="font-size: 20px;" title="Offline" data-toggle="tooltip" data-placement="top"></i>';
+                        return row.deliver_count+' / '+row.allocation;
                     }
+
                 }
             },
             {
-                data: 'employee_code',
-            },
-            {
-                data: 'first_name',
-            },
-            {
-                data: 'email',
-            },
-            {
-                data: 'role.name',
-            },
-            {
-                data: 'department.name',
-            },
-            {
-                data: 'designation.name',
-            },
-            {
                 render: function (data, type, row) {
-                    switch (row.status) {
-                        case 1: return '<span class="badge badge-pill badge-success" style="padding: 5px;min-width:50px;">Active</span>';
-                        case 0: return '<span class="badge badge-pill badge-danger" style="padding: 5px;min-width:50px;">Inactive</span>';
+                    switch (row.campaign_status_id) {
+                        case 1: return '<span class="badge badge-pill badge-success" style="padding: 5px;min-width:50px;">Live</span>';
+                        case 2: return '<span class="badge badge-pill badge-warning" style="padding: 5px;min-width:50px;">Paused</span>';
+                        case 3: return '<span class="badge badge-pill badge-danger" style="padding: 5px;min-width:50px;">Cancelled</span>';
+                        case 4: return '<span class="badge badge-pill badge-primary" style="padding: 5px;min-width:50px;">Delivered</span>';
+                        case 5: return '<span class="badge badge-pill badge-success" style="padding: 5px;min-width:50px;">Reactivated</span>';
+                        case 6: return '<span class="badge badge-pill badge-secondary" style="padding: 5px;min-width:50px;">Shortfall</span>';
                     }
-                }
-            },
-            {
-                render: function (data, type, row) {
-                    return moment(row.created_at).format('DD MMM, YYYY [at] HH:mm A');
-                }
-            },
-            {
-                render: function (data, type, row) {
-                    return moment(row.updated_at).format('DD MMM, YYYY [at] HH:mm A');
                 }
             },
             {
@@ -71,12 +79,14 @@ $(function (){
                 render: function (data, type, row) {
                     let html = '';
 
-                    html += '<div id="toolbar-options-'+row.id+'" class="hidden">';
-                    html += '<a href="javascript:;" onclick="editCampaign('+row.id+')"><i class="feather icon-edit"></i></a>';
-                    html += '<a href="javascript:;" onclick="deleteCampaign('+row.id+')"><i class="feather icon-trash-2"></i></a>';
-                    html += '</div>';
+                    html += '<a href="'+URL+'/manager/campaign/view-details/'+btoa(row.id)+'" class="btn btn-outline-info btn-rounded btn-sm" title="View Campaign Details"><i class="feather icon-eye mr-0"></i></a>';
+                    html += '<a href="'+URL+'/manager/campaign/edit/'+btoa(row.id)+'" class="btn btn-outline-dark btn-rounded btn-sm" title="Edit Campaign Details"><i class="feather icon-edit mr-0"></i></a>';
+                    //html += '<div id="toolbar-options-'+row.id+'" class="hidden">';
+                    //html += '<a href="javascript:;" onclick="window.location.href=\''+URL+'/manager/campaign/view-deatails/'+btoa(row.id)+'\'"><i class="feather icon-eye"></i></a>';
+                    //html += '<a href="javascript:;" onclick="deleteCampaign('+row.id+')"><i class="feather icon-trash-2"></i></a>';
+                    //html += '</div>';
 
-                    html += '<div data-toolbar="campaign-options" class="btn-toolbar btn-dark btn-toolbar-dark dark-left-toolbar" id="dark-left-toolbar-'+row.id+'" data-id="'+row.id+'"><i class="feather icon-settings"></i></div>';
+                    //html += '<div data-toolbar="campaign-options" class="btn-toolbar btn-dark btn-toolbar-dark dark-left-toolbar" id="dark-left-toolbar-'+row.id+'" data-id="'+row.id+'"><i class="feather icon-settings"></i></div>';
 
                     return html;
                 }
@@ -90,6 +100,13 @@ $(function (){
                     position: 'left',
                     style: 'dark'
                 });
+            });
+
+            $('.double-click').click(function() {
+                return false;
+            }).dblclick(function() {
+                window.location = this.href;
+                return false;
             });
         },
     });
@@ -241,6 +258,7 @@ $(function (){
             }
         }
     });
+
 });
 
 function addCampaign()
