@@ -21,4 +21,19 @@ class Campaign extends Model
     {
         return $this->hasOne(CampaignFilter::class, 'id', 'campaign_filter_id');
     }
+
+    public function countries(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(CampaignCountry::class, 'campaign_id', 'id');
+    }
+
+    public function specifications(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(CampaignSpecification::class, 'campaign_id', 'id');
+    }
+
+    public function pacingDetails()
+    {
+        return $this->hasMany(PacingDetail::class, 'campaign_id', 'id');
+    }
 }

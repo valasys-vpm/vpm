@@ -52,8 +52,9 @@ class CampaignController extends Controller
     public function show($id)
     {
         try {
-            $this->data['resultCampaign'] = $this->campaignRepository->find(base64_decode($id));
-            dd($this->data['resultCampaign']->toArray());
+            $this->data['resultCampaignStatuses'] = $this->campaignStatusRepository->get(array('status' => 1));
+            $this->data['resultCampaign'] = $this->campaignRepository->find(base64_decode($id), array('pacingDetails'));
+            //dd($this->data['resultCampaign']->toArray());
             return view('manager.campaign.show', $this->data);
         } catch (\Exception $exception) {
             return redirect()->route('manager.campaign.list')->with('error', ['title' => 'Error while processing request', 'message' => 'Campaign details not found']);

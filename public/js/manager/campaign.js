@@ -109,6 +109,19 @@ $(function (){
                 return false;
             });
         },
+        "createdRow": function(row, data, dataIndex){
+            switch (data.campaign_status_id) {
+                case 1:
+                    $(row).addClass('border-live');
+                    break;
+                case 2:
+                    $(row).addClass('border-paused');
+                    break;
+            }
+            /*if( data[2] ==  `someVal`){
+                $(row).addClass('redClass');
+            }*/
+        }
     });
 
     $('#modal-form-button-submit').on('click', function (e) {

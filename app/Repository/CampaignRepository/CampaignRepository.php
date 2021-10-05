@@ -41,6 +41,10 @@ class CampaignRepository implements CampaignInterface
             if (in_array('campaignFilter', $with)) {
                 $query->with('campaignFilter');
             }
+
+            if (in_array('pacingDetails', $with)) {
+                $query->with('pacingDetails');
+            }
         }
 
         return $query->findOrFail($id);
