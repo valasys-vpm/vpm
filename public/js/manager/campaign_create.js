@@ -64,6 +64,11 @@ $(function (){
 
 $(function (){
 
+    // classic editor
+    ClassicEditor.create(document.querySelector('.classic-editor')).catch(error => {
+        console.error(error);
+    });
+
     //Auto select regions
     $("#country_id").change(function () {
         let regions = [];

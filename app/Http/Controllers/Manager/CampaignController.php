@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Campaign;
 use App\Repository\CampaignFilterRepository\CampaignFilterRepository;
 use App\Repository\CampaignRepository\CampaignRepository;
+use App\Repository\CampaignSpecificationRepository\CampaignSpecificationRepository;
 use App\Repository\CampaignStatusRepository\CampaignStatusRepository;
 use App\Repository\CampaignTypeRepository\CampaignTypeRepository;
 use App\Repository\CountryRepository\CountryRepository;
@@ -23,6 +24,7 @@ class CampaignController extends Controller
     private $regionRepository;
     private $holidayRepository;
     private $campaignRepository;
+    private $campaignSpecificationRepository;
 
     public function __construct(
         CampaignStatusRepository $campaignStatusRepository,
@@ -31,7 +33,8 @@ class CampaignController extends Controller
         CountryRepository $countryRepository,
         RegionRepository $regionRepository,
         HolidayRepository $holidayRepository,
-        CampaignRepository $campaignRepository
+        CampaignRepository $campaignRepository,
+        CampaignSpecificationRepository $campaignSpecificationRepository
     )
     {
         $this->data = array();
@@ -42,6 +45,7 @@ class CampaignController extends Controller
         $this->regionRepository = $regionRepository;
         $this->holidayRepository = $holidayRepository;
         $this->campaignRepository = $campaignRepository;
+        $this->campaignSpecificationRepository = $campaignSpecificationRepository;
     }
 
     public function index()
@@ -53,7 +57,11 @@ class CampaignController extends Controller
     {
         try {
             $this->data['resultCampaignStatuses'] = $this->campaignStatusRepository->get(array('status' => 1));
-            $this->data['resultCampaign'] = $this->campaignRepository->find(base64_decode($id), array('pacingDetails'));
+            $this->data['resultCampaignFilters'] = $this->campaignFilterRepository->get(array('status' => 1));
+            $this->data['resultCampaignTypes'] = $this->campaignTypeRepository->get(array('status' => 1));
+            $this->data['resultCountries'] = $this->countryRepository->get(array('status' => 1));
+            $this->data['resultRegions'] = $this->regionRepository->get(array('status' => 1));
+            $this->data['resultCampaign'] = $this->campaignRepository->find(base64_decode($id));
             //dd($this->data['resultCampaign']->toArray());
             return view('manager.campaign.show', $this->data);
         } catch (\Exception $exception) {
@@ -83,26 +91,35 @@ class CampaignController extends Controller
         }
     }
 
-    public function edit($id)
+    public function editPacingDetails($id): \Illuminate\Http\JsonResponse
     {
-        try {
-            $this->data['resultCampaign'] = $this->campaignRepository->find(base64_decode($id));
-            dd($this->data['resultCampaign']->toArray());
-            return view('manager.campaign.edit', $this->data);
-        } catch (\Exception $exception) {
-            return redirect()->route('manager.campaign.list')->with('error', ['title' => 'Error while processing request', 'message' => 'Campaign details not found']);
+        $resultCampaign = $this->campaignRepository->find(base64_decode($id));
+        if(!empty($resultCampaign)) {
+            return response()->json(array('status' => true, 'message' => 'Data found', 'data' => $resultCampaign));
+        } else {
+            return response()->json(array('status' => false, 'message' => 'Data not found'));
         }
     }
 
-    public function update($id, Request $request): \Illuminate\Http\RedirectResponse
+    public function update($id, Request $request)
     {
         $attributes = $request->all();
         $response = $this->campaignRepository->update(base64_decode($id), $attributes);
-        if($response['status'] == TRUE) {
-            return redirect()->route('manager.campaign.list')->with('success', ['title' => 'Successful', 'message' => $response['message']]);
+        if($request->ajax()) {
+            if($response['status'] == TRUE) {
+                return response()->json(array('status' => true, 'message' => $response['message']));
+            } else {
+                return response()->json(array('status' => false, 'message' => $response['message']));
+            }
         } else {
-            return back()->withInput()->with('error', ['title' => 'Error while processing request', 'message' => $response['message']]);
+            if($response['status'] == TRUE) {
+                return redirect()->route('manager.campaign.show', $id)->with('success', ['title' => 'Successful', 'message' => $response['message']]);
+            } else {
+                return back()->withInput()->with('error', ['title' => 'Error while processing request', 'message' => $response['message']]);
+            }
+
         }
+
     }
 
     public function validateVMailCampaignId(Request $request)
@@ -118,6 +135,27 @@ class CampaignController extends Controller
             return 'false';
         } else {
             return 'true';
+        }
+    }
+
+    public function attachSpecification($id, Request $request): \Illuminate\Http\JsonResponse
+    {
+        $attributes = $request->all();
+        $response = $this->campaignRepository->updateSpecification(base64_decode($id), $attributes);
+        if($response['status'] == TRUE) {
+            return response()->json(array('status' => true, 'message' => $response['message'], 'data' => $response['data']));
+        } else {
+            return response()->json(array('status' => false, 'message' => $response['message']));
+        }
+    }
+
+    public function removeSpecification($id, Request $request): \Illuminate\Http\JsonResponse
+    {
+        $response = $this->campaignSpecificationRepository->destroy(base64_decode($id));
+        if($response['status'] == TRUE) {
+            return response()->json(array('status' => true, 'message' => $response['message']));
+        } else {
+            return response()->json(array('status' => false, 'message' => $response['message']));
         }
     }
 

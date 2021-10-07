@@ -35,7 +35,7 @@ class CreateCampaignsTable extends Migration
             $table->integer('shortfall_count')->default(0);
 
             $table->unsignedInteger('campaign_status_id');
-            $table->foreign('campaign_status_id')->references('id')->on('campaign_types')->onUpdate('cascade');
+            $table->foreign('campaign_status_id')->references('id')->on('campaign_statuses')->onUpdate('cascade');
 
             $table->enum('pacing', ['Daily', 'Monthly', 'Weekly']);
 

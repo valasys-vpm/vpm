@@ -47,7 +47,6 @@
                                                     <form id="form-campaign-create" method="post" action="{{ route('manager.campaign.store') }}" enctype="multipart/form-data">
                                                         @csrf
                                                         <div class="row">
-
                                                             <div class="col-md-6 form-group">
                                                                 <label for="name">Campaign Name<span class="text-danger">*</span></label>
                                                                 <input type="text" class="form-control btn-square" id="name" name="name" placeholder="Enter campaign name">
