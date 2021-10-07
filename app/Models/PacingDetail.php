@@ -11,4 +11,9 @@ class PacingDetail extends Model
     use SoftDeletes;
     protected $guarded = array();
     public $timestamps = true;
+
+    public function campaign()
+    {
+        return $this->hasOne(Campaign::class, 'id', 'campaign_id');
+    }
 }

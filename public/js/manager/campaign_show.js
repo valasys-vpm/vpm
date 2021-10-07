@@ -239,7 +239,37 @@ function editPacingDetails(id)
 
 function editSubAllocations(id)
 {
+    if(confirm("Are you sure to edit sub-allocations?")) {
+        $.ajax({
+            type: 'get',
+            url: $('meta[name="base-path"]').attr('content') + '/manager/campaign/edit-sub-allocations/' + id,
+            success: function (response){
+                if(response.status === true) {
+                    console.log(response.data);
+                    let html_month_list_tabs = '';
+                    $.each(response.data.resultMonthList, function(key, value){
+                        html_month_list_tabs += '<li><a class="nav-link text-left '+ (0===key?'show active':'') +'" id="v-pills-'+ value +'-tab" data-toggle="pill" href="#v-pills-'+ value +'" role="tab" aria-controls="v-pills-'+ value +'" aria-selected="false">'+ value +'</a></li>';
 
+                        let html_tabs_content = '<div class="tab-pane fade '+ (0===key?'show active':'') +'" id="v-pills-'+ value +'" role="tabpanel" aria-labelledby="v-pills-'+ value +'-tab">' +
+                                '<div class="row" id="'+ value +'-dates">' +
+                                '</div>' +
+                            '</div>';
+                        $('#v-pills-tabContent').append(html_tabs_content);
+                    });
+                    $('#v-pills-tab-month-list').html(html_month_list_tabs);
+                } else {
+
+                }
+
+
+                $(".select2-multiple-days").select2({
+                    placeholder: " -- Select Day(s) --",
+                    dropdownParent: $('#modal-edit-sub-allocations')
+                });
+                $("#modal-edit-sub-allocations").modal('show');
+            }
+        });
+    }
 }
 
 function removeSpecification(_this, specification_id) {

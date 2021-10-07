@@ -13,6 +13,9 @@ Route::prefix('campaign')->name('campaign.')->group(function()
     Route::any('/update/{id}', [App\Http\Controllers\Manager\CampaignController::class, 'update'])->name('update');
 
     Route::any('/edit-pacing-details/{id}', [App\Http\Controllers\Manager\CampaignController::class, 'editPacingDetails'])->name('edit_pacing_details');
+    Route::any('/edit-sub-allocations/{id}', [App\Http\Controllers\Manager\CampaignController::class, 'editSubAllocations'])->name('edit_pacing_details');
+
+    Route::any('/update-sub-allocations/{id}', [App\Http\Controllers\Manager\CampaignController::class, 'updateSubAllocations'])->name('update_sub_allocations');
 
     Route::any('/destroy/{id}', [App\Http\Controllers\Manager\CampaignController::class, 'destroy'])->name('destroy');
 

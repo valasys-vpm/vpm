@@ -11,8 +11,10 @@ use App\Repository\CampaignStatusRepository\CampaignStatusRepository;
 use App\Repository\CampaignTypeRepository\CampaignTypeRepository;
 use App\Repository\CountryRepository\CountryRepository;
 use App\Repository\HolidayRepository\HolidayRepository;
+use App\Repository\PacingDetailRepository\PacingDetailRepository;
 use App\Repository\RegionRepository\RegionRepository;
 use Illuminate\Http\Request;
+use function Symfony\Component\Translation\t;
 
 class CampaignController extends Controller
 {
@@ -25,6 +27,7 @@ class CampaignController extends Controller
     private $holidayRepository;
     private $campaignRepository;
     private $campaignSpecificationRepository;
+    private $pacingDetailRepository;
 
     public function __construct(
         CampaignStatusRepository $campaignStatusRepository,
@@ -34,7 +37,8 @@ class CampaignController extends Controller
         RegionRepository $regionRepository,
         HolidayRepository $holidayRepository,
         CampaignRepository $campaignRepository,
-        CampaignSpecificationRepository $campaignSpecificationRepository
+        CampaignSpecificationRepository $campaignSpecificationRepository,
+        PacingDetailRepository $pacingDetailRepository
     )
     {
         $this->data = array();
@@ -46,6 +50,7 @@ class CampaignController extends Controller
         $this->holidayRepository = $holidayRepository;
         $this->campaignRepository = $campaignRepository;
         $this->campaignSpecificationRepository = $campaignSpecificationRepository;
+        $this->pacingDetailRepository = $pacingDetailRepository;
     }
 
     public function index()
@@ -96,6 +101,30 @@ class CampaignController extends Controller
         $resultCampaign = $this->campaignRepository->find(base64_decode($id));
         if(!empty($resultCampaign)) {
             return response()->json(array('status' => true, 'message' => 'Data found', 'data' => $resultCampaign));
+        } else {
+            return response()->json(array('status' => false, 'message' => 'Data not found'));
+        }
+    }
+
+    public function editSubAllocations($id): \Illuminate\Http\JsonResponse
+    {
+        $this->data['resultCampaign'] = $this->campaignRepository->find(base64_decode($id));
+        $this->data['resultSubAllocations'] = $this->pacingDetailRepository->get(base64_decode($id));
+        if(!empty($this->data['resultSubAllocations'])) {
+            $start_date    = (new \DateTime($this->data['resultCampaign']->start_date));
+            $end_date      = (new \DateTime($this->data['resultCampaign']->end_date));
+        }
+        $interval = \DateInterval::createFromDateString('1 month');
+        $period   = new \DatePeriod($start_date, $interval, $end_date);
+        $this->data['resultMonthList'] = array();
+        $this->data['total_sub_allocation'] = 0;
+
+        foreach ($period as $month) {
+            $this->data['resultMonthList'][] = $month->format("M-Y");
+        }
+
+        if(!empty($this->data)) {
+            return response()->json(array('status' => true, 'message' => 'Data found', 'data' => $this->data));
         } else {
             return response()->json(array('status' => false, 'message' => 'Data not found'));
         }

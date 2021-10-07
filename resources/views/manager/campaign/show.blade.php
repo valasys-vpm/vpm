@@ -453,6 +453,57 @@
         </div>
     </div>
 
+    <div id="modal-edit-sub-allocations" class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="my-modal-edit-sub-allocations" aria-hidden="true" style="background: rgba(0, 0, 0, 0.7) !important;" >
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="my-modal-edit-sub-allocations">Edit Sub Allocations</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <form id="modal-form-edit-sub-allocations" method="post" action="{{ route('manager.campaign.update_sub_allocations', base64_encode($resultCampaign->id)) }}">
+                                @csrf
+                                <div class="row pl-md-4 pr-md-4">
+                                    <div class="col-md-3 form-group">
+                                        <label for="start_date">Start Date: <h5>{{ date('d-M-Y', strtotime($resultCampaign->start_date)) }}</h5></label>
+                                    </div>
+                                    <div class="col-md-3 form-group">
+                                        <label for="end_date">End Date: <h5>{{ date('d-M-Y', strtotime($resultCampaign->end_date)) }}</h5></label>
+                                    </div>
+                                    <div class="col-md-3 form-group">
+                                        <label for="pacing">Pacing: <h5>{{ ucfirst($resultCampaign->pacing) }}</h5></label>
+                                    </div>
+                                    <div class="col-md-3 form-group">
+                                        <label for="pacing">Total Sub-Allocations:
+                                            <h5>
+                                                <span id="total-sub-allocation">0</span>
+                                                <span> / {{ $resultCampaign->allocation }}</span>
+                                            </h5>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="row pl-md-4 pr-md-4" id="div-pacing-details">
+                                    <div class="col-md-3 col-sm-12">
+                                        <ul class="nav flex-column nav-pills" id="v-pills-tab-month-list" role="tablist" aria-orientation="vertical">
+                                        </ul>
+                                    </div>
+
+                                    <div class="col-md-9 col-sm-12">
+                                        <div class="tab-content" id="v-pills-tabContent">
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 @endsection
 
 @section('javascript')
