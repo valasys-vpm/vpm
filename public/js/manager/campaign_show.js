@@ -248,10 +248,17 @@ function editSubAllocations(id)
                     console.log(response.data);
                     let html_month_list_tabs = '';
                     $.each(response.data.resultMonthList, function(key, value){
-                        html_month_list_tabs += '<li><a class="nav-link text-left '+ (0===key?'show active':'') +'" id="v-pills-'+ value +'-tab" data-toggle="pill" href="#v-pills-'+ value +'" role="tab" aria-controls="v-pills-'+ value +'" aria-selected="false">'+ value +'</a></li>';
+                        html_month_list_tabs += '<li><a class="nav-link text-left '+ (0===key?'show active':'') +'" id="v-pills-'+ value.month_name +'-tab" data-toggle="pill" href="#v-pills-'+ value.month_name +'" role="tab" aria-controls="v-pills-'+ value.month_name +'" aria-selected="false">'+ value.month_name +'</a></li>';
 
-                        let html_tabs_content = '<div class="tab-pane fade '+ (0===key?'show active':'') +'" id="v-pills-'+ value +'" role="tabpanel" aria-labelledby="v-pills-'+ value +'-tab">' +
-                                '<div class="row" id="'+ value +'-dates">' +
+                        let html_tabs_content = '<div class="tab-pane fade '+ (0===key?'show active':'') +'" id="v-pills-'+ value.month_name +'" role="tabpanel" aria-labelledby="v-pills-'+ value.month_name +'-tab">' +
+                                '<div class="row">' +
+                                    '<div class="col-md-6 form-group">' +
+                                        getDaySelection_html(response.data.resultCampaign.pacing, value) +
+                                    '</div>' +
+                                '</div>' +
+
+                                '<div class="row" id="'+ value.month_name +'-dates">' +
+                                    getSubAllocations_html(value, response.data.resultCampaign.pacing) +
                                 '</div>' +
                             '</div>';
                         $('#v-pills-tabContent').append(html_tabs_content);
@@ -260,7 +267,6 @@ function editSubAllocations(id)
                 } else {
 
                 }
-
 
                 $(".select2-multiple-days").select2({
                     placeholder: " -- Select Day(s) --",
@@ -293,5 +299,58 @@ function removeSpecification(_this, specification_id) {
             }
         });
     }
+}
+
+//Pacing Related Functions
+
+function getDaySelection_html(pacing, value)
+{
+    let html = '';
+    switch (pacing) {
+        case 'Daily':
+            html += '<label for="days">Select Day(s)<span class="text-danger">*</span></label>\n' +
+                '<select class="form-control btn-square select2-multiple select2-multiple-days" id="' + value.month_name + '_days" name="days[' + value.month_name + '][]" multiple="multiple" data-month="'+(parseInt(value.month-1))+'" data-year="'+ value.year +'" onChange="getHtmlPacingDates(this);">\n' +
+                '   <option value="1" ' + ( (value.days.includes(1)) ? 'selected' : '') + '> Monday</option>\n' +
+                '   <option value="2" ' + ( (value.days.includes(2)) ? 'selected' : '') + '> Tuesday</option>\n' +
+                '   <option value="3" ' + ( (value.days.includes(3)) ? 'selected' : '') + '> Wednesday</option>\n' +
+                '   <option value="4" ' + ( (value.days.includes(4)) ? 'selected' : '') + '> Thursday</option>\n' +
+                '   <option value="5" ' + ( (value.days.includes(5)) ? 'selected' : '') + '> Friday</option>\n' +
+                '   <option value="6" ' + ( (value.days.includes(6)) ? 'selected' : '') + '> Saturday</option>\n' +
+                '   <option value="0" ' + ( (value.days.includes(0)) ? 'selected' : '') + '> Sunday</option>\n' +
+                '</select>';
+            break;
+        case 'Weekly':
+            html += '<label for="days">Select Day<span class="text-danger">*</span></label>\n' +
+                '<select class="form-control btn-square form-control-sm" id="' + value.month_name + '_day" name="day[' + value.month_name + ']" data-month="'+(parseInt(value.month-1))+'" data-year="'+ value.year +'" onChange="getHtmlPacingDates(this);">\n' +
+                '   <option value="1" ' + ( (value.days.includes(1)) ? 'selected' : '') + '> Monday</option>\n' +
+                '   <option value="2" ' + ( (value.days.includes(2)) ? 'selected' : '') + '> Tuesday</option>\n' +
+                '   <option value="3" ' + ( (value.days.includes(3)) ? 'selected' : '') + '> Wednesday</option>\n' +
+                '   <option value="4" ' + ( (value.days.includes(4)) ? 'selected' : '') + '> Thursday</option>\n' +
+                '   <option value="5" ' + ( (value.days.includes(5)) ? 'selected' : '') + '> Friday</option>\n' +
+                '   <option value="6" ' + ( (value.days.includes(6)) ? 'selected' : '') + '> Saturday</option>\n' +
+                '   <option value="0" ' + ( (value.days.includes(0)) ? 'selected' : '') + '> Sunday</option>\n' +
+                '</select>';
+            break;
+        case 'Monthly': html = ''; break;
+    }
+
+    return html;
+}
+
+function getSubAllocations_html(data, pacing)
+{
+    let html = '';
+
+    $.each(data.sub_allocations, function(key, value){
+        html += '<div class="col-md-6">\n' +
+            '       <div class="input-group mb-3">\n' +
+            '           <div class="input-group-prepend"><span class="input-group-text '+ ( (parseInt(value.is_holiday)) ? 'text-danger' : '' ) +'">' + moment(value.date).format('ddd DD-MMM-YYYY') + '</span></div>\n' +
+            '           <input type="number" class="form-control btn-square only-non-zero-number sub-allocation" name="sub-allocation[' + value.date + ']" value="' + value.sub_allocation + '" '+ ( (parseInt(value.is_holiday)) ? ' disabled placeholder="Holiday" ' : ' placeholder="Enter Sub-Allocation" ' ) +'>\n' +
+            '       </div>\n' +
+            '   </div>\n';
+    });
+
+    return html;
+
 }
 

@@ -18,7 +18,15 @@ class PacingDetailRepository implements PacingDetailInterface
         $query = PacingDetail::query();
 
         if(isset($campaign_id) && !empty($campaign_id)) {
-            $query->campaign_id = $campaign_id;
+            $query->where('campaign_id', $campaign_id);
+        }
+
+        if(isset($filters['month']) && !empty($filters['month'])) {
+            $query->whereMonth('date', $filters['month']);
+        }
+
+        if(isset($filters['year']) && !empty($filters['year'])) {
+            $query->whereYear('date', $filters['year']);
         }
 
         return $query->get();
