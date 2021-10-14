@@ -26,7 +26,13 @@ class CampaignRepository implements CampaignInterface
 
     public function get($filters = array())
     {
-        // TODO: Implement get() method.
+        $query = Campaign::query();
+
+        if(isset($filters['campaign_to_assign']) && $filters['campaign_to_assign']) {
+            $query->whereNull('parent_id');
+        }
+
+        return $query->get();
     }
 
     public function find($id, $with = array())
@@ -39,17 +45,25 @@ class CampaignRepository implements CampaignInterface
         $response = array('status' => FALSE, 'message' => 'Something went wrong, please try again.');
         try {
             DB::beginTransaction();
-
-            if(isset($lastRecord)) {
-                $lastId = str_pad($lastRecord->id + 1,6,"0",STR_PAD_LEFT);
-            } else {
-                $lastId = str_pad('1',6,"0",STR_PAD_LEFT);
-            }
-            $resultCampaignType = $this->campaignTypeRepository->find($attributes['campaign_type_id']);
-            $campaignAbbreviation = SiteSetting::where('key', 'Campaign Abbreviation')->first()->value;
-            $campaignId = $campaignAbbreviation.$resultCampaignType->name.'-'.$lastId;
-
             $campaign = new Campaign();
+
+            if(isset($attributes['parent_id'])) {
+                $resultCampaign = $this->find(base64_decode($attributes['parent_id']));
+                $campaignId = $resultCampaign->campaign_id;
+                $campaign->type  = 'incremental';
+                $campaign->parent_id  = base64_decode($attributes['parent_id']);
+            } else {
+                $lastRecord = Campaign::latest('id')->first();
+                if(isset($lastRecord)) {
+                    $lastId = str_pad($lastRecord->id + 1,6,"0",STR_PAD_LEFT);
+                } else {
+                    $lastId = str_pad('1',6,"0",STR_PAD_LEFT);
+                }
+                $resultCampaignType = $this->campaignTypeRepository->find($attributes['campaign_type_id']);
+                $campaignAbbreviation = SiteSetting::where('key', 'Campaign Abbreviation')->first()->value;
+                $campaignId = $campaignAbbreviation.$resultCampaignType->name.'-'.$lastId;
+            }
+
             $campaign->name = $attributes['name'];
             $campaign->campaign_id = $campaignId;
             $campaign->v_mail_campaign_id = $attributes['v_mail_campaign_id'];
@@ -136,6 +150,10 @@ class CampaignRepository implements CampaignInterface
         $response = array('status' => FALSE, 'message' => 'Something went wrong, please try again.');
         try {
             DB::beginTransaction();
+
+            if(isset($attributes['id']) && !empty($attributes['id'])) {
+                $id = base64_decode($attributes['id']);
+            }
 
             $campaign = $this->find($id);
 

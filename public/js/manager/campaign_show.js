@@ -1,7 +1,29 @@
 
 
+let URL = $('meta[name="base-path"]').attr('content');
+let MONTHS = ['Jan','Feb','Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+let DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+let HOLIDAYS = [];
+let HOLIDAY_LIST = [];
+
 //Initializations
 $(function(){
+
+    $.ajax({
+        url: URL + '/manager/holiday/get-holiday-list',
+        type: "get",
+        success: function(response) {
+            if(response.status === true) {
+                HOLIDAYS = response.data;
+                $.each(HOLIDAYS, function (index, row) {
+                    HOLIDAY_LIST.push(row.date);
+                });
+            } else {
+                HOLIDAY_LIST = [];
+            }
+        }
+    });
+
     // classic editor
     $(window).on('load', function() {
         // classic editor
@@ -119,6 +141,23 @@ $(function(){
         dropdownParent: $('#modal-edit-pacing-details'),
         switchOnClick : true,
     });
+
+    //Update total sub-allocation count
+    $('body').on('keyup', ".sub-allocation",function () {
+        let total = 0;
+
+        $('body').find('.sub-allocation').each(function(){
+            if($(this).val() !== '') {
+                total = total + parseInt($(this).val());
+            }
+        });
+        total = (total > 0) ? total : 0;
+        $("#total-sub-allocation").html(total);
+        if(total > parseInt($("#campaign_allocation").val())) {
+            $(this).val('');
+            $(this).keyup();
+        }
+    });
 });
 
 
@@ -190,8 +229,7 @@ $(function(){
 
 });
 
-function editCampaignDetails()
-{
+function editCampaignDetails() {
     $('#country_id').select2({
         placeholder: " -- Select Country(s) --",
         dropdownParent: $('#modal-edit-campaign-details')
@@ -203,14 +241,14 @@ function editCampaignDetails()
     $('#modal-edit-campaign-details').modal('show');
 }
 
-function editPacingDetails(id)
-{
+function editPacingDetails(id) {
     if(confirm("Are you sure to edit pacing details?")) {
         $.ajax({
             type: 'get',
             url: $('meta[name="base-path"]').attr('content') + '/manager/campaign/edit-pacing-details/' + id,
             success: function (response){
                 if(response.status === true) {
+                    $('input.campaign_id').val(btoa(response.data.id));
                     $('#start_date').bootstrapMaterialDatePicker('setDate', new Date(response.data.start_date));
                     $('#end_date').bootstrapMaterialDatePicker('setMinDate', new Date(response.data.start_date));
                     $('#end_date').bootstrapMaterialDatePicker('setDate', new Date(response.data.end_date));
@@ -237,18 +275,30 @@ function editPacingDetails(id)
     }
 }
 
-function editSubAllocations(id)
-{
+function editSubAllocations(id) {
     if(confirm("Are you sure to edit sub-allocations?")) {
         $.ajax({
             type: 'get',
             url: $('meta[name="base-path"]').attr('content') + '/manager/campaign/edit-sub-allocations/' + id,
             success: function (response){
+                $('#edit_sub_allocation_campaign_id').val(id);
+                $("#total-sub-allocation").html(0)
+                $('#v-pills-tab-month-list').html('');
+                $('#v-pills-tabContent').html('');
+
                 if(response.status === true) {
                     console.log(response.data);
-                    let html_month_list_tabs = '';
+                    let data = response.data;
+                    $('#modal-edit-sub-allocations').find('.label-start-date').html(moment(data.resultCampaign.start_date).format('DD-MMM-YYYY'));
+                    $('#campaign_start_date').val(moment(data.resultCampaign.start_date).format('DD-MMM-YYYY'));
+                    $('#modal-edit-sub-allocations').find('.label-end-date').html(moment(data.resultCampaign.end_date).format('DD-MMM-YYYY'));
+                    $('#campaign_end_date').val(moment(data.resultCampaign.end_date).format('DD-MMM-YYYY'));
+                    $('#modal-edit-sub-allocations').find('.label-pacing').html(data.resultCampaign.pacing);
+                    $('#modal-edit-sub-allocations').find('.label-allocation').html(data.resultCampaign.allocation);
+                    $('#campaign_allocation').val(data.resultCampaign.allocation);
+
                     $.each(response.data.resultMonthList, function(key, value){
-                        html_month_list_tabs += '<li><a class="nav-link text-left '+ (0===key?'show active':'') +'" id="v-pills-'+ value.month_name +'-tab" data-toggle="pill" href="#v-pills-'+ value.month_name +'" role="tab" aria-controls="v-pills-'+ value.month_name +'" aria-selected="false">'+ value.month_name +'</a></li>';
+                        let html_month_list_tabs = '<li><a class="nav-link text-left '+ (0===key?'show active':'') +'" id="v-pills-'+ value.month_name +'-tab" data-toggle="pill" href="#v-pills-'+ value.month_name +'" role="tab" aria-controls="v-pills-'+ value.month_name +'" aria-selected="false">'+ value.month_name +'</a></li>';
 
                         let html_tabs_content = '<div class="tab-pane fade '+ (0===key?'show active':'') +'" id="v-pills-'+ value.month_name +'" role="tabpanel" aria-labelledby="v-pills-'+ value.month_name +'-tab">' +
                                 '<div class="row">' +
@@ -262,8 +312,9 @@ function editSubAllocations(id)
                                 '</div>' +
                             '</div>';
                         $('#v-pills-tabContent').append(html_tabs_content);
+                        $('#v-pills-tab-month-list').append(html_month_list_tabs);
                     });
-                    $('#v-pills-tab-month-list').html(html_month_list_tabs);
+
                 } else {
 
                 }
@@ -303,32 +354,40 @@ function removeSpecification(_this, specification_id) {
 
 //Pacing Related Functions
 
-function getDaySelection_html(pacing, value)
-{
+function getDaySelection_html(pacing, value) {
     let html = '';
+    let days = [];
+    if(Array.isArray(value.days)) {
+        days = value.days;
+    } else {
+        $.each(value.days, function (key, value){
+            days.push(value);
+        });
+    }
+
     switch (pacing) {
         case 'Daily':
             html += '<label for="days">Select Day(s)<span class="text-danger">*</span></label>\n' +
                 '<select class="form-control btn-square select2-multiple select2-multiple-days" id="' + value.month_name + '_days" name="days[' + value.month_name + '][]" multiple="multiple" data-month="'+(parseInt(value.month-1))+'" data-year="'+ value.year +'" onChange="getHtmlPacingDates(this);">\n' +
-                '   <option value="1" ' + ( (value.days.includes(1)) ? 'selected' : '') + '> Monday</option>\n' +
-                '   <option value="2" ' + ( (value.days.includes(2)) ? 'selected' : '') + '> Tuesday</option>\n' +
-                '   <option value="3" ' + ( (value.days.includes(3)) ? 'selected' : '') + '> Wednesday</option>\n' +
-                '   <option value="4" ' + ( (value.days.includes(4)) ? 'selected' : '') + '> Thursday</option>\n' +
-                '   <option value="5" ' + ( (value.days.includes(5)) ? 'selected' : '') + '> Friday</option>\n' +
-                '   <option value="6" ' + ( (value.days.includes(6)) ? 'selected' : '') + '> Saturday</option>\n' +
-                '   <option value="0" ' + ( (value.days.includes(0)) ? 'selected' : '') + '> Sunday</option>\n' +
+                '   <option value="1" ' + ( (days.includes(1)) ? 'selected' : '') + '> Monday</option>\n' +
+                '   <option value="2" ' + ( (days.includes(2)) ? 'selected' : '') + '> Tuesday</option>\n' +
+                '   <option value="3" ' + ( (days.includes(3)) ? 'selected' : '') + '> Wednesday</option>\n' +
+                '   <option value="4" ' + ( (days.includes(4)) ? 'selected' : '') + '> Thursday</option>\n' +
+                '   <option value="5" ' + ( (days.includes(5)) ? 'selected' : '') + '> Friday</option>\n' +
+                '   <option value="6" ' + ( (days.includes(6)) ? 'selected' : '') + '> Saturday</option>\n' +
+                '   <option value="0" ' + ( (days.includes(0)) ? 'selected' : '') + '> Sunday</option>\n' +
                 '</select>';
             break;
         case 'Weekly':
             html += '<label for="days">Select Day<span class="text-danger">*</span></label>\n' +
                 '<select class="form-control btn-square form-control-sm" id="' + value.month_name + '_day" name="day[' + value.month_name + ']" data-month="'+(parseInt(value.month-1))+'" data-year="'+ value.year +'" onChange="getHtmlPacingDates(this);">\n' +
-                '   <option value="1" ' + ( (value.days.includes(1)) ? 'selected' : '') + '> Monday</option>\n' +
-                '   <option value="2" ' + ( (value.days.includes(2)) ? 'selected' : '') + '> Tuesday</option>\n' +
-                '   <option value="3" ' + ( (value.days.includes(3)) ? 'selected' : '') + '> Wednesday</option>\n' +
-                '   <option value="4" ' + ( (value.days.includes(4)) ? 'selected' : '') + '> Thursday</option>\n' +
-                '   <option value="5" ' + ( (value.days.includes(5)) ? 'selected' : '') + '> Friday</option>\n' +
-                '   <option value="6" ' + ( (value.days.includes(6)) ? 'selected' : '') + '> Saturday</option>\n' +
-                '   <option value="0" ' + ( (value.days.includes(0)) ? 'selected' : '') + '> Sunday</option>\n' +
+                '   <option value="1" ' + ( (days.includes(1)) ? 'selected' : '') + '> Monday</option>\n' +
+                '   <option value="2" ' + ( (days.includes(2)) ? 'selected' : '') + '> Tuesday</option>\n' +
+                '   <option value="3" ' + ( (days.includes(3)) ? 'selected' : '') + '> Wednesday</option>\n' +
+                '   <option value="4" ' + ( (days.includes(4)) ? 'selected' : '') + '> Thursday</option>\n' +
+                '   <option value="5" ' + ( (days.includes(5)) ? 'selected' : '') + '> Friday</option>\n' +
+                '   <option value="6" ' + ( (days.includes(6)) ? 'selected' : '') + '> Saturday</option>\n' +
+                '   <option value="0" ' + ( (days.includes(0)) ? 'selected' : '') + '> Sunday</option>\n' +
                 '</select>';
             break;
         case 'Monthly': html = ''; break;
@@ -337,20 +396,149 @@ function getDaySelection_html(pacing, value)
     return html;
 }
 
-function getSubAllocations_html(data, pacing)
-{
+function getSubAllocations_html(data, pacing) {
     let html = '';
+    let total_allocation = parseInt($("#total-sub-allocation").html());
+    if(data.sub_allocations.length > 0) {
+        $.each(data.sub_allocations, function(key, value){
+            if(value.sub_allocation > 0) {
+                total_allocation = total_allocation + value.sub_allocation;
+            }
+            html += '<div class="col-md-6">\n' +
+                '       <div class="input-group mb-3">\n' +
+                '           <div class="input-group-prepend"><span class="input-group-text '+ ( (parseInt(value.is_holiday)) ? 'text-danger' : '' ) +'">' + moment(value.date).format('ddd DD-MMM-YYYY') + '</span></div>\n' +
+                '           <input type="number" class="form-control btn-square only-non-zero-number sub-allocation" name="sub-allocation[' + value.date + ']" value="' + value.sub_allocation + '" '+ ( (parseInt(value.is_holiday)) ? ' disabled placeholder="Holiday" ' : ' placeholder="Enter Sub-Allocation" ' ) +'>\n' +
+                '       </div>\n' +
+                '   </div>\n';
+        });
+        $("#total-sub-allocation").html(total_allocation);
+    } else {
+        switch (pacing) {
+            case 'Daily' :
+                html += '';
+                break;
+            case 'Weekly' :
+                html += '';
+                break;
+            case 'Monthly' :
+                html += getDatesMonthlyPacing_html(data.month, data.year);
+                break;
+        }
 
-    $.each(data.sub_allocations, function(key, value){
-        html += '<div class="col-md-6">\n' +
-            '       <div class="input-group mb-3">\n' +
-            '           <div class="input-group-prepend"><span class="input-group-text '+ ( (parseInt(value.is_holiday)) ? 'text-danger' : '' ) +'">' + moment(value.date).format('ddd DD-MMM-YYYY') + '</span></div>\n' +
-            '           <input type="number" class="form-control btn-square only-non-zero-number sub-allocation" name="sub-allocation[' + value.date + ']" value="' + value.sub_allocation + '" '+ ( (parseInt(value.is_holiday)) ? ' disabled placeholder="Holiday" ' : ' placeholder="Enter Sub-Allocation" ' ) +'>\n' +
-            '       </div>\n' +
-            '   </div>\n';
-    });
-
+    }
     return html;
 
+}
+
+function getHtmlPacingDates(_this) {
+    let month = $(_this).data('month');
+    let year = $(_this).data('year');
+    let selectedDays =  $(_this).val();
+
+    let dayArr = [];
+    let allDates = [];
+
+    if(Array.isArray(selectedDays)) {
+        dayArr = selectedDays;
+    } else {
+        dayArr.push(selectedDays);
+    }
+
+    $.each(dayArr, function () {
+        $.merge(allDates, getDaysInMonthYear(parseInt(month), parseInt(year), parseInt(this)));
+    });
+    allDates.sort((a, b) => a.valueOf() - b.valueOf());
+
+    let html = '';
+
+    $('body').find('#'+MONTHS[month]+'-'+year+'-dates').html(html);
+
+    $.each(allDates, function () {
+
+        let currentDate = this.getFullYear()+'-'+((this.getMonth()+1)<=9?('0'+(this.getMonth()+1)) : (this.getMonth()+1))+'-'+(this.getDate()<=9 ? '0'+this.getDate() : this.getDate());
+        let disabled = '';
+        let place_holder = 'Sub-Allocation';
+        let text_color = '';
+        let title = '';
+        let date_title = '';
+
+        if($.inArray(currentDate, HOLIDAY_LIST) !== -1) {
+            disabled = ' disabled ';
+            text_color = 'text-danger';
+            place_holder = 'holiday';
+            title = 'holiday';
+            date_title = 'Holiday';
+            $.each(HOLIDAYS, function (index, row) {
+                if(currentDate === row.date) {
+                    title = place_holder = row.title;
+                }
+            });
+
+        }
+
+        html = '<div class="col-md-6">'+
+            '               <div class="input-group mb-3">'+
+            '                   <div class="input-group-prepend"><span class="input-group-text '+text_color+'" title="'+date_title+'">'+DAYS[this.getDay()]+' '+this.getDate()+'-'+MONTHS[this.getMonth()]+'-'+this.getFullYear()+'</span></div>'+
+            '                   <input type="number" class="form-control btn-square only-non-zero-number sub-allocation" name="sub-allocation['+currentDate+']" placeholder="'+place_holder+'" '+disabled+' title="'+title+'">'+
+            '               </div>'+
+            '          </div>';
+
+        $('body').find('#'+MONTHS[month]+'-'+year+'-dates').append(html);
+    });
+
+    $('.sub-allocation').trigger('keyup');
+}
+
+function getDaysInMonthYear(month, year, weekday) {
+
+    let date = new Date(year, month, 1);
+    let days = [];
+    let start_date = $("#campaign_start_date").val();
+    let end_date = $("#campaign_end_date").val();
+    let start = new Date(start_date);
+    let end = new Date(end_date);
+
+    while (date.getMonth() === month) {
+        if(date.getDay() === weekday && (start <= date) && (end >= date)) {
+            days.push(new Date(date));
+        }
+        date.setDate(date.getDate() + 1);
+    }
+    return days;
+}
+
+function getDatesMonthlyPacing_html(month, year) {
+    let html = '';
+    let start_date = $("#campaign_start_date").val();
+    let end_date = $("#campaign_end_date").val();
+    let start = new Date(start_date);
+    let end = new Date(end_date);
+
+    while (start <= end || (start.getMonth() === end.getMonth())) {
+        //month = MONTHS[start.getMonth()]+'-'+start.getFullYear();
+        lastDay = new Date(start.getFullYear(), start.getMonth() + 1, 0);
+
+        if(lastDay > end) { lastDay = end; }
+
+        secondLast = new Date(lastDay.getFullYear(), lastDay.getMonth(), lastDay.getDate() - 1);
+        var secondLastDate = secondLast.getFullYear()+'-'+((secondLast.getMonth()+1)<=9?('0'+(secondLast.getMonth()+1)) : (secondLast.getMonth()+1))+'-'+(secondLast.getDate()<=9 ? '0'+secondLast.getDate() : secondLast.getDate());
+
+        while ($.inArray(secondLastDate, HOLIDAY_LIST) !== -1) {
+            secondLast = new Date(secondLast.getFullYear(), secondLast.getMonth(), secondLast.getDate() - 1);
+            secondLastDate = secondLast.getFullYear()+'-'+((secondLast.getMonth()+1)<=9?('0'+(secondLast.getMonth()+1)) : (secondLast.getMonth()+1))+'-'+(secondLast.getDate()<=9 ? '0'+secondLast.getDate() : secondLast.getDate());
+        }
+        if(parseInt(secondLast.getMonth()+1) === parseInt(month) && parseInt(secondLast.getFullYear()) === parseInt(year)) {
+            html += '<div class="col-md-6">'+
+                '               <div class="input-group mb-3">'+
+                '                   <div class="input-group-prepend"><span class="input-group-text">'+ DAYS[secondLast.getDay()]+' '+secondLast.getDate()+'-'+MONTHS[secondLast.getMonth()]+'-'+secondLast.getFullYear() +'</span></div>'+
+                '                   <input type="number" class="form-control btn-square only-non-zero-number sub-allocation" name="sub-allocation['+secondLastDate+']" placeholder="Enter Sub-Allocation">'+
+                '               </div>'+
+                '          </div>';
+        }
+
+        start.setMonth( start.getMonth() + 1 );
+    }
+
+    return html;
 }
 

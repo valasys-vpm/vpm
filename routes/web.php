@@ -65,6 +65,9 @@ Route::prefix('manager')->middleware(['web', 'check.manager'])->name('manager.')
     //Campaign Management Routes
     include('manager/campaign_routes.php');
 
+    //Campaign Assign Routes
+    include('manager/campaign_assign_routes.php');
+
     //Holiday Routes
     include('manager/holiday_routes.php');
 

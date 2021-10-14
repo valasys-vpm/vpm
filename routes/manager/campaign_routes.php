@@ -10,6 +10,9 @@ Route::prefix('campaign')->name('campaign.')->group(function()
     Route::get('/create', [App\Http\Controllers\Manager\CampaignController::class, 'create'])->name('create');
     Route::post('/store', [App\Http\Controllers\Manager\CampaignController::class, 'store'])->name('store');
 
+    //Incremental
+    Route::get('/incremental/create/{id}', [App\Http\Controllers\Manager\CampaignController::class, 'createIncremental'])->name('create_incremental');
+
     Route::any('/update/{id}', [App\Http\Controllers\Manager\CampaignController::class, 'update'])->name('update');
 
     Route::any('/edit-pacing-details/{id}', [App\Http\Controllers\Manager\CampaignController::class, 'editPacingDetails'])->name('edit_pacing_details');

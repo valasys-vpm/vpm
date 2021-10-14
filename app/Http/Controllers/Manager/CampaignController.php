@@ -67,7 +67,7 @@ class CampaignController extends Controller
             $this->data['resultCountries'] = $this->countryRepository->get(array('status' => 1));
             $this->data['resultRegions'] = $this->regionRepository->get(array('status' => 1));
             $this->data['resultCampaign'] = $this->campaignRepository->find(base64_decode($id));
-            //dd($this->data['resultCampaign']->toArray());
+            //dd($this->data['resultCampaign']->children->toArray());
             return view('manager.campaign.show', $this->data);
         } catch (\Exception $exception) {
             return redirect()->route('manager.campaign.list')->with('error', ['title' => 'Error while processing request', 'message' => 'Campaign details not found']);
@@ -85,12 +85,28 @@ class CampaignController extends Controller
         return view('manager.campaign.create', $this->data);
     }
 
+    public function createIncremental($id)
+    {
+        $this->data['resultCampaign'] = $this->campaignRepository->find(base64_decode($id));
+        $this->data['resultCampaignStatuses'] = $this->campaignStatusRepository->get(array('status' => 1));
+        $this->data['resultCampaignFilters'] = $this->campaignFilterRepository->get(array('status' => 1));
+        $this->data['resultCampaignTypes'] = $this->campaignTypeRepository->get(array('status' => 1));
+        $this->data['resultCountries'] = $this->countryRepository->get(array('status' => 1));
+        $this->data['resultRegions'] = $this->regionRepository->get(array('status' => 1));
+        $this->data['resultHolidays'] = $this->holidayRepository->get(array('status' => 1));
+        return view('manager.campaign.incremental.create', $this->data);
+    }
+
     public function store(Request $request): \Illuminate\Http\RedirectResponse
     {
         $attributes = $request->all();
         $response = $this->campaignRepository->store($attributes);
         if($response['status'] == TRUE) {
-            return redirect()->route('manager.campaign.list')->with('success', ['title' => 'Successful', 'message' => $response['message']]);
+            if($request->has('parent_id')) {
+                return redirect()->route('manager.campaign.show', $attributes['parent_id'])->with('success', ['title' => 'Successful', 'message' => $response['message']]);
+            } else {
+                return redirect()->route('manager.campaign.list')->with('success', ['title' => 'Successful', 'message' => $response['message']]);
+            }
         } else {
             return back()->withInput()->with('error', ['title' => 'Error while processing request', 'message' => $response['message']]);
         }
@@ -141,6 +157,27 @@ class CampaignController extends Controller
     {
         $attributes = $request->all();
         $response = $this->campaignRepository->update(base64_decode($id), $attributes);
+        if($request->ajax()) {
+            if($response['status'] == TRUE) {
+                return response()->json(array('status' => true, 'message' => $response['message']));
+            } else {
+                return response()->json(array('status' => false, 'message' => $response['message']));
+            }
+        } else {
+            if($response['status'] == TRUE) {
+                return redirect()->route('manager.campaign.show', $id)->with('success', ['title' => 'Successful', 'message' => $response['message']]);
+            } else {
+                return back()->withInput()->with('error', ['title' => 'Error while processing request', 'message' => $response['message']]);
+            }
+
+        }
+
+    }
+
+    public function updateSubAllocations($id, Request $request)
+    {
+        $attributes = $request->all();
+        $response = $this->pacingDetailRepository->update(base64_decode($attributes['campaign_id']), $attributes);
         if($request->ajax()) {
             if($response['status'] == TRUE) {
                 return response()->json(array('status' => true, 'message' => $response['message']));
@@ -213,7 +250,9 @@ class CampaignController extends Controller
             $query->where("name", "like", "%$searchValue%");
         }
         //Filters
-        if(!empty($filters)) { }
+        if(!empty($filters)) {
+
+        }
 
 
         //Order By
@@ -233,7 +272,16 @@ class CampaignController extends Controller
             $query->offset($offset);
             $query->limit($limit);
         }
+        //Do not take incremental and reactivated
+        $query->whereNull('parent_id');
+        $query->with('children', function($children) {
+            $children->orderBy('created_at', 'DESC');
+        });
+
+
         $result = $query->get();
+
+        //dd($result->toArray());
 
         $ajaxData = array(
             "draw" => intval($draw),

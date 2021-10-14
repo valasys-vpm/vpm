@@ -2,7 +2,9 @@
 
 namespace App\Repository\PacingDetailRepository;
 
+use App\Models\Campaign;
 use App\Models\PacingDetail;
+use Illuminate\Support\Facades\DB;
 
 class PacingDetailRepository implements PacingDetailInterface
 {
@@ -29,6 +31,8 @@ class PacingDetailRepository implements PacingDetailInterface
             $query->whereYear('date', $filters['year']);
         }
 
+        $query->orderBy('date');
+
         return $query->get();
     }
 
@@ -44,7 +48,38 @@ class PacingDetailRepository implements PacingDetailInterface
 
     public function update($campaign_id, $attributes)
     {
-        // TODO: Implement update() method.
+        //dd($attributes);
+        $response = array('status' => FALSE, 'message' => 'Something went wrong, please try again.');
+        try {
+            DB::beginTransaction();
+
+            $campaign = Campaign::findOrFail($campaign_id);
+
+            //Save Pacing Details/Sub-Allocation
+            PacingDetail::whereCampaignId($campaign->id)->delete();
+
+            $insertPacingDetails = array();
+            foreach ($attributes['sub-allocation'] as $date => $sub_allocation) {
+                $insertPacingDetails[] = [
+                    'campaign_id' => $campaign->id,
+                    'date' => $date,
+                    'sub_allocation' => $sub_allocation,
+                    'day' => date('w', strtotime($date))
+                ];
+            }
+
+            if(PacingDetail::insert($insertPacingDetails)) {
+                DB::commit();
+                $response = array('status' => TRUE, 'message' => 'Sub allocations updated successfully');
+            } else {
+                throw new \Exception('Something went wrong, please try again.', 1);
+            }
+        } catch (\Exception $exception) {
+            DB::rollBack();
+            dd($exception->getMessage());
+            $response = array('status' => FALSE, 'message' => 'Something went wrong, please try again.');
+        }
+        return $response;
     }
 
     public function destroy($id)

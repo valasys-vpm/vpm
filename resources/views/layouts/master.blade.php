@@ -169,6 +169,52 @@
     });
 </script>
 
+<script>
+    // Set timeout variables.
+    var timoutWarning = 840000; // Display warning in 14 Mins.
+    var timoutNow = 900000; // Timeout in 15 mins.
+    var logoutUrl = '{{ route('logout') }}'; // URL to logout page.
+
+    var warningTimer;
+    var timeoutTimer;
+
+    // Start timers.
+    function StartTimers() {
+        warningTimer = setTimeout("IdleWarning()", timoutWarning);
+        timeoutTimer = setTimeout("IdleTimeout()", timoutNow);
+    }
+
+    // Reset timers.
+    function ResetTimers() {
+        clearTimeout(warningTimer);
+        clearTimeout(timeoutTimer);
+        StartTimers();
+        //$("#timeout").dialog('close');
+    }
+
+    // Show idle timeout warning dialog.
+    function IdleWarning() {
+        alert('Warning message');
+    }
+
+    // Logout the user.
+    function IdleTimeout() {
+        window.location = logoutUrl;
+    }
+
+    $(function () {
+        StartTimers();
+
+        $('body').mousemove(function() {
+            ResetTimers();
+        });
+
+        $('body').keypress(function() {
+            ResetTimers();
+        });
+    });
+</script>
+
 
 </body>
 </html>
