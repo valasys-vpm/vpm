@@ -82,6 +82,18 @@ Route::middleware(['web', 'check.agent'])->name('agent.')->group(function (){
 
 });
 
+Route::prefix('vendor-management')->middleware(['web', 'check.vendor_management'])->name('vendor_management.')->group(function (){
+
+    Route::get('/dashboard', [App\Http\Controllers\VendorManagement\DashboardController::class, 'index'])->name('dashboard');
+    
+    //Vendor Routes
+    include('vendor_management/vendor_routes.php');
+
+    //Campaign Management Routes
+    include('vendor_management/campaign_routes.php');
+
+});
+
 
 
 

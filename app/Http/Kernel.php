@@ -68,5 +68,6 @@ class Kernel extends HttpKernel
         'check.manager' => \App\Http\Middleware\CheckManager::class,
         'check.team_leader' => \App\Http\Middleware\CheckTeamLeader::class,
         'check.agent' => \App\Http\Middleware\CheckAgent::class,
+        'check.vendor_management' => \App\Http\Middleware\CheckVendorManagement::class,
     ];
 }
