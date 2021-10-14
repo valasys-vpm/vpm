@@ -35,42 +35,75 @@ $(function (){
             },
             {
                 render: function (data, type, row) {
-                    var percentage = (row.deliver_count/row.allocation)*100;
+                    let deliver_count = row.deliver_count;
+                    let allocation = row.allocation;
+
+                    if(row.children.length) {
+                        $.each(row.children, function (key, value) {
+                            allocation = allocation + value.allocation;
+                            deliver_count = deliver_count + value.deliver_count;
+                        });
+                    }
+
+                    let percentage = (deliver_count/allocation)*100;
                     percentage = percentage.toFixed(2);
-                    return '<div class="progress" style="height: 20px;width:100px;border:1px solid lightgrey;"><div class="progress-bar bg-warning text-dark" role="progressbar" aria-valuenow="'+percentage+'" aria-valuemin="0" aria-valuemax="100" style="width: '+percentage+'%;font-weight:bold;">&nbsp;'+percentage+'%</div></div>';
+                    return '<div class="progress" style="height: 20px;width:100px;border:1px solid lightgrey;"><div class="progress-bar '+ (parseInt(percentage) < 100 ? 'bg-warning text-dark' : 'bg-success text-light' ) +'" role="progressbar" aria-valuenow="'+percentage+'" aria-valuemin="0" aria-valuemax="100" style="width: '+percentage+'%;font-weight:bold;">&nbsp;'+percentage+'%</div></div>';
                 }
             },
             {
                 render: function (data, type, row) {
-                    var date = new Date(row.start_date);
+                    let date = new Date(row.start_date);
                     return (date.getDate() <= 9 ? '0'+date.getDate() : date.getDate())+'/'+MONTHS[date.getMonth()]+'/'+date.getFullYear();
                 }
             },
             {
                 render: function (data, type, row) {
-                    var date = new Date(row.end_date);
+                    let date = new Date(row.end_date);
+                    if(row.children.length) {
+                        date = new Date(row.children[0].end_date);
+                    }
                     return (date.getDate() <= 9 ? '0'+date.getDate() : date.getDate())+'/'+MONTHS[date.getMonth()]+'/'+date.getFullYear();
                 }
             },
             {
                 render: function (data, type, row) {
-                    if(row.campaign_status_id === 6) {
-                        return row.deliver_count+' <span class="text-danger" title="Shortfall Count">('+row.shortfall_count+')</span>'+' / '+row.allocation;
+                    let deliver_count = row.deliver_count;
+                    let allocation = row.allocation;
+                    let shortfall_count = row.shortfall_count;
+
+                    if(row.children.length) {
+                        $.each(row.children, function (key, value) {
+                            allocation = allocation + value.allocation;
+                            deliver_count = deliver_count + value.deliver_count;
+                            if(value.campaign_status_id === 6) {
+                                shortfall_count = value.shortfall_count;
+                            }
+                        });
+                    }
+
+                    if(shortfall_count) {
+                        return deliver_count + ' <span class="text-danger" title="Shortfall Count">('+ shortfall_count +')</span>'+' / '+ allocation;
                     } else {
-                        return row.deliver_count+' / '+row.allocation;
+                        return deliver_count + ' / '+ allocation;
                     }
 
                 }
             },
             {
                 render: function (data, type, row) {
-                    switch (row.campaign_status_id) {
-                        case 1: return '<span class="badge badge-pill badge-success" style="padding: 5px;min-width:50px;">Live</span>';
-                        case 2: return '<span class="badge badge-pill badge-warning" style="padding: 5px;min-width:50px;">Paused</span>';
-                        case 3: return '<span class="badge badge-pill badge-danger" style="padding: 5px;min-width:50px;">Cancelled</span>';
-                        case 4: return '<span class="badge badge-pill badge-primary" style="padding: 5px;min-width:50px;">Delivered</span>';
-                        case 5: return '<span class="badge badge-pill badge-success" style="padding: 5px;min-width:50px;">Reactivated</span>';
-                        case 6: return '<span class="badge badge-pill badge-secondary" style="padding: 5px;min-width:50px;">Shortfall</span>';
+                    let status_id  = row.campaign_status_id;
+                    let campaign_type = '';
+                    if(row.children.length) {
+                        status_id = row.children[0].campaign_status_id;
+                        campaign_type = ' (Incremental)'
+                    }
+                    switch (status_id) {
+                        case 1: return '<span class="badge badge-pill badge-success" style="padding: 5px;min-width:50px;"> Live'+campaign_type+' </span>';
+                        case 2: return '<span class="badge badge-pill badge-warning" style="padding: 5px;min-width:50px;"> Paused'+campaign_type+' </span>';
+                        case 3: return '<span class="badge badge-pill badge-danger" style="padding: 5px;min-width:50px;"> Cancelled'+campaign_type+' </span>';
+                        case 4: return '<span class="badge badge-pill badge-primary" style="padding: 5px;min-width:50px;"> Delivered'+campaign_type+' </span>';
+                        case 5: return '<span class="badge badge-pill badge-success" style="padding: 5px;min-width:50px;"> Reactivated'+campaign_type+' </span>';
+                        case 6: return '<span class="badge badge-pill badge-secondary" style="padding: 5px;min-width:50px;"> Shortfall'+campaign_type+' </span>';
                     }
                 }
             },

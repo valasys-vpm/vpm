@@ -36,4 +36,10 @@ class Campaign extends Model
     {
         return $this->hasMany(PacingDetail::class, 'campaign_id', 'id');
     }
+
+    public function children()
+    {
+        return $this->hasMany(Campaign::class, 'parent_id', 'id');
+    }
+
 }

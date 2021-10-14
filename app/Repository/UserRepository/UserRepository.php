@@ -23,6 +23,12 @@ class UserRepository implements UserInterface
             $query->whereStatus($filters['status']);
         }
 
+        if(isset($filters['designation_slug']) && !empty($filters['designation_slug'])) {
+            $query->whereHas('designation', function ($designation) use ($filters){
+                $designation->whereIn('slug', $filters['designation_slug']);
+            });
+        }
+
         $query->with(['role', 'department', 'designation']);
 
         return $query->get();

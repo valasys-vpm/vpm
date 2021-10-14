@@ -15,6 +15,13 @@
         </a>
     </li>
 
+    <li class="nav-item @if(in_array(Request::route()->getName(), array('manager.campaign_assign.list'))) active @endif">
+        <a href="{{ route('manager.campaign_assign.list') }}" class="nav-link">
+            <span class="pcoded-micon"><i class="feather icon-shuffle"></i></span>
+            <span class="pcoded-mtext">Campaign Assign</span>
+        </a>
+    </li>
+
     <li class="nav-item @if(Request::route()->getName() == '') active @endif">
         <a href="{{ route('manager.dashboard') }}" class="nav-link">
             <span class="pcoded-micon"><i class="feather icon-align-justify"></i></span>

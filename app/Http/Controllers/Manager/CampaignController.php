@@ -11,8 +11,10 @@ use App\Repository\CampaignStatusRepository\CampaignStatusRepository;
 use App\Repository\CampaignTypeRepository\CampaignTypeRepository;
 use App\Repository\CountryRepository\CountryRepository;
 use App\Repository\HolidayRepository\HolidayRepository;
+use App\Repository\PacingDetailRepository\PacingDetailRepository;
 use App\Repository\RegionRepository\RegionRepository;
 use Illuminate\Http\Request;
+use function Symfony\Component\Translation\t;
 
 class CampaignController extends Controller
 {
@@ -25,6 +27,7 @@ class CampaignController extends Controller
     private $holidayRepository;
     private $campaignRepository;
     private $campaignSpecificationRepository;
+    private $pacingDetailRepository;
 
     public function __construct(
         CampaignStatusRepository $campaignStatusRepository,
@@ -34,7 +37,8 @@ class CampaignController extends Controller
         RegionRepository $regionRepository,
         HolidayRepository $holidayRepository,
         CampaignRepository $campaignRepository,
-        CampaignSpecificationRepository $campaignSpecificationRepository
+        CampaignSpecificationRepository $campaignSpecificationRepository,
+        PacingDetailRepository $pacingDetailRepository
     )
     {
         $this->data = array();
@@ -46,6 +50,7 @@ class CampaignController extends Controller
         $this->holidayRepository = $holidayRepository;
         $this->campaignRepository = $campaignRepository;
         $this->campaignSpecificationRepository = $campaignSpecificationRepository;
+        $this->pacingDetailRepository = $pacingDetailRepository;
     }
 
     public function index()
@@ -62,7 +67,7 @@ class CampaignController extends Controller
             $this->data['resultCountries'] = $this->countryRepository->get(array('status' => 1));
             $this->data['resultRegions'] = $this->regionRepository->get(array('status' => 1));
             $this->data['resultCampaign'] = $this->campaignRepository->find(base64_decode($id));
-            //dd($this->data['resultCampaign']->toArray());
+            //dd($this->data['resultCampaign']->children->toArray());
             return view('manager.campaign.show', $this->data);
         } catch (\Exception $exception) {
             return redirect()->route('manager.campaign.list')->with('error', ['title' => 'Error while processing request', 'message' => 'Campaign details not found']);
@@ -80,12 +85,28 @@ class CampaignController extends Controller
         return view('manager.campaign.create', $this->data);
     }
 
+    public function createIncremental($id)
+    {
+        $this->data['resultCampaign'] = $this->campaignRepository->find(base64_decode($id));
+        $this->data['resultCampaignStatuses'] = $this->campaignStatusRepository->get(array('status' => 1));
+        $this->data['resultCampaignFilters'] = $this->campaignFilterRepository->get(array('status' => 1));
+        $this->data['resultCampaignTypes'] = $this->campaignTypeRepository->get(array('status' => 1));
+        $this->data['resultCountries'] = $this->countryRepository->get(array('status' => 1));
+        $this->data['resultRegions'] = $this->regionRepository->get(array('status' => 1));
+        $this->data['resultHolidays'] = $this->holidayRepository->get(array('status' => 1));
+        return view('manager.campaign.incremental.create', $this->data);
+    }
+
     public function store(Request $request): \Illuminate\Http\RedirectResponse
     {
         $attributes = $request->all();
         $response = $this->campaignRepository->store($attributes);
         if($response['status'] == TRUE) {
-            return redirect()->route('manager.campaign.list')->with('success', ['title' => 'Successful', 'message' => $response['message']]);
+            if($request->has('parent_id')) {
+                return redirect()->route('manager.campaign.show', $attributes['parent_id'])->with('success', ['title' => 'Successful', 'message' => $response['message']]);
+            } else {
+                return redirect()->route('manager.campaign.list')->with('success', ['title' => 'Successful', 'message' => $response['message']]);
+            }
         } else {
             return back()->withInput()->with('error', ['title' => 'Error while processing request', 'message' => $response['message']]);
         }
@@ -101,10 +122,62 @@ class CampaignController extends Controller
         }
     }
 
+    public function editSubAllocations($id): \Illuminate\Http\JsonResponse
+    {
+        $this->data['resultCampaign'] = $this->campaignRepository->find(base64_decode($id));
+        $this->data['resultSubAllocations'] = $this->pacingDetailRepository->get(base64_decode($id));
+        if(!empty($this->data['resultSubAllocations'])) {
+            $start_date    = (new \DateTime($this->data['resultCampaign']->start_date));
+            $end_date      = (new \DateTime($this->data['resultCampaign']->end_date));
+        }
+        $interval = \DateInterval::createFromDateString('1 month');
+        $period   = new \DatePeriod($start_date, $interval, $end_date);
+        $this->data['resultMonthList'] = array();
+        $this->data['total_sub_allocation'] = 0;
+
+        foreach ($period as $month) {
+            $resultSubAllocations = $this->pacingDetailRepository->get(base64_decode($id), array('month' => $month->format("m"),'year' => $month->format("Y")));
+            $this->data['resultMonthList'][] = array(
+                    'month_name' => $month->format("M-Y"),
+                    'month' => $month->format("m"),
+                    'year' => $month->format("Y"),
+                    'sub_allocations' => $resultSubAllocations,
+                    'days' => $resultSubAllocations->pluck('day')->unique()->toArray()
+                );
+        }
+
+        if(!empty($this->data)) {
+            return response()->json(array('status' => true, 'message' => 'Data found', 'data' => $this->data));
+        } else {
+            return response()->json(array('status' => false, 'message' => 'Data not found'));
+        }
+    }
+
     public function update($id, Request $request)
     {
         $attributes = $request->all();
         $response = $this->campaignRepository->update(base64_decode($id), $attributes);
+        if($request->ajax()) {
+            if($response['status'] == TRUE) {
+                return response()->json(array('status' => true, 'message' => $response['message']));
+            } else {
+                return response()->json(array('status' => false, 'message' => $response['message']));
+            }
+        } else {
+            if($response['status'] == TRUE) {
+                return redirect()->route('manager.campaign.show', $id)->with('success', ['title' => 'Successful', 'message' => $response['message']]);
+            } else {
+                return back()->withInput()->with('error', ['title' => 'Error while processing request', 'message' => $response['message']]);
+            }
+
+        }
+
+    }
+
+    public function updateSubAllocations($id, Request $request)
+    {
+        $attributes = $request->all();
+        $response = $this->pacingDetailRepository->update(base64_decode($attributes['campaign_id']), $attributes);
         if($request->ajax()) {
             if($response['status'] == TRUE) {
                 return response()->json(array('status' => true, 'message' => $response['message']));
@@ -177,7 +250,9 @@ class CampaignController extends Controller
             $query->where("name", "like", "%$searchValue%");
         }
         //Filters
-        if(!empty($filters)) { }
+        if(!empty($filters)) {
+
+        }
 
 
         //Order By
@@ -197,7 +272,16 @@ class CampaignController extends Controller
             $query->offset($offset);
             $query->limit($limit);
         }
+        //Do not take incremental and reactivated
+        $query->whereNull('parent_id');
+        $query->with('children', function($children) {
+            $children->orderBy('created_at', 'DESC');
+        });
+
+
         $result = $query->get();
+
+        //dd($result->toArray());
 
         $ajaxData = array(
             "draw" => intval($draw),
