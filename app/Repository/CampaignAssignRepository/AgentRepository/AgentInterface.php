@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Repository\VendorRepository;
+namespace App\Repository\CampaignAssignRepository\AgentRepository;
 
-interface VendorInterface
+interface AgentInterface
 {
     public function get($filters = array());
     public function find($id);

@@ -16,8 +16,8 @@ class CreateCampaignAssignVendorsTable extends Migration
         Schema::create('campaign_assign_vendors', function (Blueprint $table) {
             $table->increments('id');
 
-            $table->unsignedInteger('campaign_assign_ratl_id');
-            $table->foreign('campaign_assign_ratl_id')->references('id')->on('campaign_assign_r_a_t_l_s')->onUpdate('cascade');
+            $table->unsignedInteger('campaign_assign_vm_id');
+            $table->foreign('campaign_assign_vm_id')->references('id')->on('campaign_assign_vendor_managers')->onUpdate('cascade');
 
             $table->unsignedInteger('campaign_id');
             $table->foreign('campaign_id')->references('id')->on('campaigns')->onUpdate('cascade');

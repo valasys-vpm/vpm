@@ -203,7 +203,7 @@
     }
 
     $(function () {
-        StartTimers();
+        //StartTimers();
 
         $('body').mousemove(function() {
             ResetTimers();

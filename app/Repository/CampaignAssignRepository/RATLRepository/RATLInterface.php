@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Repository\VendorRepository;
+namespace App\Repository\CampaignAssignRepository\RATLRepository;
 
-interface VendorInterface
+interface RATLInterface
 {
     public function get($filters = array());
     public function find($id);

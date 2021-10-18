@@ -10,9 +10,7 @@ class VendorRepository implements VendorInterface
 {
     private $vendor;
 
-    public function __construct(
-        Vendor $vendor
-    )
+    public function __construct(Vendor $vendor)
     {
         $this->vendor = $vendor;
     }
@@ -25,12 +23,10 @@ class VendorRepository implements VendorInterface
             $query->whereStatus($filters['status']);
         }
 
-        //$query->with(['id', 'vendor_id', 'name', 'email', 'designation']);
-
         return $query->get();
     }
 
-    public function find($id, $with = array())
+    public function find($id)
     {
         return $this->vendor->findOrFail($id);
     }
@@ -74,7 +70,7 @@ class VendorRepository implements VendorInterface
             $vendor->update();
             if($vendor->id) {
                 DB::commit();
-                $response = array('status' => TRUE, 'message' => 'Vendor updated successfully');
+                $response = array('status' => TRUE, 'message' => 'Vendor details updated successfully');
             } else {
                 throw new \Exception('Something went wrong, please try again.', 1);
             }
@@ -83,7 +79,7 @@ class VendorRepository implements VendorInterface
             $response = array('status' => FALSE, 'message' => 'Something went wrong, please try again.');
         }
         return $response;
-        
+
     }
 
     public function destroy($id)
