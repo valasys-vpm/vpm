@@ -120,9 +120,10 @@
                                                 <div class="row">
                                                     <div class="col-md-6 form-group">
                                                         <label for="campaign_status">Select Campaign(s)</label>
-                                                        <select class="form-control btn-square p-1 pl-2 select2-multiple" id="campaign_list" name="campaign_list[]" style="height: unset;" multiple>
+                                                        <select class="form-control btn-square p-1 pl-2" id="campaign_list" name="campaign_list" style="height: unset;" required>
+                                                            <option value="">--- Select Campaign ---</option>
                                                             @foreach($resultCampaigns as $campaign)
-                                                                <option id="campaign_list_{{ $campaign->id }}" value="{{ $campaign->id }}" data-name="{{ $campaign->name }}" data-end-date="{{ $campaign->end_date }}" data-allocation="{{ $campaign->allocation }}">{{ $campaign->campaign_id.' - '.$campaign->name }}</option>
+                                                                <option id="campaign_list_{{ $campaign->campaign_id }}" value="{{ $campaign->campaign_id }}" data-name="{{ $campaign->campaign->name }}" data-end-date="{{ $campaign->display_date }}" data-allocation="{{ $campaign->allocation }}">{{ $campaign->campaign->campaign_id.' - '.$campaign->campaign->name }}</option>
                                                             @endforeach
                                                         </select>
                                                     </div>
@@ -190,10 +191,10 @@
     <div id="modal-campaign-assign" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog modal-xl" role="document">
             <div class="modal-content">
-                <form id="form-campaign-user-assignment" method="post" action="{{ route('manager.campaign_assign.store') }}">
+                <form id="form-campaign-user-assignment" method="post" action="{{ route('team_leader.campaign_assign.store') }}">
                     @csrf
                     <div class="modal-header">
-                        <h5 class="modal-title">Assign campaign to user</h5>
+                        <h5 class="modal-title">Assign campaign to agent(s)</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">×</span>
                         </button>
@@ -225,7 +226,7 @@
     <!-- jquery-validation Js -->
     <script src="{{ asset('public/template/assets/plugins/jquery-validation/js/jquery.validate.min.js') }}"></script>
 
-    <script src="{{ asset('public/js/manager/campaign_assign.js?='.time()) }}"></script>
+    <script src="{{ asset('public/js/team_leader/campaign_assign.js?='.time()) }}"></script>
 @append
 
 

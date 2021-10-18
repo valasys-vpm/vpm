@@ -29,6 +29,10 @@ class UserRepository implements UserInterface
             });
         }
 
+        if(isset($filters['reporting_to']) && !empty($filters['reporting_to'])) {
+            $query->whereIn('reporting_user_id', $filters['reporting_to']);
+        }
+
         $query->with(['role', 'department', 'designation']);
 
         return $query->get();

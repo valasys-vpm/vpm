@@ -194,7 +194,7 @@
 
     // Show idle timeout warning dialog.
     function IdleWarning() {
-        alert('Warning message');
+        alert('Warning: No activity detected, session will be end soon.');
     }
 
     // Logout the user.

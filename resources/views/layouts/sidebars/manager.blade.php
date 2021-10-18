@@ -22,12 +22,5 @@
         </a>
     </li>
 
-    <li class="nav-item @if(Request::route()->getName() == '') active @endif">
-        <a href="{{ route('manager.dashboard') }}" class="nav-link">
-            <span class="pcoded-micon"><i class="feather icon-align-justify"></i></span>
-            <span class="pcoded-mtext">History</span>
-        </a>
-    </li>
-
 </ul>
 

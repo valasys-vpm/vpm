@@ -1,64 +1,40 @@
 <?php
 
-namespace App\Http\Controllers\Manager;
+namespace App\Http\Controllers\TeamLeader;
 
 use App\Http\Controllers\Controller;
 use App\Models\Campaign;
 use App\Repository\CampaignAssignRepository\CampaignAssignRepository;
-use App\Repository\CampaignRepository\CampaignRepository;
 use App\Repository\UserRepository\UserRepository;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CampaignAssignController extends Controller
 {
     private $data;
-    private $campaignRepository;
-    private $userRepository;
     private $campaignAssignRepository;
+    private $userRepository;
 
     public function __construct(
-        CampaignRepository $campaignRepository,
-        UserRepository $userRepository,
-        CampaignAssignRepository $campaignAssignRepository
+        CampaignAssignRepository $campaignAssignRepository,
+        UserRepository $userRepository
     )
     {
         $this->data = array();
-        $this->campaignRepository = $campaignRepository;
-        $this->userRepository = $userRepository;
         $this->campaignAssignRepository = $campaignAssignRepository;
+        $this->userRepository = $userRepository;
     }
 
     public function index()
     {
-        $this->data['resultCampaigns'] = $this->campaignAssignRepository->getCampaignToAssign();
+        $this->data['resultCampaigns'] = $this->campaignAssignRepository->getCampaignToAssignForTL(Auth::id());
         $this->data['resultUsers'] = $this->userRepository->get(array(
             'status' => 1,
-            'designation_slug' => array('ra_team_leader', 'ra_team_leader_business_delivery', 'research_analyst', 'sr_vendor_management_specialist'),
+            'designation_slug' => array('research_analyst'),
+            'reporting_to' => array(Auth::id())
         ));
         //dd($this->data['resultCampaigns']->toArray());
-        return view('manager.campaign_assign.list', $this->data);
-    }
-
-    public function store(Request $request): \Illuminate\Http\RedirectResponse
-    {
-        $attributes = $request->all();
-        $response = $this->campaignAssignRepository->store($attributes);
-        if($response['status'] == TRUE) {
-            return redirect()->route('manager.campaign_assign.list')->with('success', ['title' => 'Successful', 'message' => $response['message']]);
-        } else {
-            return back()->withInput()->with('error', ['title' => 'Error while processing request', 'message' => $response['message']]);
-        }
-    }
-
-    public function show($id)
-    {
-        try {
-            $this->data['resultCampaign'] = $this->campaignRepository->find(base64_decode($id));
-            //dd($this->data['resultCampaign']->children->toArray());
-            return view('manager.campaign_assign.show', $this->data);
-        } catch (\Exception $exception) {
-            return redirect()->route('manager.campaign.list')->with('error', ['title' => 'Error while processing request', 'message' => 'Campaign details not found']);
-        }
+        return view('team_leader.campaign_assign.list', $this->data);
     }
 
     public function getAssignedCampaigns(Request $request): \Illuminate\Http\JsonResponse
@@ -78,13 +54,8 @@ class CampaignAssignController extends Controller
         $query = Campaign::query();
         $query->whereIn('id', $this->data['resultAssignedCampaigns']->pluck('id')->toArray());
         $query->with([
-            'assigned_ratls',
             'assigned_agents',
-            'assigned_vendor_managers',
-            'children.assigned_ratls',
-            'children.assigned_agents',
-            'children.assigned_vendor_managers',
-            ]);
+        ]);
         $totalRecords = $query->count();
 
         //Search Data
@@ -95,7 +66,6 @@ class CampaignAssignController extends Controller
         if(!empty($filters)) {
 
         }
-
 
         //Order By
         $orderColumn = $order[0]['column'];
@@ -114,12 +84,6 @@ class CampaignAssignController extends Controller
             $query->offset($offset);
             $query->limit($limit);
         }
-        //Do not take incremental and reactivated
-        $query->whereNull('parent_id');
-        $query->with('children', function($children) {
-            $children->orderBy('created_at', 'DESC');
-        });
-
 
         $result = $query->get();
 
@@ -133,19 +97,6 @@ class CampaignAssignController extends Controller
         );
 
         return response()->json($ajaxData);
-    }
-
-    public function viewAssignmentDetails($id, Request $request): \Illuminate\Http\JsonResponse
-    {
-        $result['resultRATLs'] = $this->campaignAssignRepository->getAssignedRATL(base64_decode($id));
-        $result['resultVMs'] = [];
-
-        //$result['resultAgents'] = $this->campaignAssignRepository->getAssignedAgents(base64_decode($id));
-        if(!empty($result)) {
-            return response()->json(array('status' => true, 'data' => $result));
-        } else {
-            return response()->json(array('status' => false, 'message' => 'Data not found'));
-        }
     }
 
 }

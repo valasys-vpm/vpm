@@ -77,6 +77,12 @@ Route::prefix('team-leader')->middleware(['web', 'check.team_leader'])->name('te
 
     Route::get('/dashboard', [App\Http\Controllers\TeamLeader\DashboardController::class, 'index'])->name('dashboard');
 
+    //Campaign Management Routes
+    include('team_leader/campaign_routes.php');
+
+    //Campaign Assign Routes
+    include('team_leader/campaign_assign_routes.php');
+
 });
 
 Route::middleware(['web', 'check.agent'])->name('agent.')->group(function (){
@@ -88,7 +94,7 @@ Route::middleware(['web', 'check.agent'])->name('agent.')->group(function (){
 Route::prefix('vendor-management')->middleware(['web', 'check.vendor_management'])->name('vendor_management.')->group(function (){
 
     Route::get('/dashboard', [App\Http\Controllers\VendorManagement\DashboardController::class, 'index'])->name('dashboard');
-    
+
     //Vendor Routes
     include('vendor_management/vendor_routes.php');
 
