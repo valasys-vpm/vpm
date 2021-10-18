@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Repository\VendorRepository;
+namespace App\Repository\CampaignAssignRepository\QualityAnalystRepository;
 
-interface VendorInterface
+interface QualityAnalystInterface
 {
     public function get($filters = array());
     public function find($id);

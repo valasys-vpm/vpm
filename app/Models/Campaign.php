@@ -37,6 +37,36 @@ class Campaign extends Model
         return $this->hasMany(PacingDetail::class, 'campaign_id', 'id');
     }
 
+    public function assigned_ratls()
+    {
+        return $this->hasMany(CampaignAssignRATL::class, 'campaign_id', 'id');
+    }
+
+    public function assigned_agents()
+    {
+        return $this->hasMany(CampaignAssignAgent::class, 'campaign_id', 'id');
+    }
+
+    public function assigned_vendor_managers()
+    {
+        return $this->hasMany(CampaignAssignVendorManager::class, 'campaign_id', 'id');
+    }
+
+    public function assigned_vendors()
+    {
+        return $this->hasMany(CampaignAssignVendor::class, 'campaign_id', 'id');
+    }
+
+    public function assigned_qatls()
+    {
+        return $this->hasMany(CampaignAssignQATL::class, 'campaign_id', 'id');
+    }
+
+    public function assigned_quality_analysts()
+    {
+        return $this->hasMany(CampaignAssignQualityAnalyst::class, 'campaign_id', 'id');
+    }
+
     public function children()
     {
         return $this->hasMany(Campaign::class, 'parent_id', 'id');

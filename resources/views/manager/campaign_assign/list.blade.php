@@ -115,9 +115,8 @@
                                             </div>
                                         </div>
                                         <div class="card-block" style="display: none;">
-                                            <form id="form-campaign-user-assign">
+                                            <form id="form-campaign-assign">
                                                 @csrf
-                                                <input type="hidden" id="action-campaign-user-assign" name="action" value="{{ route('manager.campaign.list') }}">
                                                 <div class="row">
                                                     <div class="col-md-6 form-group">
                                                         <label for="campaign_status">Select Campaign(s)</label>
@@ -162,10 +161,10 @@
                                                     <tr>
                                                         <th>Campaign ID</th>
                                                         <th>Name</th>
-                                                        <th>Completion</th>
+                                                        <th>Users</th>
                                                         <th>Start Date</th>
                                                         <th>End Date</th>
-                                                        <th>Deliver Count /<br> Allocation</th>
+                                                        <th>Deliver Count <br>/ Allocation</th>
                                                         <th>Status</th>
                                                         <th>Action</th>
                                                     </tr>

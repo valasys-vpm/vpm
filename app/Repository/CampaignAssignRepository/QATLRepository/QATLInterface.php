@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Repository\VendorRepository;
+namespace App\Repository\CampaignAssignRepository\QATLRepository;
 
-interface VendorInterface
+interface QATLInterface
 {
     public function get($filters = array());
     public function find($id);

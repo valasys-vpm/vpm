@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Repository\VendorRepository;
+namespace App\Repository\CampaignAssignRepository\VendorRepository;
 
 interface VendorInterface
 {
