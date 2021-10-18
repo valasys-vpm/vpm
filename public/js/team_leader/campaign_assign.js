@@ -39,66 +39,35 @@ $(function (){
         },
         "columns": [
             {
-                data: 'campaign_id'
+                data: 'campaign.campaign_id'
             },
             {
                 render: function (data, type, row) {
-                    return '<a href="'+URL+'/team-leader/campaign-assign/view-details/'+btoa(row.id)+'" class="text-dark double-click" title="View campaign details">'+row.name+'</a>';
+                    return '<a href="'+URL+'/team-leader/campaign-assign/view-details/'+btoa(row.id)+'" class="text-dark double-click" title="View campaign details">'+row.campaign.name+'</a>';
                 }
             },
             {
                 render: function (data, type, row) {
-                    let total_users = 0;
-
-                    if(row.children.length) {
-                        if(row.children[0].assigned_ratls.length) {
-                            total_users = row.children[0].assigned_ratls.length;
-                        }
-                        if(row.children[0].assigned_vendor_managers.length) {
-                            total_users = row.children[0].assigned_vendor_managers.length;
-                        }
-                    } else {
-                        if(row.assigned_ratls.length) {
-                            total_users = row.assigned_ratls.length;
-                        }
-                        if(row.assigned_vendor_managers.length) {
-                            total_users = row.assigned_vendor_managers.length;
-                        }
-                    }
-
-                    return total_users;
+                    return row.agents.length;
                 }
             },
             {
                 render: function (data, type, row) {
-                    let date = new Date(row.start_date);
+                    let date = new Date(row.campaign.start_date);
                     return (date.getDate() <= 9 ? '0'+date.getDate() : date.getDate())+'/'+MONTHS[date.getMonth()]+'/'+date.getFullYear();
                 }
             },
             {
                 render: function (data, type, row) {
-                    let date = new Date(row.end_date);
-                    if(row.children.length) {
-                        date = new Date(row.children[0].end_date);
-                    }
+                    let date = new Date(row.display_date);
                     return (date.getDate() <= 9 ? '0'+date.getDate() : date.getDate())+'/'+MONTHS[date.getMonth()]+'/'+date.getFullYear();
                 }
             },
             {
                 render: function (data, type, row) {
-                    let deliver_count = row.deliver_count;
+                    let deliver_count = 0;
                     let allocation = row.allocation;
-                    let shortfall_count = row.shortfall_count;
-
-                    if(row.children.length) {
-                        $.each(row.children, function (key, value) {
-                            allocation = allocation + value.allocation;
-                            deliver_count = deliver_count + value.deliver_count;
-                            if(value.campaign_status_id === 6) {
-                                shortfall_count = value.shortfall_count;
-                            }
-                        });
-                    }
+                    let shortfall_count = 0;
 
                     if(shortfall_count) {
                         return deliver_count + ' <span class="text-danger" title="Shortfall Count">('+ shortfall_count +')</span>'+' / '+ allocation;
@@ -110,10 +79,10 @@ $(function (){
             },
             {
                 render: function (data, type, row) {
-                    let status_id  = row.campaign_status_id;
+                    let status_id  = row.campaign.campaign_status_id;
                     let campaign_type = '';
-                    if(row.children.length) {
-                        status_id = row.children[0].campaign_status_id;
+                    if(row.campaign.parent_id) {
+                        status_id = row.campaign.campaign_status_id;
                         campaign_type = ' (Incremental)'
                     }
                     switch (status_id) {
@@ -155,17 +124,26 @@ $(function (){
             });
         },
         "createdRow": function(row, data, dataIndex){
-            switch (data.campaign_status_id) {
+            switch (data.campaign.campaign_status_id) {
                 case 1:
                     $(row).addClass('border-live');
                     break;
                 case 2:
                     $(row).addClass('border-paused');
                     break;
+                case 3:
+                    $(row).addClass('border-cancelled');
+                    break;
+                case 4:
+                    $(row).addClass('border-delivered');
+                    break;
+                case 5:
+                    $(row).addClass('border-reactivated');
+                    break;
+                case 6:
+                    $(row).addClass('border-shortfall');
+                    break;
             }
-            /*if( data[2] ==  `someVal`){
-                $(row).addClass('redClass');
-            }*/
         }
     });
 
@@ -177,7 +155,7 @@ $(function (){
         $("#modal-campaign-assign").find('.modal-body').html(html);
 
         html = getCampaignCard_html(campaign_id, user_list);
-
+        $("#campaign_assign_ratl_id").val($("#campaign_list_"+campaign_id).data('caratl-id'));
         $("#modal-campaign-assign").find('.modal-body').html(html);
 
         $("#modal-campaign-assign").modal('show');

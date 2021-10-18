@@ -24,7 +24,9 @@ class RATLRepository implements RATLInterface
 
     public function find($id)
     {
-        // TODO: Implement find() method.
+        $query = CampaignAssignRATL::query();
+        $query->with('campaign');
+        return $query->findOrFail($id);
     }
 
     public function store($attributes)

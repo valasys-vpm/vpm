@@ -28,7 +28,7 @@ class CampaignAssignRATL extends Model
 
     public function agents()
     {
-        return $this->hasMany(CampaignAssignAgent::class, 'id', 'campaign_assign_ratl_id');
+        return $this->hasMany(CampaignAssignAgent::class, 'campaign_assign_ratl_id', 'id');
     }
 
 }
