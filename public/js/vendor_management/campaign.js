@@ -7,7 +7,7 @@ let URL = $('meta[name="base-path"]').attr('content');
 let MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
 $(function (){
-    $(".js-example-basic-multiple").select2();
+    $(".select2-multiple").select2();
 //     CAMPAIGN_TABLE = $('#table-campaigns').DataTable({
 //         "lengthMenu": [ [500,400,300,200,100,-1], [500,400,300,200,100,'All'] ],
 //         "processing": true,
@@ -274,11 +274,91 @@ $(function (){
 
 });
 
-function assignVendor(id) {
-    //resetModalForm();
-    $('#modalAssignVendor').modal('show');
-    $('#campaign_id').val(id);
+$('#button-campaign-assign').on('click', function(e) {
+    let campaign_list = $("#campaign_list").val();
+    let vendor_list = $("#vendor_list").val();
+    let html = '';
+
+    $("#modal-campaign-assign").find('.modal-body').html(html);
+
+    html = getCampaignCard_html(campaign_list, vendor_list);
+
+    $("#modal-campaign-assign").find('.modal-body').html(html);
+
+    $("#modal-campaign-assign").modal('show');
+});
+
+function getCampaignCard_html(_campaign_list, _user_list) {
+    let html ='';
+
+    $.each(_campaign_list, function (key, value){
+
+        let allocation = $("#campaign_list_"+value).data('allocation')/(_user_list.length);
+        let balance_allocation = $("#campaign_list_"+value).data('allocation')%(_user_list.length);
+
+        let end_date = new Date($("#campaign_list_"+value).data('end-date'));
+        let display_date = new Date(end_date);
+        display_date.setDate(display_date.getDate() - 2);
+
+        let display_date_day = display_date.getDay();
+
+        while(display_date_day === 0 || display_date_day === 6) {
+            display_date.setDate(display_date.getDate() - 1);
+            display_date_day = display_date.getDay();
+        }
+
+        html += '' +
+            '<div class="card border border-info rounded">' +
+            '   <h5 class="card-header" style="padding: 10px 25px;">'+$("#campaign_list_"+value).data('name')+'</h5>' +
+            '   <input type="hidden" name="data['+key+'][campaign_id]" value="'+value+'">' +
+            '   <div class="card-body" style="padding: 15px 25px;">' +
+            '       <div class="row">' +
+            '           <div class="col-md-5">' +
+            '               <div class="row">' +
+            '                   <div class="col-md-6"><h6 class="card-title">Allocation</h6></div>' +
+            '                   <div class="col-md-6"><h6 class="card-title">: '+$("#campaign_list_"+value).data('allocation')+'</h6></div>' +
+            '               </div>' +
+            '               <div class="row">' +
+            '                   <div class="col-md-6"><h6 class="card-title">End Date</h6></div>' +
+            '                   <div class="col-md-6"><h6 class="card-title">: '+$("#campaign_list_"+value).data('end-date')+'</h6></div>' +
+            '               </div>' +
+            // '               <div class="row">' +
+            // '                   <div class="col-md-6"><h6 class="card-title">Display Date</h6></div>' +
+            // '                   <div class="col-md-6"><h6 class="card-title">: <input type="date" name="data['+key+'][display_date]" placeholder="DD/MMM/YYY" value="'+ moment(display_date). format('YYYY-MM-DD') +'"> </h6></div>' +
+            // '               </div>' +
+            '           </div>' +
+            '           <div class="col-md-7 border-left">' +
+            '               <h5 class="card-title mb-2">User(s) to Assign</h5>' +
+            '               <hr class="m-0" style="margin-bottom: 5px !important;">' +
+            getUserAssignCard_html(key, _user_list, allocation, balance_allocation) +
+            '           </div>' +
+            '       </div>' +
+            '   </div>' +
+            '</div>';
+
+    });
+
+    return html;
 }
+
+function getUserAssignCard_html(_key, _user_list, allocation, balance_allocation) {
+    let html = '';
+
+    $.each(_user_list, function (key, value){
+
+        html += '<div class="row p-1">' +
+            '   <div class="col-md-5"><h6 class="card-title">'+$("#user_list_"+value).data('name')+'</h6></div>' +
+            '   <input type="hidden" name="data['+_key+'][users]['+key+'][user_id]" value="'+value+'">' +
+            '   <div class="col-md-7">' +
+            '       <input type="text" name="data['+_key+'][users]['+key+'][allocation]" class="form-control form-control-sm" value="'+ ( (key === (_user_list.length -1)) ? Math.floor((allocation + balance_allocation)) : Math.floor(allocation) ) +'" style="height: 30px;">' +
+            '   </div>' +
+            '</div>';
+    });
+
+    return html;
+}
+
+
 
 function editCampaign(id) {
     $.ajax({

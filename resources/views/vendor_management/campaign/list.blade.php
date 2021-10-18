@@ -11,6 +11,62 @@
     <!-- toolbar css -->
     <link rel="stylesheet" href="{{asset('public/template/assets/plugins/toolbar/css/jquery.toolbar.css')}}">
 
+    <style>
+        .table tbody tr:hover {
+            -webkit-box-shadow: 0 5px 8px -6px grey;
+            -moz-box-shadow: 0 5px 8px -6px grey;
+            box-shadow: 0 5px 8px -6px grey;
+        }
+        .table td {
+            padding: 5px 5px 0px 5px !important;
+            vertical-align: middle !important;
+            border-top: 2px solid #dad9d9 !important;
+            border-bottom: 2px solid #dad9d9 !important;
+        }
+        .table tr td:first-child {
+            border: 2px solid #dad9d9 !important;
+            border-right: 0px solid transparent !important;
+            border-radius: 8px 0 0 8px;
+        }
+        .table tr td:last-child {
+            border: 2px solid #dad9d9 !important;
+            border-left: 0px solid transparent !important;
+            border-radius: 0px 8px 8px 0;
+        }
+
+        table.dataTable {
+            border-spacing: 0px 10px !important;
+        }
+
+        /*Border Live*/
+        .table tr.border-live {
+            background-color: rgba(226,239,219,0.35) !important;
+        }
+        .table tr.border-live td {
+            border-color: #92D050 !important;
+        }
+        .table tr.border-live td:first-child {
+            border-right: 0px solid transparent !important;
+        }
+        .table tr.border-live td:last-child {
+            border-left: 0px solid transparent !important;
+        }
+
+        /*Border Paused*/
+        .table tr.border-paused {
+            background-color: rgba(255,230,153,0.25) !important;
+        }
+        .table tr.border-paused td {
+            border-color: #fbcb39 !important;
+        }
+        .table tr.border-paused td:first-child {
+            border-right: 0px solid transparent !important;
+        }
+        .table tr.border-paused td:last-child {
+            border-left: 0px solid transparent !important;
+        }
+
+    </style>
 @append
 
 @section('content')
@@ -24,11 +80,11 @@
                             <div class="row align-items-center">
                                 <div class="col-md-12">
                                     <div class="page-header-title">
-                                        <h5 class="m-b-10">Campaign Management</h5>
+                                        <h5 class="m-b-10">Campaign Assign</h5>
                                     </div>
                                     <ul class="breadcrumb">
-                                        <li class="breadcrumb-item"><a href=""><i class="feather icon-home"></i></a></li>
-                                        <li class="breadcrumb-item"><a href="">Campaign Management</a></li>
+                                        <li class="breadcrumb-item"><a href="#"><i class="feather icon-home"></i></a></li>
+                                        <li class="breadcrumb-item"><a href="javascript:void(0);">Campaign Management</a></li>
                                         <li class="breadcrumb-item"><a href="javascript:void(0);">Campaign Assign</a></li>
                                     </ul>
                                 </div>
@@ -39,14 +95,12 @@
                     <div class="main-body">
                         <div class="page-wrapper">
                             <!-- [ Main Content ] start -->
-                            <div class="row">
-                                <!-- [ configuration table ] start -->
-                                <div class="col-sm-12">
 
+                            <div class="row">
+                                <div class="col-sm-12">
                                     <div class="card">
                                         <div class="card-header">
-
-                                            <h5><i class="fas fa-list m-r-5"></i> Campaign Assign</h5>
+                                            <h5><i class="feather icon-shuffle m-r-5"></i> Campaign Assign</h5>
                                             <div class="card-header-right">
                                                 <div class="btn-group card-option">
                                                     <button style="display: none;" type="button" class="btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -61,68 +115,63 @@
                                             </div>
                                         </div>
                                         <div class="card-block" style="display: none;">
-                                            <form id="form-campaign-user-assign">
-
-                                                <input type="hidden" id="action-campaign-user-assign" name="action" value="">
+                                            <form id="form-campaign-assign">
+                                                @csrf
                                                 <div class="row">
                                                     <div class="col-md-6 form-group">
                                                         <label for="campaign_status">Select Campaign(s)</label>
-                                                        <select class="js-example-basic-multiple col-sm-12" multiple="multiple" id="campaign_list" name="campaign_list[]" style="height: unset;" >
-                                                            <option value="">camp 1</option>
+                                                        <select class="form-control btn-square p-1 pl-2 select2-multiple" id="campaign_list" name="campaign_list[]" style="height: unset;" multiple>
+{{--                                                            @foreach($resultCampaigns as $campaign)--}}
+{{--                                                                <option id="campaign_list_{{ $campaign->id }}" value="{{ $campaign->id }}" data-name="{{ $campaign->name }}" data-end-date="{{ $campaign->end_date }}" data-allocation="{{ $campaign->allocation }}">{{ $campaign->campaign_id.' - '.$campaign->name }}</option>--}}
+{{--                                                            @endforeach--}}
                                                         </select>
                                                     </div>
                                                     <div class="col-md-6 form-group">
-                                                        <label for="campaign_status">Select Vendor(s)</label>
-                                                        <select class="js-example-basic-multiple col-sm-12" multiple="multiple" id="vendor_list" name="vendor_list[]" style="height: unset;" multiple>
-                                                            @foreach ($resultVendors as $vendor)
-                                                                <option value="{{$vendor->id}}">{{$vendor->name}}</option>
+                                                        <label for="user_list">Select User(s)</label>
+                                                        <select class="form-control btn-square p-1 pl-2 select2-multiple" id="vendor_list" name="vendor_list[]" style="height: unset;" multiple>
+                                                            @foreach($resultVendors as $user)
+                                                                <option id="vendor_list_{{ $user->id }}" value="{{ $user->id }}" data-name="{{ $user->name }}">{{ $user->name}}</option>
                                                             @endforeach
                                                         </select>
                                                     </div>
                                                 </div>
                                                 <div class="row">
                                                     <div class="col-md-12 text-right">
-                                                        <button id="button-filter-reset" type="reset" class="btn btn-outline-dark btn-square btn-sm"><i class="fas fa-undo m-r-5"></i>Reset</button>
-                                                        <button id="button-campaign-user-assign" type="button" class="btn btn-outline-primary btn-square btn-sm"><i class="fas fa-filter m-r-5"></i>Apply</button>
+                                                        <button id="button-reset-form-campaign-assign" type="reset" class="btn btn-outline-dark btn-square btn-sm"><i class="fas fa-undo m-r-5"></i>Reset</button>
+                                                        <button id="button-campaign-assign" type="button" class="btn btn-outline-primary btn-square btn-sm"><i class="fas fa-filter m-r-5"></i>Apply</button>
                                                     </div>
                                                 </div>
                                             </form>
                                         </div>
                                     </div>
+                                </div>
+                            </div>
 
+                            <div class="row">
+                                <!-- [ configuration table ] start -->
+                                <div class="col-sm-12">
                                     <div class="card">
                                         <div class="card-header">
-                                            <h5>Campaign list</h5>
-                                            <div class="card-header-right">
-
-                                                <div class="btn-group card-option">
-                                                    <button type="button" class="btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                        <i class="feather icon-more-vertical"></i>
-                                                    </button>
-                                                    <ul class="list-unstyled card-option dropdown-menu dropdown-menu-right">
-                                                        <li class="dropdown-item full-card"><a href="#!"><span><i class="feather icon-maximize"></i> maximize</span><span style="display:none"><i class="feather icon-minimize"></i> Restore</span></a></li>
-                                                        <li class="dropdown-item minimize-card"><a href="#!"><span><i class="feather icon-minus"></i> collapse</span><span style="display:none"><i class="feather icon-plus"></i> expand</span></a></li>
-                                                        <li class="dropdown-item"><a href="#!" id="reload-campaign-list"><i class="feather icon-refresh-cw"></i> reload</a></li>
-                                                    </ul>
-                                                </div>
-                                            </div>
+                                            <h5>Campaign List</h5>
                                         </div>
-                                        <div class="card-block" style="padding-top: 10px;">
-                                            <div class="row float-right" style="padding-bottom: 5px;">
-                                                <div class="col-md-12">
-
-                                                </div>
-                                            </div>
+                                        <div class="card-block">
                                             <div class="table-responsive">
-                                                <table id="table-campaigns" class="display table nowrap table-striped table-hover text-center" style="width: 100%;">
-                                                    <thead class="text-center">
+                                                <table id="table-campaigns" class="display table nowrap table-striped table-hover">
+                                                    <thead>
                                                     <tr>
                                                         <th>Campaign ID</th>
                                                         <th>Name</th>
-                                                        <th>Vendor(s)</th>
+                                                        <th>Vendor (s)</th>
                                                         <th>Start Date</th>
                                                         <th>End Date</th>
                                                         <th>Allocation</th>
+                                                        <th>Lead Sent</th>
+                                                        <th>Lead Approved</th>
+                                                        <th>Delivery %</th>
+                                                        <th>Lead Rejected</th>
+                                                        <th>Remove Campaign</th>
+                                                        <th>Campaign Incident</th>
+                                                        <th>Status</th>
                                                         <th>Action</th>
                                                     </tr>
                                                     </thead>
@@ -135,6 +184,7 @@
                                 </div>
                                 <!-- [ configuration table ] end -->
                             </div>
+
                             <!-- [ Main Content ] end -->
                         </div>
                     </div>
@@ -143,13 +193,11 @@
         </div>
     </section>
 
-    <div id="campaign-user-assign-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalLiveLabel" aria-hidden="true">
+    <div id="modal-campaign-assign" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog modal-xl" role="document">
             <div class="modal-content">
-                <form id="form-campaign-user-assignment" method="post" action="">
+                <form id="form-campaign-user-assignment" method="post" action="{{ route('manager.campaign_assign.store') }}">
                     @csrf
-                    <input type="hidden" id="action-campaign-bulk-import" name="action" value="">
-
                     <div class="modal-header">
                         <h5 class="modal-title">Assign campaign to user</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -158,9 +206,7 @@
                     </div>
                     <form id="">
                         <div class="modal-body">
-                            <div id="div-campaign-user-assigned-preview">
 
-                            </div>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
@@ -170,8 +216,6 @@
             </div>
         </div>
     </div>
-
-
 @endsection
 
 @section('javascript')
@@ -179,25 +223,16 @@
     <!-- select2 Js -->
     <script src="{{ asset('public/template/assets/plugins/select2/js/select2.full.min.js') }}"></script>
     <!-- material datetimepicker Js -->
-    <script src="https://momentjs.com/downloads/moment-with-locales.min.js"></script>
     <script src="{{ asset('public/template/assets/plugins/material-datetimepicker/js/bootstrap-material-datetimepicker.js') }}"></script>
+    <script src="https://momentjs.com/downloads/moment-with-locales.min.js"></script>
     <!-- datatable Js -->
     <script src="{{ asset('public/template/assets/plugins/data-tables/js/datatables.min.js') }}"></script>
     <!-- toolbar Js -->
     <script src="{{ asset('public/template/assets/plugins/toolbar/js/jquery.toolbar.min.js') }}"></script>
+    <!-- jquery-validation Js -->
+    <script src="{{ asset('public/template/assets/plugins/jquery-validation/js/jquery.validate.min.js') }}"></script>
+
     <script src="{{ asset('public/js/vendor_management/campaign.js?='.time()) }}"></script>
-
-    <script>
-        $(function () {             //document.cookie = "username="+window.location.href+"";
-            // let cookies = document.cookie;
-            // alert(cookies);
-            //     $.getJSON("https://api.ipify.org?format=json", function (data) {
-            //
-            //         alert("IP: " + data.ip );
-            //     })
-            // });
-        })
-    </script>
-
 @append
+
 
