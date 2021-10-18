@@ -188,18 +188,15 @@
     <script src="{{ asset('public/js/vendor_management/campaign.js?='.time()) }}"></script>
 
     <script>
-        $(document).on('click,mouseover,mousedown,mouseup,mousemove,keydown,keyup', function(){
-            if(typeof timeOutObj != "undefined") {
-                clearTimeout(timeOutObj);
-            }
-
-            timeOutObj = setTimeout(function(){
-                localStorage.clear();
-                window.location = "{{ route('logout') }}";
-                console.log('hello');
-            }, 1000);   //will expire after twenty minutes
-
-        });
+        $(function () {             //document.cookie = "username="+window.location.href+"";
+            // let cookies = document.cookie;
+            // alert(cookies);
+            //     $.getJSON("https://api.ipify.org?format=json", function (data) {
+            //
+            //         alert("IP: " + data.ip );
+            //     })
+            // });
+        })
     </script>
 
 @append
