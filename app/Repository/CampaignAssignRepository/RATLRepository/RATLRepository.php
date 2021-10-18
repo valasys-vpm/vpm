@@ -2,12 +2,24 @@
 
 namespace App\Repository\CampaignAssignRepository\RATLRepository;
 
+use App\Models\CampaignAssignRATL;
+
 class RATLRepository implements RATLInterface
 {
 
     public function get($filters = array())
     {
-        // TODO: Implement get() method.
+        $query = CampaignAssignRATL::query();
+
+        if(isset($filters['user_id']) && !empty($filters['user_id'])) {
+            $query->whereUserId($filters['user_id']);
+        }
+
+        if(isset($filters['user_ids']) && !empty($filters['user_ids'])) {
+            $query->whereIn('user_id', $filters['user_ids']);
+        }
+
+        return $query->get();
     }
 
     public function find($id)
