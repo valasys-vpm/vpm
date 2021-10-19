@@ -15,7 +15,16 @@ class AgentRepository implements AgentInterface
 
     public function get($filters = array())
     {
-        // TODO: Implement get() method.
+        $query = CampaignAssignAgent::query();
+
+        if(isset($filters['caratl_id']) && !empty($filters['caratl_id'])) {
+            $query->where('campaign_assign_ratl_id', $filters['caratl_id']);
+        }
+
+        $query->with('user');
+        $query->with('userAssignedBy');
+
+        return $query->get();
     }
 
     public function find($id)

@@ -167,12 +167,13 @@
                                                     <tbody class="text-center text-muted">
                                                     <tr>
                                                         <td><i class="feather icon-plus-square toggle-pacing-details" style="cursor: pointer;font-size: 17px;"></i></td>
-                                                        <td>{{ date('d-M-Y', strtotime($resultCampaign->start_date)) }}</td>
-                                                        <td>{{ date('d-M-Y', strtotime($resultCampaign->end_date)) }}</td>
-                                                        <td>{{ ucfirst($resultCampaign->pacing) }}</td>
+                                                        <td>{{ date('d-M-Y', strtotime($resultCampaignAssignedRATL->campaign->start_date)) }}</td>
+                                                        <td>{{ date('d-M-Y', strtotime($resultCampaignAssignedRATL->display_date)) }}</td>
+                                                        <td>{{ ucfirst($resultCampaignAssignedRATL->campaign->pacing) }}</td>
                                                         <td>
                                                             @php
-                                                                $percentage = ($resultCampaign->deliver_count/$resultCampaign->allocation)*100;
+                                                                $deliverCount = 0;
+                                                                $percentage = ($deliverCount/$resultCampaignAssignedRATL->allocation)*100;
                                                                 $percentage = number_format($percentage,2,".", "");
                                                                 if($percentage == 100) {
                                                                     $color_class = 'bg-success';
@@ -185,36 +186,42 @@
                                                             </div>
                                                         </td>
                                                         <td>
-                                                            @if($resultCampaign->campaign_status === 6)
-                                                                {{ $resultCampaign->deliver_count }} <span class="text-danger" title="Shortfall Count">({{ $resultCampaign->shortfall_count }})</span> / {{ $resultCampaign->allocation }}
+                                                            @if($resultCampaignAssignedRATL->campaign->campaign_status_id === 6)
+                                                                {{ $resultCampaignAssignedRATL->campaign->deliver_count }} <span class="text-danger" title="Shortfall Count">({{ $resultCampaignAssignedRATL->campaign->shortfall_count }})</span> / {{ $resultCampaignAssignedRATL->allocation }}
                                                             @else
-                                                                {{ $resultCampaign->deliver_count.' / '.$resultCampaign->allocation }}
+                                                                {{ $resultCampaignAssignedRATL->campaign->deliver_count.' / '.$resultCampaignAssignedRATL->allocation }}
                                                             @endif
                                                         </td>
                                                         <td>
-                                                            @switch($resultCampaign->campaign_status_id)
+                                                            @php
+                                                                $campaign_type = '';
+                                                                if($resultCampaignAssignedRATL->campaign == 'incremental') {
+                                                                    $campaign_type = ' (Incremental)';
+                                                                }
+                                                            @endphp
+                                                            @switch($resultCampaignAssignedRATL->campaign->campaign_status_id)
                                                                 @case(1)
-                                                                <span class="badge badge-pill badge-success" style="padding: 5px;min-width: 70px;">Live</span>
+                                                                <span class="badge badge-pill badge-success" style="padding: 5px;min-width: 70px;">Live{{ $campaign_type }}</span>
                                                                 @break
                                                                 @case(2)
-                                                                <span class="badge badge-pill badge-warning" style="padding: 5px;min-width: 70px;">Paused</span>
+                                                                <span class="badge badge-pill badge-warning" style="padding: 5px;min-width: 70px;">Paused{{ $campaign_type }}</span>
                                                                 @break
                                                                 @case(3)
-                                                                <span class="badge badge-pill badge-danger" style="padding: 5px;min-width: 70px;">Cancelled</span>
+                                                                <span class="badge badge-pill badge-danger" style="padding: 5px;min-width: 70px;">Cancelled{{ $campaign_type }}</span>
                                                                 @break
                                                                 @case(4)
-                                                                <span class="badge badge-pill badge-primary" style="padding: 5px;min-width: 70px;">Delivered</span>
+                                                                <span class="badge badge-pill badge-primary" style="padding: 5px;min-width: 70px;">Delivered{{ $campaign_type }}</span>
                                                                 @break
                                                                 @case(5)
-                                                                <span class="badge badge-pill badge-success" style="padding: 5px;min-width: 70px;">Reactivated</span>
+                                                                <span class="badge badge-pill badge-success" style="padding: 5px;min-width: 70px;">Reactivated{{ $campaign_type }}</span>
                                                                 @break
                                                                 @case(6)
-                                                                <span class="badge badge-pill badge-secondary" style="padding: 5px;min-width: 80px;">Shortfall</span>
+                                                                <span class="badge badge-pill badge-secondary" style="padding: 5px;min-width: 80px;">Shortfall{{ $campaign_type }}</span>
                                                                 @break
                                                             @endswitch
                                                         </td>
                                                         <td>
-                                                            <a href="javascript:;" onclick="viewAssignmentDetails('{{ base64_encode($resultCampaign->id) }}');" class="btn btn-outline-primary btn-sm btn-rounded mb-0" title="view assignment details" style="padding: 5px 8px;"><i class="feather icon-eye mr-0"></i></a>
+                                                            <a href="javascript:;" onclick="viewAssignmentDetails('{{ base64_encode($resultCampaignAssignedRATL->id) }}');" class="btn btn-outline-primary btn-sm btn-rounded mb-0" title="view assignment details" style="padding: 5px 8px;"><i class="feather icon-eye mr-0"></i></a>
                                                         </td>
                                                     </tr>
                                                     <tr class="pacing-details" style="display: none;">
@@ -238,104 +245,13 @@
                                                                     @endif
                                                                 @empty
                                                                     <tr>
-                                                                        <td colspan="3">
-                                                                            Sub allocations not updated,
-                                                                            <br>
-                                                                            <a href="javascript:;" onclick="editSubAllocations('{{ base64_encode($children->id) }}');" title="Edit Sub-Allocations">Click Here</a> to update.
-                                                                        </td>
+                                                                        <td colspan="3">Sub allocations not updated.</td>
                                                                     </tr>
                                                                 @endforelse
                                                                 </tbody>
                                                             </table>
                                                         </td>
                                                     </tr>
-                                                    @forelse($resultCampaign->children as $children)
-                                                        <tr>
-                                                            <td><i class="feather icon-plus-square toggle-pacing-details" style="cursor: pointer;font-size: 17px;"></i></td>
-                                                            <td>{{ date('d-M-Y', strtotime($children->start_date)) }}</td>
-                                                            <td>{{ date('d-M-Y', strtotime($children->end_date)) }}</td>
-                                                            <td>{{ ucfirst($children->pacing) }}</td>
-                                                            <td>
-                                                                @php
-                                                                    $percentage = ($children->deliver_count/$children->allocation)*100;
-                                                                    $percentage = number_format($percentage,2,".", "");
-                                                                    if($percentage == 100) {
-                                                                        $color_class = 'bg-success';
-                                                                    } else {
-                                                                        $color_class = 'bg-warning text-dark';
-                                                                    }
-                                                                @endphp
-                                                                <div class="progress mb-4" style="height: 20px;border: 1px solid #e2dada;">
-                                                                    <div class="progress-bar {{ $color_class }}" role="progressbar" aria-valuenow="{{$percentage}}" aria-valuemin="0" aria-valuemax="100" style="width: {{$percentage}}%; font-weight: bolder;">{{$percentage}}%</div>
-                                                                </div>
-                                                            </td>
-                                                            <td>
-                                                                @if($children->campaign_status === 6)
-                                                                    {{ $children->deliver_count }} <span class="text-danger" title="Shortfall Count">({{ $children->shortfall_count }})</span> / {{ $children->allocation }}
-                                                                @else
-                                                                    {{ $children->deliver_count.' / '.$children->allocation }}
-                                                                @endif
-                                                            </td>
-                                                            <td>
-                                                                @switch($children->campaign_status_id)
-                                                                    @case(1)
-                                                                    <span class="badge badge-pill badge-success" style="padding: 5px;min-width: 70px;">Live (Incremental)</span>
-                                                                    @break
-                                                                    @case(2)
-                                                                    <span class="badge badge-pill badge-warning" style="padding: 5px;min-width: 70px;">Paused (Incremental)</span>
-                                                                    @break
-                                                                    @case(3)
-                                                                    <span class="badge badge-pill badge-danger" style="padding: 5px;min-width: 70px;">Cancelled (Incremental)</span>
-                                                                    @break
-                                                                    @case(4)
-                                                                    <span class="badge badge-pill badge-primary" style="padding: 5px;min-width: 70px;">Delivered (Incremental)</span>
-                                                                    @break
-                                                                    @case(5)
-                                                                    <span class="badge badge-pill badge-success" style="padding: 5px;min-width: 70px;">Reactivated (Incremental)</span>
-                                                                    @break
-                                                                    @case(6)
-                                                                    <span class="badge badge-pill badge-secondary" style="padding: 5px;min-width: 80px;">Shortfall (Incremental)</span>
-                                                                    @break
-                                                                @endswitch
-                                                            </td>
-                                                            <td>
-                                                                <a href="javascript:;" onclick="viewAssignmentDetails('{{ base64_encode($children->id) }}');" class="btn btn-outline-primary btn-sm btn-rounded mb-0" title="view assignment details" style="padding: 5px 8px;"><i class="feather icon-eye mr-0"></i></a>
-                                                            </td>
-                                                        </tr>
-                                                        <tr class="pacing-details" style="display: none;">
-                                                            <td colspan="7" class="bg-light text-left">
-                                                                <table class="table table-hover foo-table text-center">
-                                                                    <thead>
-                                                                    <tr>
-                                                                        <th class="text-center" data-breakpoints="xs">Date</th>
-                                                                        <th class="text-center" data-breakpoints="xs">Day</th>
-                                                                        <th class="text-center" data-breakpoints="xs">Sub-Allocation</th>
-                                                                    </tr>
-                                                                    </thead>
-                                                                    <tbody>
-                                                                    @forelse($children->pacingDetails as $subAllocation)
-                                                                        @if($subAllocation->sub_allocation)
-                                                                            <tr>
-                                                                                <td>{{ date('d-M-Y', strtotime($subAllocation->date)) }}</td>
-                                                                                <td>{{ date('D', strtotime($subAllocation->date)) }}</td>
-                                                                                <td>{{ $subAllocation->sub_allocation }}</td>
-                                                                            </tr>
-                                                                        @endif
-                                                                    @empty
-                                                                        <tr>
-                                                                            <td colspan="3">
-                                                                                Sub allocations not updated,
-                                                                                <br>
-                                                                                <a href="javascript:;" onclick="editSubAllocations('{{ base64_encode($children->id) }}');" title="Edit Sub-Allocations">Click Here</a> to update.
-                                                                            </td>
-                                                                        </tr>
-                                                                    @endforelse
-                                                                    </tbody>
-                                                                </table>
-                                                            </td>
-                                                        </tr>
-                                                    @empty
-                                                    @endforelse
                                                     </tbody>
                                                 </table>
                                             </div>
@@ -370,7 +286,6 @@
                                     <th class="text-center">Name</th>
                                     <th class="text-center">End Date</th>
                                     <th class="text-center">Allocation</th>
-                                    <th class="text-center">Total Agents</th>
                                     <th class="text-center">Assigned By</th>
                                     <th class="text-center">Status</th>
                                 </tr>
@@ -403,5 +318,5 @@
     <!-- jquery-validation Js -->
     <script src="{{ asset('public/template/assets/plugins/jquery-validation/js/jquery.validate.min.js') }}"></script>
 
-    <script src="{{ asset('public/js/manager/campaign_assign_show.js?='.time()) }}"></script>
+    <script src="{{ asset('public/js/team_leader/campaign_assign_show.js?='.time()) }}"></script>
 @append

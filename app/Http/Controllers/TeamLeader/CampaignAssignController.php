@@ -68,10 +68,10 @@ class CampaignAssignController extends Controller
             $result = $this->RATLRepository->find(base64_decode($id));
             $this->data['resultCampaign'] = $this->campaignRepository->find($result->campaign->id);
             $this->data['resultCampaignAssignedRATL'] = $result;
-            //dd($this->data['resultCampaign']->children->toArray());
-            return view('manager.campaign_assign.show', $this->data);
+            //dd($this->data['resultCampaignAssignedRATL']->toArray());
+            return view('team_leader.campaign_assign.show', $this->data);
         } catch (\Exception $exception) {
-            return redirect()->route('manager.campaign.list')->with('error', ['title' => 'Error while processing request', 'message' => 'Campaign details not found']);
+            return redirect()->route('team_leader.campaign.list')->with('error', ['title' => 'Error while processing request', 'message' => 'Campaign details not found']);
         }
     }
 
@@ -140,10 +140,8 @@ class CampaignAssignController extends Controller
 
     public function viewAssignmentDetails($id, Request $request): \Illuminate\Http\JsonResponse
     {
-        $result['resultRATLs'] = $this->campaignAssignRepository->getAssignedRATL(base64_decode($id));
-        $result['resultVMs'] = [];
-
-        //$result['resultAgents'] = $this->campaignAssignRepository->getAssignedAgents(base64_decode($id));
+        $result = $this->agentRepository->get(array('caratl_id' => base64_decode($id)));
+        //dd($result->toArray());
         if(!empty($result)) {
             return response()->json(array('status' => true, 'data' => $result));
         } else {

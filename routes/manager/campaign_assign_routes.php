@@ -15,5 +15,7 @@ Route::prefix('campaign-assign')->name('campaign_assign.')->group(function()
     Route::any('/destroy/{id}', [App\Http\Controllers\Manager\CampaignAssignController::class, 'destroy'])->name('destroy');
 
     Route::any('/view-assignment-details/{id}', [App\Http\Controllers\Manager\CampaignAssignController::class, 'viewAssignmentDetails'])->name('view_assignment_details');
+    Route::any('/view-assigned-agents/{id}', [App\Http\Controllers\Manager\CampaignAssignController::class, 'viewAssignedAgents'])->name('view_assigned_agents');
+    Route::any('/view-assigned-vendors/{id}', [App\Http\Controllers\Manager\CampaignAssignController::class, 'viewAssignmentVendors'])->name('view_assigned_vendors');
 
 });
