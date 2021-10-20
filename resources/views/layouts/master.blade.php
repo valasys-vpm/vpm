@@ -72,18 +72,9 @@
 @include('layouts.header', ['module' => $module])
 <!-- [ Header ] end -->
 
-<!-- [ chat user list ] start -->
-<!-- [ chat user list ] end -->
-
-<!-- [ chat message ] start -->
-
-<!-- [ chat message ] end -->
-
 <!-- [ Main Content ] start -->
 @yield('content')
 <!-- [ Main Content ] end -->
-
-<div id="div-modal"></div>
 
 <script>
     var BASE_PATH = "{{ url('/') }}";
@@ -93,56 +84,13 @@
 <script src="{{ asset('public/template') }}/assets/plugins/bootstrap/js/bootstrap.min.js"></script>
 <script src="{{ asset('public/template') }}/assets/js/pcoded.min.js"></script>
 
-
-<!-- amchart js -->
-<script src="{{ asset('public/template') }}/assets/plugins/amchart/js/amcharts.js"></script>
-<script src="{{ asset('public/template') }}/assets/plugins/amchart/js/gauge.js"></script>
-<script src="{{ asset('public/template') }}/assets/plugins/amchart/js/serial.js"></script>
-<script src="{{ asset('public/template') }}/assets/plugins/amchart/js/light.js"></script>
-<script src="{{ asset('public/template') }}/assets/plugins/amchart/js/pie.min.js"></script>
-<script src="{{ asset('public/template') }}/assets/plugins/amchart/js/ammap.min.js"></script>
-<script src="{{ asset('public/template') }}/assets/plugins/amchart/js/usaLow.js"></script>
-<script src="{{ asset('public/template') }}/assets/plugins/amchart/js/radar.js"></script>
-<script src="{{ asset('public/template') }}/assets/plugins/amchart/js/worldLow.js"></script>
-
-<!-- Float Chart js -->
-<script src="{{ asset('public/template') }}/assets/plugins/flot/js/jquery.flot.js"></script>
-<script src="{{ asset('public/template') }}/assets/plugins/flot/js/jquery.flot.categories.js"></script>
-<script src="{{ asset('public/template') }}/assets/plugins/flot/js/curvedLines.js"></script>
-<script src="{{ asset('public/template') }}/assets/plugins/flot/js/jquery.flot.tooltip.min.js"></script>
-
 <!-- pnotify Js -->
 <script src="{{ asset('public/template') }}/assets/plugins/pnotify/js/pnotify.custom.min.js"></script>
 
 <!-- Moment Js -->
 <script src="https://momentjs.com/downloads/moment-with-locales.min.js"></script>
 
-<!-- dashboard-custom js -->
-<script src="{{ asset('public/template') }}/assets/js/pages/dashboard-crypto.js"></script>
-
-<script>
-    {{-- AJAX ERROR HANDLER CODE=> error: function(jqXHR, textStatus, errorThrown) { checkSession(jqXHR); } --}}
-    function checkSession(e){401==e.status&&location.reload()}
-    $(".alert-auto-dismiss").fadeTo(5000,500).slideUp(500,function(){$(".alert-auto-dismiss").slideUp(500)});
-</script>
-
-<script type="text/javascript">
-    $.ajaxSetup({
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        }
-    });
-    $(function () {
-        $('.double-click').click(function() {
-            return false;
-        }).dblclick(function() {
-            window.location = this.href;
-            return false;
-        });
-    });
-</script>
-
-<script type="text/javascript" src="{{asset('public/js/custom.js?='.time()) }}"></script>
+<script src="{{asset('public/js/custom.js?='.time()) }}"></script>
 
 @yield('javascript')
 
@@ -168,53 +116,6 @@
         @endif
     });
 </script>
-
-<script>
-    // Set timeout variables.
-    var timoutWarning = 840000; // Display warning in 14 Mins.
-    var timoutNow = 900000; // Timeout in 15 mins.
-    var logoutUrl = '{{ route('logout') }}'; // URL to logout page.
-
-    var warningTimer;
-    var timeoutTimer;
-
-    // Start timers.
-    function StartTimers() {
-        warningTimer = setTimeout("IdleWarning()", timoutWarning);
-        timeoutTimer = setTimeout("IdleTimeout()", timoutNow);
-    }
-
-    // Reset timers.
-    function ResetTimers() {
-        clearTimeout(warningTimer);
-        clearTimeout(timeoutTimer);
-        StartTimers();
-        //$("#timeout").dialog('close');
-    }
-
-    // Show idle timeout warning dialog.
-    function IdleWarning() {
-        alert('Warning: No activity detected, session will be end soon.');
-    }
-
-    // Logout the user.
-    function IdleTimeout() {
-        window.location = logoutUrl;
-    }
-
-    $(function () {
-        //StartTimers();
-
-        $('body').mousemove(function() {
-            ResetTimers();
-        });
-
-        $('body').keypress(function() {
-            ResetTimers();
-        });
-    });
-</script>
-
 
 </body>
 </html>

@@ -4,8 +4,6 @@
     @parent
     <!-- data tables css -->
     <link rel="stylesheet" href="{{asset('public/template/assets/plugins/data-tables/css/datatables.min.css')}}">
-    <!-- toolbar css -->
-    <link rel="stylesheet" href="{{asset('public/template/assets/plugins/toolbar/css/jquery.toolbar.css')}}">
     <!-- custom css -->
     <link rel="stylesheet" href="{{asset('public/css/campaign_table_custom.css')}}">
 
@@ -80,11 +78,7 @@
     @parent
     <!-- datatable Js -->
     <script src="{{ asset('public/template/assets/plugins/data-tables/js/datatables.min.js') }}"></script>
-    <!-- toolbar Js -->
-    <script src="{{ asset('public/template/assets/plugins/toolbar/js/jquery.toolbar.min.js') }}"></script>
-    <!-- jquery-validation Js -->
-    <script src="{{ asset('public/template/assets/plugins/jquery-validation/js/jquery.validate.min.js') }}"></script>
-
+    <!-- custom Js -->
     <script src="{{ asset('public/js/agent/campaign.js?='.time()) }}"></script>
 @append
 
