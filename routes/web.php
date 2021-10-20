@@ -91,15 +91,15 @@ Route::middleware(['web', 'check.agent'])->name('agent.')->group(function (){
 
 });
 
-Route::prefix('vendor-management')->middleware(['web', 'check.vendor_management'])->name('vendor_management.')->group(function (){
+Route::prefix('vendor-manager')->middleware(['web', 'check.vendor_manager'])->name('vendor_manager.')->group(function (){
 
-    Route::get('/dashboard', [App\Http\Controllers\VendorManagement\DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard', [App\Http\Controllers\VendorManager\DashboardController::class, 'index'])->name('dashboard');
 
     //Vendor Routes
-    include('vendor_management/vendor_routes.php');
+    include('vendor_manager/vendor_routes.php');
 
     //Campaign Management Routes
-    include('vendor_management/campaign_routes.php');
+    include('vendor_manager/campaign_routes.php');
 
 });
 

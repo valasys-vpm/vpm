@@ -26,7 +26,7 @@
                     <div class="main-body">
                         <div class="page-wrapper">
                             <!-- [ Main Content ] start -->
-                            <h1 class="text-info">Hello Vendor Management</h1>
+                            <h1 class="text-info">Hello Vendor Manager</h1>
                             <!-- [ Main Content ] end -->
                         </div>
                     </div>

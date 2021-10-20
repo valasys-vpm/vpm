@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\VendorManagement;
+namespace App\Http\Controllers\VendorManager;
 
 use App\Http\Controllers\Controller;
 use App\Repository\VendorRepository\VendorRepository;

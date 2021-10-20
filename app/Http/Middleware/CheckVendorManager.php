@@ -7,7 +7,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class CheckVendorManagement
+class CheckVendorManager
 {
     /**
      * Handle an incoming request.
@@ -36,7 +36,7 @@ class CheckVendorManagement
         }
 
         $module = Module::whereRoleId($user->role_id)->first();
-        if($module->slug != 'vendor_management') {
+        if($module->slug != 'vendor_manager') {
             Auth::logout();
             if($request->ajax()) {
                 return response('Invalid Session',302);

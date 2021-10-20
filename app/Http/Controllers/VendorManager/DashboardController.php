@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\VendorManagement;
+namespace App\Http\Controllers\VendorManager;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -16,6 +16,6 @@ class DashboardController extends Controller
 
     public function index()
     {
-        return view('vendor_management.dashboard');
+        return view('vendor_manager.dashboard');
     }
 }
