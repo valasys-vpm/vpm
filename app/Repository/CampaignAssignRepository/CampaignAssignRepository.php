@@ -56,12 +56,13 @@ class CampaignAssignRepository implements CampaignAssignInterface
         return $query->get();
     }
 
-    public function getCampaignToAssignForTL($id, $filters = array())
+    public function getCampaignToAgents($id, $filters = array())
     {
         //get TL's member list
         $resultUsers = User::whereReportingUserId($id)->whereStatus(1)->get();
+
         $resultAssignedCampaigns = array();
-        //get campaigns already assigned
+        //get campaigns already assigned to agents
         $result['AGENT'] = CampaignAssignAgent::select('campaign_id')
             ->whereIn('user_id', $resultUsers->pluck('id')->toArray())
             ->whereStatus(1)
@@ -74,7 +75,30 @@ class CampaignAssignRepository implements CampaignAssignInterface
         $query = CampaignAssignRATL::query();
         $query->with('campaign');
         $query->whereUserId($id);
-        $query->whereNotIn('id', $resultAssignedCampaigns);
+        $query->whereIn('campaign_id', $resultAssignedCampaigns);
+        return $query->get();
+    }
+
+    public function getCampaignToAssignForTL($id, $filters = array())
+    {
+        //get TL's member list
+        $resultUsers = User::whereReportingUserId($id)->whereStatus(1)->get();
+
+        $resultAssignedCampaigns = array();
+        //get campaigns already assigned to agents
+        $result['AGENT'] = CampaignAssignAgent::select('campaign_id')
+            ->whereIn('user_id', $resultUsers->pluck('id')->toArray())
+            ->whereStatus(1)
+            ->get();
+
+        if(!empty($result['AGENT'])) {
+            $resultAssignedCampaigns = array_unique (array_merge ($resultAssignedCampaigns, $result['AGENT']->pluck('campaign_id')->toArray()));
+        }
+
+        $query = CampaignAssignRATL::query();
+        $query->with('campaign');
+        $query->whereUserId($id);
+        $query->whereNotIn('campaign_id', $resultAssignedCampaigns);
         return $query->get();
     }
 
@@ -155,7 +179,7 @@ class CampaignAssignRepository implements CampaignAssignInterface
                         case 'research_analyst' :
                             $dataAgent[] = array(
                                 'campaign_id' => $campaign['campaign_id'],
-                                'campaign_assign_ratl_id ' => $campaign['campaign_assign_ratl_id '],
+                                'campaign_assign_ratl_id ' => $campaign['campaign_assign_ratl_id'],
                                 'user_id' => $user['user_id'],
                                 'display_date' => date('Y-m-d', strtotime($campaign['display_date'])),
                                 'allocation' => $user['allocation'],

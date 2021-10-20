@@ -11,4 +11,23 @@ class CampaignAssignAgent extends Model
     use SoftDeletes;
     protected $guarded = array();
     public $timestamps = true;
+
+    public function campaign()
+    {
+        return $this->hasOne(Campaign::class, 'id', 'campaign_id');
+    }
+    public function user()
+    {
+        return $this->hasOne(User::class, 'id', 'user_id');
+    }
+
+    public function userAssignedBy()
+    {
+        return $this->hasOne(User::class, 'id', 'assigned_by');
+    }
+
+    public function caratl()
+    {
+        return $this->hasOne(CampaignAssignAgent::class, 'id', 'campaign_assign_ratl_id');
+    }
 }

@@ -8,25 +8,12 @@ let MONTHS = ['Jan','Feb','Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'
 
 $(function (){
 
-    $("#campaign_list").select2({
-        placeholder: " --- Select Campaign ---",
-    });
-
-    $("#user_list").select2({
-        placeholder: " --- Select User(s) ---",
-    });
-
-});
-
-
-$(function (){
-
     CAMPAIGN_TABLE = $('#table-campaigns').DataTable({
         "lengthMenu": [ [500,400,300,200,100,-1], [500,400,300,200,100,'All'] ],
         "processing": true,
         "serverSide": true,
         "ajax": {
-            "url": URL + '/team-leader/campaign-assign/get-assigned-campaigns',
+            "url": URL + '/agent/campaign/get-campaigns',
             data: {
                 filters: function (){
                     let obj = {
@@ -43,12 +30,17 @@ $(function (){
             },
             {
                 render: function (data, type, row) {
-                    return '<a href="'+URL+'/team-leader/campaign-assign/view-details/'+btoa(row.id)+'" class="text-dark double-click" title="View campaign details">'+row.campaign.name+'</a>';
+                    return '<a href="'+URL+'/agent/campaign/view-details/'+btoa(row.campaign.id)+'" class="text-dark double-click" title="View campaign details">'+row.campaign.name+'</a>';
                 }
             },
             {
                 render: function (data, type, row) {
-                    return row.agents.length;
+                    let deliver_count = 0;
+                    let allocation = row.allocation;
+                    let percentage = (deliver_count/allocation)*100;
+
+                    percentage = percentage.toFixed(2);
+                    return '<div class="progress" style="height: 20px;width:100px;border:1px solid lightgrey;"><div class="progress-bar '+ (parseInt(percentage) < 100 ? 'bg-warning text-dark' : 'bg-success text-light' ) +'" role="progressbar" aria-valuenow="'+percentage+'" aria-valuemin="0" aria-valuemax="100" style="width: '+percentage+'%;font-weight:bold;">&nbsp;'+percentage+'%</div></div>';
                 }
             },
             {
@@ -82,7 +74,6 @@ $(function (){
                     let status_id  = row.campaign.campaign_status_id;
                     let campaign_type = '';
                     if(row.campaign.parent_id) {
-                        status_id = row.campaign.campaign_status_id;
                         campaign_type = ' (Incremental)'
                     }
                     switch (status_id) {
@@ -99,9 +90,7 @@ $(function (){
                 orderable: false,
                 render: function (data, type, row) {
                     let html = '';
-
-                    html += '<a href="'+URL+'/team-leader/campaign-assign/view-details/'+btoa(row.id)+'" class="btn btn-outline-info btn-rounded btn-sm" title="View Campaign Details"><i class="feather icon-eye mr-0"></i></a>';
-
+                    html += '<a href="'+URL+'/agent/campaign/view-details/'+btoa(row.id)+'" class="btn btn-outline-info btn-rounded btn-sm" title="View Campaign Details"><i class="feather icon-eye mr-0"></i></a>';
                     return html;
                 }
             },
@@ -147,81 +136,4 @@ $(function (){
         }
     });
 
-    $('#button-campaign-assign').on('click', function(e) {
-        let campaign_id = $("#campaign_list").val();
-        let user_list = $("#user_list").val();
-        let html = '';
-
-        $("#modal-campaign-assign").find('.modal-body').html(html);
-
-        html = getCampaignCard_html(campaign_id, user_list);
-        $("#campaign_assign_ratl_id").val($("#campaign_list_"+campaign_id).data('caratl-id'));
-        $("#modal-campaign-assign").find('.modal-body').html(html);
-
-        $("#modal-campaign-assign").modal('show');
-    });
-
-    $("#button-reset-form-campaign-assign").on('click', function(){
-        $("#form-campaign-assign").find('input').val('');
-        $("#form-campaign-assign").find('select').val('').trigger('change');
-    });
-
 });
-
-
-function getCampaignCard_html(_campaign_id, _user_list) {
-    let html ='';
-
-    let allocation = $("#campaign_list_"+_campaign_id).data('allocation')/(_user_list.length);
-    let balance_allocation = $("#campaign_list_"+_campaign_id).data('allocation')%(_user_list.length);
-
-    let end_date = new Date($("#campaign_list_"+_campaign_id).data('end-date'));
-
-    html += '' +
-        '<div class="card border border-info rounded">' +
-        '   <h5 class="card-header" style="padding: 10px 25px;">'+$("#campaign_list_"+_campaign_id).data('name')+'</h5>' +
-        '   <input type="hidden" name="data[0][campaign_id]" value="'+_campaign_id+'">' +
-        '   <div class="card-body" style="padding: 15px 25px;">' +
-        '       <div class="row">' +
-        '           <div class="col-md-6">' +
-        '               <div class="row">' +
-        '                   <div class="col-md-5"><h6 class="card-title">Allocation</h6></div>' +
-        '                   <div class="col-md-7"><h6 class="card-title">: '+$("#campaign_list_"+_campaign_id).data('allocation')+'</h6></div>' +
-        '               </div>' +
-        '               <div class="row">' +
-        '                   <div class="col-md-5"><h6 class="card-title">End Date</h6></div>' +
-        '                   <div class="col-md-7"><h6 class="card-title">: '+$("#campaign_list_"+_campaign_id).data('end-date')+'</h6></div>' +
-        '               </div>' +
-        '               <div class="row">' +
-        '                   <div class="col-md-5"><h6 class="card-title">Select Reporting Format File</h6></div>' +
-        '                   <div class="col-md-7"><h6 class="card-title">: <input type="file" name="data[0][reporting_file]"></h6></div>' +
-        '               </div>' +
-        '           </div>' +
-        '           <div class="col-md-6 border-left">' +
-        '               <h5 class="card-title mb-2">User(s) to Assign</h5>' +
-        '               <hr class="m-0" style="margin-bottom: 5px !important;">' +
-                        getUserAssignCard_html(0, _user_list, allocation, balance_allocation) +
-        '           </div>' +
-        '       </div>' +
-        '   </div>' +
-        '</div>';
-
-    return html;
-}
-
-function getUserAssignCard_html(_key, _user_list, allocation, balance_allocation) {
-    let html = '';
-
-    $.each(_user_list, function (key, value){
-
-        html += '<div class="row p-1">' +
-            '   <div class="col-md-5"><h6 class="card-title">'+$("#user_list_"+value).data('name')+'</h6></div>' +
-            '   <input type="hidden" name="data['+_key+'][users]['+key+'][user_id]" value="'+value+'">' +
-            '   <div class="col-md-7">' +
-            '       <input type="text" name="data['+_key+'][users]['+key+'][allocation]" class="form-control form-control-sm" value="'+ ( (key === (_user_list.length -1)) ? Math.floor((allocation + balance_allocation)) : Math.floor(allocation) ) +'" style="height: 30px;">' +
-            '   </div>' +
-            '</div>';
-    });
-
-    return html;
-}

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Manager;
 
 use App\Http\Controllers\Controller;
 use App\Models\Campaign;
+use App\Repository\CampaignAssignRepository\AgentRepository\AgentRepository;
 use App\Repository\CampaignAssignRepository\CampaignAssignRepository;
 use App\Repository\CampaignRepository\CampaignRepository;
 use App\Repository\UserRepository\UserRepository;
@@ -15,17 +16,20 @@ class CampaignAssignController extends Controller
     private $campaignRepository;
     private $userRepository;
     private $campaignAssignRepository;
+    private $agentRepository;
 
     public function __construct(
         CampaignRepository $campaignRepository,
         UserRepository $userRepository,
-        CampaignAssignRepository $campaignAssignRepository
+        CampaignAssignRepository $campaignAssignRepository,
+        AgentRepository $agentRepository
     )
     {
         $this->data = array();
         $this->campaignRepository = $campaignRepository;
         $this->userRepository = $userRepository;
         $this->campaignAssignRepository = $campaignAssignRepository;
+        $this->agentRepository = $agentRepository;
     }
 
     public function index()
@@ -141,6 +145,16 @@ class CampaignAssignController extends Controller
         $result['resultVMs'] = [];
 
         //$result['resultAgents'] = $this->campaignAssignRepository->getAssignedAgents(base64_decode($id));
+        if(!empty($result)) {
+            return response()->json(array('status' => true, 'data' => $result));
+        } else {
+            return response()->json(array('status' => false, 'message' => 'Data not found'));
+        }
+    }
+
+    public function viewAssignedAgents($id, Request $request)
+    {
+        $result = $this->agentRepository->get(array('caratl_id' => base64_decode($id)));
         if(!empty($result)) {
             return response()->json(array('status' => true, 'data' => $result));
         } else {

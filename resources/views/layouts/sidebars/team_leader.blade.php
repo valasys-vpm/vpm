@@ -22,5 +22,12 @@
         </a>
     </li>
 
+    <li class="nav-item @if(in_array(Request::route()->getName(), array('team_leader.team.list', 'team_leader.team.show'))) active @endif">
+        <a href="{{ route('team_leader.team.list') }}" class="nav-link">
+            <span class="pcoded-micon"><i class="feather icon-users"></i></span>
+            <span class="pcoded-mtext">My Team</span>
+        </a>
+    </li>
+
 </ul>
 

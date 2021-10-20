@@ -83,11 +83,17 @@ Route::prefix('team-leader')->middleware(['web', 'check.team_leader'])->name('te
     //Campaign Assign Routes
     include('team_leader/campaign_assign_routes.php');
 
+    //Campaign Assign Routes
+    include('team_leader/team_routes.php');
+
 });
 
-Route::middleware(['web', 'check.agent'])->name('agent.')->group(function (){
+Route::prefix('agent')->middleware(['web', 'check.agent'])->name('agent.')->group(function (){
 
     Route::get('/dashboard', [App\Http\Controllers\Agent\DashboardController::class, 'index'])->name('dashboard');
+
+    //Campaign Management Routes
+    include('agent/campaign_routes.php');
 
 });
 
