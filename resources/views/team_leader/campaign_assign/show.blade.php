@@ -195,7 +195,7 @@
                                                         <td>
                                                             @php
                                                                 $campaign_type = '';
-                                                                if($resultCampaignAssignedRATL->campaign == 'incremental') {
+                                                                if($resultCampaignAssignedRATL->campaign->type == 'incremental') {
                                                                     $campaign_type = ' (Incremental)';
                                                                 }
                                                             @endphp

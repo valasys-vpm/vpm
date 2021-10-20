@@ -2,25 +2,26 @@
     Campaign List Custom Javascript
 ------------------------------------ */
 
-let CAMPAIGN_TABLE;
+let LEAD_TABLE;
 let URL = $('meta[name="base-path"]').attr('content');
 let MONTHS = ['Jan','Feb','Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
 $(function (){
 
-    CAMPAIGN_TABLE = $('#table-campaigns').DataTable({
+    LEAD_TABLE = $('#table-leads').DataTable({
         "lengthMenu": [ [500,400,300,200,100,-1], [500,400,300,200,100,'All'] ],
         "processing": true,
         "serverSide": true,
         "ajax": {
-            "url": URL + '/agent/campaign/get-campaigns',
+            "url": URL + '/agent/lead/get-leads',
             data: {
                 filters: function (){
                     let obj = {
                     };
                     localStorage.setItem("filters", JSON.stringify(obj));
                     return JSON.stringify(obj);
-                }
+                },
+                ca_agent_id: $('meta[name="ca-agent-id"]').attr('content')
             },
             error: function(jqXHR, textStatus, errorThrown) { checkSession(jqXHR); }
         },

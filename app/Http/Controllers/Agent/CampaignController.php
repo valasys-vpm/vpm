@@ -4,21 +4,44 @@ namespace App\Http\Controllers\Agent;
 
 use App\Http\Controllers\Controller;
 use App\Models\CampaignAssignAgent;
+use App\Repository\CampaignAssignRepository\AgentRepository\AgentRepository;
+use App\Repository\CampaignRepository\CampaignRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class CampaignController extends Controller
 {
     private $data;
+    private $campaignRepository;
+    private $agentRepository;
 
-    public function __construct()
+    public function __construct(
+        CampaignRepository $campaignRepository,
+        AgentRepository $agentRepository
+    )
     {
         $this->data = array();
+        $this->campaignRepository = $campaignRepository;
+        $this->agentRepository = $agentRepository;
     }
 
     public function index()
     {
         return view('agent.campaign.list', $this->data);
+    }
+
+    public function show($id)
+    {
+        try {
+            $this->data['resultCAAgent'] = $this->agentRepository->find(base64_decode($id));
+            $this->data['resultCampaign'] = $this->campaignRepository->find($this->data['resultCAAgent']->campaign_id);
+            if(isset($this->data['resultCampaign']->parent_id) && !empty($this->data['resultCampaign']->parent_id)) {
+                $this->data['resultCampaignParent'] = $this->campaignRepository->find($this->data['resultCampaign']->parent_id);
+            }
+            return view('agent.campaign.show', $this->data);
+        } catch (\Exception $exception) {
+            return redirect()->route('agent.campaign.list')->with('error', ['title' => 'Error while processing request', 'message' => 'Campaign details not found']);
+        }
     }
 
     public function getCampaigns(Request $request): \Illuminate\Http\JsonResponse
@@ -77,6 +100,19 @@ class CampaignController extends Controller
         );
 
         return response()->json($ajaxData);
+    }
+
+    public function startCampaign($id, Request $request)
+    {
+        $attributes['started_at'] = date('Y-m-d H:i:s');
+
+        $response = $this->agentRepository->update(base64_decode($id), $attributes);
+
+        if($response['status']) {
+            return response()->json(array('status' => true, 'message' => 'Campaign Started'));
+        } else {
+            return response()->json(array('status' => false, 'message' => 'Data not found'));
+        }
     }
 
 }

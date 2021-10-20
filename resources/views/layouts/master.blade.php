@@ -76,46 +76,40 @@
 @yield('content')
 <!-- [ Main Content ] end -->
 
-<script>
-    var BASE_PATH = "{{ url('/') }}";
-</script>
-<!-- Required Js -->
-<script src="{{ asset('public/template') }}/assets/js/vendor-all.js"></script>
-<script src="{{ asset('public/template') }}/assets/plugins/bootstrap/js/bootstrap.min.js"></script>
-<script src="{{ asset('public/template') }}/assets/js/pcoded.min.js"></script>
-
-<!-- pnotify Js -->
-<script src="{{ asset('public/template') }}/assets/plugins/pnotify/js/pnotify.custom.min.js"></script>
-
-<!-- Moment Js -->
-<script src="https://momentjs.com/downloads/moment-with-locales.min.js"></script>
-
-<script src="{{asset('public/js/custom.js?='.time()) }}"></script>
-
-@yield('javascript')
-
-<script>
-    $(function (){
-        @if(session('default'))
-        trigger_pnofify('default', '{{ session('default')['title'] }}', '{{ session('default')['message'] }}');
-        @endif
-        @if(session('primary'))
-        trigger_pnofify('primary', '{{ session('primary')['title'] }}', '{{ session('primary')['message'] }}');
-        @endif
-        @if(session('success'))
-        trigger_pnofify('success', '{{ session('success')['title'] }}', '{{ session('success')['message'] }}');
-        @endif
-        @if(session('info'))
-        trigger_pnofify('info', '{{ session('info')['title'] }}', '{{ session('info')['message'] }}');
-        @endif
-        @if(session('error'))
-        trigger_pnofify('error', '{{ session('error')['title'] }}', '{{ session('error')['message'] }}');
-        @endif
-        @if(session('warning'))
-        trigger_pnofify('warning', '{{ session('warning')['title'] }}', '{{ session('warning')['message'] }}');
-        @endif
-    });
-</script>
+    <script> var BASE_PATH = "{{ url('/') }}"; </script>
+    <!-- Required Js -->
+    <script src="{{ asset('public/template') }}/assets/js/vendor-all.js"></script>
+    <script src="{{ asset('public/template') }}/assets/plugins/bootstrap/js/bootstrap.min.js"></script>
+    <script src="{{ asset('public/template') }}/assets/js/pcoded.min.js"></script>
+    <!-- pnotify Js -->
+    <script src="{{ asset('public/template') }}/assets/plugins/pnotify/js/pnotify.custom.min.js"></script>
+    <!-- Moment Js -->
+    <script src="https://momentjs.com/downloads/moment-with-locales.min.js"></script>
+    <!-- Custom Js -->
+    <script src="{{asset('public/js/custom.js?='.time()) }}"></script>
+    @yield('javascript')
+    <script>
+        $(function (){
+            @if(session('default'))
+            trigger_pnofify('default', '{{ session('default')['title'] }}', '{{ session('default')['message'] }}');
+            @endif
+            @if(session('primary'))
+            trigger_pnofify('primary', '{{ session('primary')['title'] }}', '{{ session('primary')['message'] }}');
+            @endif
+            @if(session('success'))
+            trigger_pnofify('success', '{{ session('success')['title'] }}', '{{ session('success')['message'] }}');
+            @endif
+            @if(session('info'))
+            trigger_pnofify('info', '{{ session('info')['title'] }}', '{{ session('info')['message'] }}');
+            @endif
+            @if(session('error'))
+            trigger_pnofify('error', '{{ session('error')['title'] }}', '{{ session('error')['message'] }}');
+            @endif
+            @if(session('warning'))
+            trigger_pnofify('warning', '{{ session('warning')['title'] }}', '{{ session('warning')['message'] }}');
+            @endif
+        });
+    </script>
 
 </body>
 </html>
