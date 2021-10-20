@@ -8,15 +8,15 @@
         </a>
     </li>
 
-    <li class="nav-item @if(in_array(Request::route()->getName(), array('team_leader.campaign.list', 'team_leader.campaign.show'))) active @endif">
-        <a href="{{ route('team_leader.campaign.list') }}" class="nav-link">
+    <li class="nav-item @if(in_array(Request::route()->getName(), array('vendor_manager.campaign.list', 'vendor_manager.campaign.show'))) active @endif">
+        <a href="{{ route('vendor_manager.campaign.list') }}" class="nav-link">
             <span class="pcoded-micon"><i class="feather icon-list"></i></span>
             <span class="pcoded-mtext">My Campaigns</span>
         </a>
     </li>
 
-    <li class="nav-item @if(in_array(Request::route()->getName(), array('team_leader.campaign_assign.list'))) active @endif">
-        <a href="{{ route('team_leader.campaign_assign.list') }}" class="nav-link">
+    <li class="nav-item @if(in_array(Request::route()->getName(), array('vendor_manager.campaign_assign.list'))) active @endif">
+        <a href="{{ route('vendor_manager.campaign_assign.list') }}" class="nav-link">
             <span class="pcoded-micon"><i class="feather icon-shuffle"></i></span>
             <span class="pcoded-mtext">Campaign Assign</span>
         </a>

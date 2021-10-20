@@ -107,6 +107,9 @@ Route::prefix('vendor-manager')->middleware(['web', 'check.vendor_manager'])->na
     //Campaign Management Routes
     include('vendor_manager/campaign_routes.php');
 
+    //Campaign Assign Routes
+    include('vendor_manager/campaign_assign_routes.php');
+
 });
 
 
