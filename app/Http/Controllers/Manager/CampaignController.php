@@ -67,7 +67,7 @@ class CampaignController extends Controller
             $this->data['resultCountries'] = $this->countryRepository->get(array('status' => 1));
             $this->data['resultRegions'] = $this->regionRepository->get(array('status' => 1));
             $this->data['resultCampaign'] = $this->campaignRepository->find(base64_decode($id));
-            //dd($this->data['resultCampaign']->children->toArray());
+            //dd($this->data['resultCampaign']->campaignFiles->toArray());
             return view('manager.campaign.show', $this->data);
         } catch (\Exception $exception) {
             return redirect()->route('manager.campaign.list')->with('error', ['title' => 'Error while processing request', 'message' => 'Campaign details not found']);
@@ -215,6 +215,17 @@ class CampaignController extends Controller
     {
         $attributes = $request->all();
         $response = $this->campaignRepository->updateSpecification(base64_decode($id), $attributes);
+        if($response['status'] == TRUE) {
+            return response()->json(array('status' => true, 'message' => $response['message'], 'data' => $response['data']));
+        } else {
+            return response()->json(array('status' => false, 'message' => $response['message']));
+        }
+    }
+
+    public function attachCampaignFile($id, Request $request): \Illuminate\Http\JsonResponse
+    {
+        $attributes = $request->all();
+        $response = $this->campaignRepository->updateCampaignFile(base64_decode($id), $attributes);
         if($response['status'] == TRUE) {
             return response()->json(array('status' => true, 'message' => $response['message'], 'data' => $response['data']));
         } else {

@@ -161,12 +161,34 @@
                                                         </div>
                                                         <hr>
                                                         <div class="row">
-
-                                                            <div class="col-md-6 form-group">
+                                                            <div class="col-md-4 form-group">
                                                                 <label for="specifications">Specifications</label>
-                                                                <input type="file" class="form-control-file" id="specifications" name="specifications[]" multiple>
+                                                                <input type="file" class="form-control-file btn btn-outline-primary btn btn-square" id="specifications" name="specifications[]" multiple>
                                                             </div>
-
+                                                            <div class="col-md-4 form-group">
+                                                                <label for="target_domain">Domain Target List</label>
+                                                                <input type="file" class="form-control-file btn btn-outline-secondary btn btn-square" id="target_domain" name="target_domain">
+                                                            </div>
+                                                            <div class="col-md-4 form-group">
+                                                                <label for="target_account_name">Account Target List</label>
+                                                                <input type="file" class="form-control-file btn btn-outline-secondary btn btn-square" id="target_account_name" name="target_account_name">
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-md-4 form-group">
+                                                                <label for="suppression_email">Email Suppression</label>
+                                                                <input type="file" class="form-control-file btn btn-outline-success btn btn-square" id="suppression_email" name="suppression_email">
+                                                            </div>
+                                                            <div class="col-md-4 form-group">
+                                                                <label for="suppression_domain">Domain Suppression</label>
+                                                                <input type="file" class="form-control-file btn btn-outline-success btn btn-square" id="suppression_domain" name="suppression_domain">
+                                                            </div>
+                                                            <div class="col-md-4 form-group">
+                                                                <label for="suppression_account_name">Account Suppression</label>
+                                                                <input type="file" class="form-control-file btn btn-outline-success btn btn-square" id="suppression_account_name" name="suppression_account_name">
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
                                                             <div class="col-md-12 form-group">
                                                                 <label for="note">Note</label>
                                                                 <textarea id="note" name="note" class="form-control classic-editor" placeholder="Enter note here..." rows="3"></textarea>

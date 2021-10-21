@@ -227,6 +227,111 @@ $(function(){
 
     });
 
+    $('#modal-form-attach-campaign-file-submit').on('click', function (e) {
+        e.preventDefault();
+        let form_data = new FormData($('#modal-form-attach-campaign-file')[0]);
+
+        $.ajax({
+            url: $('meta[name="base-path"]').attr('content') +'/manager/campaign/attach-campaign-file/'+$('#campaign_id').val(),
+            processData: false,
+            contentType: false,
+            data: form_data,
+            type: 'post',
+            success: function(response) {
+                if(response.status === true) {
+                    //If no suppression remove all list
+                    if($('.campaign-file-li').length === 0) {
+                        $('#campaign-file-ul').html('');
+                    }
+                    let html = '';
+
+                    if(response.data.suppression_email) {
+                        let value = response.data.suppression_email;
+                        html += '<li class="media d-flex m-b-15 campaign-file-li">\n\
+                                    <div class="m-r-20 file-attach">\n\
+                                        <i class="far fa-file f-28 text-muted"></i>\n\
+                                    </div>\n\
+                                    <div class="media-body">\n\
+                                        <a href="'+ $('meta[name="base-path"]').attr('content') + '/public/storage/campaigns/'+value.campaign.campaign_id+'/'+value.file_name+'" target="_blank" data-toggle="tooltip" data-placement="top" data-original-title="Click to view"><span class="m-b-5 d-block text-primary">'+value.file_name+'</span></a>\n\
+                                    </div>\n\
+                                    <div class="float-right text-muted" style="display: none;">\n\
+                                        <a href="javascript:void(0);" onclick="removeSuppression(this, \''+btoa(value.id)+'\');"><i class="fas fa-times f-24 text-danger"></i></a>\n\
+                                    </div>\n\
+                                </li>';
+                    }
+
+                    if(response.data.suppression_domain) {
+                        let value = response.data.suppression_domain;
+                        html += '<li class="media d-flex m-b-15 campaign-file-li">\n\
+                                    <div class="m-r-20 file-attach">\n\
+                                        <i class="far fa-file f-28 text-muted"></i>\n\
+                                    </div>\n\
+                                    <div class="media-body">\n\
+                                        <a href="'+ $('meta[name="base-path"]').attr('content') + '/public/storage/campaigns/'+value.campaign.campaign_id+'/'+value.file_name+'" target="_blank" data-toggle="tooltip" data-placement="top" data-original-title="Click to view"><span class="m-b-5 d-block text-primary">'+value.file_name+'</span></a>\n\
+                                    </div>\n\
+                                    <div class="float-right text-muted" style="display: none;">\n\
+                                        <a href="javascript:void(0);" onclick="removeSuppression(this, \''+btoa(value.id)+'\');"><i class="fas fa-times f-24 text-danger"></i></a>\n\
+                                    </div>\n\
+                                </li>';
+                    }
+
+                    if(response.data.suppression_account_name) {
+                        let value = response.data.suppression_account_name;
+                        html += '<li class="media d-flex m-b-15 campaign-file-li">\n\
+                                    <div class="m-r-20 file-attach">\n\
+                                        <i class="far fa-file f-28 text-muted"></i>\n\
+                                    </div>\n\
+                                    <div class="media-body">\n\
+                                        <a href="'+ $('meta[name="base-path"]').attr('content') + '/public/storage/campaigns/'+value.campaign.campaign_id+'/'+value.file_name+'" target="_blank" data-toggle="tooltip" data-placement="top" data-original-title="Click to view"><span class="m-b-5 d-block text-primary">'+value.file_name+'</span></a>\n\
+                                    </div>\n\
+                                    <div class="float-right text-muted" style="display: none;">\n\
+                                        <a href="javascript:void(0);" onclick="removeSuppression(this, \''+btoa(value.id)+'\');"><i class="fas fa-times f-24 text-danger"></i></a>\n\
+                                    </div>\n\
+                                </li>';
+                    }
+
+                    if(response.data.target_domain) {
+                        let value = response.data.target_domain;
+                        html += '<li class="media d-flex m-b-15 campaign-file-li">\n\
+                                    <div class="m-r-20 file-attach">\n\
+                                        <i class="far fa-file f-28 text-muted"></i>\n\
+                                    </div>\n\
+                                    <div class="media-body">\n\
+                                        <a href="'+ $('meta[name="base-path"]').attr('content') + '/public/storage/campaigns/'+value.campaign.campaign_id+'/'+value.file_name+'" target="_blank" data-toggle="tooltip" data-placement="top" data-original-title="Click to view"><span class="m-b-5 d-block text-primary">'+value.file_name+'</span></a>\n\
+                                    </div>\n\
+                                    <div class="float-right text-muted" style="display: none;">\n\
+                                        <a href="javascript:void(0);" onclick="removeSuppression(this, \''+btoa(value.id)+'\');"><i class="fas fa-times f-24 text-danger"></i></a>\n\
+                                    </div>\n\
+                                </li>';
+                    }
+
+                    if(response.data.target_account_name) {
+                        let value = response.data.target_account_name;
+                        html += '<li class="media d-flex m-b-15 campaign-file-li">\n\
+                                    <div class="m-r-20 file-attach">\n\
+                                        <i class="far fa-file f-28 text-muted"></i>\n\
+                                    </div>\n\
+                                    <div class="media-body">\n\
+                                        <a href="'+ $('meta[name="base-path"]').attr('content') + '/public/storage/campaigns/'+value.campaign.campaign_id+'/'+value.file_name+'" target="_blank" data-toggle="tooltip" data-placement="top" data-original-title="Click to view"><span class="m-b-5 d-block text-primary">'+value.file_name+'</span></a>\n\
+                                    </div>\n\
+                                    <div class="float-right text-muted" style="display: none;">\n\
+                                        <a href="javascript:void(0);" onclick="removeSuppression(this, \''+btoa(value.id)+'\');"><i class="fas fa-times f-24 text-danger"></i></a>\n\
+                                    </div>\n\
+                                </li>';
+                    }
+
+                    $('#campaign-file-ul').append(html);
+                    $('#modal-attach-campaign-file').modal('hide');
+                    trigger_pnofify('success', 'Successful', response.message);
+                } else {
+                    $('#modal-attach-campaign-file').modal('hide');
+                    trigger_pnofify('error', 'Error while processing request', response.message);
+                }
+            }
+        });
+
+    });
+
 });
 
 function editCampaignDetails() {

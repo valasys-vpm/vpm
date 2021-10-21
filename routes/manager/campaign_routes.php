@@ -27,4 +27,6 @@ Route::prefix('campaign')->name('campaign.')->group(function()
     Route::any('/attach-specification/{id}', [App\Http\Controllers\Manager\CampaignController::class, 'attachSpecification'])->name('attach_specification');
     Route::any('/remove-specification/{id}', [App\Http\Controllers\Manager\CampaignController::class, 'removeSpecification'])->name('remove_specification');
 
+    Route::any('/attach-campaign-file/{id}', [App\Http\Controllers\Manager\CampaignController::class, 'attachCampaignFile'])->name('attach_campaign_file');
+
 });
