@@ -71,7 +71,7 @@ class CampaignAssignController extends Controller
             //dd($this->data['resultCampaignAssignedRATL']->toArray());
             return view('team_leader.campaign_assign.show', $this->data);
         } catch (\Exception $exception) {
-            return redirect()->route('team_leader.campaign.list')->with('error', ['title' => 'Error while processing request', 'message' => 'Campaign details not found']);
+            return redirect()->route('team_leader.campaign_assign.list')->with('error', ['title' => 'Error while processing request', 'message' => 'Campaign details not found']);
         }
     }
 

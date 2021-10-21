@@ -95,6 +95,9 @@ Route::prefix('agent')->middleware(['web', 'check.agent'])->name('agent.')->grou
     //Campaign Management Routes
     include('agent/campaign_routes.php');
 
+    //Campaign Management Routes
+    include('agent/lead_routes.php');
+
 });
 
 Route::prefix('vendor-manager')->middleware(['web', 'check.vendor_manager'])->name('vendor_manager.')->group(function (){
