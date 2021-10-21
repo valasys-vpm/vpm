@@ -8,6 +8,7 @@ use App\Models\CampaignAssignRATL;
 use App\Models\CampaignAssignVendorManager;
 use App\Repository\CampaignAssignRepository\CampaignAssignRepository;
 use App\Repository\CampaignAssignRepository\VendorRepository\VendorRepository as CAVendorRepository;
+use App\Repository\CampaignRepository\CampaignRepository;
 use App\Repository\VendorRepository\VendorRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -18,16 +19,20 @@ class CampaignAssignController extends Controller
     private $campaignAssignRepository;
     private $CAVendorRepository;
     private $vendorRepository;
+    private $campaignRepository;
+
     public function __construct(
         CampaignAssignRepository $campaignAssignRepository,
         CAVendorRepository $CAVendorRepository,
-        VendorRepository $vendorRepository
+        VendorRepository $vendorRepository,
+        CampaignRepository $campaignRepository
     )
     {
         $this->data = array();
         $this->campaignAssignRepository = $campaignAssignRepository;
         $this->CAVendorRepository = $CAVendorRepository;
         $this->vendorRepository = $vendorRepository;
+        $this->campaignRepository =$campaignRepository;
     }
 
     public function index()
@@ -36,6 +41,18 @@ class CampaignAssignController extends Controller
         $this->data['resultVendors'] = $this->vendorRepository->get(array('status' => 1));
         //dd($this->data['resultCampaigns']->toArray());
         return view('vendor_manager.campaign_assign.list', $this->data);
+    }
+    public function show($id)
+    {
+
+        try {
+
+            $this->data['resultCampaign'] = $this->campaignRepository->find(base64_decode($id));
+
+            return view('vendor_manager.campaign_assign.show', $this->data);
+        } catch (\Exception $exception) {
+            return redirect()->route('vendor_manager.campaign_assign.list')->with('error', ['title' => 'Error while processing request', 'message' => 'Campaign details not found']);
+        }
     }
 
     public function store(Request $request): \Illuminate\Http\RedirectResponse

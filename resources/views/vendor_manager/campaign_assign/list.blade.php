@@ -84,7 +84,6 @@
                                     </div>
                                     <ul class="breadcrumb">
                                         <li class="breadcrumb-item"><a href="{{ route('vendor_manager.dashboard') }}"><i class="feather icon-home"></i></a></li>
-                                        <li class="breadcrumb-item"><a href="javascript:void(0);">Campaign Management</a></li>
                                         <li class="breadcrumb-item"><a href="javascript:void(0);">Campaign Assign</a></li>
                                     </ul>
                                 </div>

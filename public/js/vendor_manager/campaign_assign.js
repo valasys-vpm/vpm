@@ -43,7 +43,7 @@ $(function (){
             },
             {
                 render: function (data, type, row) {
-                    return '<a href="'+URL+'/vendor-manager/campaign-assign/view-details/'+btoa(row.id)+'" class="text-dark double-click" title="View campaign details">'+row.campaign.name+'</a>';
+                    return '<a href="'+URL+'/vendor-manager/campaign-assign/view-details/'+btoa(row.campaign.id)+'" class="text-dark double-click" title="View campaign details">'+row.campaign.name+'</a>';
                 }
             },
             {
@@ -100,7 +100,7 @@ $(function (){
                 render: function (data, type, row) {
                     let html = '';
 
-                    html += '<a href="'+URL+'/vendor-manager/campaign-assign/view-details/'+btoa(row.id)+'" class="btn btn-outline-info btn-rounded btn-sm" title="View Campaign Details"><i class="feather icon-eye mr-0"></i></a>';
+                    html += '<a href="'+URL+'/vendor-manager/campaign-assign/view-details/'+btoa(row.campaign.id)+'" class="btn btn-outline-info btn-rounded btn-sm" title="View Campaign Details"><i class="feather icon-eye mr-0"></i></a>';
 
                     return html;
                 }

@@ -90,7 +90,7 @@ $(function (){
                 orderable: false,
                 render: function (data, type, row) {
                     let html = '';
-                    html += '<a href="'+URL+'/vendor-manager/campaign/view-details/'+btoa(row.id)+'" class="btn btn-outline-info btn-rounded btn-sm" title="View Campaign Details"><i class="feather icon-eye mr-0"></i></a>';
+                    html += '<a href="'+URL+'/vendor-manager/campaign/view-details/'+btoa(row.campaign.id)+'" class="btn btn-outline-info btn-rounded btn-sm" title="View Campaign Details"><i class="feather icon-eye mr-0"></i></a>';
                     return html;
                 }
             },

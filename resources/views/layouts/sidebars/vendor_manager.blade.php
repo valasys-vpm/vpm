@@ -15,7 +15,7 @@
         </a>
     </li>
 
-    <li class="nav-item @if(in_array(Request::route()->getName(), array('vendor_manager.campaign_assign.list'))) active @endif">
+    <li class="nav-item @if(in_array(Request::route()->getName(), array('vendor_manager.campaign_assign.list','vendor_manager.campaign_assign.show'))) active @endif">
         <a href="{{ route('vendor_manager.campaign_assign.list') }}" class="nav-link">
             <span class="pcoded-micon"><i class="feather icon-shuffle"></i></span>
             <span class="pcoded-mtext">Campaign Assign</span>
