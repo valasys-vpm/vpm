@@ -34,6 +34,8 @@ function startCampaign(_id) {
             dataType: 'json',
             success: function (response) {
                 if(response.status === true) {
+                    $('#div-start-campaign').css('display', 'none');
+                    $('#div-manage-leads').css('display', 'block');
                     trigger_pnofify('success', 'Successful', 'Campaign Started.');
                 } else {
                     trigger_pnofify('error', 'Something went wrong', response.message);

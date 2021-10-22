@@ -5,6 +5,12 @@
     <!-- data tables css -->
     <link rel="stylesheet" href="{{asset('public/template/assets/plugins/data-tables/css/datatables.min.css')}}">
     <meta name="ca-agent-id" content="{{ base64_encode($resultCAAgent->id) }}">
+
+    <style>
+        .table td{
+            padding: 5px 10px !important;
+        }
+    </style>
 @append
 
 @section('content')
@@ -43,7 +49,7 @@
                                             <h5>Lead Details</h5>
                                             <div class="float-right">
                                                 <a href="{{ route('agent.lead.create', base64_encode($resultCAAgent->id)) }}">
-                                                    <button type="button" class="btn btn-primary btn-square btn-sm"><i class="feather icon-plus"></i>New Lead</button>
+                                                    <button autofocus type="button" class="btn btn-primary btn-square btn-sm"><i class="feather icon-plus"></i>Add New Lead</button>
                                                 </a>
                                             </div>
                                         </div>
@@ -71,7 +77,7 @@
                                                         <th>LinkedIn Profile URL</th>
                                                         <th>LinkedIn Profile SN URL</th>
                                                         <th>Created At</th>
-                                                        <th>Action</th>
+
                                                     </tr>
                                                     </thead>
                                                     <tbody>

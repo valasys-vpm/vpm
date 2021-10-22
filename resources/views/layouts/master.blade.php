@@ -35,6 +35,7 @@
     @yield('stylesheet')
 
     <link rel="stylesheet" href="{{ asset('public/template') }}/assets/css/style.css">
+    <link rel="stylesheet" href="{{ asset('public/css') }}/custom.css">
 
     @yield('style')
 </head>

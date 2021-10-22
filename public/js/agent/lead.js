@@ -27,74 +27,72 @@ $(function (){
         },
         "columns": [
             {
-                data: 'campaign.campaign_id'
+                data: 'first_name'
+            },
+            {
+                data: 'last_name'
+            },
+            {
+                data: 'company_name'
+            },
+            {
+                data: 'email_address'
+            },
+            {
+                data: 'phone_number'
+            },
+            {
+                data: 'address_1'
+            },
+            {
+                data: 'address_2'
+            },
+            {
+                data: 'city'
+            },
+            {
+                data: 'state'
+            },
+            {
+                data: 'zipcode'
+            },
+            {
+                data: 'country'
+            },
+            {
+                data: 'employee_size'
+            },
+            {
+                data: 'revenue'
+            },
+            {
+                data: 'company_domain'
+            },
+            {
+                data: 'website'
+            },
+            {
+                data: 'company_linkedin_url'
+            },
+            {
+                data: 'linkedin_profile_link'
+            },
+            {
+                data: 'linkedin_profile_sn_link'
             },
             {
                 render: function (data, type, row) {
-                    return '<a href="'+URL+'/agent/campaign/view-details/'+btoa(row.id)+'" class="text-dark double-click" title="View campaign details">'+row.campaign.name+'</a>';
+                    return moment(row.created_at).format('YYYY-MM-DD HH:mm:ss');
                 }
-            },
-            {
-                render: function (data, type, row) {
-                    let deliver_count = 0;
-                    let allocation = row.allocation;
-                    let percentage = (deliver_count/allocation)*100;
-
-                    percentage = percentage.toFixed(2);
-                    return '<div class="progress" style="height: 20px;width:100px;border:1px solid lightgrey;"><div class="progress-bar '+ (parseInt(percentage) < 100 ? 'bg-warning text-dark' : 'bg-success text-light' ) +'" role="progressbar" aria-valuenow="'+percentage+'" aria-valuemin="0" aria-valuemax="100" style="width: '+percentage+'%;font-weight:bold;">&nbsp;'+percentage+'%</div></div>';
-                }
-            },
-            {
-                render: function (data, type, row) {
-                    let date = new Date(row.campaign.start_date);
-                    return (date.getDate() <= 9 ? '0'+date.getDate() : date.getDate())+'/'+MONTHS[date.getMonth()]+'/'+date.getFullYear();
-                }
-            },
-            {
-                render: function (data, type, row) {
-                    let date = new Date(row.display_date);
-                    return (date.getDate() <= 9 ? '0'+date.getDate() : date.getDate())+'/'+MONTHS[date.getMonth()]+'/'+date.getFullYear();
-                }
-            },
-            {
-                render: function (data, type, row) {
-                    let deliver_count = 0;
-                    let allocation = row.allocation;
-                    let shortfall_count = 0;
-
-                    if(shortfall_count) {
-                        return deliver_count + ' <span class="text-danger" title="Shortfall Count">('+ shortfall_count +')</span>'+' / '+ allocation;
-                    } else {
-                        return deliver_count + ' / '+ allocation;
-                    }
-
-                }
-            },
-            {
-                render: function (data, type, row) {
-                    let status_id  = row.campaign.campaign_status_id;
-                    let campaign_type = '';
-                    if(row.campaign.parent_id) {
-                        campaign_type = ' (Incremental)'
-                    }
-                    switch (status_id) {
-                        case 1: return '<span class="badge badge-pill badge-success" style="padding: 5px;min-width:50px;"> Live'+campaign_type+' </span>';
-                        case 2: return '<span class="badge badge-pill badge-warning" style="padding: 5px;min-width:50px;"> Paused'+campaign_type+' </span>';
-                        case 3: return '<span class="badge badge-pill badge-danger" style="padding: 5px;min-width:50px;"> Cancelled'+campaign_type+' </span>';
-                        case 4: return '<span class="badge badge-pill badge-primary" style="padding: 5px;min-width:50px;"> Delivered'+campaign_type+' </span>';
-                        case 5: return '<span class="badge badge-pill badge-success" style="padding: 5px;min-width:50px;"> Reactivated'+campaign_type+' </span>';
-                        case 6: return '<span class="badge badge-pill badge-secondary" style="padding: 5px;min-width:50px;"> Shortfall'+campaign_type+' </span>';
-                    }
-                }
-            },
+            }/*,
             {
                 orderable: false,
                 render: function (data, type, row) {
                     let html = '';
-                    html += '<a href="'+URL+'/agent/campaign/view-details/'+btoa(row.id)+'" class="btn btn-outline-info btn-rounded btn-sm" title="View Campaign Details"><i class="feather icon-eye mr-0"></i></a>';
+                    html += '<a href="'+URL+'/agent/lead/view-details/'+btoa(row.id)+'" class="btn btn-outline-info btn-rounded btn-sm" title="View Campaign Details"><i class="feather icon-eye mr-0"></i></a>';
                     return html;
                 }
-            },
+            },*/
         ],
         "fnDrawCallback": function (nRow, aData, iDisplayIndex, iDisplayIndexFull) {
             $('.dark-left-toolbar').each(function() {

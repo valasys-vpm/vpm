@@ -12,4 +12,12 @@ Route::prefix('lead')->name('lead.')->group(function()
 
     Route::any('/start-campaign/{id}', [App\Http\Controllers\Agent\LeadController::class, 'startCampaign'])->name('start_campaign');
 
+    //Validate Suppression
+    Route::any('/check-suppression-email/{id}', [App\Http\Controllers\Agent\LeadController::class, 'checkSuppressionEmail'])->name('check_suppression_email');
+    Route::any('/check-suppression-domain/{id}', [App\Http\Controllers\Agent\LeadController::class, 'checkSuppressionDomain'])->name('check_suppression_domain');
+    Route::any('/check-suppression-account-name/{id}', [App\Http\Controllers\Agent\LeadController::class, 'checkSuppressionAccountName'])->name('check_suppression_account_name');
+
+    //Validate Target List
+    Route::any('/check-target-domain/{id}', [App\Http\Controllers\Agent\LeadController::class, 'checkTargetDomain'])->name('check_target_domain');
+
 });
