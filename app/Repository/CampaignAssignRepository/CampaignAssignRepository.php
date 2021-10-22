@@ -5,8 +5,10 @@ namespace App\Repository\CampaignAssignRepository;
 use App\Models\Campaign;
 use App\Models\CampaignAssignAgent;
 use App\Models\CampaignAssignRATL;
+use App\Models\CampaignAssignVendor;
 use App\Models\CampaignAssignVendorManager;
 use App\Models\User;
+use App\Models\Vendor;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -79,6 +81,28 @@ class CampaignAssignRepository implements CampaignAssignInterface
         return $query->get();
     }
 
+    public function getAssignedCampaignToVendors($id, $filters = array())
+    {
+        //get Vendor's list
+        $resultVendors = Vendor::whereStatus(1)->get();
+        $resultAssignedCampaigns = array();
+        //get campaigns already assigned to agents
+        $result['VENDOR'] = CampaignAssignVendor::select('campaign_id')
+            ->whereIn('vendor_id', $resultVendors->pluck('id')->toArray())
+            ->whereStatus(1)
+            ->get();
+
+        if(!empty($result['VENDOR'])) {
+            $resultAssignedCampaigns = array_unique (array_merge ($resultAssignedCampaigns, $result['VENDOR']->pluck('campaign_id')->toArray()));
+        }
+
+        $query = CampaignAssignVendorManager::query();
+        $query->with('campaign');
+        $query->whereUserId($id);
+        $query->whereIn('campaign_id', $resultAssignedCampaigns);
+        return $query->get();
+    }
+
     public function getCampaignToAssignForTL($id, $filters = array())
     {
         //get TL's member list
@@ -96,6 +120,29 @@ class CampaignAssignRepository implements CampaignAssignInterface
         }
 
         $query = CampaignAssignRATL::query();
+        $query->with('campaign');
+        $query->whereUserId($id);
+        $query->whereNotIn('campaign_id', $resultAssignedCampaigns);
+        return $query->get();
+    }
+
+    public function getCampaignToAssignForVM($id, $filters = array())
+    {
+        //get Vendor's member list
+        $resultVendors = Vendor::whereStatus(1)->get();
+
+        $resultAssignedCampaigns = array();
+        //get campaigns already assigned to agents
+        $result['VENDOR'] = CampaignAssignVendor::select('campaign_id')
+            ->whereIn('vendor_id', $resultVendors->pluck('id')->toArray())
+            ->whereStatus(1)
+            ->get();
+
+        if(!empty($result['VENDOR'])) {
+            $resultAssignedCampaigns = array_unique (array_merge ($resultAssignedCampaigns, $result['VENDOR']->pluck('campaign_id')->toArray()));
+        }
+
+        $query = CampaignAssignVendorManager::query();
         $query->with('campaign');
         $query->whereUserId($id);
         $query->whereNotIn('campaign_id', $resultAssignedCampaigns);

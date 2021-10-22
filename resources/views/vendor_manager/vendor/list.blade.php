@@ -20,7 +20,7 @@
                                         <h5 class="m-b-10">Vendor Management</h5>
                                     </div>
                                     <ul class="breadcrumb">
-                                        <li class="breadcrumb-item"><a href="{{ route('vendor_management.dashboard') }}"><i class="feather icon-home"></i></a></li>
+                                        <li class="breadcrumb-item"><a href="{{ route('vendor_manager.dashboard') }}"><i class="feather icon-home"></i></a></li>
                                         <li class="breadcrumb-item"><a href="javascript:void(0);">Vendor Management</a></li>
                                     </ul>
                                 </div>
@@ -124,7 +124,7 @@
     <script src="{{ asset('public/template/assets/plugins/data-tables/js/datatables.min.js') }}"></script>
      <!-- jquery-validation Js -->
      <script src="{{ asset('public/template/assets/plugins/jquery-validation/js/jquery.validate.min.js') }}"></script>
-    <script src="{{ asset('public/js/vendor_management/vendor.js?='.time()) }}"></script>
+    <script src="{{ asset('public/js/vendor_manager/vendor.js?='.time()) }}"></script>
 @append
 
 

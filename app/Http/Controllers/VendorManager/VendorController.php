@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\VendorManagement;
+namespace App\Http\Controllers\VendorManager;
 
 use App\Http\Controllers\Controller;
 use App\Repository\VendorRepository\VendorRepository;
@@ -21,7 +21,7 @@ class VendorController extends Controller
 
     public function index()
     {
-        return view('vendor_management.vendor.list');
+        return view('vendor_manager.vendor.list');
     }
 
     public function store(Request $request)

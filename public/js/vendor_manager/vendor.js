@@ -9,7 +9,7 @@ $(function (){
         "processing": true,
         "serverSide": true,
         "ajax": {
-            "url": BASE_URL + '/vendor-management/vendor/get-vendors',
+            "url": BASE_URL + '/vendor-manager/vendor/get-vendors',
             data: {
                 filters: function (){
                     let obj = {
@@ -58,9 +58,9 @@ $(function (){
         if($("#modal-vendor-form").valid()) {
         let url = '';
         if($(this).text() === 'Save') {
-            url = BASE_URL + '/vendor-management/vendor/store';
+            url = BASE_URL + '/vendor-manager/vendor/store';
         } else if ($(this).text() === 'Update') {
-            url = BASE_URL + '/vendor-management/vendor/update/'+$('#id').val();
+            url = BASE_URL + '/vendor-manager/vendor/update/'+$('#id').val();
         } else {
             resetModalForm();
             trigger_pnofify('error', 'Something went wrong', 'Please try again');
@@ -165,7 +165,7 @@ function editVendor(id)
 {
     $.ajax({
         type: 'post',
-        url: BASE_URL + '/vendor-management/vendor/edit/'+btoa(id),
+        url: BASE_URL + '/vendor-manager/vendor/edit/'+btoa(id),
         dataType: 'json',
         success: function (response) {
             if(response.status === true) {
@@ -192,7 +192,7 @@ function deleteVendor(id)
     if(confirm('Are you sure to delete this vendor?')) {
         $.ajax({
             type: 'post',
-            url: BASE_URL + '/vendor-management/vendor/destroy/'+btoa(id),
+            url: BASE_URL + '/vendor-manager/vendor/destroy/'+btoa(id),
             dataType: 'json',
             success: function (response) {
                 if(response.status === true) {
