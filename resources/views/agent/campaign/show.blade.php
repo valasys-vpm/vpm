@@ -275,19 +275,20 @@
                                     </div>
 
                                     <div class="row mb-4">
-                                        <div class="col-md-3">
+                                        <div id="div-start-campaign" class="col-md-3" @if(!empty($resultCAAgent->started_at)) style="display: none;" @endif>
                                             <button type="button" class="btn btn-success btn-sm btn-square w-100" onclick="startCampaign('{{ base64_encode($resultCAAgent->id) }}');">Start Campaign</button>
                                         </div>
-                                        <div class="col-md-3">
+                                        <div id="div-manage-leads" class="col-md-3" @if(empty($resultCAAgent->started_at)) style="display: none;" @endif>
                                             <a href="{{ route('agent.lead.list', base64_encode($resultCAAgent->id)) }}">
                                                 <button type="button" class="btn btn-primary btn-sm btn-square w-100">Manage Leads</button>
                                             </a>
                                         </div>
+
                                         <div class="col-md-3">
-                                            <button type="button" class="btn btn-info btn-sm btn-square w-100">Click Me</button>
+                                            <button type="button" class="btn btn-info btn-sm btn-square w-100">Get Data</button>
                                         </div>
                                         <div class="col-md-3">
-                                            <button type="button" class="btn btn-danger btn-sm btn-square w-100">Click Me</button>
+                                            <button type="button" class="btn btn-danger btn-sm btn-square w-100">Submit Campaign</button>
                                         </div>
                                     </div>
 

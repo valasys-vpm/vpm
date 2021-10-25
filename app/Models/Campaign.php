@@ -32,6 +32,36 @@ class Campaign extends Model
         return $this->hasMany(CampaignSpecification::class, 'campaign_id', 'id');
     }
 
+    public function campaignFiles(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(CampaignFile::class, 'campaign_id', 'id');
+    }
+
+    public function suppressionEmails(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(SuppressionEmail::class, 'campaign_id', 'id');
+    }
+
+    public function suppressionDomains(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(SuppressionDomain::class, 'campaign_id', 'id');
+    }
+
+    public function suppressionAccountNames(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(SuppressionAccountName::class, 'campaign_id', 'id');
+    }
+
+    public function targetDomains(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(TargetDomain::class, 'campaign_id', 'id');
+    }
+
+    public function targetAccountNames(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(TargetAccountName::class, 'campaign_id', 'id');
+    }
+
     public function pacingDetails()
     {
         return $this->hasMany(PacingDetail::class, 'campaign_id', 'id');

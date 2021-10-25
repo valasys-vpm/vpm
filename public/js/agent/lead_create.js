@@ -25,7 +25,7 @@ $(function (){
 
         if(value.length>0) {
             if(value.trim().length>0) {
-                $(element).val(value.trim())
+                //$(element).val(value.trim())
                 return true;
             } else {
                 $(element).val('');
@@ -36,6 +36,40 @@ $(function (){
         }
     }, "Please enter data");
 
+    //Validator f() Target Domain
+    $.validator.addMethod(
+        "remote_suppression_domain",
+        function(value, element) {
+            let data;
+            $.ajax({
+                url: URL + '/agent/lead/check-suppression-domain/' + $('#ca_agent_id').val(),
+                data: {
+                    company_domain: value
+                },
+                dataType: 'json',
+                async: false,
+                success: function(response) { data = response }
+            });
+            return data;
+        }
+    );
+    $.validator.addMethod(
+        "remote_target_domain",
+        function(value, element) {
+            let data;
+            $.ajax({
+                url: URL + '/agent/lead/check-target-domain/' + $('#ca_agent_id').val(),
+                data: {
+                    company_domain: value
+                },
+                dataType: 'json',
+                async: false,
+                success: function(response) { data = response }
+            });
+            return data;
+        }
+    );
+
     //Validate Form
     $("#form-lead-create").validate({
         ignore: [],
@@ -43,8 +77,30 @@ $(function (){
         rules: {
             'first_name' : { required : true,non_empty_value: true },
             'last_name' : { required : true,non_empty_value: true },
-            'company_name' : { required : true,non_empty_value: true },
-            'email_address' : { required : true,non_empty_value: true },
+            'company_name' : {
+                required : true,
+                non_empty_value: true,
+                remote : {
+                    url : URL + '/agent/lead/check-suppression-account-name/' + $('#ca_agent_id').val(),
+                    data : {
+                        company_name : function(){
+                            return $("#company_name").val();
+                        },
+                    }
+                }
+            },
+            'email_address' : {
+                required : true,
+                non_empty_value: true,
+                remote : {
+                    url : URL + '/agent/lead/check-suppression-email/' + $('#ca_agent_id').val(),
+                    data : {
+                        email_address : function(){
+                            return $("#email_address").val();
+                        },
+                    }
+                }
+            },
             'specific_title' : { required : true,non_empty_value: true },
             'phone_number' : { required : true,non_empty_value: true },
             'address_1' : { required : true,non_empty_value: true },
@@ -54,7 +110,12 @@ $(function (){
             'country' : { required : true,non_empty_value: true },
             'employee_size' : { required : true,non_empty_value: true },
             'revenue' : { required : true,non_empty_value: true },
-            'company_domain' : { required : true,non_empty_value: true },
+            'company_domain' : {
+                required : true,
+                non_empty_value: true,
+                remote_suppression_domain: true,
+                remote_target_domain: true
+            },
             'company_linkedin_url' : { required : true,non_empty_value: true },
             'linkedin_profile_link' : { required : true,non_empty_value: true },
 
@@ -62,8 +123,14 @@ $(function (){
         messages: {
             'first_name' : { required : "Please enter first name" },
             'last_name' : { required : "Please enter last name" },
-            'company_name' : { required : "Please enter company name" },
-            'email_address' : { required : "Please enter email address" },
+            'company_name' : {
+                required : "Please enter company name",
+                remote: "Client suppression! Target another prospect"
+            },
+            'email_address' : {
+                required : "Please enter email address",
+                remote: "Client suppression! Target another prospect"
+            },
             'specific_title' : { required : "Please enter title" },
             'phone_number' : { required : "Please enter phone number" },
             'address_1' : { required : "Please enter address" },
@@ -73,7 +140,11 @@ $(function (){
             'country' : { required : "Please enter country" },
             'employee_size' : { required : "Please enter size" },
             'revenue' : { required : "Please enter revenue" },
-            'company_domain' : { required : "Please enter company domain" },
+            'company_domain' : {
+                required : "Please enter company domain",
+                remote_suppression_domain: "Client suppression! Target another prospect",
+                remote_target_domain: "Target Mismatch"
+            },
             'company_linkedin_url' : { required : "Please enter url" },
             'linkedin_profile_link' : { required : "Please enter link" },
 

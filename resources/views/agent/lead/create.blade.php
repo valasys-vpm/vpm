@@ -52,7 +52,7 @@
                                                 <div class="col-md-12">
                                                     <form id="form-lead-create" method="post" action="{{ route('agent.lead.store') }}">
                                                         @csrf
-                                                        <input type="hidden" id="ca_agent_id" name="ca_agent_id" value="{{ base64_encode($resultCAAgent->campaign_id) }}">
+                                                        <input type="hidden" id="ca_agent_id" name="ca_agent_id" value="{{ base64_encode($resultCAAgent->id) }}">
 
                                                         <div class="row">
                                                             <div class="col-md-4 form-group">

@@ -4,6 +4,11 @@ namespace App\Http\Controllers\Agent;
 
 use App\Http\Controllers\Controller;
 use App\Models\AgentLead;
+use App\Models\Campaign;
+use App\Models\SuppressionAccountName;
+use App\Models\SuppressionDomain;
+use App\Models\SuppressionEmail;
+use App\Models\TargetDomain;
 use App\Repository\AgentLeadRepository\AgentLeadRepository;
 use App\Repository\CampaignAssignRepository\AgentRepository\AgentRepository;
 use Illuminate\Http\Request;
@@ -111,5 +116,57 @@ class LeadController extends Controller
         );
 
         return response()->json($ajaxData);
+    }
+
+    public function checkSuppressionEmail($id, Request $request)
+    {
+        $resultCAAgent = $this->agentRepository->find(base64_decode($id));
+        $query = SuppressionEmail::query();
+        $query->whereCampaignId($resultCAAgent->campaign_id);
+        $query->whereEmail(trim($request->email_address));
+        if($query->exists()) {
+            return 'false';
+        } else {
+            return 'true';
+        }
+    }
+
+    public function checkSuppressionDomain($id, Request $request)
+    {
+        $resultCAAgent = $this->agentRepository->find(base64_decode($id));
+        $query = SuppressionDomain::query();
+        $query->whereCampaignId($resultCAAgent->campaign_id);
+        $query->whereDomain(trim($request->company_domain));
+        if($query->exists()) {
+            return 'false';
+        } else {
+            return 'true';
+        }
+    }
+
+    public function checkSuppressionAccountName($id, Request $request)
+    {
+        $resultCAAgent = $this->agentRepository->find(base64_decode($id));
+        $query = SuppressionAccountName::query();
+        $query->whereCampaignId($resultCAAgent->campaign_id);
+        $query->where('account_name', trim($request->company_name));
+        if($query->exists()) {
+            return 'false';
+        } else {
+            return 'true';
+        }
+    }
+
+    public function checkTargetDomain($id, Request $request)
+    {
+        $resultCAAgent = $this->agentRepository->find(base64_decode($id));
+        $query = TargetDomain::query();
+        $query->whereCampaignId($resultCAAgent->campaign_id);
+        $query->whereDomain(trim($request->company_domain));
+        if($query->exists()) {
+            return 'true';
+        } else {
+            return 'false';
+        }
     }
 }

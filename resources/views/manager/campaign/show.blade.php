@@ -66,6 +66,7 @@
                                             </div>
                                         </div>
                                     </div>
+
                                     <div class="card">
                                         <div class="card-header">
                                             <h5>Campaign Details</h5>
@@ -132,6 +133,43 @@
                                                     </li>
                                                 @endforelse
 
+                                            </ul>
+                                        </div>
+                                    </div>
+
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h5>Campaign Files</h5>
+                                            <br><small>Suppression/Target List</small>
+                                            @if($resultCampaign->campaignFiles->count() < 5)
+                                                <div class="card-header-right">
+                                                    <button class="btn btn-primary btn-sm btn-square pt-1 pb-1" data-toggle="modal" data-target="#modal-attach-campaign-file" style=""><i class="feather icon-plus mr-0"></i> Attach</button>
+                                                </div>
+                                            @endif
+                                        </div>
+                                        <div class="card-block task-attachment">
+                                            <ul class="media-list p-0" id="campaign-file-ul">
+                                                @if($resultCampaign->campaignFiles->count())
+                                                    @foreach($resultCampaign->campaignFiles as $campaignFile)
+                                                        <li class="media d-flex m-b-15 campaign-file-li">
+                                                            <div class="m-r-20 file-attach">
+                                                                <i class="far fa-file f-28 text-muted"></i>
+                                                            </div>
+                                                            <div class="media-body">
+                                                                <a href="{{ url('public/storage/campaigns/'.$resultCampaign->campaign_id.'/'.$campaignFile->file_name) }}" class="double-click" target="_blank" download data-toggle="tooltip" data-placement="top" data-original-title="{{ $campaignFile->file_name }}"><span class="m-b-5 d-block text-primary">@if(strlen($campaignFile->file_name) < 30) {{ $campaignFile->file_name }} @else {{ substr($campaignFile->file_name, 0, 27).'...' }} @endif</span></a>
+                                                            </div>
+                                                            <div class="float-right text-muted" style="display: none;">
+                                                                <a href="javascript:void(0);" onclick="removeSuppression(this, '{{base64_encode($campaignFile->id)}}');"><i class="fas fa-times f-24 text-danger"></i></a>
+                                                            </div>
+                                                        </li>
+                                                    @endforeach
+                                                @else
+                                                    <li class="media d-flex m-b-15">
+                                                        <div class="media-body">
+                                                            <a href="javascript:void(0);" class="m-b-5 d-block text-warning">No File Attached</a>
+                                                        </div>
+                                                    </li>
+                                                @endif
                                             </ul>
                                         </div>
                                     </div>
@@ -541,6 +579,85 @@
                             </div>
                             <button type="reset" class="btn btn-secondary btn-square float-right">Clear</button>
                             <button id="modal-form-attach-specification-submit" type="button" class="btn btn-primary btn-square float-right">Upload</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-attach-campaign-file" class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Attach Campaign Files</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body">
+                    <div class="col-md-12">
+                        <form id="modal-form-attach-campaign-file" enctype="multipart/form-data">
+                            @csrf
+                            @php
+                                $campaignFileFlag['suppression_email'] = 1;
+                                $campaignFileFlag['suppression_domain'] = 1;
+                                $campaignFileFlag['suppression_account_name'] = 1;
+                                $campaignFileFlag['target_domain'] = 1;
+                                $campaignFileFlag['target_account_name'] = 1;
+                            @endphp
+                            @if($resultCampaign->campaignFiles->count())
+                                @foreach($resultCampaign->campaignFiles as $campaignFile)
+                                    @switch($campaignFile->file_type)
+                                        @case('suppression_email') @php $campaignFileFlag['suppression_email'] = 0; @endphp @break
+                                        @case('suppression_domain') @php $campaignFileFlag['suppression_domain'] = 0; @endphp @break
+                                        @case('suppression_account_name') @php $campaignFileFlag['suppression_account_name'] = 0; @endphp @break
+                                        @case('target_domain') @php $campaignFileFlag['target_domain'] = 0; @endphp @break
+                                        @case('target_account_name') @php $campaignFileFlag['target_account_name'] = 0; @endphp @break
+                                    @endswitch
+                                @endforeach
+                            @else
+                                @php
+                                    $campaignFileFlag['suppression_email'] = 1;
+                                    $campaignFileFlag['suppression_domain'] = 1;
+                                    $campaignFileFlag['suppression_account_name'] = 1;
+                                    $campaignFileFlag['target_domain'] = 1;
+                                    $campaignFileFlag['target_account_name'] = 1;
+                                @endphp
+                            @endif
+                            <div class="row">
+                                @if($campaignFileFlag['suppression_email'])
+                                <div class="col-md-4 form-group">
+                                    <label for="suppression_email">Email Suppression</label>
+                                    <input type="file" class="form-control-file btn btn-outline-success btn btn-square" id="suppression_email" name="suppression_email">
+                                </div>
+                                @endif
+                                @if($campaignFileFlag['suppression_domain'])
+                                <div class="col-md-4 form-group">
+                                    <label for="suppression_domain">Domain Suppression</label>
+                                    <input type="file" class="form-control-file btn btn-outline-success btn btn-square" id="suppression_domain" name="suppression_domain">
+                                </div>
+                                @endif
+                                @if($campaignFileFlag['suppression_account_name'])
+                                <div class="col-md-4 form-group">
+                                    <label for="suppression_account_name">Account Suppression</label>
+                                    <input type="file" class="form-control-file btn btn-outline-success btn btn-square" id="suppression_account_name" name="suppression_account_name">
+                                </div>
+                                @endif
+                                @if($campaignFileFlag['target_domain'])
+                                    <div class="col-md-4 form-group">
+                                        <label for="target_domain">Domain Target List</label>
+                                        <input type="file" class="form-control-file btn btn-outline-secondary btn btn-square" id="target_domain" name="target_domain">
+                                    </div>
+                                @endif
+                                @if($campaignFileFlag['target_account_name'])
+                                    <div class="col-md-4 form-group">
+                                        <label for="target_account_name">Account Target List</label>
+                                        <input type="file" class="form-control-file btn btn-outline-secondary btn btn-square" id="target_account_name" name="target_account_name">
+                                    </div>
+                                @endif
+                            </div>
+
+                            <button type="reset" class="btn btn-secondary btn-square float-right">Clear</button>
+                            <button id="modal-form-attach-campaign-file-submit" type="button" class="btn btn-primary btn-square float-right">Upload</button>
                         </form>
                     </div>
                 </div>

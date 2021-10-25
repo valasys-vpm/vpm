@@ -101,6 +101,8 @@ $(function (){
                     let html = '';
 
                     html += '<a href="'+URL+'/vendor-manager/campaign-assign/view-details/'+btoa(row.campaign.id)+'" class="btn btn-outline-info btn-rounded btn-sm" title="View Campaign Details"><i class="feather icon-eye mr-0"></i></a>';
+                    html += '<a href="javascript:void(0)" class="btn btn-outline-info btn-rounded btn-sm" title="Lead Sent" onclick="leadSent(\''+ btoa(row.campaign.id) +'\')"><i class="feather icon-user-plus mr-0"></i></a>';
+                    html += '<a href="javascript:void(0)" class="btn btn-outline-info btn-rounded btn-sm" title="Lead Approved" onclick="leadApproved(\''+ btoa(row.campaign.id) +'\')"><i class="feather icon-user-check mr-0"></i></a>';
 
                     return html;
                 }
@@ -196,10 +198,6 @@ function getCampaignCard_html(_campaign_id, _vendor_list) {
         '                   <div class="col-md-5"><h6 class="card-title">End Date</h6></div>' +
         '                   <div class="col-md-7"><h6 class="card-title">: '+$("#campaign_list_"+_campaign_id).data('end-date')+'</h6></div>' +
         '               </div>' +
-        // '               <div class="row">' +
-        // '                   <div class="col-md-5"><h6 class="card-title">Select Reporting Format File</h6></div>' +
-        // '                   <div class="col-md-7"><h6 class="card-title">: <input type="file" name="data[0][reporting_file]"></h6></div>' +
-        // '               </div>' +
         '           </div>' +
         '           <div class="col-md-6 border-left">' +
         '               <h5 class="card-title mb-2">Vendor(s) to Assign</h5>' +
@@ -229,3 +227,16 @@ function getUserAssignCard_html(_key, _vendor_list, allocation, balance_allocati
 
     return html;
 }
+
+function leadSent(id){
+    $("#modal-lead-sent").modal('show');
+    $('.campaign_id').val(id);
+    $('#lead_sent').val('')
+}
+
+function leadApproved(id){
+    $("#modal-lead-approved").modal('show');
+    $('.campaign_id').val(id);
+    $('#lead_approved').val('')
+}
+

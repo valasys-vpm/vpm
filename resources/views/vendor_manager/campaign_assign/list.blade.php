@@ -189,6 +189,7 @@
         </div>
     </section>
 
+    <!--  Modal campaign assign  -->
     <div id="modal-campaign-assign" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog modal-xl" role="document">
             <div class="modal-content">
@@ -207,6 +208,66 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
                         <button type="submit" class="btn btn-primary" id="btn-submit-campaign-user-assign">Assign</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!--  Modal lead sent  -->
+    <div id="modal-lead-sent" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <form id="form-lead-sent" method="post" action="" enctype="multipart/form-data">
+                    @csrf
+                    <input type="hidden" class="campaign_id" id="campaign_id" name="campaign_id" value="">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Lead Sent</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-12 form-group">
+                                <label for="lead_sent">Lead Sent<span class="text-danger">*</span></label>
+                                <input autofocus type="number" class="form-control btn-square" id="lead_sent" name="lead_sent" placeholder="Enter lead sent count">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary" id="btn-submit-lead-sent">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!--  Modal lead approved  -->
+    <div id="modal-lead-approved" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <form id="form-lead-approved" method="post" action="" enctype="multipart/form-data">
+                    @csrf
+                    <input type="hidden" class="campaign_id" id="campaign_id" name="campaign_id" value="">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Lead Approved</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-12 form-group">
+                                <label for="lead_approved">Lead Approved<span class="text-danger">*</span></label>
+                                <input autofocus type="number" class="form-control btn-square" id="lead_approved" name="lead_approved" placeholder="Enter lead approved count">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary" id="btn-submit-lead-sent">Save</button>
                     </div>
                 </form>
             </div>

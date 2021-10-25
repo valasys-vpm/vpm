@@ -4,24 +4,53 @@ namespace App\Repository\CampaignRepository;
 
 use App\Models\Campaign;
 use App\Models\CampaignCountry;
+use App\Models\CampaignFile;
 use App\Models\CampaignSpecification;
 use App\Models\PacingDetail;
+use App\Repository\CampaignFile\CampaignFileRepository;
 use App\Repository\CampaignTypeRepository\CampaignTypeRepository;
 use App\Models\SiteSetting;
+
+use App\Repository\Suppression\AccountName\AccountNameRepository as SuppressionAccountNameRepository;
+use App\Repository\Suppression\Domain\DomainRepository as SuppressionDomainRepository;
+use App\Repository\Suppression\Email\EmailRepository as SuppressionEmailRepository;
+
+use App\Repository\Target\AccountName\AccountNameRepository as TargetAccountNameRepository;
+use App\Repository\Target\Domain\DomainRepository as TargetDomainRepository;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 
 class CampaignRepository implements CampaignInterface
 {
     private $campaign;
     private $campaignTypeRepository;
+    private $campaignFileRepository;
+    private $suppressionEmailRepository;
+    private $suppressionDomainRepository;
+    private $suppressionAccountNameRepository;
+    private $targetDomainRepository;
+    private $targetAccountNameRepository;
+
 
     public function __construct(
         Campaign $campaign,
-        CampaignTypeRepository $campaignTypeRepository
+        CampaignTypeRepository $campaignTypeRepository,
+        CampaignFileRepository $campaignFileRepository,
+        SuppressionEmailRepository $suppressionEmailRepository,
+        SuppressionDomainRepository $suppressionDomainRepository,
+        SuppressionAccountNameRepository $suppressionAccountNameRepository,
+        TargetDomainRepository $targetDomainRepository,
+        TargetAccountNameRepository $targetAccountNameRepository
     )
     {
         $this->campaign = $campaign;
         $this->campaignTypeRepository = $campaignTypeRepository;
+        $this->campaignFileRepository = $campaignFileRepository;
+        $this->suppressionEmailRepository = $suppressionEmailRepository;
+        $this->suppressionDomainRepository = $suppressionDomainRepository;
+        $this->suppressionAccountNameRepository = $suppressionAccountNameRepository;
+        $this->targetDomainRepository = $targetDomainRepository;
+        $this->targetAccountNameRepository = $targetAccountNameRepository;
     }
 
     public function get($filters = array())
@@ -42,6 +71,7 @@ class CampaignRepository implements CampaignInterface
 
     public function store($attributes)
     {
+        //dd($attributes);
         $response = array('status' => FALSE, 'message' => 'Something went wrong, please try again.');
         try {
             DB::beginTransaction();
@@ -115,6 +145,108 @@ class CampaignRepository implements CampaignInterface
                     CampaignSpecification::insert($insertCampaignSpecifications);
                 }
 
+                //Save Suppression Email
+                if(isset($attributes['suppression_email']) && !empty($attributes['suppression_email'])) {
+                    $file = $attributes['suppression_email'];
+                    $responseSuppressionEmail = $this->suppressionEmailRepository->bulkUpload($campaign->id, $file);
+                    if($responseSuppressionEmail['status'] == FALSE) {
+                        $responseFlag  = 0;
+                        throw new \Exception('Something went wrong, please try again.', 1);
+                    }
+                    $path = 'public/campaigns/'.$campaign->campaign_id;
+                    $result  = $file->storeAs($path, $file->getClientOriginalName());
+                    $attributesCampaignFile = array(
+                        'campaign_id' => $campaign->id,
+                        'file_type' => 'suppression_email',
+                        'file_name' => $file->getClientOriginalName(),
+                        'extension' => $file->getClientOriginalExtension(),
+                    );
+                    $responseCampaignFile = $this->campaignFileRepository->store($attributesCampaignFile);
+                    if($responseCampaignFile['status'] == FALSE) {
+                        throw new \Exception('Something went wrong, please try again.', 1);
+                    }
+                }
+                //Save Suppression Domain
+                if(isset($attributes['suppression_domain']) && !empty($attributes['suppression_domain'])) {
+                    $file = $attributes['suppression_domain'];
+                    $responseSuppressionDomain = $this->suppressionDomainRepository->bulkUpload($campaign->id, $file);
+                    if($responseSuppressionDomain['status'] == FALSE) {
+                        throw new \Exception('Something went wrong, please try again.', 1);
+                    }
+                    $path = 'public/campaigns/'.$campaign->campaign_id;
+                    $result  = $file->storeAs($path, $file->getClientOriginalName());
+                    $attributesCampaignFile = array(
+                        'campaign_id' => $campaign->id,
+                        'file_type' => 'suppression_domain',
+                        'file_name' => $file->getClientOriginalName(),
+                        'extension' => $file->getClientOriginalExtension(),
+                    );
+                    $responseCampaignFile = $this->campaignFileRepository->store($attributesCampaignFile);
+                    if($responseCampaignFile['status'] == FALSE) {
+                        throw new \Exception('Something went wrong, please try again.', 1);
+                    }
+                }
+                //Save Suppression Account Name
+                if(isset($attributes['suppression_account_name']) && !empty($attributes['suppression_account_name'])) {
+                    $file = $attributes['suppression_account_name'];
+                    $responseSuppressionAccountName = $this->suppressionAccountNameRepository->bulkUpload($campaign->id, $file);
+                    if($responseSuppressionAccountName['status'] == FALSE) {
+                        throw new \Exception('Something went wrong, please try again.', 1);
+                    }
+                    $path = 'public/campaigns/'.$campaign->campaign_id;
+                    $result  = $file->storeAs($path, $file->getClientOriginalName());
+                    $attributesCampaignFile = array(
+                        'campaign_id' => $campaign->id,
+                        'file_type' => 'suppression_account_name',
+                        'file_name' => $file->getClientOriginalName(),
+                        'extension' => $file->getClientOriginalExtension(),
+                    );
+                    $responseCampaignFile = $this->campaignFileRepository->store($attributesCampaignFile);
+                    if($responseCampaignFile['status'] == FALSE) {
+                        throw new \Exception('Something went wrong, please try again.', 1);
+                    }
+                }
+                //Save Target Domain
+                if(isset($attributes['target_domain']) && !empty($attributes['target_domain'])) {
+                    $file = $attributes['target_domain'];
+                    $responseTargetDomain = $this->targetDomainRepository->bulkUpload($campaign->id, $file);
+                    if($responseTargetDomain['status'] == FALSE) {
+                        throw new \Exception('Something went wrong, please try again.', 1);
+                    }
+                    $path = 'public/campaigns/'.$campaign->campaign_id;
+                    $result  = $file->storeAs($path, $file->getClientOriginalName());
+                    $attributesCampaignFile = array(
+                        'campaign_id' => $campaign->id,
+                        'file_type' => 'target_domain',
+                        'file_name' => $file->getClientOriginalName(),
+                        'extension' => $file->getClientOriginalExtension(),
+                    );
+                    $responseCampaignFile = $this->campaignFileRepository->store($attributesCampaignFile);
+                    if($responseCampaignFile['status'] == FALSE) {
+                        throw new \Exception('Something went wrong, please try again.', 1);
+                    }
+                }
+                //Save Target Account Name
+                if(isset($attributes['target_account_name']) && !empty($attributes['target_account_name'])) {
+                    $file = $attributes['target_account_name'];
+                    $responseTargetAccountName = $this->targetAccountNameRepository->bulkUpload($campaign->id, $file);
+                    if($responseTargetAccountName['status'] == FALSE) {
+                        throw new \Exception('Something went wrong, please try again.', 1);
+                    }
+                    $path = 'public/campaigns/'.$campaign->campaign_id;
+                    $result  = $file->storeAs($path, $file->getClientOriginalName());
+                    $attributesCampaignFile = array(
+                        'campaign_id' => $campaign->id,
+                        'file_type' => 'target_account_name',
+                        'file_name' => $file->getClientOriginalName(),
+                        'extension' => $file->getClientOriginalExtension(),
+                    );
+                    $responseCampaignFile = $this->campaignFileRepository->store($attributesCampaignFile);
+                    if($responseCampaignFile['status'] == FALSE) {
+                        throw new \Exception('Something went wrong, please try again.', 1);
+                    }
+                }
+
                 //Save Pacing Details/Sub-Allocation
                 if(isset($attributes['sub-allocation']) && !empty($attributes['sub-allocation'])) {
                     //Pacing Details
@@ -130,6 +262,7 @@ class CampaignRepository implements CampaignInterface
                     PacingDetail::insert($insertPacingDetails);
                     //--Pacing Details
                 }
+
                 DB::commit();
                 $response = array('status' => TRUE, 'message' => 'Campaign added successfully');
             } else {
@@ -137,7 +270,7 @@ class CampaignRepository implements CampaignInterface
             }
         } catch (\Exception $exception) {
             DB::rollBack();
-            dd($exception->getMessage());
+            //dd($exception->getMessage());
             $response = array('status' => FALSE, 'message' => 'Something went wrong, please try again.');
         }
         return $response;
@@ -307,6 +440,173 @@ class CampaignRepository implements CampaignInterface
             if(CampaignSpecification::insert($insertCampaignSpecifications)) {
                 $lastInserted = CampaignSpecification::whereIn('file_name', $fileNames)->get();
                 $response = array('status' => TRUE, 'message' => 'Campaign specification added successfully', 'data' => $lastInserted);
+                DB::commit();
+            } else {
+                throw new \Exception('Something went wrong, please try again.', 1);
+            }
+        } catch (\Exception $exception) {
+            DB::rollBack();
+            //dd($exception->getMessage());
+            $response = array('status' => FALSE, 'message' => 'Something went wrong, please try again.');
+        }
+        return $response;
+    }
+
+    public function updateCampaignFile($id, $attributes = array())
+    {
+        $response = array('status' => FALSE, 'message' => 'Something went wrong, please try again.');
+        try {
+            DB::beginTransaction();
+            $campaign = $this->find($id);
+            $responseFlag = 1;
+            $lastInserted = array();
+            //Save Suppression Email
+            if(isset($attributes['suppression_email']) && !empty($attributes['suppression_email'])) {
+                $file = $attributes['suppression_email'];
+                $responseSuppressionEmail = $this->suppressionEmailRepository->bulkUpload($campaign->id, $file);
+                if($responseSuppressionEmail['status'] == FALSE) {
+                    $responseFlag  = 0;
+                    throw new \Exception('Something went wrong, please try again.', 1);
+                }
+                $path = 'public/campaigns/'.$campaign->campaign_id;
+                $result  = $file->storeAs($path, $file->getClientOriginalName());
+                $attributesCampaignFile = array(
+                    'campaign_id' => $campaign->id,
+                    'file_type' => 'suppression_email',
+                    'file_name' => $file->getClientOriginalName(),
+                    'extension' => $file->getClientOriginalExtension(),
+                );
+                $resultCampaignFile = $this->campaignFileRepository->store($attributesCampaignFile);
+                if($resultCampaignFile['status'] == FALSE) {
+                    $responseFlag  = 0;
+                    throw new \Exception('Something went wrong, please try again.', 1);
+                } else {
+                    $lastInserted['suppression_email'] = CampaignFile::whereCampaignId($attributesCampaignFile['campaign_id'])
+                        ->whereFileType($attributesCampaignFile['file_type'])
+                        ->whereFileName($attributesCampaignFile['file_name'])
+                        ->with('campaign')
+                        ->first();
+                }
+            }
+
+            //Save Suppression Domain
+            if(isset($attributes['suppression_domain']) && !empty($attributes['suppression_domain'])) {
+                $file = $attributes['suppression_domain'];
+                $responseSuppressionDomain = $this->suppressionDomainRepository->bulkUpload($campaign->id, $file);
+                if($responseSuppressionDomain['status'] == FALSE) {
+                    $responseFlag  = 0;
+                    throw new \Exception('Something went wrong, please try again.', 1);
+                }
+                $path = 'public/campaigns/'.$campaign->campaign_id;
+                $result  = $file->storeAs($path, $file->getClientOriginalName());
+                $attributesCampaignFile = array(
+                    'campaign_id' => $campaign->id,
+                    'file_type' => 'suppression_domain',
+                    'file_name' => $file->getClientOriginalName(),
+                    'extension' => $file->getClientOriginalExtension(),
+                );
+                $responseCampaignFile = $this->campaignFileRepository->store($attributesCampaignFile);
+                if($responseCampaignFile['status'] == FALSE) {
+                    $responseFlag  = 0;
+                    throw new \Exception('Something went wrong, please try again.', 1);
+                } else {
+                    $lastInserted['suppression_domain'] = CampaignFile::whereCampaignId($attributesCampaignFile['campaign_id'])
+                        ->whereFileType($attributesCampaignFile['file_type'])
+                        ->whereFileName($attributesCampaignFile['file_name'])
+                        ->with('campaign')
+                        ->first();
+                }
+            }
+
+            //Save Suppression Account Name
+            if(isset($attributes['suppression_account_name']) && !empty($attributes['suppression_account_name'])) {
+                $file = $attributes['suppression_account_name'];
+                $responseSuppressionAccountName = $this->suppressionAccountNameRepository->bulkUpload($campaign->id, $file);
+                if($responseSuppressionAccountName['status'] == FALSE) {
+                    $responseFlag  = 0;
+                    throw new \Exception('Something went wrong, please try again.', 1);
+                }
+                $path = 'public/campaigns/'.$campaign->campaign_id;
+                $result  = $file->storeAs($path, $file->getClientOriginalName());
+                $attributesCampaignFile = array(
+                    'campaign_id' => $campaign->id,
+                    'file_type' => 'suppression_account_name',
+                    'file_name' => $file->getClientOriginalName(),
+                    'extension' => $file->getClientOriginalExtension(),
+                );
+                $responseCampaignFile = $this->campaignFileRepository->store($attributesCampaignFile);
+                if($responseCampaignFile['status'] == FALSE) {
+                    $responseFlag  = 0;
+                    throw new \Exception('Something went wrong, please try again.', 1);
+                } else {
+                    $lastInserted['suppression_account_name'] = CampaignFile::whereCampaignId($attributesCampaignFile['campaign_id'])
+                        ->whereFileType($attributesCampaignFile['file_type'])
+                        ->whereFileName($attributesCampaignFile['file_name'])
+                        ->with('campaign')
+                        ->first();
+                }
+            }
+
+            //Save Target Domain
+            if(isset($attributes['target_domain']) && !empty($attributes['target_domain'])) {
+                $file = $attributes['target_domain'];
+                $responseTargetDomain = $this->targetDomainRepository->bulkUpload($campaign->id, $file);
+                if($responseTargetDomain['status'] == FALSE) {
+                    $responseFlag  = 0;
+                    throw new \Exception('Something went wrong, please try again.', 1);
+                }
+                $path = 'public/campaigns/'.$campaign->campaign_id;
+                $result  = $file->storeAs($path, $file->getClientOriginalName());
+                $attributesCampaignFile = array(
+                    'campaign_id' => $campaign->id,
+                    'file_type' => 'target_domain',
+                    'file_name' => $file->getClientOriginalName(),
+                    'extension' => $file->getClientOriginalExtension(),
+                );
+                $responseCampaignFile = $this->campaignFileRepository->store($attributesCampaignFile);
+                if($responseCampaignFile['status'] == FALSE) {
+                    $responseFlag  = 0;
+                    throw new \Exception('Something went wrong, please try again.', 1);
+                } else {
+                    $lastInserted['target_domain'] = CampaignFile::whereCampaignId($attributesCampaignFile['campaign_id'])
+                        ->whereFileType($attributesCampaignFile['file_type'])
+                        ->whereFileName($attributesCampaignFile['file_name'])
+                        ->with('campaign')
+                        ->first();
+                }
+            }
+
+            //Save Target Account Name
+            if(isset($attributes['target_account_name']) && !empty($attributes['target_account_name'])) {
+                $file = $attributes['target_account_name'];
+                $responseTargetAccountName = $this->targetAccountNameRepository->bulkUpload($campaign->id, $file);
+                if($responseTargetAccountName['status'] == FALSE) {
+                    $responseFlag  = 0;
+                    throw new \Exception('Something went wrong, please try again.', 1);
+                }
+                $path = 'public/campaigns/'.$campaign->campaign_id;
+                $result  = $file->storeAs($path, $file->getClientOriginalName());
+                $attributesCampaignFile = array(
+                    'campaign_id' => $campaign->id,
+                    'file_type' => 'target_account_name',
+                    'file_name' => $file->getClientOriginalName(),
+                    'extension' => $file->getClientOriginalExtension(),
+                );
+                $responseCampaignFile = $this->campaignFileRepository->store($attributesCampaignFile);
+                if($responseCampaignFile['status'] == FALSE) {
+                    $responseFlag  = 0;
+                    throw new \Exception('Something went wrong, please try again.', 1);
+                } else {
+                    $lastInserted['target_account_name'] = CampaignFile::whereCampaignId($attributesCampaignFile['campaign_id'])
+                        ->whereFileType($attributesCampaignFile['file_type'])
+                        ->whereFileName($attributesCampaignFile['file_name'])
+                        ->with('campaign')
+                        ->first();
+                }
+            }
+
+            if($responseFlag) {
+                $response = array('status' => TRUE, 'message' => 'Campaign file(s) added successfully', 'data' => $lastInserted);
                 DB::commit();
             } else {
                 throw new \Exception('Something went wrong, please try again.', 1);
