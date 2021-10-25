@@ -16,9 +16,10 @@ class AgentLead extends Model
     {
         return $this->hasOne(Campaign::class, 'id', 'campaign_id');
     }
+
     public function agent()
     {
-        return $this->hasOne(User::class, 'id', 'user_id');
+        return $this->hasOne(User::class, 'id', 'agent_id');
     }
 
     public function ca_agent()

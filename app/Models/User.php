@@ -55,6 +55,8 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
+    protected $appends = ['full_name'];
+
     public function role(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
         return $this->hasOne(Role::class, 'id', 'role_id');
@@ -68,5 +70,10 @@ class User extends Authenticatable
     public function designation(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
         return $this->hasOne(Designation::class, 'id', 'designation_id');
+    }
+
+    public function getFullNameAttribute()
+    {
+        return $this->first_name.' '.$this->last_name;
     }
 }

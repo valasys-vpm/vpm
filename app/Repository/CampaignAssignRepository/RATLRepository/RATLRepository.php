@@ -24,13 +24,14 @@ class RATLRepository implements RATLInterface
 
     public function getAssignedAgentsByTL()
     {
-        
+
     }
 
     public function find($id)
     {
         $query = CampaignAssignRATL::query();
         $query->with('campaign');
+        $query->with('agents');
         return $query->findOrFail($id);
     }
 

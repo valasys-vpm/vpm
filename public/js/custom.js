@@ -1,3 +1,4 @@
+
 function checkSession(e){401==e.status&&location.reload()}
 
 $(".alert-auto-dismiss").fadeTo(5000,500).slideUp(500,function(){$(".alert-auto-dismiss").slideUp(500)});
@@ -76,5 +77,9 @@ function trigger_pnofify(type = 'default', title = '', message = '') {
 
 }
 /* --- END - Pnotify Custom Js --- */
+
+function downloadSampleFile(file_name) {
+    return window.location.href = $('meta[name="base-path"]').attr('content') + '/public/storage/sample/' + file_name;
+}
 
 

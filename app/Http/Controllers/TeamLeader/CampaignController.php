@@ -5,7 +5,9 @@ namespace App\Http\Controllers\TeamLeader;
 use App\Http\Controllers\Controller;
 use App\Models\Campaign;
 use App\Models\CampaignAssignRATL;
+use App\Repository\AgentLeadRepository\AgentLeadRepository;
 use App\Repository\CampaignAssignRepository\RATLRepository\RATLRepository;
+use App\Repository\CampaignRepository\CampaignRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -13,18 +15,32 @@ class CampaignController extends Controller
 {
     private $data;
     private $RATLRepository;
+    private $campaignRepository;
+    private $agentLeadRepository;
 
     public function __construct(
-        RATLRepository $RATLRepository
+        RATLRepository $RATLRepository,
+        CampaignRepository $campaignRepository,
+        AgentLeadRepository $agentLeadRepository
     )
     {
         $this->data = array();
         $this->RATLRepository = $RATLRepository;
+        $this->campaignRepository = $campaignRepository;
+        $this->agentLeadRepository = $agentLeadRepository;
     }
 
     public function index()
     {
         return view('team_leader.campaign.list');
+    }
+
+    public function show($id)
+    {
+        $this->data['resultCARATL'] = $this->RATLRepository->find(base64_decode($id));
+        $this->data['resultCampaign'] = $this->campaignRepository->find($this->data['resultCARATL']->campaign->id);
+
+        return view('team_leader.campaign.show', $this->data);
     }
 
     public function getCampaigns(Request $request): \Illuminate\Http\JsonResponse
@@ -83,6 +99,17 @@ class CampaignController extends Controller
         );
 
         return response()->json($ajaxData);
+    }
+
+    public function getAgentLeadDetails($ca_agent_id, Request $request): \Illuminate\Http\JsonResponse
+    {
+        $result = $this->agentLeadRepository->get(array('ca_agent_id' => base64_decode($ca_agent_id)));
+        //dd($result->toArray());
+        if(!empty($result)) {
+            return response()->json(array('status' => true, 'data' => $result));
+        } else {
+            return response()->json(array('status' => false, 'message' => 'Data not found'));
+        }
     }
 
 }

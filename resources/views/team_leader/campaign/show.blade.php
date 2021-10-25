@@ -17,6 +17,16 @@
             z-index: 99999999 !important;
         }
         .dtp{z-index:999999999 !important;}
+
+        #table-agents.table td {
+            padding: 10px 10px !important;
+            vertical-align: inherit !important;
+        }
+
+        #table-agent-lead-details.table td {
+            padding: 5px 10px !important;
+            vertical-align: inherit !important;
+        }
     </style>
 @append
 
@@ -31,14 +41,14 @@
                             <div class="row align-items-center">
                                 <div class="col-md-12">
                                     <div class="page-header-title">
-                                        <h5 class="m-b-10">Campaign Management</h5>
+                                        <h5 class="m-b-10">My Campaigns</h5>
                                         <div class="card-header-right mb-1" style="float: right;">
                                             {{-- <a href="{{ route('campaign') }}" class="btn btn-outline-dark btn-square btn-sm" style="font-weight: bold;"><i class="feather icon-arrow-left"></i>Back</a> --}}
                                         </div>
                                     </div>
                                     <ul class="breadcrumb">
-                                        <li class="breadcrumb-item"><a href="{{ route('manager.dashboard') }}"><i class="feather icon-home"></i></a></li>
-                                        <li class="breadcrumb-item"><a href="{{ route('manager.campaign.list') }}">Campaign Management</a></li>
+                                        <li class="breadcrumb-item"><a href="{{ route('team_leader.dashboard') }}"><i class="feather icon-home"></i></a></li>
+                                        <li class="breadcrumb-item"><a href="{{ route('team_leader.campaign.list') }}">My Campaigns</a></li>
                                         <li class="breadcrumb-item"><a href="javascript:void(0);">Campaign Details</a></li>
                                     </ul>
 
@@ -69,9 +79,6 @@
                                     <div class="card">
                                         <div class="card-header">
                                             <h5>Campaign Details</h5>
-                                            <div class="card-header-right">
-                                                <button type="button" class="btn btn-outline-primary btn-sm btn-square" onclick="editCampaignDetails()"><i class="feather icon-edit mr-0"></i> Edit</button>
-                                            </div>
                                         </div>
                                         <div class="card-block">
                                             <h6 class="text-muted f-w-300">Campaign Type: <span class="float-right">{{ $resultCampaign->campaignType->name }}</span></h6>
@@ -106,9 +113,6 @@
                                     <div class="card">
                                         <div class="card-header">
                                             <h5>Specifications</h5>
-                                            <div class="card-header-right">
-                                                <button class="btn btn-primary btn-sm btn-square pt-1 pb-1" data-toggle="modal" data-target="#modal-attach-specification" style=""><i class="feather icon-plus mr-0"></i> Attach</button>
-                                            </div>
                                         </div>
                                         <div class="card-block task-attachment">
                                             <ul class="media-list p-0" id="specification_ul">
@@ -119,9 +123,6 @@
                                                         </div>
                                                         <div class="media-body">
                                                             <a href="{{ url('public/storage/campaigns/'.$resultCampaign->campaign_id.'/'.$specification->file_name) }}" class="double-click" target="_blank" download data-toggle="tooltip" data-placement="top" data-original-title="{{ $specification->file_name }}"><span class="m-b-5 d-block text-primary">@if(strlen($specification->file_name) < 30) {{ $specification->file_name }} @else {{ substr($specification->file_name, 0, 27).'...' }} @endif</span></a>
-                                                        </div>
-                                                        <div class="float-right text-muted">
-                                                            <a href="javascript:void(0);" onclick="removeSpecification(this, '{{base64_encode($specification->id)}}');"><i class="fas fa-times f-24 text-danger"></i></a>
                                                         </div>
                                                     </li>
                                                 @empty
@@ -146,11 +147,7 @@
 
                                             <div class="card-header-right">
                                                 <div class="btn-group card-option">
-                                                    <span>
-                                                        <a href="{{ route('manager.campaign.create_incremental', base64_encode($resultCampaign->id)) }}">
-                                                        <button class="btn btn-primary btn-sm btn-square pt-1 pb-1"><i class="feather icon-plus"></i>Incremental</button>
-                                                        </a>
-                                                    </span>
+
                                                     <button type="button" class="btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                         <i class="feather icon-more-vertical"></i>
                                                     </button>
@@ -162,7 +159,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="card-block">
+                                        <div class="card-block" style="padding: 0 10px 10px 10px;">
                                             <div class="table-responsive">
                                                 <table class="table m-b-0 f-14 b-solid requid-table">
                                                     <thead>
@@ -180,12 +177,12 @@
                                                     <tbody class="text-center text-muted">
                                                     <tr>
                                                         <td><i class="feather icon-plus-square toggle-pacing-details" style="cursor: pointer;font-size: 17px;"></i></td>
-                                                        <td>{{ date('d-M-Y', strtotime($resultCampaign->start_date)) }}</td>
-                                                        <td>{{ date('d-M-Y', strtotime($resultCampaign->end_date)) }}</td>
-                                                        <td>{{ ucfirst($resultCampaign->pacing) }}</td>
+                                                        <td>{{ date('d-M-Y', strtotime($resultCARATL->campaign->start_date)) }}</td>
+                                                        <td>{{ date('d-M-Y', strtotime($resultCARATL->display_date)) }}</td>
+                                                        <td>{{ ucfirst($resultCARATL->campaign->pacing) }}</td>
                                                         <td>
                                                             @php
-                                                                $percentage = ($resultCampaign->deliver_count/$resultCampaign->allocation)*100;
+                                                                $percentage = ($resultCARATL->agent_lead_total_count/$resultCARATL->allocation)*100;
                                                                 $percentage = number_format($percentage,2,".", "");
                                                                 if($percentage == 100) {
                                                                     $color_class = 'bg-success';
@@ -198,37 +195,38 @@
                                                             </div>
                                                         </td>
                                                         <td>
-                                                            @if($resultCampaign->campaign_status === 6)
-                                                                {{ $resultCampaign->deliver_count }} <span class="text-danger" title="Shortfall Count">({{ $resultCampaign->shortfall_count }})</span> / {{ $resultCampaign->allocation }}
-                                                            @else
-                                                                {{ $resultCampaign->deliver_count.' / '.$resultCampaign->allocation }}
-                                                            @endif
+                                                            {{ $resultCARATL->agent_lead_total_count.' / '.$resultCARATL->allocation }}
                                                         </td>
                                                         <td>
-                                                            @switch($resultCampaign->campaign_status_id)
+                                                            @php
+                                                                $campaign_type = '';
+                                                                if($resultCARATL->campaign->type == 'incremental') {
+                                                                    $campaign_type = ' (Incremental)';
+                                                                }
+                                                            @endphp
+                                                            @switch($resultCARATL->campaign->campaign_status_id)
                                                                 @case(1)
-                                                                <span class="badge badge-pill badge-success" style="padding: 5px;min-width: 70px;">Live</span>
+                                                                <span class="badge badge-pill badge-success" style="padding: 5px;min-width: 70px;">Live{{ $campaign_type }}</span>
                                                                 @break
                                                                 @case(2)
-                                                                <span class="badge badge-pill badge-warning" style="padding: 5px;min-width: 70px;">Paused</span>
+                                                                <span class="badge badge-pill badge-warning" style="padding: 5px;min-width: 70px;">Paused{{ $campaign_type }}</span>
                                                                 @break
                                                                 @case(3)
-                                                                <span class="badge badge-pill badge-danger" style="padding: 5px;min-width: 70px;">Cancelled</span>
+                                                                <span class="badge badge-pill badge-danger" style="padding: 5px;min-width: 70px;">Cancelled{{ $campaign_type }}</span>
                                                                 @break
                                                                 @case(4)
-                                                                <span class="badge badge-pill badge-primary" style="padding: 5px;min-width: 70px;">Delivered</span>
+                                                                <span class="badge badge-pill badge-primary" style="padding: 5px;min-width: 70px;">Delivered{{ $campaign_type }}</span>
                                                                 @break
                                                                 @case(5)
-                                                                <span class="badge badge-pill badge-success" style="padding: 5px;min-width: 70px;">Reactivated</span>
+                                                                <span class="badge badge-pill badge-success" style="padding: 5px;min-width: 70px;">Reactivated{{ $campaign_type }}</span>
                                                                 @break
                                                                 @case(6)
-                                                                <span class="badge badge-pill badge-secondary" style="padding: 5px;min-width: 80px;">Shortfall</span>
+                                                                <span class="badge badge-pill badge-secondary" style="padding: 5px;min-width: 80px;">Shortfall{{ $campaign_type }}</span>
                                                                 @break
                                                             @endswitch
                                                         </td>
                                                         <td>
-                                                            <a href="javascript:;" onclick="editPacingDetails('{{ base64_encode($resultCampaign->id) }}');" class="btn btn-outline-primary btn-sm btn-rounded mb-0" title="Edit pacing details" style="padding: 5px 8px;"><i class="feather icon-edit mr-0"></i></a>
-                                                            <a href="javascript:;" onclick="editSubAllocations('{{ base64_encode($resultCampaign->id) }}');" class="btn btn-outline-secondary btn-sm btn-rounded mb-0" title="Edit Sub-Allocations" style="padding: 5px 8px;"><i class="feather icon-edit mr-0"></i></a>
+                                                            <a href="javascript:;" onclick="viewAssignmentDetails('{{ base64_encode($resultCARATL->id) }}');" class="btn btn-outline-primary btn-sm btn-rounded mb-0" title="view assignment details" style="padding: 5px 8px;"><i class="feather icon-eye mr-0"></i></a>
                                                         </td>
                                                     </tr>
                                                     <tr class="pacing-details" style="display: none;">
@@ -252,103 +250,92 @@
                                                                     @endif
                                                                 @empty
                                                                     <tr>
-                                                                        <td colspan="3">
-                                                                            Sub allocations not updated,
-                                                                            <br>
-                                                                            <a href="javascript:;" onclick="editSubAllocations('{{ base64_encode($children->id) }}');" title="Edit Sub-Allocations">Click Here</a> to update.
-                                                                        </td>
+                                                                        <td colspan="3">Sub allocations not updated.</td>
                                                                     </tr>
                                                                 @endforelse
                                                                 </tbody>
                                                             </table>
                                                         </td>
                                                     </tr>
-                                                    @forelse($resultCampaign->children as $children)
-                                                        <tr>
-                                                            <td><i class="feather icon-plus-square toggle-pacing-details" style="cursor: pointer;font-size: 17px;"></i></td>
-                                                            <td>{{ date('d-M-Y', strtotime($children->start_date)) }}</td>
-                                                            <td>{{ date('d-M-Y', strtotime($children->end_date)) }}</td>
-                                                            <td>{{ ucfirst($children->pacing) }}</td>
-                                                            <td>
-                                                                @php
-                                                                    $percentage = ($children->deliver_count/$children->allocation)*100;
-                                                                    $percentage = number_format($percentage,2,".", "");
-                                                                    if($percentage == 100) {
-                                                                        $color_class = 'bg-success';
-                                                                    } else {
-                                                                        $color_class = 'bg-warning text-dark';
-                                                                    }
-                                                                @endphp
-                                                                <div class="progress mb-4" style="height: 20px;border: 1px solid #e2dada;">
-                                                                    <div class="progress-bar {{ $color_class }}" role="progressbar" aria-valuenow="{{$percentage}}" aria-valuemin="0" aria-valuemax="100" style="width: {{$percentage}}%; font-weight: bolder;">{{$percentage}}%</div>
-                                                                </div>
-                                                            </td>
-                                                            <td>
-                                                                @if($children->campaign_status === 6)
-                                                                    {{ $children->deliver_count }} <span class="text-danger" title="Shortfall Count">({{ $children->shortfall_count }})</span> / {{ $children->allocation }}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="card">
+                                        <div class="card-header">
+
+                                            <h5><i class="fas fa-users m-r-5"></i> Campaign Agents</h5>
+
+                                            <div class="card-header-right">
+                                                <div class="btn-group card-option">
+
+                                                    <button type="button" class="btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                        <i class="feather icon-more-vertical"></i>
+                                                    </button>
+                                                    <ul class="list-unstyled card-option dropdown-menu dropdown-menu-right">
+                                                        <li class="dropdown-item full-card"><a href="#!"><span><i class="feather icon-maximize"></i> maximize</span><span style="display:none"><i class="feather icon-minimize"></i> Restore</span></a></li>
+                                                        <li class="dropdown-item minimize-card"><a href="#!"><span><i class="feather icon-minus"></i> collapse</span><span style="display:none"><i class="feather icon-plus"></i> expand</span></a></li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="card-block" style="padding: 0 10px 10px 10px;">
+                                            <div class="table-responsive">
+                                                <table id="table-agents" class="table m-b-0 f-14 b-solid requid-table">
+                                                    <thead>
+                                                    <tr class="text-uppercase">
+                                                        <th class="text-center">Name</th>
+                                                        <th class="text-center">Completion</th>
+                                                        <th class="text-center">Deliver Count / <br>Allocation</th>
+                                                        <th class="text-center">Status</th>
+                                                        <th class="text-center">Action</th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody class="text-center text-muted">
+                                                    @php
+                                                    $total_agents = $resultCARATL->agents->count();
+                                                    $total_submitted = 0;
+                                                    @endphp
+                                                    @forelse($resultCARATL->agents as $ca_agent)
+                                                    <tr>
+                                                        <td>{{ $ca_agent->user->full_name }}</td>
+                                                        <td>
+                                                            @php
+                                                                $percentage = ($ca_agent->agent_lead_count/$ca_agent->allocation)*100;
+                                                                $percentage = number_format($percentage,2,".", "");
+                                                                if($percentage == 100) {
+                                                                    $color_class = 'bg-success';
+                                                                } else {
+                                                                    $color_class = 'bg-warning text-dark';
+                                                                }
+                                                            @endphp
+                                                            <div class="progress" style="height: 20px;border: 1px solid #e2dada;">
+                                                                <div class="progress-bar {{ $color_class }}" role="progressbar" aria-valuenow="{{$percentage}}" aria-valuemin="0" aria-valuemax="100" style="width: {{$percentage}}%; font-weight: bolder;">{{$percentage}}%</div>
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            {{ $ca_agent->agent_lead_count.' / '.$ca_agent->allocation }}
+                                                        </td>
+                                                        <td>
+                                                            @if(empty($ca_agent->started_at) && empty($ca_agent->submitted_at))
+                                                                <span class="badge badge-pill badge-danger" style="padding: 5px;min-width: 70px;">Campaign Assigned</span>
+                                                            @else
+                                                                @if(!empty($ca_agent->started_at) && empty($ca_agent->submitted_at))
+                                                                    <span class="badge badge-pill badge-warning" style="padding: 5px;min-width: 70px;">Campaign In Progress</span>
                                                                 @else
-                                                                    {{ $children->deliver_count.' / '.$children->allocation }}
+                                                                    @php $total_submitted++; @endphp
+                                                                    <span class="badge badge-pill badge-success" style="padding: 5px;min-width: 70px;">Campaign Submit</span>
                                                                 @endif
-                                                            </td>
-                                                            <td>
-                                                                @switch($children->campaign_status_id)
-                                                                    @case(1)
-                                                                    <span class="badge badge-pill badge-success" style="padding: 5px;min-width: 70px;">Live (Incremental)</span>
-                                                                    @break
-                                                                    @case(2)
-                                                                    <span class="badge badge-pill badge-warning" style="padding: 5px;min-width: 70px;">Paused (Incremental)</span>
-                                                                    @break
-                                                                    @case(3)
-                                                                    <span class="badge badge-pill badge-danger" style="padding: 5px;min-width: 70px;">Cancelled (Incremental)</span>
-                                                                    @break
-                                                                    @case(4)
-                                                                    <span class="badge badge-pill badge-primary" style="padding: 5px;min-width: 70px;">Delivered (Incremental)</span>
-                                                                    @break
-                                                                    @case(5)
-                                                                    <span class="badge badge-pill badge-success" style="padding: 5px;min-width: 70px;">Reactivated (Incremental)</span>
-                                                                    @break
-                                                                    @case(6)
-                                                                    <span class="badge badge-pill badge-secondary" style="padding: 5px;min-width: 80px;">Shortfall (Incremental)</span>
-                                                                    @break
-                                                                @endswitch
-                                                            </td>
-                                                            <td>
-                                                                <a href="javascript:;" onclick="editPacingDetails('{{ base64_encode($children->id) }}');" class="btn btn-outline-primary btn-sm btn-rounded mb-0" title="Edit pacing details" style="padding: 5px 8px;"><i class="feather icon-edit mr-0"></i></a>
-                                                                <a href="javascript:;" onclick="editSubAllocations('{{ base64_encode($children->id) }}');" class="btn btn-outline-secondary btn-sm btn-rounded mb-0" title="Edit Sub-Allocations" style="padding: 5px 8px;"><i class="feather icon-edit mr-0"></i></a>
-                                                            </td>
-                                                        </tr>
-                                                        <tr class="pacing-details" style="display: none;">
-                                                            <td colspan="7" class="bg-light text-left">
-                                                                <table class="table table-hover foo-table text-center">
-                                                                    <thead>
-                                                                    <tr>
-                                                                        <th class="text-center" data-breakpoints="xs">Date</th>
-                                                                        <th class="text-center" data-breakpoints="xs">Day</th>
-                                                                        <th class="text-center" data-breakpoints="xs">Sub-Allocation</th>
-                                                                    </tr>
-                                                                    </thead>
-                                                                    <tbody>
-                                                                    @forelse($children->pacingDetails as $subAllocation)
-                                                                        @if($subAllocation->sub_allocation)
-                                                                            <tr>
-                                                                                <td>{{ date('d-M-Y', strtotime($subAllocation->date)) }}</td>
-                                                                                <td>{{ date('D', strtotime($subAllocation->date)) }}</td>
-                                                                                <td>{{ $subAllocation->sub_allocation }}</td>
-                                                                            </tr>
-                                                                        @endif
-                                                                    @empty
-                                                                        <tr>
-                                                                            <td colspan="3">
-                                                                                Sub allocations not updated,
-                                                                                <br>
-                                                                                <a href="javascript:;" onclick="editSubAllocations('{{ base64_encode($children->id) }}');" title="Edit Sub-Allocations">Click Here</a> to update.
-                                                                            </td>
-                                                                        </tr>
-                                                                    @endforelse
-                                                                    </tbody>
-                                                                </table>
-                                                            </td>
-                                                        </tr>
+                                                            @endif
+                                                        </td>
+                                                        <td>
+                                                            @if(!empty($ca_agent->started_at))
+                                                            <a href="javascript:;" onclick="viewAgentLeadDetails('{{ base64_encode($ca_agent->id) }}');" class="btn btn-outline-primary btn-sm btn-rounded mb-0" title="view agent lead details" style="padding: 5px 8px;"><i class="feather icon-eye mr-0"></i></a>
+                                                            @endif
+                                                        </td>
+                                                    </tr>
                                                     @empty
                                                     @endforelse
                                                     </tbody>
@@ -356,6 +343,25 @@
                                             </div>
                                         </div>
                                     </div>
+
+                                    <div class="row mb-4">
+                                        <div class="col-md-3">
+                                            <button type="button" class="btn btn-success btn-sm btn-square w-100">Button 1</button>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <a href="{{ route('team_leader.lead.list', base64_encode($resultCARATL->id)) }}">
+                                                <button type="button" class="btn btn-primary btn-sm btn-square w-100">Manage Leads</button>
+                                            </a>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <button type="button" class="btn btn-warning btn-sm btn-square w-100">Button 3</button>
+                                        </div>
+
+                                        <div class="col-md-3">
+                                            <button type="button" @if($total_submitted < $total_agents) class="btn btn-danger btn-sm btn-square w-100" disabled title="Campaign Not Submitted By All Agents!" @else class="btn btn-success btn-sm btn-square w-100" @endif onclick="submitCampaign('{{ base64_encode($resultCARATL->id) }}');">Submit Campaign</button>
+                                        </div>
+                                    </div>
+
                                 </div>
                                 <!-- [ task-detail ] end -->
                             </div>
@@ -367,246 +373,54 @@
         </div>
     </div>
 
-    <div id="modal-campaign-note" class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" style="background: rgba(0, 0, 0, 0.7) !important;">
-        <div class="modal-dialog modal-xl">
+    <div id="modal-view-lead-details" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-xl" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Campaign Note</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h5 class="modal-title">Campaign Lead Details</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
                 </div>
-                <div class="modal-body">
-                    <div class="col-md-12" style="font-size: 17px;">
-                        {!! $resultCampaign->note !!}
+                <div class="modal-body" style="padding-top: 0px !important;">
+                    <div class="table-responsive">
+                        <table id="table-agent-lead-details" class="table m-b-0 f-14 b-solid requid-table">
+                            <thead>
+                            <tr class="text-uppercase">
+                                <th>#</th>
+                                <th>First Name</th>
+                                <th>Last Name</th>
+                                <th>Company Name</th>
+                                <th>Email Address</th>
+                                <th>Phone Number</th>
+                                <th>Address 1</th>
+                                <th>Address 2</th>
+                                <th>City</th>
+                                <th>State</th>
+                                <th>Zipcode</th>
+                                <th>Country</th>
+                                <th>Employee Size</th>
+                                <th>Revenue</th>
+                                <th>Company Domain</th>
+                                <th>Website</th>
+                                <th>Company LinkedIn URL</th>
+                                <th>LinkedIn Profile Link</th>
+                                <th>LinkedIn Profile SN Link</th>
+                                <th>Date</th>
+                            </tr>
+                            </thead>
+                            <tbody class="text-center text-muted">
+
+                            </tbody>
+                        </table>
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="modal-edit-campaign-details" class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="" aria-hidden="true">
-        <div class="modal-dialog modal-xl">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Edit Campaign Details</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                </div>
-
-                <div class="modal-body">
-                    <form id="modal-form-update-campaign-details">
-                        <input type="hidden" id="campaign_id" name="campaign_id" value="{{ base64_encode($resultCampaign->id) }}">
-                        <div class="row pl-md-3 pr-md-3">
-                            <div class="col-md-6 form-group">
-                                <label for="name">Campaign Name<span class="text-danger">*</span></label>
-                                <input type="text" class="form-control btn-square" id="name" name="name" placeholder="Enter campaign name" value="{{ $resultCampaign->name }}">
-                            </div>
-
-                            <div class="col-md-6 form-group">
-                                <label for="v_mail_campaign_id">V-Mail Campaign ID<span class="text-info"> <small>(Optional)</small></span></label>
-                                <input type="text" class="form-control btn-square" id="v_mail_campaign_id" name="v_mail_campaign_id" placeholder="Enter v-mail campaign id" value="{{ $resultCampaign->v_mail_campaign_id }}">
-                            </div>
-
-                            <div class="col-md-6 form-group">
-                                <label for="campaign_filter_id">Campaign Filter<span class="text-danger">*</span></label>
-                                <select class="form-control btn-square" id="campaign_filter_id" name="campaign_filter_id">
-                                    <option value="">-- Select Campaign Filter --</option>
-                                    @foreach($resultCampaignFilters as $campaign_filter)
-                                        <option value="{{$campaign_filter->id}}" @if($campaign_filter->id == $resultCampaign->campaign_filter_id) selected @endif>{{ $campaign_filter->name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-
-                            <div class="col-md-6 form-group">
-                                <label for="campaign_type_id">Campaign Type<span class="text-danger">*</span></label>
-                                <select class="form-control btn-square" id="campaign_type_id" name="campaign_type_id">
-                                    <option value="">-- Select Campaign Type --</option>
-                                    @foreach($resultCampaignTypes as $campaign_type)
-                                        <option value="{{$campaign_type->id}}" @if($campaign_type->id == $resultCampaign->campaign_type_id) selected @endif>{{ $campaign_type->name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-
-                            <div class="col-md-6 form-group">
-                                <label for="country_id">Country(s)<span class="text-danger">*</span></label>
-                                <select class="form-control btn-square select2-multiple" id="country_id" name="country_id[]" multiple="multiple">
-                                    @foreach($resultCountries as $country)
-                                        <option value="{{$country->id}}" data-region-id="{{$country->region_id}}" @if(in_array($country->id, $resultCampaign->countries->pluck('country_id')->toArray())) selected @endif>{{ $country->name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-
-                            <div class="col-md-6 form-group">
-                                <label for="region_id">Region(s)<span class="text-danger">*</span></label>
-                                <select class="form-control btn-square select2-multiple" id="region_id" name="region_id[]" multiple="multiple" disabled>
-                                    @foreach($resultRegions as $region)
-                                        <option value="{{$region->id}}" @if(in_array($region->id, $resultCampaign->countries->pluck('country.region.id')->toArray())) selected @endif>{{ $region->name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-
-                            <div class="col-md-12 form-group">
-                                <label for="note">Note</label>
-                                <textarea id="note" name="note" class="form-control classic-editor" placeholder="Enter note here..." rows="3">{{ $resultCampaign->note }}</textarea>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-
                 <div class="modal-footer">
-                    <div class="modal-footer">
-                        <div class="row pl-md-2 pr-md-2">
-                            <button type="button" class="btn btn-secondary btn-square btn-sm" data-dismiss="modal">Cancel</button>
-                            <button id="modal-form-update-campaign-details-submit" type="button" class="btn btn-primary btn-square btn-sm">Update</button>
-                        </div>
-                    </div>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>
     </div>
-
-    <div id="modal-edit-pacing-details" class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="my-modal-edit-pacing-details" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="my-modal-edit-pacing-details">Edit Pacing Details</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                </div>
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="col-md-12">
-                            <form id="modal-form-edit-pacing-details" method="post" action="{{ route('manager.campaign.update', base64_encode($resultCampaign->id)) }}">
-                                @csrf
-                                <input type="hidden" class="campaign_id" name="id" value="">
-                                <div class="row">
-                                    <div class="col-md-6 form-group">
-                                        <label for="start_date">Start Date<span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control btn-square" id="start_date" name="start_date" placeholder="Select Start Date">
-                                    </div>
-                                    <div class="col-md-6 form-group">
-                                        <label for="end_date">End Date<span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control btn-square" id="end_date" name="end_date" placeholder="Select End Date">
-                                    </div>
-                                    <div class="col-md-6 form-group">
-                                        <label for="allocation">Allocation<span class="text-danger">*</span></label>
-                                        <input type="number" class="form-control btn-square only-non-zero-number" id="allocation" name="allocation" placeholder="Enter allocation">
-                                    </div>
-                                    <div class="col-md-6 form-group">
-                                        <label for="deliver_count">Deliver Count<span class="text-danger">*</span></label>
-                                        <input type="number" class="form-control btn-square only-non-zero-number" id="deliver_count" name="deliver_count" placeholder="Enter Deliver Count">
-                                    </div>
-                                    <div class="col-md-6 form-group">
-                                        <label for="campaign_status_id">Status</label>
-                                        <select class="form-control btn-square" id="campaign_status_id" name="campaign_status_id">
-                                            @foreach($resultCampaignStatuses as $campaign_status)
-                                                <option value="{{$campaign_status->id}}">{{ $campaign_status->name }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                    <div id="div-shortfall-count" class="col-md-6 form-group" style="display: none;">
-                                        <label for="shortfall_count">Shortfall Count<span class="text-danger">*</span></label>
-                                        <input type="number" class="form-control btn-square only-non-zero-number" id="shortfall_count" name="shortfall_count" placeholder="Enter Shortfall Count" disabled>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <div class="alert alert-warning" role="alert">
-                                            <p>Warning: If Start Date or End Date are updated then corresponding sub-allocation will be removed.</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <button type="submit" class="btn btn-primary btn-square float-right">Update</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="modal-attach-specification" class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Attach Specification</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                </div>
-                <div class="modal-body">
-                    <div class="col-md-12">
-                        <form id="modal-form-attach-specification" enctype="multipart/form-data">
-                            @csrf
-                            <div class="row">
-                                <div class="col-md-6 form-group">
-                                    <label for="specifications">Specifications</label>
-                                    <input type="file" class="form-control-file" id="specifications" name="specifications[]" multiple required>
-                                </div>
-                            </div>
-                            <button type="reset" class="btn btn-secondary btn-square float-right">Clear</button>
-                            <button id="modal-form-attach-specification-submit" type="button" class="btn btn-primary btn-square float-right">Upload</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="modal-edit-sub-allocations" class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="my-modal-edit-sub-allocations" aria-hidden="true" style="background: rgba(0, 0, 0, 0.7) !important;" >
-        <div class="modal-dialog modal-xl">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="my-modal-edit-sub-allocations">Edit Sub Allocations</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                </div>
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="col-md-12">
-                            <form id="modal-form-edit-sub-allocations" method="post" action="{{ route('manager.campaign.update_sub_allocations', base64_encode($resultCampaign->id)) }}">
-                                @csrf
-                                <input type="hidden" id="edit_sub_allocation_campaign_id" name="campaign_id" value="">
-                                <div class="row pl-md-4 pr-md-4">
-                                    <div class="col-md-3 form-group">
-                                        <label for="start_date">Start Date: <h5 class="label-start-date">{{ date('d-M-Y', strtotime($resultCampaign->start_date)) }}</h5></label>
-                                        <input type="hidden" id="campaign_start_date" value="{{ date('d-M-Y', strtotime($resultCampaign->start_date)) }}">
-                                    </div>
-                                    <div class="col-md-3 form-group">
-                                        <label for="end_date">End Date: <h5 class="label-end-date">{{ date('d-M-Y', strtotime($resultCampaign->end_date)) }}</h5></label>
-                                        <input type="hidden" id="campaign_end_date" value="{{ date('d-M-Y', strtotime($resultCampaign->end_date)) }}">
-                                    </div>
-                                    <div class="col-md-3 form-group">
-                                        <label for="pacing">Pacing: <h5 class="label-pacing">{{ ucfirst($resultCampaign->pacing) }}</h5></label>
-                                    </div>
-                                    <div class="col-md-3 form-group">
-                                        <label for="pacing">Total Sub-Allocations:
-                                            <h5>
-                                                <span id="total-sub-allocation">0</span> /
-                                                <span class="label-allocation">{{ $resultCampaign->allocation }}</span>
-                                            </h5>
-                                        </label>
-                                        <input type="hidden" id="campaign_allocation" value="{{ $resultCampaign->allocation }}">
-                                    </div>
-                                </div>
-
-                                <div class="row pl-md-4 pr-md-4" id="div-pacing-details">
-                                    <div class="col-md-3 col-sm-12">
-                                        <ul class="nav flex-column nav-pills" id="v-pills-tab-month-list" role="tablist" aria-orientation="vertical">
-                                        </ul>
-                                    </div>
-
-                                    <div class="col-md-9 col-sm-12">
-                                        <div class="tab-content" id="v-pills-tabContent">
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="row pl-md-4 pr-md-4 float-right" id="div-pacing-details">
-                                    <button type="submit" class="btn btn-primary btn-square float-right">Update</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
 @endsection
 
 @section('javascript')
@@ -616,12 +430,11 @@
     <!-- select2 Js -->
     <script src="{{ asset('public/template/assets/plugins/select2/js/select2.full.min.js') }}"></script>
     <!-- material datetimepicker Js -->
-    <script src="https://momentjs.com/downloads/moment-with-locales.min.js"></script>
     <script src="{{ asset('public/template/assets/plugins/material-datetimepicker/js/bootstrap-material-datetimepicker.js') }}"></script>
     <!-- Ckeditor js -->
     <script src="{{ asset('public/template/assets/plugins/ckeditor/js/ckeditor.js') }}"></script>
     <!-- jquery-validation Js -->
     <script src="{{ asset('public/template/assets/plugins/jquery-validation/js/jquery.validate.min.js') }}"></script>
 
-    <script src="{{ asset('public/js/manager/campaign_show.js?='.time()) }}"></script>
+    <script src="{{ asset('public/js/team_leader/campaign_show.js?='.time()) }}"></script>
 @append

@@ -4,7 +4,7 @@
     @parent
     <!-- data tables css -->
     <link rel="stylesheet" href="{{asset('public/template/assets/plugins/data-tables/css/datatables.min.css')}}">
-    <meta name="ca-agent-id" content="{{ base64_encode($resultCAAgent->id) }}">
+    <meta name="ca-ratl-id" content="{{ base64_encode($resultCARATL->id) }}">
 
     <style>
         .table td{
@@ -25,12 +25,12 @@
                             <div class="row align-items-center">
                                 <div class="col-md-12">
                                     <div class="page-header-title">
-                                        <h5 class="m-b-10">{{ $resultCAAgent->campaign->name }}</h5>
+                                        <h5 class="m-b-10">{{ $resultCARATL->campaign->name }}</h5>
                                     </div>
                                     <ul class="breadcrumb">
-                                        <li class="breadcrumb-item"><a href="{{ route('agent.dashboard') }}"><i class="feather icon-home"></i></a></li>
-                                        <li class="breadcrumb-item"><a href="{{ route('agent.campaign.list') }}">Campaign Management</a></li>
-                                        <li class="breadcrumb-item"><a href="{{ route('agent.campaign.show', base64_encode($resultCAAgent->id)) }}">Campaign Details</a></li>
+                                        <li class="breadcrumb-item"><a href="{{ route('team_leader.dashboard') }}"><i class="feather icon-home"></i></a></li>
+                                        <li class="breadcrumb-item"><a href="{{ route('team_leader.campaign.list') }}">Campaign Management</a></li>
+                                        <li class="breadcrumb-item"><a href="{{ route('team_leader.campaign.show', base64_encode($resultCARATL->id)) }}">Campaign Details</a></li>
                                         <li class="breadcrumb-item"><a href="javascript:void(0);">Manage Leads</a></li>
                                     </ul>
                                 </div>
@@ -47,17 +47,18 @@
                                     <div class="card">
                                         <div class="card-header">
                                             <h5>Lead Details</h5>
-                                            <div class="float-right">
-                                                <a href="{{ route('agent.lead.create', base64_encode($resultCAAgent->id)) }}">
-                                                    <button autofocus type="button" class="btn btn-primary btn-square btn-sm"><i class="feather icon-plus"></i>Add New Lead</button>
-                                                </a>
-                                            </div>
                                         </div>
                                         <div class="card-block">
                                             <div class="table-responsive">
                                                 <table id="table-leads" class="display table nowrap table-striped table-hover">
                                                     <thead>
                                                     <tr>
+                                                        <th colspan="2" class="text-center">Agent Details</th>
+                                                        <th colspan="18">Lead Details</th>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Agent</th>
+                                                        <th>Date</th>
                                                         <th>First Name</th>
                                                         <th>Last Name</th>
                                                         <th>Company Name</th>
@@ -79,8 +80,6 @@
                                                         <th>Company LinkedIn URL</th>
                                                         <th>LinkedIn Profile URL</th>
                                                         <th>LinkedIn Profile SN URL</th>
-                                                        <th>Created At</th>
-
                                                     </tr>
                                                     </thead>
                                                     <tbody>
@@ -106,7 +105,7 @@
     <!-- datatable Js -->
     <script src="{{ asset('public/template/assets/plugins/data-tables/js/datatables.min.js') }}"></script>
     <!-- custom Js -->
-    <script src="{{ asset('public/js/agent/lead.js?='.time()) }}"></script>
+    <script src="{{ asset('public/js/team_leader/lead.js?='.time()) }}"></script>
 @append
 
 

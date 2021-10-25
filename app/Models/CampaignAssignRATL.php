@@ -12,6 +12,8 @@ class CampaignAssignRATL extends Model
     protected $guarded = array();
     public $timestamps = true;
 
+    protected $appends = ['agent_lead_total_count'];
+
     public function campaign()
     {
         return $this->hasOne(Campaign::class, 'id', 'campaign_id');
@@ -29,6 +31,17 @@ class CampaignAssignRATL extends Model
     public function agents()
     {
         return $this->hasMany(CampaignAssignAgent::class, 'campaign_assign_ratl_id', 'id');
+    }
+
+    public function getAgentLeadTotalCountAttribute()
+    {
+        $total_count = 0;
+        if(isset($this->agents) && !empty($this->agents)) {
+            foreach ($this->agents as $ca_agent) {
+                $total_count = $total_count + $ca_agent->agent_lead_count;
+            }
+        }
+        return $total_count;
     }
 
 }

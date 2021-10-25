@@ -22,5 +22,12 @@
         </a>
     </li>
 
+    <li class="nav-item @if(in_array(Request::route()->getName(), array('manager.data.list'))) active @endif">
+        <a href="{{ route('manager.data.list') }}" class="nav-link">
+            <span class="pcoded-micon"><i class="feather icon-layers"></i></span>
+            <span class="pcoded-mtext">Data Management</span>
+        </a>
+    </li>
+
 </ul>
 

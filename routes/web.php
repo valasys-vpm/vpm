@@ -71,6 +71,9 @@ Route::prefix('manager')->middleware(['web', 'check.manager'])->name('manager.')
     //Holiday Routes
     include('manager/holiday_routes.php');
 
+    //Data Routes
+    include('manager/data_routes.php');
+
 });
 
 Route::prefix('team-leader')->middleware(['web', 'check.team_leader'])->name('team_leader.')->group(function (){
@@ -85,6 +88,9 @@ Route::prefix('team-leader')->middleware(['web', 'check.team_leader'])->name('te
 
     //Campaign Assign Routes
     include('team_leader/team_routes.php');
+
+    //Campaign Management Routes
+    include('team_leader/lead_routes.php');
 
 });
 
