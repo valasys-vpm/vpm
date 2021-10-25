@@ -134,7 +134,7 @@ class CampaignController extends Controller
 
     public function restartCampaign($id, Request $request)
     {
-        $attributes['submitted_at'] = null;
+        $attributes['submitted_at'] = NULL;
 
         $response = $this->agentRepository->update(base64_decode($id), $attributes);
 
