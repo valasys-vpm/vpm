@@ -22,6 +22,10 @@ class AgentLeadRepository implements AgentLeadInterface
     {
         $query = AgentLead::query();
 
+        if (isset($filters['ca_agent_id']) && $filters['ca_agent_id']) {
+            $query->where('ca_agent_id', $filters['ca_agent_id']);
+        }
+
         return $query->get();
     }
 

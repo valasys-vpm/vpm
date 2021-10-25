@@ -35,7 +35,7 @@ $(function (){
             },
             {
                 render: function (data, type, row) {
-                    let deliver_count = 0;
+                    let deliver_count = row.agent_lead_count;
                     let allocation = row.allocation;
                     let percentage = (deliver_count/allocation)*100;
 
@@ -57,7 +57,7 @@ $(function (){
             },
             {
                 render: function (data, type, row) {
-                    let deliver_count = 0;
+                    let deliver_count = row.agent_lead_count;
                     let allocation = row.allocation;
                     let shortfall_count = 0;
 

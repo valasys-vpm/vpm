@@ -220,7 +220,7 @@
                                                         <td>{{ ucfirst($resultCampaign->pacing) }}</td>
                                                         <td>
                                                             @php
-                                                                $percentage = ($resultCampaign->deliver_count/$resultCampaign->allocation)*100;
+                                                                $percentage = ($resultCAAgent->agent_lead_count / $resultCAAgent->allocation) * 100;
                                                                 $percentage = number_format($percentage,2,".", "");
                                                                 if($percentage == 100) {
                                                                     $color_class = 'bg-success';
@@ -233,11 +233,7 @@
                                                             </div>
                                                         </td>
                                                         <td>
-                                                            @if($resultCampaign->campaign_status_id === 6)
-                                                                {{ $resultCampaign->deliver_count }} <span class="text-danger" title="Shortfall Count">({{ $resultCampaign->shortfall_count }})</span> / {{ $resultCampaign->allocation }}
-                                                            @else
-                                                                {{ $resultCampaign->deliver_count.' / '.$resultCampaign->allocation }}
-                                                            @endif
+                                                            {{ $resultCAAgent->agent_lead_count.' / '.$resultCAAgent->allocation }}
                                                         </td>
                                                         <td>
                                                             @php
@@ -278,7 +274,7 @@
                                         <div id="div-start-campaign" class="col-md-3" @if(!empty($resultCAAgent->started_at)) style="display: none;" @endif>
                                             <button type="button" class="btn btn-success btn-sm btn-square w-100" onclick="startCampaign('{{ base64_encode($resultCAAgent->id) }}');">Start Campaign</button>
                                         </div>
-                                        <div id="div-manage-leads" class="col-md-3" @if(empty($resultCAAgent->started_at)) style="display: none;" @endif>
+                                        <div id="div-manage-leads" class="col-md-3" @if(!empty($resultCAAgent->submitted_at)) style="display: none;" @endif>
                                             <a href="{{ route('agent.lead.list', base64_encode($resultCAAgent->id)) }}">
                                                 <button type="button" class="btn btn-primary btn-sm btn-square w-100">Manage Leads</button>
                                             </a>
@@ -287,8 +283,11 @@
                                         <div class="col-md-3">
                                             <button type="button" class="btn btn-info btn-sm btn-square w-100">Get Data</button>
                                         </div>
-                                        <div class="col-md-3">
-                                            <button type="button" class="btn btn-danger btn-sm btn-square w-100">Submit Campaign</button>
+                                        <div id="div-submit-campaign"  class="col-md-3" @if(!empty($resultCAAgent->submitted_at)) style="display: none;" @endif>
+                                            <button type="button" class="btn btn-danger btn-sm btn-square w-100" onclick="submitCampaign('{{ base64_encode($resultCAAgent->id) }}');">Submit Campaign</button>
+                                        </div>
+                                        <div id="div-start-again-campaign" class="col-md-3" @if(empty($resultCAAgent->submitted_at)) style="display: none;" @endif>
+                                            <button type="button" class="btn btn-success btn-sm btn-square w-100" onclick="startAgainCampaign('{{ base64_encode($resultCAAgent->id) }}');">Restart Campaign</button>
                                         </div>
                                     </div>
 
@@ -318,6 +317,7 @@
             </div>
         </div>
     </div>
+
 @endsection
 
 @section('javascript')

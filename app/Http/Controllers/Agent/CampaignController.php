@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Agent;
 
 use App\Http\Controllers\Controller;
 use App\Models\CampaignAssignAgent;
+use App\Repository\AgentLeadRepository\AgentLeadRepository;
 use App\Repository\CampaignAssignRepository\AgentRepository\AgentRepository;
 use App\Repository\CampaignRepository\CampaignRepository;
 use Illuminate\Http\Request;
@@ -14,15 +15,18 @@ class CampaignController extends Controller
     private $data;
     private $campaignRepository;
     private $agentRepository;
+    private $agentLeadRepository;
 
     public function __construct(
         CampaignRepository $campaignRepository,
-        AgentRepository $agentRepository
+        AgentRepository $agentRepository,
+        AgentLeadRepository $agentLeadRepository
     )
     {
         $this->data = array();
         $this->campaignRepository = $campaignRepository;
         $this->agentRepository = $agentRepository;
+        $this->agentLeadRepository = $agentLeadRepository;
     }
 
     public function index()
@@ -110,6 +114,32 @@ class CampaignController extends Controller
 
         if($response['status']) {
             return response()->json(array('status' => true, 'message' => 'Campaign Started'));
+        } else {
+            return response()->json(array('status' => false, 'message' => 'Data not found'));
+        }
+    }
+
+    public function submitCampaign($id, Request $request)
+    {
+        $attributes['submitted_at'] = date('Y-m-d H:i:s');
+
+        $response = $this->agentRepository->update(base64_decode($id), $attributes);
+
+        if($response['status']) {
+            return response()->json(array('status' => true, 'message' => 'Campaign submitted successfully'));
+        } else {
+            return response()->json(array('status' => false, 'message' => 'Data not found'));
+        }
+    }
+
+    public function restartCampaign($id, Request $request)
+    {
+        $attributes['submitted_at'] = null;
+
+        $response = $this->agentRepository->update(base64_decode($id), $attributes);
+
+        if($response['status']) {
+            return response()->json(array('status' => true, 'message' => 'Campaign started successfully'));
         } else {
             return response()->json(array('status' => false, 'message' => 'Data not found'));
         }
