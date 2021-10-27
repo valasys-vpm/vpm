@@ -130,7 +130,7 @@
                     <div class="modal-footer">
                         <div class="col-md-12">
                             <button id="modal-form-import-data-submit" type="button" class="btn btn-primary btn-square float-right btn-sm">Upload</button>
-                            <button type="reset" class="btn btn-secondary btn-square float-right btn-sm">Close</button>
+                            <button type="reset" class="btn btn-secondary btn-square float-right btn-sm" data-dismiss="modal" aria-label="Close">Close</button>
                         </div>
                     </div>
                 </form>

@@ -19,7 +19,13 @@ class AccountNameRepository implements AccountNameInterface
 
     public function get($filters = array())
     {
-        // TODO: Implement get() method.
+        $query = SuppressionAccountName::query();
+
+        if(isset($filters['campaign_id']) && $filters['campaign_id']) {
+            $query->whereIn('campaign_id', $filters['campaign_id']);
+        }
+
+        return $query->get();
     }
 
     public function find($id)

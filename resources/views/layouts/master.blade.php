@@ -77,6 +77,39 @@
 @yield('content')
 <!-- [ Main Content ] end -->
 
+    <div id="modal-loader" class="modal fade" data-backdrop="static" tabindex="-1" role="dialog" aria-hidden="true" style="background: rgba(0, 0, 0, 0.7) !important;">
+        <div class="modal-dialog modal-dialog-centered" role="document" style="max-width: 300px !important;">
+            <div class="row">
+                <div class="col-md-12 text-center">
+                    <div class="spinner-grow text-primary" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                    <div class="spinner-grow text-secondary" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                    <div class="spinner-grow text-success" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                    <div class="spinner-grow text-danger" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                    <div class="spinner-grow text-warning" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                    <div class="spinner-grow text-info" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                    <div class="spinner-grow text-light" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                    <div class="spinner-grow text-dark" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script> var BASE_PATH = "{{ url('/') }}"; </script>
     <!-- Required Js -->
     <script src="{{ asset('public/template') }}/assets/js/vendor-all.js"></script>

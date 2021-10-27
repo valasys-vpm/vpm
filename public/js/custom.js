@@ -6,6 +6,15 @@ $(".alert-auto-dismiss").fadeTo(5000,500).slideUp(500,function(){$(".alert-auto-
 $.ajaxSetup({
     headers: {
         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+    },
+    beforeSend: function () {
+        $('#modal-loader').modal('show');
+    },
+    complete: function () {
+        $('#modal-loader').modal('hide');
+        $('#modal-loader').hide();
+        $('#modal-loader').css('display', 'none');
+        $('body').find('.modal-backdrop.fade.show').css('display', 'none');
     }
 });
 $(function () {
@@ -81,5 +90,20 @@ function trigger_pnofify(type = 'default', title = '', message = '') {
 function downloadSampleFile(file_name) {
     return window.location.href = $('meta[name="base-path"]').attr('content') + '/public/storage/sample/' + file_name;
 }
+
+//Toggle Modal Loader
+$(function () {
+
+    /*$('.toggle-custom-loader').click(function (){
+        if($('#modal-loader').css('display') === 'none') {
+            $('#modal-loader').modal('show');
+        } else {
+            $('#modal-loader').modal('hide');
+        }
+    });*/
+
+});
+
+
 
 

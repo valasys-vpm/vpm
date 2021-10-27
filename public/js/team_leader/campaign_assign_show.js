@@ -1,9 +1,33 @@
-
+let URL = $('meta[name="base-path"]').attr('content');
 let MONTHS = ['Jan','Feb','Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 let DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 //Initializations
 $(function(){
+
+    $("#filter_job_level").select2({
+        placeholder: " -- Select Job Level(s) --"
+    });
+
+    $("#filter_job_role").select2({
+        placeholder: " -- Select Job Role(s) --"
+    });
+
+    $("#filter_employee_size").select2({
+        placeholder: " -- Select Employee Size(s) --"
+    });
+
+    $("#filter_revenue").select2({
+        placeholder: " -- Select Revenue(s) --"
+    });
+
+    $("#filter_country").select2({
+        placeholder: " -- Select Country(s) --"
+    });
+
+    $("#filter_state").select2({
+        placeholder: " -- Select State(s) --"
+    });
 
     $('.foo-table').footable({
         "paging": { "enabled": true }
@@ -23,6 +47,51 @@ $(function(){
 
 
 $(function(){
+
+    $('#form-get-data-submit').on('click', function (e) {
+        e.preventDefault();
+        $.ajax({
+            type: 'post',
+            url: URL + '/team-leader/campaign-assign/get-data',
+            data: $('#form-get-data').serialize(),
+            async : true,
+            success: function (response) {
+                if(response.status === true) {
+                    if(response.data.length) {
+                        $('#div-result-get-data').css('display','block');
+                        $('#div-result-get-data').parent('div.card-footer').css('display','block');
+                        $('#result-record-found').html(response.data.length);
+                        $('#data_ids').val(response.data);
+                    } else {
+                        $('#data_ids').val('');
+                    }
+                    trigger_pnofify('success', 'Successful', response.message);
+                } else {
+                    trigger_pnofify('error', 'Something went wrong', response.message);
+                }
+            }
+        });
+    });
+
+    $('#form-assign-data-submit').on('click', function (e) {
+        e.preventDefault();
+        $.ajax({
+            type: 'post',
+            url: URL + '/team-leader/campaign-assign/assign-data',
+            data: $('#form-assign-data').serialize(),
+            async : true,
+            success: function (response) {
+                if(response.status === true) {
+                    $('#result-record-found').html('');
+                    $('#div-result-get-data').css('display','none');
+                    $('#count-agent-data').html(response.countAgentData);
+                    trigger_pnofify('success', 'Successful', response.message);
+                } else {
+                    trigger_pnofify('error', 'Something went wrong', response.message);
+                }
+            }
+        });
+    });
 
 });
 

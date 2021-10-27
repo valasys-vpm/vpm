@@ -92,6 +92,9 @@ Route::prefix('team-leader')->middleware(['web', 'check.team_leader'])->name('te
     //Campaign Management Routes
     include('team_leader/lead_routes.php');
 
+    //Data Routes
+    include('team_leader/data_routes.php');
+
 });
 
 Route::prefix('agent')->middleware(['web', 'check.agent'])->name('agent.')->group(function (){

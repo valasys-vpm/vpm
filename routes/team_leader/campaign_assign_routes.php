@@ -12,4 +12,7 @@ Route::prefix('campaign-assign')->name('campaign_assign.')->group(function()
 
     Route::any('/view-assignment-details/{id}', [App\Http\Controllers\TeamLeader\CampaignAssignController::class, 'viewAssignmentDetails'])->name('view_assignment_details');
 
+    Route::any('/get-data', [App\Http\Controllers\TeamLeader\CampaignAssignController::class, 'getData'])->name('get_data');
+    Route::any('/assign-data', [App\Http\Controllers\TeamLeader\CampaignAssignController::class, 'assignData'])->name('assign_data');
+
 });

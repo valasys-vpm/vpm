@@ -9,6 +9,7 @@ let MONTHS = ['Jan','Feb','Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'
 $(function (){
 
     DATA_TABLE = $('#table-data').DataTable({
+        scrollY: 300,
         "lengthMenu": [ [500,400,300,200,100,-1], [500,400,300,200,100,'All'] ],
         "processing": true,
         "serverSide": true,
@@ -95,6 +96,44 @@ $(function (){
             },
 
         ],
+    });
+
+    $('#modal-form-import-data-submit').on('click', function (e) {
+        e.preventDefault();
+        let form_data = new FormData($('#modal-form-import-data')[0]);
+
+        $('#modal-loader').modal('show');
+
+        $.ajax({
+            url: URL +'/manager/data/import-data',
+            processData: false,
+            contentType: false,
+            data: form_data,
+            type: 'post',
+            success: function(response) {
+                console.log(response);
+                let message = response.message;
+                if(response.status === true) {
+                    let type = 'success';
+                    if(typeof response.data.failed_data !== 'undefined') {
+                        message = response.message + '\n' + response.data.failed_data.length + ' row not inserted.';
+                        type = 'warning';
+                    }
+                    $('#modal-import-data').modal('hide');
+                    trigger_pnofify(type, 'Successful', message);
+                } else {
+                    if(typeof response.data.failed_data !== 'undefined') {
+                        message = response.message + '\n' + response.data.failed_data.length + ' row not inserted.';
+                    }
+                    trigger_pnofify('error', 'Error while processing request', response.message);
+                }
+
+                $('#modal-loader').modal('hide');
+                DATA_TABLE.ajax.reload();
+
+            }
+        });
+
     });
 
 });

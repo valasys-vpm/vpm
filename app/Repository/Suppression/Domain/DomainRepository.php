@@ -8,6 +8,10 @@ use Excel;
 
 class DomainRepository implements DomainInterface
 {
+
+    /**
+     * @var SuppressionDomain
+     */
     private $suppressionDomain;
 
     public function __construct(
@@ -19,7 +23,13 @@ class DomainRepository implements DomainInterface
 
     public function get($filters = array())
     {
-        // TODO: Implement get() method.
+        $query = SuppressionDomain::query();
+
+        if(isset($filters['campaign_id']) && $filters['campaign_id']) {
+            $query->whereIn('campaign_id', $filters['campaign_id']);
+        }
+
+        return $query->get();
     }
 
     public function find($id)
