@@ -7,6 +7,7 @@ use App\Models\AgentData;
 use App\Models\Data;
 use App\Repository\AgentDataRepository\AgentDataRepository;
 use App\Repository\CampaignAssignRepository\AgentRepository\AgentRepository;
+use App\Repository\DataRepository\DataRepository;
 use Illuminate\Http\Request;
 
 class DataController extends Controller
@@ -20,21 +21,48 @@ class DataController extends Controller
      * @var AgentRepository
      */
     private $agentRepository;
+    /**
+     * @var DataRepository
+     */
+    private $dataRepository;
 
     public function __construct(
         AgentDataRepository $agentDataRepository,
-        AgentRepository $agentRepository
+        AgentRepository $agentRepository,
+        DataRepository $dataRepository
     )
     {
         $this->data = array();
         $this->agentDataRepository = $agentDataRepository;
         $this->agentRepository = $agentRepository;
+        $this->dataRepository = $dataRepository;
     }
 
     public function index($id)
     {
         $this->data['resultCAAgent'] = $this->agentRepository->find(base64_decode($id));
         return view('agent.data.list', $this->data);
+    }
+
+    public function edit($id)
+    {
+        $result = $this->dataRepository->find(base64_decode($id));
+        if(!empty($result)) {
+            return response()->json(array('status' => true, 'message' => 'Data found', 'data' => $result));
+        } else {
+            return response()->json(array('status' => false, 'message' => 'Data not found'));
+        }
+    }
+
+    public function update($id, Request $request): \Illuminate\Http\JsonResponse
+    {
+        $attributes = $request->all();
+        $response = $this->dataRepository->update(base64_decode($id), $attributes);
+        if($response['status'] == TRUE) {
+            return response()->json(array('status' => true, 'message' => $response['message']));
+        } else {
+            return response()->json(array('status' => false, 'message' => $response['message']));
+        }
     }
 
     public function getAgentData(Request $request)
@@ -49,46 +77,48 @@ class DataController extends Controller
 
         //get assigned data_ids
         $resultDataIds = array();
-        $resultAgentData = AgentData::select('data_id')->where('ca_agent_id', base64_decode($request->get('ca_agent_id')))->get();
+        $resultAgentData = AgentData::select('data_id')
+            ->where('ca_agent_id', base64_decode($request->get('ca_agent_id')))
+            ->where('status', 1)
+            ->get();
         if($resultAgentData->count()) {
             $resultDataIds = $resultAgentData->pluck('data_id')->toArray();
         }
 
         $query = Data::query();
-
         $query->whereIn('id', $resultDataIds);
-
         $totalRecords = $query->count();
 
         //Search Data
         if(isset($searchValue) && $searchValue != "") {
-            $query->where("first_name", "like", "%$searchValue%");
-            $query->orWhere("last_name", "like", "%$searchValue%");
-            $query->orWhere("company_name", "like", "%$searchValue%");
-            $query->orWhere("email_address", "like", "%$searchValue%");
-            $query->orWhere("specific_title", "like", "%$searchValue%");
-            $query->orWhere("job_level", "like", "%$searchValue%");
-            $query->orWhere("job_role", "like", "%$searchValue%");
-            $query->orWhere("phone_number", "like", "%$searchValue%");
-            $query->orWhere("address_1", "like", "%$searchValue%");
-            $query->orWhere("address_2", "like", "%$searchValue%");
-            $query->orWhere("city", "like", "%$searchValue%");
-            $query->orWhere("state", "like", "%$searchValue%");
-            $query->orWhere("zipcode", "like", "%$searchValue%");
-            $query->orWhere("employee_size", "like", "%$searchValue%");
-            $query->orWhere("revenue", "like", "%$searchValue%");
-            $query->orWhere("country", "like", "%$searchValue%");
-            $query->orWhere("company_domain", "like", "%$searchValue%");
-            $query->orWhere("website", "like", "%$searchValue%");
-            $query->orWhere("company_linkedin_url", "like", "%$searchValue%");
-            $query->orWhere("linkedin_profile_link", "like", "%$searchValue%");
-            $query->orWhere("linkedin_profile_sn_link", "like", "%$searchValue%");
+            $query->where(function ($query) use($searchValue) {
+                $query->where("first_name", "like", "%$searchValue%");
+                $query->orWhere("last_name", "like", "%$searchValue%");
+                $query->orWhere("company_name", "like", "%$searchValue%");
+                $query->orWhere("email_address", "like", "%$searchValue%");
+                $query->orWhere("specific_title", "like", "%$searchValue%");
+                $query->orWhere("job_level", "like", "%$searchValue%");
+                $query->orWhere("job_role", "like", "%$searchValue%");
+                $query->orWhere("phone_number", "like", "%$searchValue%");
+                $query->orWhere("address_1", "like", "%$searchValue%");
+                $query->orWhere("address_2", "like", "%$searchValue%");
+                $query->orWhere("city", "like", "%$searchValue%");
+                $query->orWhere("state", "like", "%$searchValue%");
+                $query->orWhere("zipcode", "like", "%$searchValue%");
+                $query->orWhere("employee_size", "like", "%$searchValue%");
+                $query->orWhere("revenue", "like", "%$searchValue%");
+                $query->orWhere("country", "like", "%$searchValue%");
+                $query->orWhere("company_domain", "like", "%$searchValue%");
+                $query->orWhere("website", "like", "%$searchValue%");
+                $query->orWhere("company_linkedin_url", "like", "%$searchValue%");
+                $query->orWhere("linkedin_profile_link", "like", "%$searchValue%");
+                $query->orWhere("linkedin_profile_sn_link", "like", "%$searchValue%");
+            });
         }
         //Filters
         if(!empty($filters)) {
 
         }
-
 
         //Order By
         $orderColumn = $order[0]['column'];
@@ -123,6 +153,9 @@ class DataController extends Controller
             $query->offset($offset);
             $query->limit($limit);
         }
+
+
+
 
         $result = $query->get();
 

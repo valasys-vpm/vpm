@@ -3,14 +3,17 @@
 namespace App\Http\Controllers\Agent;
 
 use App\Http\Controllers\Controller;
+use App\Models\AgentData;
 use App\Models\AgentLead;
 use App\Models\Campaign;
 use App\Models\SuppressionAccountName;
 use App\Models\SuppressionDomain;
 use App\Models\SuppressionEmail;
 use App\Models\TargetDomain;
+use App\Repository\AgentDataRepository\AgentDataRepository;
 use App\Repository\AgentLeadRepository\AgentLeadRepository;
 use App\Repository\CampaignAssignRepository\AgentRepository\AgentRepository;
+use App\Repository\DataRepository\DataRepository;
 use Illuminate\Http\Request;
 
 class LeadController extends Controller
@@ -18,15 +21,27 @@ class LeadController extends Controller
     private $data;
     private $agentRepository;
     private $agentLeadRepository;
+    /**
+     * @var DataRepository
+     */
+    private $dataRepository;
+    /**
+     * @var AgentDataRepository
+     */
+    private $agentDataRepository;
 
     public function __construct(
         AgentRepository $agentRepository,
-        AgentLeadRepository $agentLeadRepository
+        AgentLeadRepository $agentLeadRepository,
+        DataRepository $dataRepository,
+        AgentDataRepository $agentDataRepository
     )
     {
         $this->data = array();
         $this->agentRepository = $agentRepository;
         $this->agentLeadRepository = $agentLeadRepository;
+        $this->dataRepository = $dataRepository;
+        $this->agentDataRepository = $agentDataRepository;
     }
 
     public function index($id)
@@ -35,9 +50,12 @@ class LeadController extends Controller
         return view('agent.lead.list', $this->data);
     }
 
-    public function create($id)
+    public function create($ca_agent_id, $data_id = null)
     {
-        $this->data['resultCAAgent'] = $this->agentRepository->find(base64_decode($id));
+        if($data_id) {
+            $this->data['resultData'] = $this->dataRepository->find(base64_decode($data_id));
+        }
+        $this->data['resultCAAgent'] = $this->agentRepository->find(base64_decode($ca_agent_id));
         return view('agent.lead.create', $this->data);
     }
 
@@ -46,7 +64,18 @@ class LeadController extends Controller
         $attributes = $request->all();
         $response = $this->agentLeadRepository->store($attributes);
         if($response['status'] == TRUE) {
-            return redirect()->route('agent.lead.list', $attributes['ca_agent_id'])->with('success', ['title' => 'Successful', 'message' => $response['message']]);
+            if(isset($attributes['data_id']) && !empty($attributes['data_id'])) {
+                //Change agentData status to taken
+                $resultAgentData = AgentData::where('ca_agent_id', base64_decode($attributes['ca_agent_id']))->where('data_id', base64_decode($attributes['data_id']))->first();
+                $response_agentData = $this->agentDataRepository->update($resultAgentData->id, array('status' => 2));
+                if($response_agentData['status'] == TRUE) {
+                    return redirect()->route('agent.data.list', $attributes['ca_agent_id'])->with('success', ['title' => 'Successful', 'message' => $response['message']]);
+                } else {
+                    return back()->withInput()->with('error', ['title' => 'Error while processing request', 'message' => $response_agentData['message']]);
+                }
+            } else {
+                return redirect()->route('agent.lead.list', $attributes['ca_agent_id'])->with('success', ['title' => 'Successful', 'message' => $response['message']]);
+            }
         } else {
             return back()->withInput()->with('error', ['title' => 'Error while processing request', 'message' => $response['message']]);
         }

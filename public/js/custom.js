@@ -8,13 +8,10 @@ $.ajaxSetup({
         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
     },
     beforeSend: function () {
-        $('#modal-loader').modal('show');
+        $('#modal-loader').css('display', 'block');
     },
     complete: function () {
-        $('#modal-loader').modal('hide');
-        $('#modal-loader').hide();
         $('#modal-loader').css('display', 'none');
-        $('body').find('.modal-backdrop.fade.show').css('display', 'none');
     }
 });
 $(function () {

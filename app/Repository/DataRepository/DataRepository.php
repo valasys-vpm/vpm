@@ -122,7 +122,95 @@ class DataRepository implements DataInterface
 
     public function update($id, $attributes)
     {
-        // TODO: Implement update() method.
+        $response = array('status' => FALSE, 'message' => 'Something went wrong, please try again.');
+        try {
+            DB::beginTransaction();
+
+            $data = $this->find($id);
+
+            if(isset($attributes['first_name']) && !empty($attributes['first_name'])) {
+                $data->first_name = trim($attributes['first_name']);
+            }
+            if(isset($attributes['last_name']) && !empty($attributes['last_name'])) {
+                $data->last_name = trim($attributes['last_name']);
+            }
+            if(isset($attributes['company_name']) && !empty($attributes['company_name'])) {
+                $data->company_name = trim($attributes['company_name']);
+            }
+            if(isset($attributes['email_address']) && !empty($attributes['email_address'])) {
+                $data->email_address = trim($attributes['email_address']);
+            }
+            if(isset($attributes['specific_title']) && !empty($attributes['specific_title'])) {
+                $data->specific_title = trim($attributes['specific_title']);
+            }
+            if(isset($attributes['job_level']) && !empty($attributes['job_level'])) {
+                $data->job_level = trim($attributes['job_level']);
+            }
+            if(isset($attributes['job_role']) && !empty($attributes['job_role'])) {
+                $data->job_role = trim($attributes['job_role']);
+            }
+            if(isset($attributes['phone_number']) && !empty($attributes['phone_number'])) {
+                $data->phone_number = trim($attributes['phone_number']);
+            }
+            if(isset($attributes['address_1']) && !empty($attributes['address_1'])) {
+                $data->address_1 = trim($attributes['address_1']);
+            }
+            if(isset($attributes['address_2']) && !empty($attributes['address_2'])) {
+                $data->address_2 = trim($attributes['address_2']);
+            }
+            if(isset($attributes['city']) && !empty($attributes['city'])) {
+                $data->city = trim($attributes['city']);
+            }
+            if(isset($attributes['state']) && !empty($attributes['state'])) {
+                $data->state = trim($attributes['state']);
+            }
+            if(isset($attributes['zipcode']) && !empty($attributes['zipcode'])) {
+                $data->zipcode = trim($attributes['zipcode']);
+            }
+            if(isset($attributes['country']) && !empty($attributes['country'])) {
+                $data->country = trim($attributes['country']);
+            }
+            if(isset($attributes['employee_size']) && !empty($attributes['employee_size'])) {
+                $data->employee_size = trim($attributes['employee_size']);
+            }
+            if(isset($attributes['revenue']) && !empty($attributes['revenue'])) {
+                $data->revenue = trim($attributes['revenue']);
+            }
+            if(isset($attributes['company_domain']) && !empty($attributes['company_domain'])) {
+                $data->company_domain = trim($attributes['company_domain']);
+            }
+            if(isset($attributes['website']) && !empty($attributes['website'])) {
+                $data->website = trim($attributes['website']);
+            }
+            if(isset($attributes['company_linkedin_url']) && !empty($attributes['company_linkedin_url'])) {
+                $data->company_linkedin_url = trim($attributes['company_linkedin_url']);
+            }
+            if(isset($attributes['linkedin_profile_link']) && !empty($attributes['linkedin_profile_link'])) {
+                $data->linkedin_profile_link = trim($attributes['linkedin_profile_link']);
+            }
+            if(isset($attributes['linkedin_profile_sn_link']) && !empty($attributes['linkedin_profile_sn_link'])) {
+                $data->linkedin_profile_sn_link = trim($attributes['linkedin_profile_sn_link']);
+            }
+
+            if(isset($attributes['status'])) {
+                $data->status = trim($attributes['status']);
+            }
+
+            $data->updated_by = Auth::id();
+
+            if($data->update()) {
+                DB::commit();
+                $response = array('status' => TRUE, 'message' => 'Data updated successfully');
+            } else {
+                throw new \Exception('Something went wrong, please try again.', 1);
+            }
+
+        } catch (\Exception $exception) {
+            DB::rollBack();
+            //dd($exception->getMessage());
+            $response = array('status' => FALSE, 'message' => 'Something went wrong, please try again.');
+        }
+        return $response;
     }
 
     public function destroy($id)
@@ -246,7 +334,7 @@ class DataRepository implements DataInterface
 
         } catch (\Exception $exception) {
             DB::rollBack();
-            dd($exception->getMessage());
+            //dd($exception->getMessage());
             $response = array('status' => FALSE, 'message' => 'Something went wrong, please try again.');
         }
         return $response;

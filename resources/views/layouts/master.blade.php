@@ -77,7 +77,7 @@
 @yield('content')
 <!-- [ Main Content ] end -->
 
-    <div id="modal-loader" class="modal fade" data-backdrop="static" tabindex="-1" role="dialog" aria-hidden="true" style="background: rgba(0, 0, 0, 0.7) !important;">
+    <div id="modal-loader" class="modal" data-backdrop="static" tabindex="-1" role="dialog" aria-hidden="true" style="background: rgba(0, 0, 0, 0.7) !important;display: none;">
         <div class="modal-dialog modal-dialog-centered" role="document" style="max-width: 300px !important;">
             <div class="row">
                 <div class="col-md-12 text-center">

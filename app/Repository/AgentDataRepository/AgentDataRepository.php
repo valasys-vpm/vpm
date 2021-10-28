@@ -40,7 +40,9 @@ class AgentDataRepository implements AgentDataInterface
 
     public function find($id)
     {
-        // TODO: Implement find() method.
+        $query = AgentData::query();
+
+        return $query->findOrFail($id);
     }
 
     public function store($attributes)
@@ -48,7 +50,7 @@ class AgentDataRepository implements AgentDataInterface
         // TODO: Implement store() method.
     }
 
-    public function assignData($attributes)
+    public function assignData($attributes): array
     {
         $response = array('status' => FALSE, 'message' => 'Something went wrong, please try again.');
         try {
@@ -92,9 +94,37 @@ class AgentDataRepository implements AgentDataInterface
         return $response;
     }
 
-    public function update($id, $attributes)
+    public function update($id, $attributes): array
     {
-        // TODO: Implement update() method.
+        $response = array('status' => FALSE, 'message' => 'Something went wrong, please try again.');
+        try {
+            DB::beginTransaction();
+
+            $agentData = $this->find($id);
+
+            if(isset($attributes['ca_agent_id']) && !empty($attributes['ca_agent_id'])) {
+                $agentData->ca_agent_id = trim($attributes['ca_agent_id']);
+            }
+            if(isset($attributes['data_id']) && !empty($attributes['data_id'])) {
+                $agentData->data_id = trim($attributes['data_id']);
+            }
+            if(isset($attributes['status']) && !empty($attributes['status'])) {
+                $agentData->status = trim($attributes['status']);
+            }
+
+            if($agentData->update()) {
+                DB::commit();
+                $response = array('status' => TRUE, 'message' => 'Agent\'s data updated successfully');
+            } else {
+                throw new \Exception('Something went wrong, please try again.', 1);
+            }
+
+        } catch (\Exception $exception) {
+            DB::rollBack();
+            dd($exception->getMessage());
+            $response = array('status' => FALSE, 'message' => 'Something went wrong, please try again.');
+        }
+        return $response;
     }
 
     public function destroy($id)
