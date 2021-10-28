@@ -31,6 +31,10 @@ class AgentDataRepository implements AgentDataInterface
             }
         }
 
+        if (isset($filters['ca_agent_ids']) && !empty($filters['ca_agent_ids'])) {
+            $query->whereIn('ca_agent_id', $filters['ca_agent_ids']);
+        }
+
         return $query->get();
     }
 

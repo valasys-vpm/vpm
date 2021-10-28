@@ -31,14 +31,14 @@
                             <div class="row align-items-center">
                                 <div class="col-md-12">
                                     <div class="page-header-title">
-                                        <h5 class="m-b-10">Campaign Management</h5>
+                                        <h5 class="m-b-10">My Campaings</h5>
                                         <div class="card-header-right mb-1" style="float: right;">
                                             {{-- <a href="{{ route('campaign') }}" class="btn btn-outline-dark btn-square btn-sm" style="font-weight: bold;"><i class="feather icon-arrow-left"></i>Back</a> --}}
                                         </div>
                                     </div>
                                     <ul class="breadcrumb">
                                         <li class="breadcrumb-item"><a href="{{ route('agent.dashboard') }}"><i class="feather icon-home"></i></a></li>
-                                        <li class="breadcrumb-item"><a href="{{ route('agent.campaign.list') }}">Campaign Management</a></li>
+                                        <li class="breadcrumb-item"><a href="{{ route('agent.campaign.list') }}">My Campaings</a></li>
                                         <li class="breadcrumb-item"><a href="javascript:void(0);">Campaign Details</a></li>
                                     </ul>
 
@@ -281,7 +281,11 @@
                                         </div>
 
                                         <div class="col-md-3">
-                                            <button type="button" class="btn btn-info btn-sm btn-square w-100">Get Data</button>
+                                            @if($countAgentData)
+                                                <a href="{{ route('agent.data.list', base64_encode($resultCAAgent->id)) }}">
+                                                    <button type="button" class="btn btn-info btn-sm btn-square w-100">View Data</button>
+                                                </a>
+                                            @endif
                                         </div>
                                         <div id="div-submit-campaign"  class="col-md-3" @if(!empty($resultCAAgent->submitted_at)) style="display: none;" @endif>
                                             <button type="button" class="btn btn-danger btn-sm btn-square w-100" onclick="submitCampaign('{{ base64_encode($resultCAAgent->id) }}');">Submit Campaign</button>
