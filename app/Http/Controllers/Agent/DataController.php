@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\AgentData;
 use App\Models\Data;
 use App\Repository\AgentDataRepository\AgentDataRepository;
+use App\Repository\AgentLeadRepository\AgentLeadRepository;
 use App\Repository\CampaignAssignRepository\AgentRepository\AgentRepository;
 use App\Repository\DataRepository\DataRepository;
 use Illuminate\Http\Request;
@@ -25,17 +26,23 @@ class DataController extends Controller
      * @var DataRepository
      */
     private $dataRepository;
+    /**
+     * @var AgentLeadRepository
+     */
+    private $agentLeadRepository;
 
     public function __construct(
         AgentDataRepository $agentDataRepository,
         AgentRepository $agentRepository,
-        DataRepository $dataRepository
+        DataRepository $dataRepository,
+        AgentLeadRepository $agentLeadRepository
     )
     {
         $this->data = array();
         $this->agentDataRepository = $agentDataRepository;
         $this->agentRepository = $agentRepository;
         $this->dataRepository = $dataRepository;
+        $this->agentLeadRepository = $agentLeadRepository;
     }
 
     public function index($id)
@@ -60,6 +67,29 @@ class DataController extends Controller
         $response = $this->dataRepository->update(base64_decode($id), $attributes);
         if($response['status'] == TRUE) {
             return response()->json(array('status' => true, 'message' => $response['message']));
+        } else {
+            return response()->json(array('status' => false, 'message' => $response['message']));
+        }
+    }
+
+    public function takeLead(Request $request)
+    {
+        $attributes = $request->all();
+
+        $resultData = $this->dataRepository->find(base64_decode($attributes['data_id']));
+        $attributes = array_merge($attributes, $resultData->toArray());
+
+        $resultAgentData = AgentData::select('id')->where('ca_agent_id', base64_decode($attributes['ca_agent_id']))->where('data_id', base64_decode($attributes['data_id']))->first();
+
+        $response = $this->agentLeadRepository->store($attributes);
+        if($response['status'] == TRUE) {
+            //Change agentData status to taken
+            $response_agentData = $this->agentDataRepository->update($resultAgentData->id, array('status' => 2));
+            if($response_agentData['status'] == TRUE) {
+                return response()->json(array('status' => true, 'message' => $response['message']));
+            } else {
+                return response()->json(array('status' => false, 'message' => $response['message']));
+            }
         } else {
             return response()->json(array('status' => false, 'message' => $response['message']));
         }

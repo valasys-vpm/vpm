@@ -29,4 +29,6 @@ Route::prefix('campaign')->name('campaign.')->group(function()
 
     Route::any('/attach-campaign-file/{id}', [App\Http\Controllers\Manager\CampaignController::class, 'attachCampaignFile'])->name('attach_campaign_file');
 
+    Route::any('/import', [App\Http\Controllers\Manager\CampaignController::class, 'import'])->name('import');
+
 });

@@ -155,17 +155,30 @@ $(function (){
             });
         },
         "createdRow": function(row, data, dataIndex){
-            switch (data.campaign_status_id) {
+            let status_id  = data.campaign_status_id;
+            if(data.children.length) {
+                status_id = data.children[0].campaign_status_id;
+            }
+            switch (status_id) {
                 case 1:
                     $(row).addClass('border-live');
                     break;
                 case 2:
                     $(row).addClass('border-paused');
                     break;
+                case 3:
+                    $(row).addClass('border-cancelled');
+                    break;
+                case 4:
+                    $(row).addClass('border-delivered');
+                    break;
+                case 5:
+                    $(row).addClass('border-reactivated');
+                    break;
+                case 6:
+                    $(row).addClass('border-shortfall');
+                    break;
             }
-            /*if( data[2] ==  `someVal`){
-                $(row).addClass('redClass');
-            }*/
         }
     });
 

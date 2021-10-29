@@ -243,12 +243,28 @@ class CampaignController extends Controller
         }
     }
 
+    //Import bulk campaigns
+    public function import(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $attributes = $request->all();
+
+        dd($attributes);
+
+
+
+        if($response['status'] == TRUE) {
+            return response()->json(array('status' => true, 'message' => $response['message']));
+        } else {
+            return response()->json(array('status' => false, 'message' => $response['message']));
+        }
+    }
+
     public function getCampaigns(Request $request): \Illuminate\Http\JsonResponse
     {
         $filters = array_filter(json_decode($request->get('filters'), true));
         $search_data = $request->get('search');
         $searchValue = $search_data['value'];
-        $order = $request->get('order');
+
         $draw = $request->get('draw');
         $limit = $request->get("length"); // Rows display per page
         $offset = $request->get("start");
@@ -265,17 +281,24 @@ class CampaignController extends Controller
 
         }
 
-
         //Order By
-        $orderColumn = $order[0]['column'];
-        $orderDirection = $order[0]['dir'];
+        $orderColumn = null;
+        if ($request->has('order')){
+            $order = $request->get('order');
+            $orderColumn = $order[0]['column'];
+            $orderDirection = $order[0]['dir'];
+        }
+
         switch ($orderColumn) {
-            case '0': $query->orderBy('name', $orderDirection); break;
+            case '0': $query->orderBy('campaign_id', $orderDirection); break;
             case '1': $query->orderBy('name', $orderDirection); break;
-            case '2': $query->orderBy('name', $orderDirection); break;
-            case '3': $query->orderBy('name', $orderDirection); break;
-            case '4': $query->orderBy('name', $orderDirection); break;
-            default: $query->orderBy('name'); break;
+            case '2':
+                break;
+            case '3': $query->orderBy('start_date', $orderDirection); break;
+            case '4': $query->orderBy('end_date', $orderDirection); break;
+            case '5': $query->orderBy('allocation', $orderDirection); break;
+            case '6': $query->orderBy('campaign_status_id', $orderDirection); break;
+            default: $query->orderBy('created_at', 'DESC'); break;
         }
 
         $totalFilterRecords = $query->count();

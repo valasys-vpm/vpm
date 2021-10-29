@@ -33,7 +33,8 @@ $(function (){
                 render: function (data, type, row) {
                     let html = '';
                     html += '<button type="button" class="btn btn-outline-secondary btn-rounded btn-sm" title="Edit/Nurture Data" onclick="editData(\''+ btoa(row.id) +'\')"><i class="feather icon-edit mr-0"></i></button>';
-                    html += '<a href="'+URL+'/agent/data/take-lead-data/'+ $('meta[name="ca-agent-id"]').attr('content') + '/' + btoa(row.id) +'" class="btn btn-outline-success btn-rounded btn-sm" title="Take Lead"><i class="feather icon-share mr-0"></i></a>';
+                    html += '<button type="button" class="btn btn-outline-success btn-rounded btn-sm" title="Take Lead" onclick="takeLead(\''+ btoa(row.id) +'\')"><i class="feather icon-share mr-0"></i></button>';
+                    //html += '<a href="'+URL+'/agent/data/take-lead-data/'+ $('meta[name="ca-agent-id"]').attr('content') + '/' + btoa(row.id) +'" class="btn btn-outline-success btn-rounded btn-sm" title="Take Lead"><i class="feather icon-share mr-0"></i></a>';
                     return html;
                 }
             },
@@ -185,4 +186,25 @@ function editData(_data_id) {
             }
         }
     });
+}
+
+function takeLead(_data_id) {
+    if(confirm('Are you sure to take/utilize lead?')) {
+        $.ajax({
+            type: 'post',
+            url: URL + '/agent/data/take-lead-data',
+            data: {
+                data_id: _data_id,
+                ca_agent_id: $('meta[name="ca-agent-id"]').attr('content')
+            },
+            success: function (response){
+                if(response.status === true) {
+                    trigger_pnofify('success', 'Successful', response.message);
+                    DATA_TABLE.ajax.reload();
+                } else {
+                    trigger_pnofify('error', 'Error while processing request', response.message);
+                }
+            }
+        });
+    }
 }

@@ -63,9 +63,6 @@
                                     <div class="card">
                                         <div class="card-header">
                                             <h5>Data List</h5>
-                                            <div class="float-right">
-                                                <button type="button" class="btn btn-primary btn-square btn-sm" data-toggle="modal" data-target="#modal-import-data"><i class="feather icon-upload"></i>Import</button>
-                                            </div>
                                         </div>
                                         <div class="card-block">
                                             <div class="table-responsive">

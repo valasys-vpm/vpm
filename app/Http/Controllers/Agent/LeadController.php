@@ -52,9 +52,9 @@ class LeadController extends Controller
 
     public function create($ca_agent_id, $data_id = null)
     {
-        if($data_id) {
+        /*if($data_id) {
             $this->data['resultData'] = $this->dataRepository->find(base64_decode($data_id));
-        }
+        }*/
         $this->data['resultCAAgent'] = $this->agentRepository->find(base64_decode($ca_agent_id));
         return view('agent.lead.create', $this->data);
     }
@@ -64,18 +64,7 @@ class LeadController extends Controller
         $attributes = $request->all();
         $response = $this->agentLeadRepository->store($attributes);
         if($response['status'] == TRUE) {
-            if(isset($attributes['data_id']) && !empty($attributes['data_id'])) {
-                //Change agentData status to taken
-                $resultAgentData = AgentData::where('ca_agent_id', base64_decode($attributes['ca_agent_id']))->where('data_id', base64_decode($attributes['data_id']))->first();
-                $response_agentData = $this->agentDataRepository->update($resultAgentData->id, array('status' => 2));
-                if($response_agentData['status'] == TRUE) {
-                    return redirect()->route('agent.data.list', $attributes['ca_agent_id'])->with('success', ['title' => 'Successful', 'message' => $response['message']]);
-                } else {
-                    return back()->withInput()->with('error', ['title' => 'Error while processing request', 'message' => $response_agentData['message']]);
-                }
-            } else {
-                return redirect()->route('agent.lead.list', $attributes['ca_agent_id'])->with('success', ['title' => 'Successful', 'message' => $response['message']]);
-            }
+            return redirect()->route('agent.lead.list', $attributes['ca_agent_id'])->with('success', ['title' => 'Successful', 'message' => $response['message']]);
         } else {
             return back()->withInput()->with('error', ['title' => 'Error while processing request', 'message' => $response['message']]);
         }

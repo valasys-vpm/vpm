@@ -10,7 +10,6 @@
     <link rel="stylesheet" href="{{asset('public/template/assets/plugins/data-tables/css/datatables.min.css')}}">
     <!-- toolbar css -->
     <link rel="stylesheet" href="{{asset('public/template/assets/plugins/toolbar/css/jquery.toolbar.css')}}">
-
     <!-- custom campaign table css -->
     <link rel="stylesheet" href="{{asset('public/css/campaign_table_custom.css')}}">
 @append

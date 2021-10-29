@@ -115,8 +115,8 @@
                     @csrf
                     <div class="modal-body">
                         <div class="col-md-12">
-                                <div class="row">
-                                    <div class="col-md-12 form-group">
+                            <div class="row">
+                                <div class="col-md-12 form-group">
                                     <label for="data_file">Upload Data File <span class="text-danger">*</span></label>
                                     <div class="float-right">
                                         <button type="button" class="btn btn-outline-dark btn-square btn-sm p-1 pl-2 pr-2" style="font-size: 11px" onclick="downloadSampleFile('import-data.xlsx');" download><i class="feather icon-download"></i>Download Sample</button>
