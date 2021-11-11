@@ -11,4 +11,5 @@ Route::prefix('campaign')->name('campaign.')->group(function()
 
     Route::any('/view-agent-lead-details/{id}', [App\Http\Controllers\TeamLeader\CampaignController::class, 'getAgentLeadDetails'])->name('view_agent_lead_details');
 
+    Route::any('/submit-campaign/{id}', [App\Http\Controllers\TeamLeader\CampaignController::class, 'submitCampaign'])->name('submit_campaign');
 });

@@ -30,7 +30,7 @@ class CampaignAssignAgent extends Model
 
     public function caratl()
     {
-        return $this->hasOne(CampaignAssignAgent::class, 'id', 'campaign_assign_ratl_id');
+        return $this->hasOne(CampaignAssignRATL::class, 'id', 'campaign_assign_ratl_id');
     }
 
     public function agentLeads()

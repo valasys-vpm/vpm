@@ -29,6 +29,7 @@ class CreateCampaignAssignQualityAnalystsTable extends Migration
 
             $table->dateTime('started_at')->nullable();
             $table->dateTime('submitted_at')->nullable();
+            $table->string('file_name')->nullable();
 
             $table->integer('assigned_by');
             $table->tinyInteger('status')->default(1)->comment('1-active,0-inactive,2-revoke');

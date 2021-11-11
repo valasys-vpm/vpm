@@ -14,7 +14,6 @@ use App\Repository\HolidayRepository\HolidayRepository;
 use App\Repository\PacingDetailRepository\PacingDetailRepository;
 use App\Repository\RegionRepository\RegionRepository;
 use Illuminate\Http\Request;
-use function Symfony\Component\Translation\t;
 
 class CampaignController extends Controller
 {
@@ -244,18 +243,21 @@ class CampaignController extends Controller
     }
 
     //Import bulk campaigns
-    public function import(Request $request): \Illuminate\Http\JsonResponse
+    public function import(Request $request)
     {
         $attributes = $request->all();
 
-        dd($attributes);
-
-
+        $response = $this->campaignRepository->import($attributes);
 
         if($response['status'] == TRUE) {
-            return response()->json(array('status' => true, 'message' => $response['message']));
+            return response(json_encode(array('status' => true, 'message' => $response['message'])), 201);
         } else {
-            return response()->json(array('status' => false, 'message' => $response['message']));
+            if(!empty($response['file'])) {
+                return $response['file'];
+                //return response(json_encode(array('status' => false, 'message' => $response['message'], 'file' => base64_encode($response['file']))));
+            } else {
+                return response(json_encode(array('status' => false, 'message' => $response['message'])));
+            }
         }
     }
 

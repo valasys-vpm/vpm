@@ -105,6 +105,7 @@ class CampaignAssignController extends Controller
         $attributes = $request->all();
         $response = $this->agentRepository->store($attributes);
         if($response['status'] == TRUE) {
+            $res = $this->RATLRepository->update($attributes['data'][0]['campaign_assign_ratl_id'], array('started_at' => date('Y-m-d H:i:s')));
             return redirect()->route('team_leader.campaign_assign.list')->with('success', ['title' => 'Successful', 'message' => $response['message']]);
         } else {
             return back()->withInput()->with('error', ['title' => 'Error while processing request', 'message' => $response['message']]);
@@ -153,6 +154,7 @@ class CampaignAssignController extends Controller
         $query->whereIn('id', $this->data['resultAssignedCampaigns']->pluck('id')->toArray());
         $query->whereUserId(Auth::id());
         $query->with('campaign');
+        $query->with('campaign.children');
         $query->with('agents');
 
         $totalRecords = $query->count();

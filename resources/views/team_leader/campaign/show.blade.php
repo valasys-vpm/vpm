@@ -348,18 +348,22 @@
                                         <div class="col-md-3">
                                             <button type="button" class="btn btn-success btn-sm btn-square w-100">Button 1</button>
                                         </div>
-                                        <div class="col-md-3">
+                                        @if(empty($resultCARATL->submitted_at))
+                                        <div id="div-manage-leads" class="col-md-3">
                                             <a href="{{ route('team_leader.lead.list', base64_encode($resultCARATL->id)) }}">
                                                 <button type="button" class="btn btn-primary btn-sm btn-square w-100">Manage Leads</button>
                                             </a>
                                         </div>
+                                        @endif
+
                                         <div class="col-md-3">
                                             <button type="button" class="btn btn-warning btn-sm btn-square w-100">Button 3</button>
                                         </div>
-
-                                        <div class="col-md-3">
+                                        @if(empty($resultCARATL->submitted_at))
+                                        <div id="div-submit-campaign" class="col-md-3">
                                             <button type="button" @if($total_submitted < $total_agents) class="btn btn-danger btn-sm btn-square w-100" disabled title="Campaign Not Submitted By All Agents!" @else class="btn btn-success btn-sm btn-square w-100" @endif onclick="submitCampaign('{{ base64_encode($resultCARATL->id) }}');">Submit Campaign</button>
                                         </div>
+                                        @endif
                                     </div>
 
                                 </div>

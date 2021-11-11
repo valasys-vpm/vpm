@@ -323,20 +323,49 @@ $(function (){
     $('#form-import-campaigns-submit').on('click', function (e) {
         e.preventDefault();
         let form_data = new FormData($('#form-import-campaigns')[0]);
+        let url = '';
         $.ajax({
             url: URL +'/manager/campaign/import',
             processData: false,
             contentType: false,
             data: form_data,
             type: 'post',
-            success: function(response) {
-                if(response.status === true) {
-                    console.log(response);
-                    $('#modal-import-campaigns').modal('hide');
-                    trigger_pnofify('success', 'Successful', response.message);
+            xhr: function () {
+                let xhr = new XMLHttpRequest();
+
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState === 2) {
+                        if (xhr.status === 201) {
+                            xhr.responseType = "json";
+                        } else {
+                            xhr.responseType = "blob";
+                        }
+                    }
+                };
+                return xhr;
+            },
+            success: function(response, status, xhr) {
+                if(xhr.status === 201) {
+                    if(response.status === true) {
+                        //$('#modal-import-campaigns').modal('hide');
+                        trigger_pnofify('success', 'Successful', response.message);
+                    } else {
+                        trigger_pnofify('error', 'Error while processing request', response.message);
+                    }
                 } else {
-                    trigger_pnofify('error', 'Error while processing request', response.message);
+                    let date = new Date();
+                    let blob = new Blob([response], {type: '' + xhr.getResponseHeader("content-type")})
+                    console.log(blob);
+                    let a = $('<a />'), url = window.URL.createObjectURL(blob);
+                    a.attr({
+                        'href': url,
+                        'download': 'Invalid_Campaigns_'+date.getTime()+'.xlsx',
+                        'text': "click"
+                    }).hide().appendTo("body")[0].click();
+                    trigger_pnofify('warning', 'Invalid Data', 'Campaigns imported with errors, please check excel file to invalid data.');
                 }
+                $('#modal-import-campaigns').modal('hide');
+                CAMPAIGN_TABLE.ajax.reload();
             }
         });
 

@@ -66,6 +66,7 @@ class AgentLeadRepository implements AgentLeadInterface
             $agentLead->state = $attributes['state'];
             $agentLead->zipcode = $attributes['zipcode'];
             $agentLead->country = $attributes['country'];
+            $agentLead->industry = $attributes['industry'];
             $agentLead->employee_size = $attributes['employee_size'];
             $agentLead->revenue = $attributes['revenue'];
             $agentLead->company_domain = $attributes['company_domain'];
@@ -76,6 +77,10 @@ class AgentLeadRepository implements AgentLeadInterface
             $agentLead->linkedin_profile_link = $attributes['linkedin_profile_link'];
             if(isset($attributes['linkedin_profile_sn_link']) && !empty(trim($attributes['linkedin_profile_sn_link']))) {
                 $agentLead->linkedin_profile_sn_link = $attributes['linkedin_profile_sn_link'];
+            }
+
+            if(isset($attributes['comment']) && !empty(trim($attributes['comment']))) {
+                $agentLead->comment = $attributes['comment'];
             }
 
             $agentLead->save();

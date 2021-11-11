@@ -94,6 +94,9 @@ $(function (){
                 data: 'country'
             },
             {
+                data: 'industry'
+            },
+            {
                 data: 'employee_size'
             },
             {

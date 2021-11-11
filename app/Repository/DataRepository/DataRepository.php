@@ -170,6 +170,9 @@ class DataRepository implements DataInterface
             if(isset($attributes['country']) && !empty($attributes['country'])) {
                 $data->country = trim($attributes['country']);
             }
+            if(isset($attributes['industry']) && !empty(trim($attributes['industry']))) {
+                $data->industry = $attributes['industry'];
+            }
             if(isset($attributes['employee_size']) && !empty($attributes['employee_size'])) {
                 $data->employee_size = trim($attributes['employee_size']);
             }
@@ -190,6 +193,9 @@ class DataRepository implements DataInterface
             }
             if(isset($attributes['linkedin_profile_sn_link']) && !empty($attributes['linkedin_profile_sn_link'])) {
                 $data->linkedin_profile_sn_link = trim($attributes['linkedin_profile_sn_link']);
+            }
+            if(isset($attributes['comment']) && !empty(trim($attributes['comment']))) {
+                $data->comment = $attributes['comment'];
             }
 
             if(isset($attributes['status'])) {
@@ -251,61 +257,20 @@ class DataRepository implements DataInterface
                         'state' => trim($row[11]),
                         'zipcode' => trim($row[12]),
                         'country' => trim($row[13]),
-                        'employee_size' => trim($row[14]),
-                        'revenue' => trim($row[15]),
-                        'company_domain' => trim($row[16]),
-                        'website' => trim($row[17]),
-                        'company_linkedin_url' => trim($row[18]),
-                        'linkedin_profile_link' => trim($row[19]),
-                        'linkedin_profile_sn_link' => trim($row[20]),
+                        'industry' => trim($row[14]),
+                        'employee_size' => trim($row[15]),
+                        'revenue' => trim($row[16]),
+                        'company_domain' => trim($row[17]),
+                        'website' => trim($row[18]),
+                        'company_linkedin_url' => trim($row[19]),
+                        'linkedin_profile_link' => trim($row[20]),
+                        'linkedin_profile_sn_link' => trim($row[21]),
                         'updated_by' => $updated_by,
                         'status' => 1,
                     );
                     $resultValidate = $this->validateLeadData($leadData);
                     if(empty($resultValidate)) {
                         $validData[] = $leadData;
-                        /*
-                        $data = new Data();
-                        $data->first_name = trim($row[0]);
-                        $data->last_name = trim($row[1]);
-                        $data->company_name = trim($row[2]);
-
-                        $data->email_address = trim($row[3]);
-
-                        $data->specific_title = trim($row[4]);
-                        if(!empty(trim($row[5]))) {
-                            $data->job_level = trim($row[5]);
-                        }
-                        if(!empty(trim($row[6]))) {
-                            $data->job_role = trim($row[6]);
-                        }
-                        $data->phone_number = trim($row[7]);
-                        $data->address_1 = trim($row[8]);
-                        if(!empty(trim($row[9]))) {
-                            $data->address_2 = trim($row[9]);
-                        }
-                        $data->city = trim($row[10]);
-                        $data->state = trim($row[11]);
-                        $data->zipcode = trim($row[12]);
-                        $data->country = trim($row[13]);
-                        $data->employee_size = trim($row[14]);
-                        $data->revenue = trim($row[15]);
-                        $data->company_domain = trim($row[16]);
-                        if(!empty(trim($row[17]))) {
-                            $data->website = trim($row[17]);
-                        }
-                        if(!empty(trim($row[18]))) {
-                            $data->company_linkedin_url = trim($row[18]);
-                        }
-                        $data->linkedin_profile_link = trim($row[19]);
-                        $data->linkedin_profile_sn_link = trim($row[20]);
-                        $data->updated_by  = Auth::id();
-                        $data->status  = 1;
-                        $data->save();
-                        if($data->id) {
-                            $successCount++;
-                        }
-                        */
                     } else {
                         $failedData[] = $leadData;
                     }

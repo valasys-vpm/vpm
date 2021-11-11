@@ -13,12 +13,12 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="description" content=""/>
-    <meta name="keywords" content=""/>
-    <meta name="author" content="CodedThemes" />
+    <meta name="description" content="Valasys Media"/>
+    <meta name="keywords" content="Valasys Media"/>
+    <meta name="author" content="Valasys Media" />
 
     <!-- Favicon icon -->
-    <link rel="icon" href="{{ asset('public/template') }}/assets/images/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="{{ asset('public/template') }}/assets/images/favicon.png" type="image/x-icon">
     <!-- fontawesome icon -->
     <link rel="stylesheet" href="{{ asset('public/template') }}/assets/fonts/fontawesome/css/fontawesome-all.min.css">
     <!-- animation css -->

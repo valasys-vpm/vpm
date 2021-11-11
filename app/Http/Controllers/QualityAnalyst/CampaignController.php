@@ -1,0 +1,217 @@
+<?php
+
+namespace App\Http\Controllers\QualityAnalyst;
+
+use App\Exports\AgentLeadExport;
+use App\Exports\NPFExport;
+use App\Http\Controllers\Controller;
+use App\Models\Campaign;
+use App\Models\CampaignAssignQualityAnalyst;
+use App\Repository\CampaignAssignRepository\EMERepository\EMERepository as CAEMERepository;
+use App\Repository\CampaignAssignRepository\QualityAnalystRepository\QualityAnalystRepository;
+use App\Repository\CampaignEBBFileRepository\CampaignEBBFileRepository;
+use App\Repository\UserRepository\UserRepository;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+
+use Excel;
+
+class CampaignController extends Controller
+{
+    private $data;
+    /**
+     * @var QualityAnalystRepository
+     */
+    private $qualityAnalystRepository;
+    /**
+     * @var CAEMERepository
+     */
+    private $CAEMERepository;
+    /**
+     * @var UserRepository
+     */
+    private $userRepository;
+    /**
+     * @var CampaignEBBFileRepository
+     */
+    private $campaignEBBFileRepository;
+    /**
+     * @var CampaignFileRepository
+     */
+    private $campaignFileRepository;
+
+    public function __construct(
+        QualityAnalystRepository $qualityAnalystRepository,
+        CAEMERepository $CAEMERepository,
+        UserRepository $userRepository,
+        CampaignEBBFileRepository $campaignEBBFileRepository
+    )
+    {
+        $this->data = array();
+        $this->qualityAnalystRepository = $qualityAnalystRepository;
+        $this->CAEMERepository = $CAEMERepository;
+        $this->userRepository = $userRepository;
+        $this->campaignEBBFileRepository = $campaignEBBFileRepository;
+    }
+
+    public function index()
+    {
+        return view('quality_analyst.campaign.list', $this->data);
+    }
+
+    public function show($id)
+    {
+        $this->data['resultCAQA'] = $this->qualityAnalystRepository->find(base64_decode($id));
+        $this->data['resultCampaignEBBFiles'] = $this->campaignEBBFileRepository->get(array('campaign_ids' => [$this->data['resultCAQA']->campaign_id]));
+        $this->data['resultEMEUsers'] = $this->userRepository->get(array('designation_slug' => ['email_marketing_executive']));
+        //dd($this->data['resultCAQA']->campaign->toArray());
+        return view('quality_analyst.campaign.show', $this->data);
+    }
+
+    public function submitCampaign($id, Request $request): \Illuminate\Http\JsonResponse
+    {
+        $finalResponse = array('status' => false, 'message' => 'Something went wrong, please try again.');
+        if($request->hasFile('final_file')) {
+            $attributes = $request->all();
+            $attributes['submitted_at'] = date('Y-m-d H:i:s');
+            $response = $this->qualityAnalystRepository->update(base64_decode($id), $attributes);
+            if($response['status']) {
+                $finalResponse = array('status' => true, 'message' => 'Campaign submitted successfully');
+            } else {
+                $finalResponse = array('status' => false, 'message' => $response['message']);
+            }
+        } else {
+            $finalResponse = array('status' => false, 'message' => 'Please upload file');
+        }
+
+        return response()->json($finalResponse);
+    }
+
+    public function getCampaigns(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $filters = array_filter(json_decode($request->get('filters'), true));
+        $search_data = $request->get('search');
+        $searchValue = $search_data['value'];
+        $order = $request->get('order');
+        $draw = $request->get('draw');
+        $limit = $request->get("length"); // Rows display per page
+        $offset = $request->get("start");
+
+        $query = CampaignAssignQualityAnalyst::query();
+
+        $query->whereUserId(Auth::id());
+
+        $query->with('campaign.children');
+
+        $totalRecords = $query->count();
+
+        //Search Data
+        if(isset($searchValue) && $searchValue != "") {
+            $query->where("created_at", "like", "%$searchValue%");
+        }
+        //Filters
+        if(!empty($filters)) {
+
+        }
+
+
+        //Order By
+        $orderColumn = $order[0]['column'];
+        $orderDirection = $order[0]['dir'];
+        switch ($orderColumn) {
+            case '0': $query->orderBy('id', $orderDirection); break;
+            case '1': $query->orderBy('id', $orderDirection); break;
+            case '2': $query->orderBy('id', $orderDirection); break;
+            case '3': $query->orderBy('id', $orderDirection); break;
+            case '4': $query->orderBy('id', $orderDirection); break;
+            default: $query->orderBy('id'); break;
+        }
+
+        $totalFilterRecords = $query->count();
+        if($limit > 0) {
+            $query->offset($offset);
+            $query->limit($limit);
+        }
+
+        $result = $query->get();
+        //dd($result->toArray());
+
+        $ajaxData = array(
+            "draw" => intval($draw),
+            "iTotalRecords" => $totalRecords,
+            "iTotalDisplayRecords" => $totalFilterRecords,
+            "aaData" => $result
+        );
+
+        return response()->json($ajaxData);
+    }
+
+    public function downloadFile($id)
+    {
+        $response = array('status' => true, 'message' => 'Something went wrong, please try again.');
+        try {
+            $resultCAQA = $this->qualityAnalystRepository->find(base64_decode($id));
+            $resultCampaign = Campaign::find($resultCAQA->campaign_id);
+
+            $path = 'public/campaigns/'.$resultCampaign->campaign_id.'/quality/';
+            $path_to_download = '/public/storage/campaigns/'.$resultCampaign->campaign_id.'/quality/';
+            $filename = str_replace(' ', '_', trim($resultCampaign->name)) .'_'.time(). "_AGENT_DATA.xlsx";
+            if(Excel::store(new AgentLeadExport($resultCAQA->campaign_id), $path.$filename)) {
+                $response = array('status' => true, 'message' => 'Successful', 'file_name' => $path_to_download.$filename);
+            } else {
+                throw new \Exception('Something went wrong, please try again.', 1);
+            }
+        } catch (\Exception $exception) {
+            //dd($exception->getMessage());
+            $response = array('status' => false, 'message' => 'Something went wrong, please try again.');
+        }
+
+        return response()->json($response);
+
+    }
+
+    public function downloadNPF($id)
+    {
+        $response = array('status' => true, 'message' => 'Something went wrong, please try again.');
+        try {
+            $resultCAQA = $this->qualityAnalystRepository->find(base64_decode($id));
+            $resultCampaign = Campaign::find($resultCAQA->campaign_id);
+
+            $path = 'public/campaigns/'.$resultCampaign->campaign_id.'/quality/';
+            $path_to_download = '/public/storage/campaigns/'.$resultCampaign->campaign_id.'/quality/';
+            $filename = str_replace(' ', '_', trim($resultCampaign->name)) .'_'.time(). "_NPF.xlsx";
+            if(Excel::store(new NPFExport($resultCAQA->campaign_id), $path.$filename)) {
+                $response = array('status' => true, 'message' => 'Successful', 'file_name' => $path_to_download.$filename);
+            } else {
+                throw new \Exception('Something went wrong, please try again.', 1);
+            }
+        } catch (\Exception $exception) {
+            //dd($exception->getMessage());
+            $response = array('status' => false, 'message' => 'Something went wrong, please try again.');
+        }
+
+        return response()->json($response);
+
+    }
+
+    public function uploadNPF($id, Request $request)
+    {
+        $response = array('status' => false, 'message' => 'Something went wrong, please try again.');
+        if($request->hasFile('npf_file') && !empty($request->get('user_id'))) {
+            $attributes = $request->all();
+            $resultCAQA = $this->qualityAnalystRepository->find(base64_decode($id));
+            $attributes['campaign_id'] = $resultCAQA->campaign_id;
+            $attributes['display_date'] = date('Y-m-d', strtotime($resultCAQA->display_date));
+            $response = $this->CAEMERepository->store($attributes);
+            if($response['status'] == TRUE) {
+                $response = array('status' => true, 'message' => $response['message']);
+            } else {
+                $response = array('status' => false, 'message' => $response['message']);
+            }
+        } else {
+            $response = array('status' => false, 'message' => 'Required field missing');
+        }
+
+        return response()->json($response);
+    }
+}

@@ -31,6 +31,7 @@ class CreateDataTable extends Migration
             $table->string('state', 100);
             $table->string('zipcode', 10);
             $table->string('country', 100);
+            $table->string('industry');
             $table->string('employee_size', 50);
             $table->string('revenue', 50);
             $table->string('company_domain', 100);

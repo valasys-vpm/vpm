@@ -69,6 +69,9 @@ $(function (){
                 data: 'country'
             },
             {
+                data: 'industry'
+            },
+            {
                 data: 'employee_size'
             },
             {
@@ -88,6 +91,9 @@ $(function (){
             },
             {
                 data: 'linkedin_profile_sn_link'
+            },
+            {
+                data: 'comment'
             },
             {
                 render: function (data, type, row) {

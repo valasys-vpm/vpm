@@ -86,6 +86,7 @@
                                                         <th>State</th>
                                                         <th>Zipcode</th>
                                                         <th>Country</th>
+                                                        <th>Industry</th>
                                                         <th>Employee Size</th>
                                                         <th>Revenue</th>
                                                         <th>Company Domain</th>

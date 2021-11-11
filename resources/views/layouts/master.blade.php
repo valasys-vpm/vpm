@@ -21,7 +21,7 @@
     <meta name="base-path" content="{{ url('/') }}" />
 
     <!-- Favicon icon -->
-    <link rel="icon" href="{{ asset('public/template') }}/assets/images/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="{{ asset('public/template') }}/assets/images/favicon.png" type="image/x-icon">
     <!-- fontawesome icon -->
     <link rel="stylesheet" href="{{ asset('public/template') }}/assets/fonts/fontawesome/css/fontawesome-all.min.css">
     <!-- animation css -->

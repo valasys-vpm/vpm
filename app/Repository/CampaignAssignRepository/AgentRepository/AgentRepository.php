@@ -30,7 +30,7 @@ class AgentRepository implements AgentInterface
     public function find($id)
     {
         $query = CampaignAssignAgent::query();
-
+        $query->with('caratl');
         return $query->findOrFail($id);
     }
 

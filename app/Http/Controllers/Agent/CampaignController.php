@@ -70,6 +70,7 @@ class CampaignController extends Controller
 
         $query->whereUserId(Auth::id());
         $query->with('campaign');
+        $query->with('campaign.children');
 
         $totalRecords = $query->count();
 

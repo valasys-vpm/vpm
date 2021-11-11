@@ -128,12 +128,16 @@
                                                                 <input autofocus type="text" class="form-control btn-square" id="country" name="country" placeholder="Enter country" @if(isset($resultData)) value="{{ $resultData->country }}" @endif>
                                                             </div>
                                                             <div class="col-md-4 form-group">
-                                                                <label for="employee_size">Employee/Company Size<span class="text-danger">*</span></label>
-                                                                <input type="text" class="form-control btn-square" id="employee_size" name="employee_size" placeholder="Enter size" @if(isset($resultData)) value="{{ $resultData->employee_size }}" @endif>
+                                                                <label for="industry">Industry<span class="text-danger">*</span></label>
+                                                                <input type="text" class="form-control btn-square" id="industry" name="industry" placeholder="Enter industry" @if(isset($resultData)) value="{{ $resultData->industry }}" @endif>
                                                             </div>
                                                         </div>
 
                                                         <div class="row">
+                                                            <div class="col-md-4 form-group">
+                                                                <label for="employee_size">Employee/Company Size<span class="text-danger">*</span></label>
+                                                                <input type="text" class="form-control btn-square" id="employee_size" name="employee_size" placeholder="Enter size" @if(isset($resultData)) value="{{ $resultData->employee_size }}" @endif>
+                                                            </div>
                                                             <div class="col-md-4 form-group">
                                                                 <label for="revenue">Revenue<span class="text-danger">*</span></label>
                                                                 <input type="text" class="form-control btn-square" id="revenue" name="revenue" placeholder="Enter revenue" @if(isset($resultData)) value="{{ $resultData->revenue }}" @endif>
@@ -142,22 +146,22 @@
                                                                 <label for="company_domain">Company Domain<span class="text-danger">*</span></label>
                                                                 <input autofocus type="text" class="form-control btn-square" id="company_domain" name="company_domain" placeholder="Enter company domain" @if(isset($resultData)) value="{{ $resultData->company_domain }}" @endif>
                                                             </div>
-                                                            <div class="col-md-4 form-group">
-                                                                <label for="website">Website<span class="text-info"> <small>(optional)</small></span></label>
-                                                                <input type="text" class="form-control btn-square" id="website" name="website" placeholder="Enter website" @if(isset($resultData)) value="{{ $resultData->website }}" @endif>
-                                                            </div>
                                                         </div>
 
                                                         <div class="row">
-                                                            <div class="col-md-12 form-group">
+                                                            <div class="col-md-6 form-group">
+                                                                <label for="website">Website<span class="text-info"> <small>(optional)</small></span></label>
+                                                                <input type="text" class="form-control btn-square" id="website" name="website" placeholder="Enter website" @if(isset($resultData)) value="{{ $resultData->website }}" @endif>
+                                                            </div>
+                                                            <div class="col-md-6 form-group">
                                                                 <label for="company_linkedin_url">Company LinkedIn URL<span class="text-danger">*</span></label>
                                                                 <input type="text" class="form-control btn-square" id="company_linkedin_url" name="company_linkedin_url" placeholder="Enter company linkedin url" @if(isset($resultData)) value="{{ $resultData->company_linkedin_url }}" @endif>
                                                             </div>
-                                                            <div class="col-md-12 form-group">
+                                                            <div class="col-md-6 form-group">
                                                                 <label for="linkedin_profile_link">LinkedIn Profile Link<span class="text-danger">*</span></label>
                                                                 <input autofocus type="text" class="form-control btn-square" id="linkedin_profile_link" name="linkedin_profile_link" placeholder="Enter linkedin profile link" @if(isset($resultData)) value="{{ $resultData->linkedin_profile_link }}" @endif>
                                                             </div>
-                                                            <div class="col-md-12 form-group">
+                                                            <div class="col-md-6 form-group">
                                                                 <label for="linkedin_profile_sn_link">LinkedIn Profile SN Link<span class="text-info"> <small>(optional)</small></span></label>
                                                                 <input type="text" class="form-control btn-square" id="linkedin_profile_sn_link" name="linkedin_profile_sn_link" placeholder="Enter LinkedIn Profile SN Link" @if(isset($resultData)) value="{{ $resultData->linkedin_profile_sn_link }}" @endif>
                                                             </div>

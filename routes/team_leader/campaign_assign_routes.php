@@ -14,5 +14,6 @@ Route::prefix('campaign-assign')->name('campaign_assign.')->group(function()
 
     Route::any('/get-data', [App\Http\Controllers\TeamLeader\CampaignAssignController::class, 'getData'])->name('get_data');
     Route::any('/assign-data', [App\Http\Controllers\TeamLeader\CampaignAssignController::class, 'assignData'])->name('assign_data');
+    Route::any('/upload-npf-file', [App\Http\Controllers\TeamLeader\CampaignAssignController::class, 'uploadNPF'])->name('upload_npf');
 
 });
