@@ -47,7 +47,7 @@ class CreateAgentLeadsTable extends Migration
             $table->string('website')->nullable();
             $table->text('company_linkedin_url')->nullable();
             $table->text('linkedin_profile_link');
-            $table->text('linkedin_profile_sn_link');
+            $table->text('linkedin_profile_sn_link')->nullable();
             $table->text('comment')->nullable();
             //---Lead Details
 

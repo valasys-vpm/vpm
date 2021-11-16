@@ -17,6 +17,15 @@ $(function (){
             data: {
                 filters: function (){
                     let obj = {
+                        start_date: $("#filter_start_date").val(),
+                        end_date: $("#filter_end_date").val(),
+                        campaign_status_id: $("#filter_campaign_status_id").val(),
+                        delivery_day: $("#filter_delivery_day").val(),
+                        due_in: $("#filter_due_in").val(),
+                        country_id: $("#filter_country_id").val(),
+                        region_id: $("#filter_region_id").val(),
+                        campaign_type_id: $("#filter_campaign_type_id").val(),
+                        campaign_filter_id: $("#filter_campaign_filter_id").val()
                     };
                     localStorage.setItem("filters", JSON.stringify(obj));
                     return JSON.stringify(obj);
@@ -114,7 +123,7 @@ $(function (){
                     let html = '';
 
                     html += '<a href="'+URL+'/manager/campaign/view-details/'+btoa(row.id)+'" class="btn btn-outline-info btn-rounded btn-sm" title="View Campaign Details"><i class="feather icon-eye mr-0"></i></a>';
-                    html += '<a href="'+URL+'/manager/campaign/edit/'+btoa(row.id)+'" class="btn btn-outline-dark btn-rounded btn-sm" title="Edit Campaign Details"><i class="feather icon-edit mr-0"></i></a>';
+                    //html += '<a href="'+URL+'/manager/campaign/edit/'+btoa(row.id)+'" class="btn btn-outline-dark btn-rounded btn-sm" title="Edit Campaign Details"><i class="feather icon-edit mr-0"></i></a>';
                     //html += '<div id="toolbar-options-'+row.id+'" class="hidden">';
                     //html += '<a href="javascript:;" onclick="window.location.href=\''+URL+'/manager/campaign/view-deatails/'+btoa(row.id)+'\'"><i class="feather icon-eye"></i></a>';
                     //html += '<a href="javascript:;" onclick="deleteCampaign('+row.id+')"><i class="feather icon-trash-2"></i></a>';

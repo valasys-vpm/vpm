@@ -40,7 +40,7 @@ $(function (){
     $.validator.addMethod(
         "remote_suppression_domain",
         function(value, element) {
-            let data;
+            var data;
             $.ajax({
                 url: URL + '/agent/lead/check-suppression-domain/' + $('#ca_agent_id').val(),
                 data: {
@@ -48,9 +48,15 @@ $(function (){
                 },
                 dataType: 'json',
                 async: false,
-                success: function(response) { data = response }
+                success: function(response) {
+                    data = response;
+                }
             });
-            return data;
+            if(data === true || data === 'true') {
+                return true;
+            } else {
+                return false;
+            }
         }
     );
     $.validator.addMethod(
@@ -64,9 +70,15 @@ $(function (){
                 },
                 dataType: 'json',
                 async: false,
-                success: function(response) { data = response }
+                success: function(response) {
+                    data = response;
+                }
             });
-            return data;
+            if(data === true || data === 'true') {
+                return true;
+            } else {
+                return false;
+            }
         }
     );
 

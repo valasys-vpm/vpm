@@ -51,7 +51,7 @@
                                                     <button style="display: none;" type="button" class="btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                         <i class="feather icon-more-vertical"></i>
                                                     </button>
-                                                    <button type="button" class="btn minimize-card" id="filter-card-toggle"><i class="feather icon-plus"></i></button>
+                                                    <button type="button" class="btn minimize-card card-toggle-custom" id="filter-card-toggle"><i class="feather icon-plus m-0"></i></button>
                                                     <ul class="list-unstyled card-option dropdown-menu dropdown-menu-right" style="display: none;">
                                                         <li class="dropdown-item full-card"><a href="#!"><span><i class="feather icon-maximize"></i> maximize</span><span style="display:none"><i class="feather icon-minimize"></i> Restore</span></a></li>
                                                         <li class="dropdown-item minimize-card"><a href="#!"><span><i class="feather icon-minus"></i> collapse</span><span style="display:none"><i class="feather icon-plus"></i> expand</span></a></li>
@@ -92,9 +92,12 @@
                                 </div>
                             </div>
 
+
+
                             <div class="row">
                                 <!-- [ configuration table ] start -->
                                 <div class="col-sm-12">
+                                    @include('blocks.campaign_filter', $dataFilter)
                                     <div class="card">
                                         <div class="card-header">
                                             <h5>Campaign List</h5>
@@ -170,6 +173,7 @@
     <!-- jquery-validation Js -->
     <script src="{{ asset('public/template/assets/plugins/jquery-validation/js/jquery.validate.min.js') }}"></script>
 
+    <script src="{{ asset('public/blocks/campaign_filter/custom.js?='.time()) }}"></script>
     <script src="{{ asset('public/js/manager/campaign_assign.js?='.time()) }}"></script>
 @append
 

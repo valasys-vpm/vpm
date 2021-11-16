@@ -30,6 +30,15 @@ $(function (){
             data: {
                 filters: function (){
                     let obj = {
+                        start_date: $("#filter_start_date").val(),
+                        end_date: $("#filter_end_date").val(),
+                        campaign_status_id: $("#filter_campaign_status_id").val(),
+                        delivery_day: $("#filter_delivery_day").val(),
+                        due_in: $("#filter_due_in").val(),
+                        country_id: $("#filter_country_id").val(),
+                        region_id: $("#filter_region_id").val(),
+                        campaign_type_id: $("#filter_campaign_type_id").val(),
+                        campaign_filter_id: $("#filter_campaign_filter_id").val()
                     };
                     localStorage.setItem("filters", JSON.stringify(obj));
                     return JSON.stringify(obj);

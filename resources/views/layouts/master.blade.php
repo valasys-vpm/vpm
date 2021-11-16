@@ -21,21 +21,44 @@
     <meta name="base-path" content="{{ url('/') }}" />
 
     <!-- Favicon icon -->
-    <link rel="icon" href="{{ asset('public/template') }}/assets/images/favicon.png" type="image/x-icon">
+    <link rel="icon" href="{{ asset('public/template/assets/images/favicon.png') }}" type="image/x-icon">
     <!-- fontawesome icon -->
-    <link rel="stylesheet" href="{{ asset('public/template') }}/assets/fonts/fontawesome/css/fontawesome-all.min.css">
+    <link rel="stylesheet" href="{{ asset('public/template/assets/fonts/fontawesome/css/fontawesome-all.min.css') }}">
     <!-- animation css -->
-    <link rel="stylesheet" href="{{ asset('public/template') }}/assets/plugins/animation/css/animate.min.css">
+    <link rel="stylesheet" href="{{ asset('public/template/assets/plugins/animation/css/animate.min.css') }}">
     <!-- pnotify css -->
-    <link rel="stylesheet" href="{{ asset('public/template') }}/assets/plugins/pnotify/css/pnotify.custom.min.css">
+    <link rel="stylesheet" href="{{ asset('public/template/assets/plugins/pnotify/css/pnotify.custom.min.css') }}">
     <!-- pnotify-custom css -->
-    <link rel="stylesheet" href="{{ asset('public/template') }}/assets/css/pages/pnotify.css">
+    <link rel="stylesheet" href="{{ asset('public/template/assets/css/pages/pnotify.css') }}">
+    <!-- select2 css -->
+    <link rel="stylesheet" href="{{ asset('public/template/assets/plugins/select2/css/select2.min.css') }}">
+    <!-- Bootstrap datetimepicker css -->
+    <link rel="stylesheet" href="{{ asset('public/template/assets/plugins/bootstrap-datetimepicker/css/bootstrap-datepicker3.min.css') }}">
+    <!-- notification css -->
+    <link rel="stylesheet" href="{{ asset('public/template/assets/plugins/notification/css/notification.min.css') }}">
+    <script>
+        var page = {
+            bootstrap: 3
+        };
 
+        function swap_bs() {
+            page.bootstrap = 3;
+        }
+    </script>
+    <style>
+        .datepicker>.datepicker-days {
+            display: block;
+        }
+
+        ol.linenums {
+            margin: 0 0 0 -8px;
+        }
+    </style>
     <!-- vendor css -->
     @yield('stylesheet')
 
-    <link rel="stylesheet" href="{{ asset('public/template') }}/assets/css/style.css">
-    <link rel="stylesheet" href="{{ asset('public/css') }}/custom.css">
+    <link rel="stylesheet" href="{{ asset('public/template/assets/css/style.css') }}">
+    <link rel="stylesheet" href="{{ asset('public/css/custom.css') }}">
 
     @yield('style')
 </head>
@@ -112,11 +135,15 @@
 
     <script> var BASE_PATH = "{{ url('/') }}"; </script>
     <!-- Required Js -->
-    <script src="{{ asset('public/template') }}/assets/js/vendor-all.js"></script>
-    <script src="{{ asset('public/template') }}/assets/plugins/bootstrap/js/bootstrap.min.js"></script>
-    <script src="{{ asset('public/template') }}/assets/js/pcoded.min.js"></script>
+    <script src="{{ asset('public/template/assets/js/vendor-all.js') }}"></script>
+    <script src="{{ asset('public/template/assets/plugins/bootstrap/js/bootstrap.min.js') }}"></script>
+    <script src="{{ asset('public/template/assets/js/pcoded.min.js') }}"></script>
     <!-- pnotify Js -->
-    <script src="{{ asset('public/template') }}/assets/plugins/pnotify/js/pnotify.custom.min.js"></script>
+    <script src="{{ asset('public/template/assets/plugins/pnotify/js/pnotify.custom.min.js') }}"></script>
+    <!-- datepicker js -->
+    <script src="{{ asset('public/template/assets/plugins/bootstrap-datetimepicker/js/bootstrap-datepicker.min.js') }}"></script>
+    <!-- select2 Js -->
+    <script src="{{ asset('public/template/assets/plugins/select2/js/select2.full.min.js') }}"></script>
     <!-- Moment Js -->
     <script src="https://momentjs.com/downloads/moment-with-locales.min.js"></script>
     <!-- Custom Js -->

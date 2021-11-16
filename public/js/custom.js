@@ -21,6 +21,15 @@ $(function () {
         window.location = this.href;
         return false;
     });
+
+    $('.card-toggle-custom').click(function (){
+        if($(this).children('i')[0].className.split(' ').indexOf('icon-minus') !== -1) {
+            $(this).children('i').removeClass('icon-minus').addClass('icon-plus');
+        } else {
+            $(this).children('i').removeClass('icon-plus').addClass('icon-minus');
+        }
+    });
+
 });
 
 //Idle Time Functionality
@@ -88,18 +97,26 @@ function downloadSampleFile(file_name) {
     return window.location.href = $('meta[name="base-path"]').attr('content') + '/public/storage/sample/' + file_name;
 }
 
-//Toggle Modal Loader
-$(function () {
-
-    /*$('.toggle-custom-loader').click(function (){
-        if($('#modal-loader').css('display') === 'none') {
-            $('#modal-loader').modal('show');
-        } else {
-            $('#modal-loader').modal('hide');
+function notificationMarkAllAsRead()
+{
+    $.ajax({
+        type: 'post',
+        url: $('meta[name="base-path"]').attr('content') + '/notification/mark-all-as-read',
+        success: function (response) {
+            if(response.status === true) {
+                $('.new-notification').css('display', 'none');
+                $('.no-new-notification').css('display', 'block');
+                $('#new-notification-count').css('display', 'none');
+                $('#notification-mark-all-as-read-button').css('display', 'none');
+                trigger_pnofify('success', 'Successful', 'Notification marked as read.');
+            } else {
+                trigger_pnofify('error', 'Something went wrong', response.message);
+            }
         }
-    });*/
+    });
+}
 
-});
+
 
 
 

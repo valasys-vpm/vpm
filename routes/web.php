@@ -160,6 +160,11 @@ Route::prefix('vendor-manager')->middleware(['web', 'check.vendor_manager'])->na
 
 });
 
+//Notification Routes
+
+Route::any('/notification/mark-all-as-read', [App\Http\Controllers\NotificationController::class, 'markAllAsRead'])->name('notification.mark_all_as_read');
+Route::any('/notification/view-details/{id}', [App\Http\Controllers\NotificationController::class, 'update'])->name('notification.view_details');
+
 
 
 

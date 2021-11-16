@@ -154,9 +154,13 @@ class LeadController extends Controller
         $resultCAAgent = $this->agentRepository->find(base64_decode($id));
         $query = SuppressionDomain::query();
         $query->whereCampaignId($resultCAAgent->campaign_id);
-        $query->whereDomain(trim($request->company_domain));
-        if($query->exists()) {
-            return 'false';
+        if($query->count()) {
+            $query->whereDomain(trim($request->company_domain));
+            if($query->exists()) {
+                return 'false';
+            } else {
+                return 'true';
+            }
         } else {
             return 'true';
         }
@@ -180,11 +184,18 @@ class LeadController extends Controller
         $resultCAAgent = $this->agentRepository->find(base64_decode($id));
         $query = TargetDomain::query();
         $query->whereCampaignId($resultCAAgent->campaign_id);
-        $query->whereDomain(trim($request->company_domain));
-        if($query->exists()) {
-            return 'true';
+        if($query->count()) {
+            $query->whereDomain(trim($request->company_domain));
+            if($query->exists()) {
+                return 'true';
+            } else {
+                return 'false';
+            }
         } else {
-            return 'false';
+            return 'true';
         }
+
+
+
     }
 }

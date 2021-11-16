@@ -75,6 +75,7 @@ class AgentLeadRepository implements AgentLeadInterface
             }
             $agentLead->company_linkedin_url = $attributes['company_linkedin_url'];
             $agentLead->linkedin_profile_link = $attributes['linkedin_profile_link'];
+
             if(isset($attributes['linkedin_profile_sn_link']) && !empty(trim($attributes['linkedin_profile_sn_link']))) {
                 $agentLead->linkedin_profile_sn_link = $attributes['linkedin_profile_sn_link'];
             }
@@ -92,7 +93,6 @@ class AgentLeadRepository implements AgentLeadInterface
             }
         } catch (\Exception $exception) {
             DB::rollBack();
-            dd($exception->getMessage());
             $response = array('status' => FALSE, 'message' => 'Something went wrong, please try again.');
         }
         return $response;

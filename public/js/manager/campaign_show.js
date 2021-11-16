@@ -186,6 +186,10 @@ $(function(){
         }
     });
 
+    $('#form-attach-specification-reset').on('click', function (e) {
+        document.getElementById("modal-form-attach-specification").reset();
+    });
+
     $('#modal-form-attach-specification-submit').on('click', function (e) {
         e.preventDefault();
         let form_data = new FormData($('#modal-form-attach-specification')[0]);
@@ -224,6 +228,8 @@ $(function(){
                 }
             }
         });
+
+        document.getElementById("modal-form-attach-specification").reset();
 
     });
 
@@ -329,6 +335,8 @@ $(function(){
                 }
             }
         });
+
+        document.getElementById("modal-form-attach-campaign-file").reset();
 
     });
 

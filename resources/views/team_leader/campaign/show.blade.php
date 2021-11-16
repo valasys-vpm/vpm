@@ -345,7 +345,7 @@
                                     </div>
 
                                     <div class="row mb-4">
-                                        <div class="col-md-3">
+                                        <div class="col-md-3" style="display: none;">
                                             <button type="button" class="btn btn-success btn-sm btn-square w-100">Button 1</button>
                                         </div>
                                         @if(empty($resultCARATL->submitted_at))
@@ -356,7 +356,7 @@
                                         </div>
                                         @endif
 
-                                        <div class="col-md-3">
+                                        <div class="col-md-3"  style="display: none;">
                                             <button type="button" class="btn btn-warning btn-sm btn-square w-100">Button 3</button>
                                         </div>
                                         @if(empty($resultCARATL->submitted_at))
@@ -372,6 +372,41 @@
                             <!-- [ Main Content ] end -->
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-view-assignment-details" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-xl" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Campaign Assignment Details</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="table-responsive">
+                        <table class="table m-b-0 f-14 b-solid requid-table">
+                            <thead>
+                            <tr class="text-uppercase">
+                                <th class="text-center">#</th>
+                                <th class="text-center">Name</th>
+                                <th class="text-center">End Date</th>
+                                <th class="text-center">Allocation</th>
+                                <th class="text-center">Assigned By</th>
+                                <th class="text-center">Status</th>
+                            </tr>
+                            </thead>
+                            <tbody class="text-center text-muted">
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>

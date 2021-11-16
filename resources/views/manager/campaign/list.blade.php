@@ -9,6 +9,7 @@
 
     <!-- campaign table custom css -->
     <link rel="stylesheet" href="{{asset('public/css/campaign_table_custom.css')}}">
+
 @append
 
 @section('content')
@@ -36,9 +37,11 @@
                     <div class="main-body">
                         <div class="page-wrapper">
                             <!-- [ Main Content ] start -->
+
                             <div class="row">
                                 <!-- [ configuration table ] start -->
                                 <div class="col-sm-12">
+                                    @include('blocks.campaign_filter', $dataFilter)
                                     <div class="card">
                                         <div class="card-header pb-2">
                                             <h5>Campaigns</h5>
@@ -128,6 +131,8 @@
     <script src="{{ asset('public/template/assets/plugins/toolbar/js/jquery.toolbar.min.js') }}"></script>
     <!-- jquery-validation Js -->
     <script src="{{ asset('public/template/assets/plugins/jquery-validation/js/jquery.validate.min.js') }}"></script>
+
+    <script src="{{ asset('public/blocks/campaign_filter/custom.js?='.time()) }}"></script>
 
     <script src="{{ asset('public/js/manager/campaign.js?='.time()) }}"></script>
 @append

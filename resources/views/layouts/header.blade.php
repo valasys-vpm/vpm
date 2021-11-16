@@ -13,9 +13,67 @@
     </a>
     <div class="collapse navbar-collapse">
         <ul class="navbar-nav mr-auto">
-            <li><span class="text-secondary"><small>Version 2.0</small></span></li>
+            <li>
+                <span class="text-secondary">
+                    <small>Version 2.0</small>
+                </span>
+            </li>
         </ul>
         <ul class="navbar-nav ml-auto">
+            <li>
+                <div class="dropdown">
+                    <a class="dropdown-toggle" href="#" data-toggle="dropdown"><i class="icon feather icon-bell"></i> @if(!empty($notifications) && $notifications->count()) <span id="new-notification-count" class="badge badge-warning" style="position: relative;bottom: 10px;z-index: -1;">{{ $notifications->count() }}</span> @endif </a>
+                    <div class="dropdown-menu dropdown-menu-right notification">
+                        <div class="noti-head">
+                            <h6 class="d-inline-block m-b-0">Notifications</h6>
+                            <div class="float-right">
+                                @if(!empty($notifications) && $notifications->count())
+                                <a id="notification-mark-all-as-read-button" href="javascript:void(0);" onclick="notificationMarkAllAsRead();" class="m-r-10">mark all as read</a>
+                                @endif
+                            </div>
+                        </div>
+                        <ul class="noti-body">
+
+                            @if(!empty($notifications) && $notifications->count())
+                                <li class="n-title new-notification">
+                                    <p class="m-b-0">NEW</p>
+                                </li>
+                                @foreach($notifications as $key => $notification)
+                                <li class="notification new-notification">
+                                    <div class="media">
+                                        <img class="img-radius" src="{{ asset('public/template') }}/assets/images/user/avatar-2.jpg" alt="Generic placeholder image">
+                                        <div class="media-body">
+                                            <p><strong>{{ $notification->sender->full_name }}</strong><span class="n-time text-muted"><i class="icon feather icon-clock m-r-10"></i>{{ \Carbon\Carbon::parse($notification->created_at)->diffForHumans() }}</span></p>
+                                            <p>{{ $notification->message }} <a href="{{ route('notification.view_details', base64_encode($notification->id)) }}" class="float-right p-0" style="cursor: pointer;"><small>View Details</small></a></p>
+
+                                        </div>
+                                    </div>
+                                </li>
+                                @endforeach
+                                <li class="notification no-new-notification" style="display: none;">
+                                    <div class="media">
+                                        <div class="media-body">
+                                            <p>No new notifications</p>
+                                        </div>
+                                    </div>
+                                </li>
+                            @else
+                            <li class="notification no-new-notification">
+                                <div class="media">
+                                    <div class="media-body">
+                                        <p>No new notifications</p>
+                                    </div>
+                                </div>
+                            </li>
+                            @endif
+                        </ul>
+                        <div class="noti-footer" style="display: none;">
+                            <a href="javascript:void(0);" onclick="alert('feature in progress!!!');">show all</a>
+                        </div>
+                    </div>
+                </div>
+            </li>
+
             <li>
                 <div class="dropdown drp-user">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">

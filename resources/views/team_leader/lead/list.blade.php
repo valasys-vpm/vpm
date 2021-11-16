@@ -73,6 +73,7 @@
                                                         <th>State</th>
                                                         <th>Zipcode</th>
                                                         <th>Country</th>
+                                                        <th>Industry</th>
                                                         <th>Employee Size</th>
                                                         <th>Revenue</th>
                                                         <th>Company Domain</th>
@@ -80,6 +81,7 @@
                                                         <th>Company LinkedIn URL</th>
                                                         <th>LinkedIn Profile URL</th>
                                                         <th>LinkedIn Profile SN URL</th>
+                                                        <th>Comment</th>
                                                     </tr>
                                                     </thead>
                                                     <tbody>

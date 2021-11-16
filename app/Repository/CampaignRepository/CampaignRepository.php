@@ -10,7 +10,9 @@ use App\Models\CampaignFilter;
 use App\Models\CampaignSpecification;
 use App\Models\CampaignStatus;
 use App\Models\CampaignType;
+use App\Models\ManagerNotification;
 use App\Models\PacingDetail;
+use App\Models\User;
 use App\Repository\CampaignFile\CampaignFileRepository;
 use App\Repository\CampaignTypeRepository\CampaignTypeRepository;
 use App\Models\SiteSetting;
@@ -22,6 +24,7 @@ use App\Repository\Suppression\Email\EmailRepository as SuppressionEmailReposito
 use App\Repository\Target\AccountName\AccountNameRepository as TargetAccountNameRepository;
 use App\Repository\Target\Domain\DomainRepository as TargetDomainRepository;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Excel;
 use Illuminate\Support\Facades\File;
@@ -271,6 +274,21 @@ class CampaignRepository implements CampaignInterface
                     if($responseCampaignFile['status'] == FALSE) {
                         throw new \Exception('Something went wrong, please try again.', 1);
                     }
+                }
+
+                //Send Notification
+                $dataNotification = array();
+                $resultManagers = User::whereHas('role', function ($role){ $role->where('slug', 'manager')->where('status', 1); })->where('status', 1)->where('id','!=', Auth::id())->get();
+                if(!empty($resultManagers) && $resultManagers->count()) {
+                    foreach ($resultManagers as $manager) {
+                        $dataNotification[] = array(
+                            'sender_id' => Auth::id(),
+                            'recipient_id' => $manager->id,
+                            'message' => 'New campaign added - '.$campaign->name,
+                            'url' => implode('/', array_slice(explode('/', route('manager.campaign.show', base64_encode($campaign->id))), 4))
+                        );
+                    }
+                    $responseNotification = ManagerNotification::insert($dataNotification);
                 }
 
                 DB::commit();
