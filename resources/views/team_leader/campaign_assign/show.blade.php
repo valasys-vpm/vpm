@@ -37,8 +37,8 @@
                                         </div>
                                     </div>
                                     <ul class="breadcrumb">
-                                        <li class="breadcrumb-item"><a href="{{ route('manager.dashboard') }}"><i class="feather icon-home"></i></a></li>
-                                        <li class="breadcrumb-item"><a href="{{ route('manager.campaign.list') }}">Campaign Assign</a></li>
+                                        <li class="breadcrumb-item"><a href="{{ route('team_leader.dashboard') }}"><i class="feather icon-home"></i></a></li>
+                                        <li class="breadcrumb-item"><a href="{{ route('team_leader.campaign.list') }}">Campaign Assign</a></li>
                                         <li class="breadcrumb-item"><a href="javascript:void(0);">Campaign Details</a></li>
                                     </ul>
 
@@ -167,13 +167,13 @@
                                                     <tbody class="text-center text-muted">
                                                     <tr>
                                                         <td><i class="feather icon-plus-square toggle-pacing-details" style="cursor: pointer;font-size: 17px;"></i></td>
-                                                        <td>{{ date('d-M-Y', strtotime($resultCampaignAssignedRATL->campaign->start_date)) }}</td>
-                                                        <td>{{ date('d-M-Y', strtotime($resultCampaignAssignedRATL->display_date)) }}</td>
-                                                        <td>{{ ucfirst($resultCampaignAssignedRATL->campaign->pacing) }}</td>
+                                                        <td>{{ date('d-M-Y', strtotime($resultCARATL->campaign->start_date)) }}</td>
+                                                        <td>{{ date('d-M-Y', strtotime($resultCARATL->display_date)) }}</td>
+                                                        <td>{{ ucfirst($resultCARATL->campaign->pacing) }}</td>
                                                         <td>
                                                             @php
                                                                 $deliverCount = 0;
-                                                                $percentage = ($deliverCount/$resultCampaignAssignedRATL->allocation)*100;
+                                                                $percentage = ($deliverCount/$resultCARATL->allocation)*100;
                                                                 $percentage = number_format($percentage,2,".", "");
                                                                 if($percentage == 100) {
                                                                     $color_class = 'bg-success';
@@ -186,20 +186,20 @@
                                                             </div>
                                                         </td>
                                                         <td>
-                                                            @if($resultCampaignAssignedRATL->campaign->campaign_status_id === 6)
-                                                                {{ $resultCampaignAssignedRATL->campaign->deliver_count }} <span class="text-danger" title="Shortfall Count">({{ $resultCampaignAssignedRATL->campaign->shortfall_count }})</span> / {{ $resultCampaignAssignedRATL->allocation }}
+                                                            @if($resultCARATL->campaign->campaign_status_id === 6)
+                                                                {{ $resultCARATL->campaign->deliver_count }} <span class="text-danger" title="Shortfall Count">({{ $resultCARATL->campaign->shortfall_count }})</span> / {{ $resultCARATL->allocation }}
                                                             @else
-                                                                {{ $resultCampaignAssignedRATL->campaign->deliver_count.' / '.$resultCampaignAssignedRATL->allocation }}
+                                                                {{ $resultCARATL->campaign->deliver_count.' / '.$resultCARATL->allocation }}
                                                             @endif
                                                         </td>
                                                         <td>
                                                             @php
                                                                 $campaign_type = '';
-                                                                if($resultCampaignAssignedRATL->campaign->type == 'incremental') {
+                                                                if($resultCARATL->campaign->type == 'incremental') {
                                                                     $campaign_type = ' (Incremental)';
                                                                 }
                                                             @endphp
-                                                            @switch($resultCampaignAssignedRATL->campaign->campaign_status_id)
+                                                            @switch($resultCARATL->campaign->campaign_status_id)
                                                                 @case(1)
                                                                 <span class="badge badge-pill badge-success" style="padding: 5px;min-width: 70px;">Live{{ $campaign_type }}</span>
                                                                 @break
@@ -221,7 +221,7 @@
                                                             @endswitch
                                                         </td>
                                                         <td>
-                                                            <a href="javascript:;" onclick="viewAssignmentDetails('{{ base64_encode($resultCampaignAssignedRATL->id) }}');" class="btn btn-outline-primary btn-sm btn-rounded mb-0" title="view assignment details" style="padding: 5px 8px;"><i class="feather icon-eye mr-0"></i></a>
+                                                            <a href="javascript:;" onclick="viewAssignmentDetails('{{ base64_encode($resultCARATL->id) }}');" class="btn btn-outline-primary btn-sm btn-rounded mb-0" title="view assignment details" style="padding: 5px 8px;"><i class="feather icon-eye mr-0"></i></a>
                                                         </td>
                                                     </tr>
                                                     <tr class="pacing-details" style="display: none;">
@@ -257,6 +257,119 @@
                                             </div>
                                         </div>
                                     </div>
+
+                                    <div id="div-get-data" class="card">
+                                        <div class="card-header">
+                                            <h5><i class="fas fa-chart-pie m-r-5"></i> Get Data</h5>
+                                            <div class="card-header-right">
+                                                <div class="btn-group card-option">
+                                                    <button type="button" class="btn minimize-card">
+                                                        <a href="#!"><span><i class="feather icon-minus"></i></span><span style="display:none"><i class="feather icon-plus"></i></span></a>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="card-block">
+                                            <form id="form-get-data">
+
+                                                <input type="hidden" name="campaign_id" value="{{ base64_encode($resultCampaign->id) }}">
+                                                <input type="hidden" name="ca_ratl_id" value="{{ base64_encode($resultCARATL->id) }}">
+
+                                                <div class="row">
+                                                    <div class="col-md-6 form-group">
+                                                        <label for="filter_job_level">Job Level</label>
+                                                        <select class="form-control btn-square p-1 pl-2 select2-multiple" id="filter_job_level" name="job_level[]" style="height: unset;" multiple>
+                                                            @forelse($resultFilterJobLevels as $value)
+                                                            <option value="{{ $value->job_level }}">{{ $value->job_level }}</option>
+                                                            @empty
+                                                            @endforelse
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-md-6 form-group">
+                                                        <label for="filter_job_role">Job Role</label>
+                                                        <select class="form-control btn-square p-1 pl-2 select2-multiple" id="filter_job_role" name="job_role[]" style="height: unset;" multiple>
+                                                            @forelse($resultFilterJobRoles as $value)
+                                                                <option value="{{ $value->job_role }}">{{ $value->job_role }}</option>
+                                                            @empty
+                                                            @endforelse
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-md-6 form-group">
+                                                        <label for="filter_employee_size">Employee Size</label>
+                                                        <select class="form-control btn-square p-1 pl-2 select2-multiple" id="filter_employee_size" name="employee_size[]" style="height: unset;" multiple>
+                                                            @forelse($resultFilterEmployeeSizes as $value)
+                                                                <option value="{{ $value->employee_size }}">{{ $value->employee_size }}</option>
+                                                            @empty
+                                                            @endforelse
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-md-6 form-group">
+                                                        <label for="filter_revenue">Revenue</label>
+                                                        <select class="form-control btn-square p-1 pl-2 select2-multiple" id="filter_revenue" name="revenue[]" style="height: unset;" multiple>
+                                                            @forelse($resultFilterRevenues as $value)
+                                                                <option value="{{ $value->revenue }}">{{ $value->revenue }}</option>
+                                                            @empty
+                                                            @endforelse
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-md-6 form-group">
+                                                        <label for="filter_country">Country</label>
+                                                        <select class="form-control btn-square p-1 pl-2 select2-multiple" id="filter_country" name="country[]" style="height: unset;" multiple>
+                                                            @forelse($resultFilterCountries as $value)
+                                                                <option value="{{ $value->country }}">{{ $value->country }}</option>
+                                                            @empty
+                                                            @endforelse
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-md-6 form-group">
+                                                        <label for="filter_state">State</label>
+                                                        <select class="form-control btn-square p-1 pl-2 select2-multiple" id="filter_state" name="state[]" style="height: unset;" multiple>
+                                                            @forelse($resultFilterStates as $value)
+                                                                <option value="{{ $value->state }}">{{ $value->state }}</option>
+                                                            @empty
+                                                            @endforelse
+                                                        </select>
+                                                    </div>
+                                                </div>
+
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        <div class="float-right">
+                                                            <button id="form-get-data-submit" type="button" class="btn btn-primary btn-sm btn-square">Get Data</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                        <div class="card-footer" @if(!$countAgentData) style="display: none;" @endif>
+                                            <div id="div-result-get-data" class="row" style="display: none;">
+                                                <div class="col-md-12">
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <div class="float-left">
+                                                                <h3><span id="result-record-found" class="text-success"></span></h3>
+                                                                <h5>Records found.</h5>
+                                                            </div>
+                                                            <div class="float-right">
+                                                                <form id="form-assign-data">
+                                                                    <input type="hidden" name="ca_ratl_id" value="{{ base64_encode($resultCARATL->id) }}">
+                                                                    <input type="hidden" id="data_ids" name="data_ids" value="">
+                                                                    <button id="form-assign-data-submit" type="button" class="btn btn-primary btn-sm btn-square">Assign Data</button>
+                                                                </form>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <hr>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <h5>Assigned Data: <span id="count-agent-data" class="text-success">{{ $countAgentData }}</span></h5>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                 </div>
                                 <!-- [ task-detail ] end -->
                             </div>

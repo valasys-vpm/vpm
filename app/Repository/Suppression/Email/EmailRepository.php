@@ -2,12 +2,17 @@
 
 namespace App\Repository\Suppression\Email;
 
+use App\Models\Data;
 use App\Models\SuppressionEmail;
 use Illuminate\Support\Facades\DB;
 use Excel;
 
 class EmailRepository implements EmailInterface
 {
+
+    /**
+     * @var SuppressionEmail
+     */
     private $suppressionEmail;
 
     public function __construct(
@@ -19,7 +24,13 @@ class EmailRepository implements EmailInterface
 
     public function get($filters = array())
     {
-        // TODO: Implement get() method.
+        $query = SuppressionEmail::query();
+
+        if(isset($filters['campaign_id']) && $filters['campaign_id']) {
+            $query->whereIn('campaign_id', $filters['campaign_id']);
+        }
+
+        return $query->get();
     }
 
     public function find($id)

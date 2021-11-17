@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Agent;
 
 use App\Http\Controllers\Controller;
 use App\Models\CampaignAssignAgent;
+use App\Repository\AgentDataRepository\AgentDataRepository;
+use App\Repository\AgentLeadRepository\AgentLeadRepository;
 use App\Repository\CampaignAssignRepository\AgentRepository\AgentRepository;
 use App\Repository\CampaignRepository\CampaignRepository;
 use Illuminate\Http\Request;
@@ -14,15 +16,24 @@ class CampaignController extends Controller
     private $data;
     private $campaignRepository;
     private $agentRepository;
+    private $agentLeadRepository;
+    /**
+     * @var AgentDataRepository
+     */
+    private $agentDataRepository;
 
     public function __construct(
         CampaignRepository $campaignRepository,
-        AgentRepository $agentRepository
+        AgentRepository $agentRepository,
+        AgentLeadRepository $agentLeadRepository,
+        AgentDataRepository $agentDataRepository
     )
     {
         $this->data = array();
         $this->campaignRepository = $campaignRepository;
         $this->agentRepository = $agentRepository;
+        $this->agentLeadRepository = $agentLeadRepository;
+        $this->agentDataRepository = $agentDataRepository;
     }
 
     public function index()
@@ -33,6 +44,7 @@ class CampaignController extends Controller
     public function show($id)
     {
         try {
+            $this->data['countAgentData'] = $this->agentDataRepository->get(array('ca_agent_ids' => [base64_decode($id)]))->count();
             $this->data['resultCAAgent'] = $this->agentRepository->find(base64_decode($id));
             $this->data['resultCampaign'] = $this->campaignRepository->find($this->data['resultCAAgent']->campaign_id);
             if(isset($this->data['resultCampaign']->parent_id) && !empty($this->data['resultCampaign']->parent_id)) {
@@ -58,6 +70,7 @@ class CampaignController extends Controller
 
         $query->whereUserId(Auth::id());
         $query->with('campaign');
+        $query->with('campaign.children');
 
         $totalRecords = $query->count();
 
@@ -110,6 +123,32 @@ class CampaignController extends Controller
 
         if($response['status']) {
             return response()->json(array('status' => true, 'message' => 'Campaign Started'));
+        } else {
+            return response()->json(array('status' => false, 'message' => 'Data not found'));
+        }
+    }
+
+    public function submitCampaign($id, Request $request)
+    {
+        $attributes['submitted_at'] = date('Y-m-d H:i:s');
+
+        $response = $this->agentRepository->update(base64_decode($id), $attributes);
+
+        if($response['status']) {
+            return response()->json(array('status' => true, 'message' => 'Campaign submitted successfully'));
+        } else {
+            return response()->json(array('status' => false, 'message' => 'Data not found'));
+        }
+    }
+
+    public function restartCampaign($id, Request $request)
+    {
+        $attributes['submitted_at'] = NULL;
+
+        $response = $this->agentRepository->update(base64_decode($id), $attributes);
+
+        if($response['status']) {
+            return response()->json(array('status' => true, 'message' => 'Campaign started successfully'));
         } else {
             return response()->json(array('status' => false, 'message' => 'Data not found'));
         }

@@ -124,7 +124,11 @@ $(function (){
             });
         },
         "createdRow": function(row, data, dataIndex){
-            switch (data.campaign.campaign_status_id) {
+            let status_id  = data.campaign.campaign_status_id;
+            if(data.campaign.children.length) {
+                status_id = data.campaign.children[0].campaign_status_id;
+            }
+            switch (status_id) {
                 case 1:
                     $(row).addClass('border-live');
                     break;

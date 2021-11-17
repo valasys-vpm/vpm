@@ -14,7 +14,6 @@ use App\Repository\HolidayRepository\HolidayRepository;
 use App\Repository\PacingDetailRepository\PacingDetailRepository;
 use App\Repository\RegionRepository\RegionRepository;
 use Illuminate\Http\Request;
-use function Symfony\Component\Translation\t;
 
 class CampaignController extends Controller
 {
@@ -55,6 +54,11 @@ class CampaignController extends Controller
 
     public function index()
     {
+        $this->data['dataFilter']['resultCountries'] = $this->countryRepository->get(array('status' => 1));
+        $this->data['dataFilter']['resultRegions'] = $this->regionRepository->get(array('status' => 1));
+        $this->data['dataFilter']['resultCampaignTypes'] = $this->campaignTypeRepository->get(array('status' => 1));
+        $this->data['dataFilter']['resultCampaignFilters'] = $this->campaignFilterRepository->get(array('status' => 1));
+        $this->data['dataFilter']['resultCampaignStatuses'] = $this->campaignStatusRepository->get(array('status' => 1));
         return view('manager.campaign.list', $this->data);
     }
 
@@ -243,12 +247,31 @@ class CampaignController extends Controller
         }
     }
 
+    //Import bulk campaigns
+    public function import(Request $request)
+    {
+        $attributes = $request->all();
+
+        $response = $this->campaignRepository->import($attributes);
+
+        if($response['status'] == TRUE) {
+            return response(json_encode(array('status' => true, 'message' => $response['message'])), 201);
+        } else {
+            if(!empty($response['file'])) {
+                return $response['file'];
+                //return response(json_encode(array('status' => false, 'message' => $response['message'], 'file' => base64_encode($response['file']))));
+            } else {
+                return response(json_encode(array('status' => false, 'message' => $response['message'])));
+            }
+        }
+    }
+
     public function getCampaigns(Request $request): \Illuminate\Http\JsonResponse
     {
         $filters = array_filter(json_decode($request->get('filters'), true));
         $search_data = $request->get('search');
         $searchValue = $search_data['value'];
-        $order = $request->get('order');
+
         $draw = $request->get('draw');
         $limit = $request->get("length"); // Rows display per page
         $offset = $request->get("start");
@@ -263,19 +286,97 @@ class CampaignController extends Controller
         //Filters
         if(!empty($filters)) {
 
+            if(isset($filters['start_date']) && !empty($filters['start_date'])) {
+                $start_date = date('Y-m-d', strtotime($filters['start_date']));
+                $query->where('start_date', '>=', $start_date);
+            }
+
+            if(isset($filters['end_date']) && !empty($filters['end_date'])) {
+                $end_date = date('Y-m-d', strtotime($filters['end_date']));
+                $query->where('end_date', '<=', $end_date);
+            }
+
+            if(isset($filters['campaign_status_id']) && !empty($filters['campaign_status_id'])) {
+                $query->whereIn('campaign_status_id',  $filters['campaign_status_id']);
+            }
+
+            if(isset($filters['delivery_day'])) {
+                $query->whereHas('pacingDetails', function($pacingDetails) use($filters) {
+                    $pacingDetails->whereNotNull('sub_allocation');
+                    $pacingDetails->whereIn('day', $filters['delivery_day']);
+                });
+            }
+
+            if(isset($filters['due_in'])) {
+
+                $today_date = date('Y-m-d');
+
+                switch ($filters['due_in']) {
+                    case 'Today':
+                        $query->where('end_date', '=', $today_date);
+                        break;
+                    case 'Tomorrow':
+                        $tomorrow_date = date('Y-m-d', strtotime('+1 days'));
+                        $query->where('end_date', '=', $tomorrow_date);
+                        break;
+                    case '7 Days':
+                        $date_7days_later = date('Y-m-d', strtotime('+6 days'));
+                        $query->whereBetween('end_date', [$today_date, $date_7days_later]);
+                        break;
+                    case 'Past Due':
+                        $query->where('end_date', '<', $today_date);
+                        break;
+                }
+            }
+
+            if(isset($filters['country_id'])) {
+                $query->whereHas('countries', function ($countries) use($filters) {
+                    $countries->whereIn('country_id', $filters['country_id']);
+                });
+            }
+
+            if(isset($filters['country_id'])) {
+                $query->whereHas('countries', function ($countries) use($filters) {
+                    $countries->whereIn('country_id', $filters['country_id']);
+                });
+            }
+
+            if(isset($filters['region_id'])) {
+                $query->whereHas('countries.country', function ($countries) use($filters) {
+                    $countries->whereHas('region', function ($region) use($filters) {
+                        $region->whereIn('id', $filters['region_id']);
+                    });
+                });
+            }
+
+            if(isset($filters['campaign_type_id'])) {
+                $query->where('campaign_type_id', $filters['campaign_type_id']);
+            }
+
+            if(isset($filters['campaign_filter_id'])) {
+                $query->where('campaign_filter_id', $filters['campaign_filter_id']);
+            }
+
         }
 
-
         //Order By
-        $orderColumn = $order[0]['column'];
-        $orderDirection = $order[0]['dir'];
+        $orderColumn = null;
+        if ($request->has('order')){
+            $order = $request->get('order');
+            $orderColumn = $order[0]['column'];
+            $orderDirection = $order[0]['dir'];
+        }
+
         switch ($orderColumn) {
-            case '0': $query->orderBy('name', $orderDirection); break;
+            case '0': $query->orderBy('campaign_id', $orderDirection); break;
             case '1': $query->orderBy('name', $orderDirection); break;
-            case '2': $query->orderBy('name', $orderDirection); break;
-            case '3': $query->orderBy('name', $orderDirection); break;
-            case '4': $query->orderBy('name', $orderDirection); break;
-            default: $query->orderBy('name'); break;
+            case '2':
+                break;
+            case '3': $query->orderBy('start_date', $orderDirection); break;
+            case '4': $query->orderBy('end_date', $orderDirection); break;
+            case '5': $query->orderBy('allocation', $orderDirection); break;
+            case '6': $query->orderBy('campaign_status_id', $orderDirection); break;
+            default: $query->orderBy('created_at', 'DESC'); break;
         }
 
         $totalFilterRecords = $query->count();

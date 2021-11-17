@@ -2,11 +2,17 @@
 
 namespace App\Repository\CampaignRepository;
 
+use App\Exports\ArrayToExcel;
 use App\Models\Campaign;
 use App\Models\CampaignCountry;
 use App\Models\CampaignFile;
+use App\Models\CampaignFilter;
 use App\Models\CampaignSpecification;
+use App\Models\CampaignStatus;
+use App\Models\CampaignType;
+use App\Models\ManagerNotification;
 use App\Models\PacingDetail;
+use App\Models\User;
 use App\Repository\CampaignFile\CampaignFileRepository;
 use App\Repository\CampaignTypeRepository\CampaignTypeRepository;
 use App\Models\SiteSetting;
@@ -18,7 +24,11 @@ use App\Repository\Suppression\Email\EmailRepository as SuppressionEmailReposito
 use App\Repository\Target\AccountName\AccountNameRepository as TargetAccountNameRepository;
 use App\Repository\Target\Domain\DomainRepository as TargetDomainRepository;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Excel;
+use Illuminate\Support\Facades\File;
+use Zip;
 
 class CampaignRepository implements CampaignInterface
 {
@@ -99,7 +109,10 @@ class CampaignRepository implements CampaignInterface
             $campaign->v_mail_campaign_id = $attributes['v_mail_campaign_id'];
             $campaign->campaign_filter_id  = $attributes['campaign_filter_id'];
             $campaign->campaign_type_id  = $attributes['campaign_type_id'];
-            $campaign->note = $attributes['note'];
+
+            if(isset($attributes['note']) && $attributes['note'] > 0) {
+                $campaign->note = $attributes['note'];
+            }
 
             $campaign->start_date = date('Y-m-d', strtotime($attributes['start_date']));
             $campaign->end_date = date('Y-m-d', strtotime($attributes['end_date']));
@@ -143,6 +156,22 @@ class CampaignRepository implements CampaignInterface
                         ];
                     }
                     CampaignSpecification::insert($insertCampaignSpecifications);
+                }
+
+                //Save Pacing Details/Sub-Allocation
+                if(isset($attributes['sub-allocation']) && !empty($attributes['sub-allocation'])) {
+                    //Pacing Details
+                    $insertPacingDetails = array();
+                    foreach ($attributes['sub-allocation'] as $date => $sub_allocation) {
+                        $insertPacingDetails[] = [
+                            'campaign_id' => $campaign->id,
+                            'date' => $date,
+                            'sub_allocation' => $sub_allocation,
+                            'day' => date('w', strtotime($date))
+                        ];
+                    }
+                    PacingDetail::insert($insertPacingDetails);
+                    //--Pacing Details
                 }
 
                 //Save Suppression Email
@@ -247,24 +276,23 @@ class CampaignRepository implements CampaignInterface
                     }
                 }
 
-                //Save Pacing Details/Sub-Allocation
-                if(isset($attributes['sub-allocation']) && !empty($attributes['sub-allocation'])) {
-                    //Pacing Details
-                    $insertPacingDetails = array();
-                    foreach ($attributes['sub-allocation'] as $date => $sub_allocation) {
-                        $insertPacingDetails[] = [
-                            'campaign_id' => $campaign->id,
-                            'date' => $date,
-                            'sub_allocation' => $sub_allocation,
-                            'day' => date('w', strtotime($date))
-                        ];
+                //Send Notification
+                $dataNotification = array();
+                $resultManagers = User::whereHas('role', function ($role){ $role->where('slug', 'manager')->where('status', 1); })->where('status', 1)->where('id','!=', Auth::id())->get();
+                if(!empty($resultManagers) && $resultManagers->count()) {
+                    foreach ($resultManagers as $manager) {
+                        $dataNotification[] = array(
+                            'sender_id' => Auth::id(),
+                            'recipient_id' => $manager->id,
+                            'message' => 'New campaign added - '.$campaign->name,
+                            'url' => implode('/', array_slice(explode('/', route('manager.campaign.show', base64_encode($campaign->id))), 4))
+                        );
                     }
-                    PacingDetail::insert($insertPacingDetails);
-                    //--Pacing Details
+                    $responseNotification = ManagerNotification::insert($dataNotification);
                 }
 
                 DB::commit();
-                $response = array('status' => TRUE, 'message' => 'Campaign added successfully');
+                $response = array('status' => TRUE, 'message' => 'Campaign added successfully', 'campaign_id' => $campaign->campaign_id, 'id' => $campaign->id);
             } else {
                 throw new \Exception('Something went wrong, please try again.', 1);
             }
@@ -404,7 +432,7 @@ class CampaignRepository implements CampaignInterface
             }
         } catch (\Exception $exception) {
             DB::rollBack();
-            dd($exception->getMessage());
+            //dd($exception->getMessage());
             $response = array('status' => FALSE, 'message' => 'Something went wrong, please try again.');
         }
         return $response;
@@ -616,6 +644,257 @@ class CampaignRepository implements CampaignInterface
             //dd($exception->getMessage());
             $response = array('status' => FALSE, 'message' => 'Something went wrong, please try again.');
         }
+        return $response;
+    }
+
+    public function import($attributes): array
+    {
+        $response = array('status' => FALSE, 'message' => 'Something went wrong, please try again.');
+        try {
+            ini_set('memory_limit', '-1');
+            ini_set('max_execution_time', '0');
+
+            $excelData = Excel::toArray('', $attributes['campaign_file']);
+            array_shift($excelData[0]);
+
+            $validatedData = array();
+            $invalidData = array();
+            $errorMessages = array();
+            //Validate Data
+            foreach ($excelData[0] as $key => $row) {
+                $responseValidate = $this->validateCampaignData($row);
+                if($responseValidate['status'] == TRUE) {
+                    $validatedData[] = $responseValidate['validatedData'];
+                } else {
+                    $invalidData[] = array(
+                        'data' => $row,
+                        'invalidCells' => $responseValidate['invalidCells'],
+                        'errorMessage' => implode(',', $responseValidate['errorMessage'])
+                    );
+                }
+            }
+
+            //Insert Validated Data
+            $successCount = 0;
+            $failedCount = 0;
+
+            foreach ($validatedData as $index => $attributes) {
+                $responseStore = $this->store($attributes);
+                if($responseStore['status'] == TRUE) {
+                    if(isset($attributes['specification_file']) && !empty($attributes['specification_file'])) {
+                        $zip = Zip::open($request->file('specification_file'));
+                        $fileList = $zip->listFiles();
+                        if(!empty($fileList)) {
+                            $campaign_path = 'public/storage/campaigns/'.$response['campaign_id'].'/';
+                            $unzips_path = 'public/storage/unzips';
+                            foreach ($fileList as $filename) {
+                                $exploded = explode('/', $filename);
+                                if($attributes['name'] == $exploded[0]) {
+                                    $zip->extract($unzips_path, $filename);
+                                    if(!File::exists($campaign_path)) {
+                                        File::makeDirectory($campaign_path, $mode = 0777, true, true);
+                                    }
+                                    File::move($unzips_path.'/'.$exploded[0].'/'.$exploded[1], $campaign_path.$exploded[1]);
+                                    File::deleteDirectory($unzips_path.'/'.$exploded[0]);
+
+                                    CampaignSpecification::insert([['campaign_id' => $response['id'], 'file_name' => explode('/', $filename)[1], 'extension' => pathinfo($exploded[1], PATHINFO_EXTENSION)]]);
+                                }
+                            }
+                        }
+                    }
+                    $successCount++;
+                } else {
+                    $failedCount++;
+                }
+            }
+
+            if(!empty($invalidData)) {
+                $file = Excel::download(new ArrayToExcel($invalidData), 'InvalidCampaigns'. time() . ".xlsx");
+                $response = array('status' => FALSE, 'message' => 'Something went wrong, please try again.', 'file' => $file);
+            } else {
+                $response = array('status' => TRUE, 'message' => 'All Campaigns imported successfully');
+            }
+        } catch (\Exception $exception) {
+            //dd($exception->getMessage());
+            $response = array('status' => FALSE, 'message' => 'Something went wrong, please try again.');
+        }
+        return $response;
+    }
+
+    public function validateCampaignData($data = array())
+    {
+        $validatedData = array();
+        $errorMessage = array();
+        $response = array('status' => FALSE, 'message' => 'Something went wrong, please try again.');
+        $invalidCells = array();
+
+        try {
+            //Validate Campaign Name $data[0]
+            if(!empty(trim($data[0]))) {
+                $campaign = Campaign::whereName(trim($data[0]))->count();
+                if($campaign == 0) {
+                    $validatedData['name'] = trim($data[0]);
+                } else {
+                    $errorMessage['Campaign Name'] = 'Campaign name already exists';
+                    $invalidCells[0] = 'Invalid';
+                }
+            } else {
+                $errorMessage['Campaign Name'] = 'Enter campaign name';
+                $invalidCells[0] = 'Invalid';
+            }
+
+            //Validate V-Mail Campaign ID $data[1]
+            $validatedData['v_mail_campaign_id'] = trim($data[1]);
+
+            //Validate Campaign Type $data[2]
+            if(!empty(trim($data[2]))) {
+                $campaignType = CampaignType::whereName(trim($data[2]))->first();
+                if(!empty($campaignType)) {
+                    $validatedData['campaign_type_id'] = $campaignType->id;
+                } else {
+                    $errorMessage['Campaign Type'] = 'Enter valid campaign type';
+                    $invalidCells[2] = 'Invalid';
+                }
+            } else {
+                $errorMessage['Campaign Type'] = 'Enter campaign type';
+                $invalidCells[2] = 'Invalid';
+            }
+
+
+            //Validate Campaign Filter $data[3]
+            if(!empty(trim($data[3]))) {
+                $campaignFilter = CampaignFilter::whereName(trim($data[3]))->first();
+                if(!empty($campaignFilter)) {
+                    $validatedData['campaign_filter_id'] = $campaignFilter->id;
+                } else {
+                    $errorMessage['Campaign Filter'] = 'Enter valid campaign filter';
+                    $invalidCells[3] = 'Invalid';
+                }
+            } else {
+                $errorMessage['Campaign Filter'] = 'Enter campaign filter';
+                $invalidCells[3] = 'Invalid';
+            }
+
+            //Validate Country(s) $data[4]
+            if(!empty(trim($data[4]))) {
+                $countries = explode(',', strtolower(trim($data[4])));
+                $country = Country::select('id')->whereIn('name', $countries)->get();
+                if(($country->count() == count($countries))) {
+                    $country_id = array();
+                    foreach ($country as $item) {
+                        array_push($country_id, $item->id);
+                    }
+                    $validatedData['country_id'] = $country_id;
+                } else {
+                    $errorMessage['Countries'] = 'Enter valid countries';
+                    $invalidCells[4] = 'Invalid';
+                }
+            }
+
+            $start_date = $end_date = null;
+            //Validate Start Date $data[5]
+            if(!empty(trim($data[5]))) {
+                $start_date = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($data[5]);
+                $start_date = date_format($start_date, 'Y-m-d');
+                if($start_date != '1970-01-01') {
+                    $validatedData['start_date'] = $start_date;
+                } else {
+                    $errorMessage['Start Date'] = 'Enter valid start date';
+                    $invalidCells[5] = 'Invalid';
+                }
+            } else {
+                $errorMessage['Start Date'] = 'Enter start date';
+                $invalidCells[5] = 'Invalid';
+            }
+
+            //Validate End Date $data[6]
+            if(!empty(trim($data[6]))) {
+                $end_date = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($data[6]);
+                $end_date = date_format($end_date, 'Y-m-d');
+                if($end_date != '1970-01-01') {
+                    $validatedData['end_date'] = $end_date;
+                } else {
+                    $errorMessage['End Date'] = 'Enter valid end date';
+                    $invalidCells[6] = 'Invalid';
+                }
+            } else {
+                $errorMessage['End Date'] = 'Enter end date';
+                $invalidCells[6] = 'Invalid';
+            }
+
+            //Check Start Date & End Date
+            if($start_date > $end_date) {
+                $errorMessage['Start Date & End Date'] = 'Enter valid start date & end date';
+            }
+
+            //Validate Allocation $data[7]
+            if(!empty(trim($data[7]))) {
+                $allocation = trim($data[7]);
+                if(is_numeric($allocation) && $allocation > 0) {
+                    $validatedData['allocation'] = $allocation;
+                } else {
+                    $errorMessage['Allocation'] = 'Enter valid allocation';
+                    $invalidCells[7] = 'Invalid';
+                }
+            } else {
+                $errorMessage['Allocation'] = 'Enter allocation';
+                $invalidCells[7] = 'Invalid';
+            }
+
+            //Validate Status $data[8]
+            if(!empty(trim($data[8]))) {
+                $campaignStatus = CampaignStatus::whereName(trim($data[8]))->first();
+                if(!empty($campaignStatus)) {
+                    $validatedData['campaign_status_id'] = $campaignStatus->id;
+                } else {
+                    $errorMessage['Status'] = 'Enter valid status';
+                    $invalidCells[8] = 'Invalid';
+                }
+            } else {
+                $errorMessage['Status'] = 'Enter valid status';
+                $invalidCells[8] = 'Invalid';
+            }
+
+            //Validate Pacing $data[9]
+            if(!empty(trim($data[9]))) {
+                $pacings = array('Daily', 'Monthly', 'Weekly');
+                if(in_array(ucfirst(trim($data[9])), $pacings)) {
+                    $validatedData['pacing'] = ucfirst(trim($data[9]));
+                } else {
+                    $errorMessage['Pacing'] = 'Enter valid pacing';
+                    $invalidCells[9] = 'Invalid';
+                }
+            } else {
+                $errorMessage['Pacing'] = 'Enter pacing';
+                $invalidCells[9] = 'Invalid';
+            }
+
+            //Validate Delivery Count $data[10]
+            if(!empty(trim($data[10]))) {
+                $deliver_count = trim($data[10]);
+                if(is_numeric($deliver_count) && $deliver_count > 0) {
+                    $validatedData['deliver_count'] = $deliver_count;
+                } else {
+                    $errorMessage['Delivery Count'] = 'Enter valid delivery count';
+                    $invalidCells[10] = 'Invalid';
+                }
+            }
+
+            if(empty($errorMessage)) {
+                $response = array('status' => TRUE, 'validatedData' => $validatedData);
+            } else {
+                throw new \Exception('Something went wrong, please try again.', 1);
+            }
+
+        } catch (\Exception $exception) {
+            //dd($exception->getMessage());
+            $response = array(
+                'status' => FALSE,
+                'errorMessage' => $errorMessage,
+                'invalidCells' => $invalidCells
+            );
+        }
+
         return $response;
     }
 }

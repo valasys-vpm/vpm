@@ -17,6 +17,15 @@ $(function (){
             data: {
                 filters: function (){
                     let obj = {
+                        start_date: $("#filter_start_date").val(),
+                        end_date: $("#filter_end_date").val(),
+                        campaign_status_id: $("#filter_campaign_status_id").val(),
+                        delivery_day: $("#filter_delivery_day").val(),
+                        due_in: $("#filter_due_in").val(),
+                        country_id: $("#filter_country_id").val(),
+                        region_id: $("#filter_region_id").val(),
+                        campaign_type_id: $("#filter_campaign_type_id").val(),
+                        campaign_filter_id: $("#filter_campaign_filter_id").val()
                     };
                     localStorage.setItem("filters", JSON.stringify(obj));
                     return JSON.stringify(obj);
@@ -34,6 +43,7 @@ $(function (){
                 }
             },
             {
+                orderable: false,
                 render: function (data, type, row) {
                     let deliver_count = row.deliver_count;
                     let allocation = row.allocation;
@@ -113,7 +123,7 @@ $(function (){
                     let html = '';
 
                     html += '<a href="'+URL+'/manager/campaign/view-details/'+btoa(row.id)+'" class="btn btn-outline-info btn-rounded btn-sm" title="View Campaign Details"><i class="feather icon-eye mr-0"></i></a>';
-                    html += '<a href="'+URL+'/manager/campaign/edit/'+btoa(row.id)+'" class="btn btn-outline-dark btn-rounded btn-sm" title="Edit Campaign Details"><i class="feather icon-edit mr-0"></i></a>';
+                    //html += '<a href="'+URL+'/manager/campaign/edit/'+btoa(row.id)+'" class="btn btn-outline-dark btn-rounded btn-sm" title="Edit Campaign Details"><i class="feather icon-edit mr-0"></i></a>';
                     //html += '<div id="toolbar-options-'+row.id+'" class="hidden">';
                     //html += '<a href="javascript:;" onclick="window.location.href=\''+URL+'/manager/campaign/view-deatails/'+btoa(row.id)+'\'"><i class="feather icon-eye"></i></a>';
                     //html += '<a href="javascript:;" onclick="deleteCampaign('+row.id+')"><i class="feather icon-trash-2"></i></a>';
@@ -143,18 +153,32 @@ $(function (){
             });
         },
         "createdRow": function(row, data, dataIndex){
-            switch (data.campaign_status_id) {
+            let status_id  = data.campaign_status_id;
+            if(data.children.length) {
+                status_id = data.children[0].campaign_status_id;
+            }
+            switch (status_id) {
                 case 1:
                     $(row).addClass('border-live');
                     break;
                 case 2:
                     $(row).addClass('border-paused');
                     break;
+                case 3:
+                    $(row).addClass('border-cancelled');
+                    break;
+                case 4:
+                    $(row).addClass('border-delivered');
+                    break;
+                case 5:
+                    $(row).addClass('border-reactivated');
+                    break;
+                case 6:
+                    $(row).addClass('border-shortfall');
+                    break;
             }
-            /*if( data[2] ==  `someVal`){
-                $(row).addClass('redClass');
-            }*/
-        }
+        },
+        order:[]
     });
 
     $('#modal-form-button-submit').on('click', function (e) {
@@ -303,6 +327,57 @@ $(function (){
                 $(element).parents('.form-group').find('.is-invalid').removeClass('is-invalid');
             }
         }
+    });
+
+    $('#form-import-campaigns-submit').on('click', function (e) {
+        e.preventDefault();
+        let form_data = new FormData($('#form-import-campaigns')[0]);
+        let url = '';
+        $.ajax({
+            url: URL +'/manager/campaign/import',
+            processData: false,
+            contentType: false,
+            data: form_data,
+            type: 'post',
+            xhr: function () {
+                let xhr = new XMLHttpRequest();
+
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState === 2) {
+                        if (xhr.status === 201) {
+                            xhr.responseType = "json";
+                        } else {
+                            xhr.responseType = "blob";
+                        }
+                    }
+                };
+                return xhr;
+            },
+            success: function(response, status, xhr) {
+                if(xhr.status === 201) {
+                    if(response.status === true) {
+                        //$('#modal-import-campaigns').modal('hide');
+                        trigger_pnofify('success', 'Successful', response.message);
+                    } else {
+                        trigger_pnofify('error', 'Error while processing request', response.message);
+                    }
+                } else {
+                    let date = new Date();
+                    let blob = new Blob([response], {type: '' + xhr.getResponseHeader("content-type")})
+                    console.log(blob);
+                    let a = $('<a />'), url = window.URL.createObjectURL(blob);
+                    a.attr({
+                        'href': url,
+                        'download': 'Invalid_Campaigns_'+date.getTime()+'.xlsx',
+                        'text': "click"
+                    }).hide().appendTo("body")[0].click();
+                    trigger_pnofify('warning', 'Invalid Data', 'Campaigns imported with errors, please check excel file to invalid data.');
+                }
+                $('#modal-import-campaigns').modal('hide');
+                CAMPAIGN_TABLE.ajax.reload();
+            }
+        });
+
     });
 
 });

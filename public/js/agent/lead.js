@@ -39,6 +39,15 @@ $(function (){
                 data: 'email_address'
             },
             {
+                data: 'specific_title'
+            },
+            {
+                data: 'job_level'
+            },
+            {
+                data: 'job_role'
+            },
+            {
                 data: 'phone_number'
             },
             {
@@ -60,6 +69,9 @@ $(function (){
                 data: 'country'
             },
             {
+                data: 'industry'
+            },
+            {
                 data: 'employee_size'
             },
             {
@@ -79,6 +91,9 @@ $(function (){
             },
             {
                 data: 'linkedin_profile_sn_link'
+            },
+            {
+                data: 'comment'
             },
             {
                 render: function (data, type, row) {

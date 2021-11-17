@@ -4,7 +4,7 @@
     @parent
     <!-- data tables css -->
     <link rel="stylesheet" href="{{asset('public/template/assets/plugins/data-tables/css/datatables.min.css')}}">
-    <!-- custom css -->
+    <!-- custom campaign table css -->
     <link rel="stylesheet" href="{{asset('public/css/campaign_table_custom.css')}}">
 
 @append
@@ -23,7 +23,7 @@
                                         <h5 class="m-b-10">My Campaigns</h5>
                                     </div>
                                     <ul class="breadcrumb">
-                                        <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}"><i class="feather icon-home"></i></a></li>
+                                        <li class="breadcrumb-item"><a href="{{ route('agent.dashboard') }}"><i class="feather icon-home"></i></a></li>
                                         <li class="breadcrumb-item"><a href="javascript:void(0);">My Campaigns</a></li>
                                     </ul>
                                 </div>

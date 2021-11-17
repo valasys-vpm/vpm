@@ -10,63 +10,8 @@
     <link rel="stylesheet" href="{{asset('public/template/assets/plugins/data-tables/css/datatables.min.css')}}">
     <!-- toolbar css -->
     <link rel="stylesheet" href="{{asset('public/template/assets/plugins/toolbar/css/jquery.toolbar.css')}}">
-
-    <style>
-        .table tbody tr:hover {
-            -webkit-box-shadow: 0 5px 8px -6px grey;
-            -moz-box-shadow: 0 5px 8px -6px grey;
-            box-shadow: 0 5px 8px -6px grey;
-        }
-        .table td {
-            padding: 5px 5px 0px 5px !important;
-            vertical-align: middle !important;
-            border-top: 2px solid #dad9d9 !important;
-            border-bottom: 2px solid #dad9d9 !important;
-        }
-        .table tr td:first-child {
-            border: 2px solid #dad9d9 !important;
-            border-right: 0px solid transparent !important;
-            border-radius: 8px 0 0 8px;
-        }
-        .table tr td:last-child {
-            border: 2px solid #dad9d9 !important;
-            border-left: 0px solid transparent !important;
-            border-radius: 0px 8px 8px 0;
-        }
-
-        table.dataTable {
-            border-spacing: 0px 10px !important;
-        }
-
-        /*Border Live*/
-        .table tr.border-live {
-            background-color: rgba(226,239,219,0.35) !important;
-        }
-        .table tr.border-live td {
-            border-color: #92D050 !important;
-        }
-        .table tr.border-live td:first-child {
-            border-right: 0px solid transparent !important;
-        }
-        .table tr.border-live td:last-child {
-            border-left: 0px solid transparent !important;
-        }
-
-        /*Border Paused*/
-        .table tr.border-paused {
-            background-color: rgba(255,230,153,0.25) !important;
-        }
-        .table tr.border-paused td {
-            border-color: #fbcb39 !important;
-        }
-        .table tr.border-paused td:first-child {
-            border-right: 0px solid transparent !important;
-        }
-        .table tr.border-paused td:last-child {
-            border-left: 0px solid transparent !important;
-        }
-
-    </style>
+    <!-- campaign table custom css -->
+    <link rel="stylesheet" href="{{asset('public/css/campaign_table_custom.css')}}">
 @append
 
 @section('content')
@@ -106,7 +51,7 @@
                                                     <button style="display: none;" type="button" class="btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                         <i class="feather icon-more-vertical"></i>
                                                     </button>
-                                                    <button type="button" class="btn minimize-card" id="filter-card-toggle"><i class="feather icon-plus"></i></button>
+                                                    <button type="button" class="btn minimize-card card-toggle-custom" id="filter-card-toggle"><i class="feather icon-plus m-0"></i></button>
                                                     <ul class="list-unstyled card-option dropdown-menu dropdown-menu-right" style="display: none;">
                                                         <li class="dropdown-item full-card"><a href="#!"><span><i class="feather icon-maximize"></i> maximize</span><span style="display:none"><i class="feather icon-minimize"></i> Restore</span></a></li>
                                                         <li class="dropdown-item minimize-card"><a href="#!"><span><i class="feather icon-minus"></i> collapse</span><span style="display:none"><i class="feather icon-plus"></i> expand</span></a></li>
@@ -147,9 +92,12 @@
                                 </div>
                             </div>
 
+
+
                             <div class="row">
                                 <!-- [ configuration table ] start -->
                                 <div class="col-sm-12">
+                                    @include('blocks.campaign_filter', $dataFilter)
                                     <div class="card">
                                         <div class="card-header">
                                             <h5>Campaign List</h5>
@@ -225,6 +173,7 @@
     <!-- jquery-validation Js -->
     <script src="{{ asset('public/template/assets/plugins/jquery-validation/js/jquery.validate.min.js') }}"></script>
 
+    <script src="{{ asset('public/blocks/campaign_filter/custom.js?='.time()) }}"></script>
     <script src="{{ asset('public/js/manager/campaign_assign.js?='.time()) }}"></script>
 @append
 

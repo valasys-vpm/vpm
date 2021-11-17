@@ -3,14 +3,17 @@
 namespace App\Http\Controllers\Agent;
 
 use App\Http\Controllers\Controller;
+use App\Models\AgentData;
 use App\Models\AgentLead;
 use App\Models\Campaign;
 use App\Models\SuppressionAccountName;
 use App\Models\SuppressionDomain;
 use App\Models\SuppressionEmail;
 use App\Models\TargetDomain;
+use App\Repository\AgentDataRepository\AgentDataRepository;
 use App\Repository\AgentLeadRepository\AgentLeadRepository;
 use App\Repository\CampaignAssignRepository\AgentRepository\AgentRepository;
+use App\Repository\DataRepository\DataRepository;
 use Illuminate\Http\Request;
 
 class LeadController extends Controller
@@ -18,15 +21,27 @@ class LeadController extends Controller
     private $data;
     private $agentRepository;
     private $agentLeadRepository;
+    /**
+     * @var DataRepository
+     */
+    private $dataRepository;
+    /**
+     * @var AgentDataRepository
+     */
+    private $agentDataRepository;
 
     public function __construct(
         AgentRepository $agentRepository,
-        AgentLeadRepository $agentLeadRepository
+        AgentLeadRepository $agentLeadRepository,
+        DataRepository $dataRepository,
+        AgentDataRepository $agentDataRepository
     )
     {
         $this->data = array();
         $this->agentRepository = $agentRepository;
         $this->agentLeadRepository = $agentLeadRepository;
+        $this->dataRepository = $dataRepository;
+        $this->agentDataRepository = $agentDataRepository;
     }
 
     public function index($id)
@@ -35,9 +50,12 @@ class LeadController extends Controller
         return view('agent.lead.list', $this->data);
     }
 
-    public function create($id)
+    public function create($ca_agent_id, $data_id = null)
     {
-        $this->data['resultCAAgent'] = $this->agentRepository->find(base64_decode($id));
+        /*if($data_id) {
+            $this->data['resultData'] = $this->dataRepository->find(base64_decode($data_id));
+        }*/
+        $this->data['resultCAAgent'] = $this->agentRepository->find(base64_decode($ca_agent_id));
         return view('agent.lead.create', $this->data);
     }
 
@@ -136,9 +154,13 @@ class LeadController extends Controller
         $resultCAAgent = $this->agentRepository->find(base64_decode($id));
         $query = SuppressionDomain::query();
         $query->whereCampaignId($resultCAAgent->campaign_id);
-        $query->whereDomain(trim($request->company_domain));
-        if($query->exists()) {
-            return 'false';
+        if($query->count()) {
+            $query->whereDomain(trim($request->company_domain));
+            if($query->exists()) {
+                return 'false';
+            } else {
+                return 'true';
+            }
         } else {
             return 'true';
         }
@@ -162,11 +184,18 @@ class LeadController extends Controller
         $resultCAAgent = $this->agentRepository->find(base64_decode($id));
         $query = TargetDomain::query();
         $query->whereCampaignId($resultCAAgent->campaign_id);
-        $query->whereDomain(trim($request->company_domain));
-        if($query->exists()) {
-            return 'true';
+        if($query->count()) {
+            $query->whereDomain(trim($request->company_domain));
+            if($query->exists()) {
+                return 'true';
+            } else {
+                return 'false';
+            }
         } else {
-            return 'false';
+            return 'true';
         }
+
+
+
     }
 }

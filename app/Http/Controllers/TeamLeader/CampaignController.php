@@ -5,7 +5,12 @@ namespace App\Http\Controllers\TeamLeader;
 use App\Http\Controllers\Controller;
 use App\Models\Campaign;
 use App\Models\CampaignAssignRATL;
+use App\Models\Role;
+use App\Models\User;
+use App\Repository\AgentLeadRepository\AgentLeadRepository;
+use App\Repository\CampaignAssignRepository\QATLRepository\QATLRepository;
 use App\Repository\CampaignAssignRepository\RATLRepository\RATLRepository;
+use App\Repository\CampaignRepository\CampaignRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -13,18 +18,38 @@ class CampaignController extends Controller
 {
     private $data;
     private $RATLRepository;
+    private $campaignRepository;
+    private $agentLeadRepository;
+    /**
+     * @var QATLRepository
+     */
+    private $QATLRepository;
 
     public function __construct(
-        RATLRepository $RATLRepository
+        RATLRepository $RATLRepository,
+        QATLRepository $QATLRepository,
+        CampaignRepository $campaignRepository,
+        AgentLeadRepository $agentLeadRepository
     )
     {
         $this->data = array();
         $this->RATLRepository = $RATLRepository;
+        $this->campaignRepository = $campaignRepository;
+        $this->agentLeadRepository = $agentLeadRepository;
+        $this->QATLRepository = $QATLRepository;
     }
 
     public function index()
     {
         return view('team_leader.campaign.list');
+    }
+
+    public function show($id)
+    {
+        $this->data['resultCARATL'] = $this->RATLRepository->find(base64_decode($id));
+        $this->data['resultCampaign'] = $this->campaignRepository->find($this->data['resultCARATL']->campaign->id);
+
+        return view('team_leader.campaign.show', $this->data);
     }
 
     public function getCampaigns(Request $request): \Illuminate\Http\JsonResponse
@@ -39,8 +64,9 @@ class CampaignController extends Controller
 
         $query = CampaignAssignRATL::query();
 
-        //$query->whereIn('id', $campaignIds);
-        $query->whereUserId(Auth::id())->with('campaign');
+        $query->whereUserId(Auth::id());
+        $query->with('campaign');
+        $query->with('campaign.children');
 
         $totalRecords = $query->count();
 
@@ -83,6 +109,46 @@ class CampaignController extends Controller
         );
 
         return response()->json($ajaxData);
+    }
+
+    public function getAgentLeadDetails($ca_agent_id, Request $request): \Illuminate\Http\JsonResponse
+    {
+        $result = $this->agentLeadRepository->get(array('ca_agent_id' => base64_decode($ca_agent_id)));
+        //dd($result->toArray());
+        if(!empty($result)) {
+            return response()->json(array('status' => true, 'data' => $result));
+        } else {
+            return response()->json(array('status' => false, 'message' => 'Data not found'));
+        }
+    }
+
+    public function submitCampaign($id, Request $request)
+    {
+        $attributes['submitted_at'] = date('Y-m-d H:i:s');
+        $response = $this->RATLRepository->update(base64_decode($id), $attributes);
+        if($response['status']) {
+            if(!CampaignAssignRATL::whereNull('submitted_at')->count()) {
+                $resultCARATL = $this->RATLRepository->find(base64_decode($id));
+                $resultRole = Role::whereSlug('qa_team_leader')->whereStatus(1)->first();
+                $resultUser = User::whereRoleId($resultRole->id)->whereStatus(1)->first();
+                $attributes = array(
+                    'campaign_id' => $resultCARATL->campaign_id,
+                    'user_id' => $resultUser->id,
+                    'display_date' => $resultCARATL->display_date,
+                    'assigned_by' => $resultCARATL->user_id,
+                );
+                $responseCAQATL = $this->QATLRepository->store($attributes);
+                if($responseCAQATL['status']) {
+                    return response()->json(array('status' => true, 'message' => $responseCAQATL['message']));
+                } else {
+                    return response()->json(array('status' => false, 'message' => $responseCAQATL['message']));
+                }
+            } else {
+                return response()->json(array('status' => true, 'message' => $response['message']));
+            }
+        } else {
+            return response()->json(array('status' => false, 'message' => $response['message']));
+        }
     }
 
 }

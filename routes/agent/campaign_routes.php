@@ -9,5 +9,7 @@ Route::prefix('campaign')->name('campaign.')->group(function()
 
 
     Route::any('/start-campaign/{id}', [App\Http\Controllers\Agent\CampaignController::class, 'startCampaign'])->name('start_campaign');
+    Route::any('/restart-campaign/{id}', [App\Http\Controllers\Agent\CampaignController::class, 'restartCampaign'])->name('restart_campaign');
+    Route::any('/submit-campaign/{id}', [App\Http\Controllers\Agent\CampaignController::class, 'submitCampaign'])->name('submit_campaign');
 
 });

@@ -7,8 +7,11 @@ use App\Models\CampaignAssignAgent;
 use App\Models\CampaignAssignRATL;
 use App\Models\CampaignAssignVendor;
 use App\Models\CampaignAssignVendorManager;
+use App\Models\RANotification;
+use App\Models\RATLNotification;
 use App\Models\User;
 use App\Models\Vendor;
+use App\Models\VMNotification;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -188,6 +191,7 @@ class CampaignAssignRepository implements CampaignAssignInterface
         }
         $query = Campaign::query();
         $query->whereIn('id', $resultCampaignIds);
+        //dd($query->get()->pluck('id')->toArray());
         return $query->get();
     }
 
@@ -209,8 +213,11 @@ class CampaignAssignRepository implements CampaignAssignInterface
         try {
             DB::beginTransaction();
             $dataRATL = $dataAgent = $dataVM = array();
+            $RATLNotifications = $RANotifications = $VMNotifications = array();
             foreach ($attributes['data'] as $key => $campaign) {
                 foreach ($campaign['users'] as $user) {
+                    $resultCampaign = Campaign::findOrFail($campaign['campaign_id']);
+
                     //Check user type
                     $resultUser = User::findOrFail($user['user_id']);
                     switch ($resultUser->designation->slug) {
@@ -221,6 +228,12 @@ class CampaignAssignRepository implements CampaignAssignInterface
                                 'display_date' => date('Y-m-d', strtotime($campaign['display_date'])),
                                 'allocation' => $user['allocation'],
                                 'assigned_by' => Auth::id()
+                            );
+                            $RATLNotifications[] = array(
+                                'sender_id' => Auth::id(),
+                                'recipient_id' => $user['user_id'],
+                                'message' => 'New campaign assigned - '.$resultCampaign->name,
+                                'url' => implode('/', array_slice(explode('/', route('team_leader.campaign.show', base64_encode($resultCampaign->id))), 4))
                             );
                             break;
                         case 'research_analyst' :
@@ -233,6 +246,12 @@ class CampaignAssignRepository implements CampaignAssignInterface
                                 'reporting_file' => '',
                                 'assigned_by' => Auth::id()
                             );
+                            $RANotifications[] = array(
+                                'sender_id' => Auth::id(),
+                                'recipient_id' => $user['user_id'],
+                                'message' => 'New campaign assigned - '.$resultCampaign->name,
+                                'url' => implode('/', array_slice(explode('/', route('agent.campaign.show', base64_encode($resultCampaign->id))), 4))
+                            );
                             break;
                         case 'sr_vendor_management_specialist' :
                             $dataVM[] = array(
@@ -241,6 +260,13 @@ class CampaignAssignRepository implements CampaignAssignInterface
                                 'display_date' => date('Y-m-d', strtotime($campaign['display_date'])),
                                 'allocation' => $user['allocation'],
                                 'assigned_by' => Auth::id()
+                            );
+
+                            $VMNotifications[] = array(
+                                'sender_id' => Auth::id(),
+                                'recipient_id' => $user['user_id'],
+                                'message' => 'New campaign assigned - '.$resultCampaign->name,
+                                'url' => implode('/', array_slice(explode('/', route('vendor_manager.campaign.show', base64_encode($resultCampaign->id))), 4))
                             );
                             break;
                     }
@@ -274,6 +300,20 @@ class CampaignAssignRepository implements CampaignAssignInterface
             }
 
             if($flag) {
+                //Send Notification
+                if(count($RATLNotifications)) {
+                    RATLNotification::insert($RATLNotifications);
+                }
+
+                if(count($RANotifications)) {
+                    RANotification::insert($RANotifications);
+                }
+
+                if(count($VMNotifications)) {
+                    VMNotification::insert($VMNotifications);
+                }
+
+
                 DB::commit();
                 $response = array('status' => TRUE, 'message' => 'Campaign assigned successfully');
             } else {

@@ -1,3 +1,4 @@
+
 function checkSession(e){401==e.status&&location.reload()}
 
 $(".alert-auto-dismiss").fadeTo(5000,500).slideUp(500,function(){$(".alert-auto-dismiss").slideUp(500)});
@@ -5,6 +6,12 @@ $(".alert-auto-dismiss").fadeTo(5000,500).slideUp(500,function(){$(".alert-auto-
 $.ajaxSetup({
     headers: {
         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+    },
+    beforeSend: function () {
+        $('#modal-loader').css('display', 'block');
+    },
+    complete: function () {
+        $('#modal-loader').css('display', 'none');
     }
 });
 $(function () {
@@ -14,6 +21,15 @@ $(function () {
         window.location = this.href;
         return false;
     });
+
+    $('.card-toggle-custom').click(function (){
+        if($(this).children('i')[0].className.split(' ').indexOf('icon-minus') !== -1) {
+            $(this).children('i').removeClass('icon-minus').addClass('icon-plus');
+        } else {
+            $(this).children('i').removeClass('icon-plus').addClass('icon-minus');
+        }
+    });
+
 });
 
 //Idle Time Functionality
@@ -76,5 +92,32 @@ function trigger_pnofify(type = 'default', title = '', message = '') {
 
 }
 /* --- END - Pnotify Custom Js --- */
+
+function downloadSampleFile(file_name) {
+    return window.location.href = $('meta[name="base-path"]').attr('content') + '/public/storage/sample/' + file_name;
+}
+
+function notificationMarkAllAsRead()
+{
+    $.ajax({
+        type: 'post',
+        url: $('meta[name="base-path"]').attr('content') + '/notification/mark-all-as-read',
+        success: function (response) {
+            if(response.status === true) {
+                $('.new-notification').css('display', 'none');
+                $('.no-new-notification').css('display', 'block');
+                $('#new-notification-count').css('display', 'none');
+                $('#notification-mark-all-as-read-button').css('display', 'none');
+                trigger_pnofify('success', 'Successful', 'Notification marked as read.');
+            } else {
+                trigger_pnofify('error', 'Something went wrong', response.message);
+            }
+        }
+    });
+}
+
+
+
+
 
 

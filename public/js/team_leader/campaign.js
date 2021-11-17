@@ -30,12 +30,12 @@ $(function (){
             },
             {
                 render: function (data, type, row) {
-                    return '<a href="'+URL+'/team-leader/campaign/view-details/'+btoa(row.campaign.id)+'" class="text-dark double-click" title="View campaign details">'+row.campaign.name+'</a>';
+                    return '<a href="'+URL+'/team-leader/campaign/view-details/'+btoa(row.id)+'" class="text-dark double-click" title="View campaign details">'+row.campaign.name+'</a>';
                 }
             },
             {
                 render: function (data, type, row) {
-                    let deliver_count = 0;
+                    let deliver_count = row.agent_lead_total_count;
                     let allocation = row.allocation;
                     let percentage = (deliver_count/allocation)*100;
 
@@ -57,7 +57,7 @@ $(function (){
             },
             {
                 render: function (data, type, row) {
-                    let deliver_count = 0;
+                    let deliver_count = row.agent_lead_total_count;
                     let allocation = row.allocation;
                     let shortfall_count = 0;
 
@@ -113,7 +113,11 @@ $(function (){
             });
         },
         "createdRow": function(row, data, dataIndex){
-            switch (data.campaign.campaign_status_id) {
+            let status_id  = data.campaign.campaign_status_id;
+            if(data.campaign.children.length) {
+                status_id = data.campaign.children[0].campaign_status_id;
+            }
+            switch (status_id) {
                 case 1:
                     $(row).addClass('border-live');
                     break;

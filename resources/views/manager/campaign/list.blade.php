@@ -7,62 +7,9 @@
     <!-- toolbar css -->
     <link rel="stylesheet" href="{{asset('public/template/assets/plugins/toolbar/css/jquery.toolbar.css')}}">
 
-    <style>
-        .table tbody tr:hover {
-            -webkit-box-shadow: 0 5px 8px -6px grey;
-            -moz-box-shadow: 0 5px 8px -6px grey;
-            box-shadow: 0 5px 8px -6px grey;
-        }
-        .table td {
-            padding: 5px 5px 0px 5px !important;
-            vertical-align: middle !important;
-            border-top: 2px solid #dad9d9 !important;
-            border-bottom: 2px solid #dad9d9 !important;
-        }
-        .table tr td:first-child {
-            border: 2px solid #dad9d9 !important;
-            border-right: 0px solid transparent !important;
-            border-radius: 8px 0 0 8px;
-        }
-        .table tr td:last-child {
-            border: 2px solid #dad9d9 !important;
-            border-left: 0px solid transparent !important;
-            border-radius: 0px 8px 8px 0;
-        }
+    <!-- campaign table custom css -->
+    <link rel="stylesheet" href="{{asset('public/css/campaign_table_custom.css')}}">
 
-        table.dataTable {
-            border-spacing: 0px 10px !important;
-        }
-
-        /*Border Live*/
-        .table tr.border-live {
-            background-color: rgba(226,239,219,0.35) !important;
-        }
-        .table tr.border-live td {
-            border-color: #92D050 !important;
-        }
-        .table tr.border-live td:first-child {
-            border-right: 0px solid transparent !important;
-        }
-        .table tr.border-live td:last-child {
-            border-left: 0px solid transparent !important;
-        }
-
-        /*Border Paused*/
-        .table tr.border-paused {
-            background-color: rgba(255,230,153,0.25) !important;
-        }
-        .table tr.border-paused td {
-            border-color: #fbcb39 !important;
-        }
-        .table tr.border-paused td:first-child {
-            border-right: 0px solid transparent !important;
-        }
-        .table tr.border-paused td:last-child {
-            border-left: 0px solid transparent !important;
-        }
-
-    </style>
 @append
 
 @section('content')
@@ -79,7 +26,7 @@
                                         <h5 class="m-b-10">Campaign Management</h5>
                                     </div>
                                     <ul class="breadcrumb">
-                                        <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}"><i class="feather icon-home"></i></a></li>
+                                        <li class="breadcrumb-item"><a href="{{ route('agent.dashboard') }}"><i class="feather icon-home"></i></a></li>
                                         <li class="breadcrumb-item"><a href="javascript:void(0);">Campaign Management</a></li>
                                     </ul>
                                 </div>
@@ -90,17 +37,20 @@
                     <div class="main-body">
                         <div class="page-wrapper">
                             <!-- [ Main Content ] start -->
+
                             <div class="row">
                                 <!-- [ configuration table ] start -->
                                 <div class="col-sm-12">
+                                    @include('blocks.campaign_filter', $dataFilter)
                                     <div class="card">
-                                        <div class="card-header">
+                                        <div class="card-header pb-2">
                                             <h5>Campaigns</h5>
                                             <div class="float-right">
+                                                <button type="button" class="btn btn-outline-dark btn-sm" data-toggle="modal" data-target="#modal-import-campaigns"><i class="feather icon-upload mr-0"></i></button>
                                                 <button type="button" class="btn btn-primary btn-square btn-sm" onclick="window.location.href='{{ route('manager.campaign.create') }}'"><i class="feather icon-plus"></i>New Campaign</button>
                                             </div>
                                         </div>
-                                        <div class="card-block">
+                                        <div class="card-block pt-3">
                                             <div class="table-responsive">
                                                 <table id="table-campaigns" class="display table nowrap table-striped table-hover">
                                                     <thead>
@@ -131,6 +81,46 @@
             </div>
         </div>
     </section>
+
+    <div id="modal-import-campaigns" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <form id="form-import-campaigns" method="post" action="" enctype="multipart/form-data">
+
+                    <div class="modal-header">
+                        <h5 class="modal-title">Import Campaign(s)</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <label>Select excel file <span class="text-danger">*</span></label>
+                                <div class="float-right">
+                                    <button type="button" class="btn btn-outline-dark btn-square btn-sm p-1 pl-2 pr-2" style="font-size: 11px" onclick="downloadSampleFile('import-campaign.xlsx');" download><i class="feather icon-download"></i>Download Sample</button>
+                                </div>
+                                <br><br>
+                                <input type="file" class="form-control" id="campaign_file" name="campaign_file" required>
+                            </div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col-md-12">
+                                <label>Select zip file (specification)</label>
+                                <input type="file" class="form-control" id="specification_file" name="specification_file">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <button id="form-import-campaigns-submit" type="button" class="btn btn-primary">Import</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
 @endsection
 
 @section('javascript')
@@ -141,6 +131,8 @@
     <script src="{{ asset('public/template/assets/plugins/toolbar/js/jquery.toolbar.min.js') }}"></script>
     <!-- jquery-validation Js -->
     <script src="{{ asset('public/template/assets/plugins/jquery-validation/js/jquery.validate.min.js') }}"></script>
+
+    <script src="{{ asset('public/blocks/campaign_filter/custom.js?='.time()) }}"></script>
 
     <script src="{{ asset('public/js/manager/campaign.js?='.time()) }}"></script>
 @append

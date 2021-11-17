@@ -6,7 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Models\Campaign;
 use App\Repository\CampaignAssignRepository\AgentRepository\AgentRepository;
 use App\Repository\CampaignAssignRepository\CampaignAssignRepository;
+use App\Repository\CampaignFilterRepository\CampaignFilterRepository;
 use App\Repository\CampaignRepository\CampaignRepository;
+use App\Repository\CampaignStatusRepository\CampaignStatusRepository;
+use App\Repository\CampaignTypeRepository\CampaignTypeRepository;
+use App\Repository\CountryRepository\CountryRepository;
+use App\Repository\RegionRepository\RegionRepository;
 use App\Repository\UserRepository\UserRepository;
 use Illuminate\Http\Request;
 
@@ -17,8 +22,33 @@ class CampaignAssignController extends Controller
     private $userRepository;
     private $campaignAssignRepository;
     private $agentRepository;
+    /**
+     * @var CampaignStatusRepository
+     */
+    private $campaignStatusRepository;
+    /**
+     * @var CampaignFilterRepository
+     */
+    private $campaignFilterRepository;
+    /**
+     * @var CampaignTypeRepository
+     */
+    private $campaignTypeRepository;
+    /**
+     * @var CountryRepository
+     */
+    private $countryRepository;
+    /**
+     * @var RegionRepository
+     */
+    private $regionRepository;
 
     public function __construct(
+        CampaignStatusRepository $campaignStatusRepository,
+        CampaignFilterRepository $campaignFilterRepository,
+        CampaignTypeRepository $campaignTypeRepository,
+        CountryRepository $countryRepository,
+        RegionRepository $regionRepository,
         CampaignRepository $campaignRepository,
         UserRepository $userRepository,
         CampaignAssignRepository $campaignAssignRepository,
@@ -30,10 +60,21 @@ class CampaignAssignController extends Controller
         $this->userRepository = $userRepository;
         $this->campaignAssignRepository = $campaignAssignRepository;
         $this->agentRepository = $agentRepository;
+        $this->campaignStatusRepository = $campaignStatusRepository;
+        $this->campaignFilterRepository = $campaignFilterRepository;
+        $this->campaignTypeRepository = $campaignTypeRepository;
+        $this->countryRepository = $countryRepository;
+        $this->regionRepository = $regionRepository;
     }
 
     public function index()
     {
+        $this->data['dataFilter']['resultCountries'] = $this->countryRepository->get(array('status' => 1));
+        $this->data['dataFilter']['resultRegions'] = $this->regionRepository->get(array('status' => 1));
+        $this->data['dataFilter']['resultCampaignTypes'] = $this->campaignTypeRepository->get(array('status' => 1));
+        $this->data['dataFilter']['resultCampaignFilters'] = $this->campaignFilterRepository->get(array('status' => 1));
+        $this->data['dataFilter']['resultCampaignStatuses'] = $this->campaignStatusRepository->get(array('status' => 1));
+
         $this->data['resultCampaigns'] = $this->campaignAssignRepository->getCampaignToAssign();
         $this->data['resultUsers'] = $this->userRepository->get(array(
             'status' => 1,
@@ -97,6 +138,77 @@ class CampaignAssignController extends Controller
         }
         //Filters
         if(!empty($filters)) {
+
+            if(isset($filters['start_date']) && !empty($filters['start_date'])) {
+                $start_date = date('Y-m-d', strtotime($filters['start_date']));
+                $query->where('start_date', '>=', $start_date);
+            }
+
+            if(isset($filters['end_date']) && !empty($filters['end_date'])) {
+                $end_date = date('Y-m-d', strtotime($filters['end_date']));
+                $query->where('end_date', '<=', $end_date);
+            }
+
+            if(isset($filters['campaign_status_id']) && !empty($filters['campaign_status_id'])) {
+                $query->whereIn('campaign_status_id',  $filters['campaign_status_id']);
+            }
+
+            if(isset($filters['delivery_day'])) {
+                $query->whereHas('pacingDetails', function($pacingDetails) use($filters) {
+                    $pacingDetails->whereNotNull('sub_allocation');
+                    $pacingDetails->whereIn('day', $filters['delivery_day']);
+                });
+            }
+
+            if(isset($filters['due_in'])) {
+
+                $today_date = date('Y-m-d');
+
+                switch ($filters['due_in']) {
+                    case 'Today':
+                        $query->where('end_date', '=', $today_date);
+                        break;
+                    case 'Tomorrow':
+                        $tomorrow_date = date('Y-m-d', strtotime('+1 days'));
+                        $query->where('end_date', '=', $tomorrow_date);
+                        break;
+                    case '7 Days':
+                        $date_7days_later = date('Y-m-d', strtotime('+6 days'));
+                        $query->whereBetween('end_date', [$today_date, $date_7days_later]);
+                        break;
+                    case 'Past Due':
+                        $query->where('end_date', '<', $today_date);
+                        break;
+                }
+            }
+
+            if(isset($filters['country_id'])) {
+                $query->whereHas('countries', function ($countries) use($filters) {
+                    $countries->whereIn('country_id', $filters['country_id']);
+                });
+            }
+
+            if(isset($filters['country_id'])) {
+                $query->whereHas('countries', function ($countries) use($filters) {
+                    $countries->whereIn('country_id', $filters['country_id']);
+                });
+            }
+
+            if(isset($filters['region_id'])) {
+                $query->whereHas('countries.country', function ($countries) use($filters) {
+                    $countries->whereHas('region', function ($region) use($filters) {
+                        $region->whereIn('id', $filters['region_id']);
+                    });
+                });
+            }
+
+            if(isset($filters['campaign_type_id'])) {
+                $query->where('campaign_type_id', $filters['campaign_type_id']);
+            }
+
+            if(isset($filters['campaign_filter_id'])) {
+                $query->where('campaign_filter_id', $filters['campaign_filter_id']);
+            }
 
         }
 

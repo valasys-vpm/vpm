@@ -30,6 +30,15 @@ $(function (){
             data: {
                 filters: function (){
                     let obj = {
+                        start_date: $("#filter_start_date").val(),
+                        end_date: $("#filter_end_date").val(),
+                        campaign_status_id: $("#filter_campaign_status_id").val(),
+                        delivery_day: $("#filter_delivery_day").val(),
+                        due_in: $("#filter_due_in").val(),
+                        country_id: $("#filter_country_id").val(),
+                        region_id: $("#filter_region_id").val(),
+                        campaign_type_id: $("#filter_campaign_type_id").val(),
+                        campaign_filter_id: $("#filter_campaign_filter_id").val()
                     };
                     localStorage.setItem("filters", JSON.stringify(obj));
                     return JSON.stringify(obj);
@@ -155,17 +164,30 @@ $(function (){
             });
         },
         "createdRow": function(row, data, dataIndex){
-            switch (data.campaign_status_id) {
+            let status_id  = data.campaign_status_id;
+            if(data.children.length) {
+                status_id = data.children[0].campaign_status_id;
+            }
+            switch (status_id) {
                 case 1:
                     $(row).addClass('border-live');
                     break;
                 case 2:
                     $(row).addClass('border-paused');
                     break;
+                case 3:
+                    $(row).addClass('border-cancelled');
+                    break;
+                case 4:
+                    $(row).addClass('border-delivered');
+                    break;
+                case 5:
+                    $(row).addClass('border-reactivated');
+                    break;
+                case 6:
+                    $(row).addClass('border-shortfall');
+                    break;
             }
-            /*if( data[2] ==  `someVal`){
-                $(row).addClass('redClass');
-            }*/
         }
     });
 

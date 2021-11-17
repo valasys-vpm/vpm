@@ -71,6 +71,9 @@ Route::prefix('manager')->middleware(['web', 'check.manager'])->name('manager.')
     //Holiday Routes
     include('manager/holiday_routes.php');
 
+    //Data Routes
+    include('manager/data_routes.php');
+
 });
 
 Route::prefix('team-leader')->middleware(['web', 'check.team_leader'])->name('team_leader.')->group(function (){
@@ -83,8 +86,14 @@ Route::prefix('team-leader')->middleware(['web', 'check.team_leader'])->name('te
     //Campaign Assign Routes
     include('team_leader/campaign_assign_routes.php');
 
-    //Campaign Assign Routes
+    //Team Management Routes
     include('team_leader/team_routes.php');
+
+    //Campaign Management Routes
+    include('team_leader/lead_routes.php');
+
+    //Data Routes
+    include('team_leader/data_routes.php');
 
 });
 
@@ -97,6 +106,42 @@ Route::prefix('agent')->middleware(['web', 'check.agent'])->name('agent.')->grou
 
     //Campaign Management Routes
     include('agent/lead_routes.php');
+
+    //Data Routes
+    include('agent/data_routes.php');
+
+});
+
+Route::prefix('qa-team-leader')->middleware(['web', 'check.qa_team_leader'])->name('qa_team_leader.')->group(function (){
+
+    Route::get('/dashboard', [App\Http\Controllers\QATeamLeader\DashboardController::class, 'index'])->name('dashboard');
+
+    //Campaign Management Routes
+    include('qa_team_leader/campaign_routes.php');
+
+    //Campaign Assign Routes
+    include('qa_team_leader/campaign_assign_routes.php');
+
+    //Team Management Routes
+    include('qa_team_leader/team_routes.php');
+
+});
+
+Route::prefix('quality-analyst')->middleware(['web', 'check.quality_analyst'])->name('quality_analyst.')->group(function (){
+
+    Route::get('/dashboard', [App\Http\Controllers\QualityAnalyst\DashboardController::class, 'index'])->name('dashboard');
+
+    //Campaign Management Routes
+    include('quality_analyst/campaign_routes.php');
+
+});
+
+Route::prefix('email-marketing-executive')->middleware(['web', 'check.email_marketing_executive'])->name('email_marketing_executive.')->group(function (){
+
+    Route::get('/dashboard', [App\Http\Controllers\EmailMarketingExecutive\DashboardController::class, 'index'])->name('dashboard');
+
+    //Campaign Management Routes
+    include('email_marketing_executive/campaign_routes.php');
 
 });
 
@@ -114,6 +159,11 @@ Route::prefix('vendor-manager')->middleware(['web', 'check.vendor_manager'])->na
     include('vendor_manager/campaign_assign_routes.php');
 
 });
+
+//Notification Routes
+
+Route::any('/notification/mark-all-as-read', [App\Http\Controllers\NotificationController::class, 'markAllAsRead'])->name('notification.mark_all_as_read');
+Route::any('/notification/view-details/{id}', [App\Http\Controllers\NotificationController::class, 'update'])->name('notification.view_details');
 
 
 

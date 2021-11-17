@@ -40,13 +40,15 @@ class CreateAgentLeadsTable extends Migration
             $table->string('state', 100);
             $table->string('zipcode', 10);
             $table->string('country', 100);
+            $table->string('industry');
             $table->string('employee_size', 50);
             $table->string('revenue', 50);
             $table->string('company_domain', 100);
             $table->string('website')->nullable();
             $table->text('company_linkedin_url')->nullable();
             $table->text('linkedin_profile_link');
-            $table->text('linkedin_profile_sn_link');
+            $table->text('linkedin_profile_sn_link')->nullable();
+            $table->text('comment')->nullable();
             //---Lead Details
 
             $table->timestamp('created_at')->useCurrent();

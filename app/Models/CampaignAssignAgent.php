@@ -12,6 +12,8 @@ class CampaignAssignAgent extends Model
     protected $guarded = array();
     public $timestamps = true;
 
+    protected $appends = ['agent_lead_count'];
+
     public function campaign()
     {
         return $this->hasOne(Campaign::class, 'id', 'campaign_id');
@@ -28,6 +30,16 @@ class CampaignAssignAgent extends Model
 
     public function caratl()
     {
-        return $this->hasOne(CampaignAssignAgent::class, 'id', 'campaign_assign_ratl_id');
+        return $this->hasOne(CampaignAssignRATL::class, 'id', 'campaign_assign_ratl_id');
+    }
+
+    public function agentLeads()
+    {
+        return $this->hasMany(AgentLead::class, 'ca_agent_id', 'id');
+    }
+
+    public function getAgentLeadCountAttribute()
+    {
+        return $this->agentLeads->count();
     }
 }
