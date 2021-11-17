@@ -9,11 +9,11 @@ let MONTHS = ['Jan','Feb','Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'
 $(function (){
 
     $("#campaign_list").select2({
-        placeholder: " -- Select Campaign(s) --",
+        placeholder: " --- Select Campaign ---",
     });
 
     $("#user_list").select2({
-        placeholder: " -- Select User(s) --",
+        placeholder: " --- Select User(s) ---",
     });
 
 });
@@ -195,6 +195,10 @@ $(function (){
         let campaign_list = $("#campaign_list").val();
         let user_list = $("#user_list").val();
         let html = '';
+
+        if(!Array.isArray(campaign_list)) {
+            campaign_list = [campaign_list];
+        }
 
         $("#modal-campaign-assign").find('.modal-body').html(html);
 

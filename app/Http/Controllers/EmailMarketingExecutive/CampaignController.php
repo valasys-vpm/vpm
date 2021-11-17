@@ -104,7 +104,12 @@ class CampaignController extends Controller
 
         //Search Data
         if(isset($searchValue) && $searchValue != "") {
-            $query->where("created_at", "like", "%$searchValue%");
+            $query->whereHas('campaign', function ($campaign) use($searchValue) {
+                $campaign->where("campaign_id", "like", "%$searchValue%");
+                $campaign->orWhere("name", "like", "%$searchValue%");
+                $campaign->orWhere("allocation", "like", "%$searchValue%");
+                $campaign->orWhere("deliver_count", "like", "%$searchValue%");
+            });
         }
         //Filters
         if(!empty($filters)) {

@@ -1,4 +1,4 @@
-
+let URL = $('meta[name="base-path"]').attr('content');
 let MONTHS = ['Jan','Feb','Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 let DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
@@ -33,6 +33,30 @@ $(function(){
 
 
 $(function(){
+
+    $('#form-update-delivery-details-submit').on('click', function (e) {
+        e.preventDefault();
+        let form_data = new FormData($('#form-update-delivery-details')[0]);
+
+        $.ajax({
+            url: URL +'/manager/campaign-assign/update-delivery-details',
+            processData: false,
+            contentType: false,
+            data: form_data,
+            type: 'post',
+            success: function(response) {
+                if(response.status === true) {
+                    $('#modal-update-delivery-details').modal('hide');
+                    trigger_pnofify('success', 'Successful', response.message);
+                } else {
+                    trigger_pnofify('error', 'Error while processing request', response.message);
+                }
+            }
+        });
+
+        document.getElementById("modal-form-attach-specification").reset();
+
+    });
 
 });
 
@@ -146,4 +170,26 @@ function getAssignedAgents(_id, _this) {
 
 
     return html;
+}
+
+function updateDeliveryDetails(_campaign_id) {
+    $.ajax({
+        type: 'get',
+        url: URL + '/manager/campaign-assign/get-campaign-details/' + _campaign_id,
+        success: function (response){
+            if(response.status === true) {
+                $("#modal-update-delivery-details").find('#campaign_id').val(_campaign_id);
+                if (response.data.delivery_detail) {
+                    let delivery_detail = response.data.delivery_detail;
+                    $("#form-update-delivery-details").find('input[name="id"]').val(btoa(delivery_detail.id));
+                    $("#form-update-delivery-details").find('input[name="lead_sent"]').val(delivery_detail.lead_sent);
+                    $("#form-update-delivery-details").find('input[name="lead_approved"]').val(delivery_detail.lead_approved);
+                    $("#form-update-delivery-details").find('input[name="lead_available"]').val(delivery_detail.lead_available);
+                }
+                $("#modal-update-delivery-details").modal('show');
+            } else {
+                trigger_pnofify('error', 'Error while processing request', response.message);
+            }
+        }
+    });
 }

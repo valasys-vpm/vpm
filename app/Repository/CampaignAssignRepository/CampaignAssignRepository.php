@@ -215,62 +215,78 @@ class CampaignAssignRepository implements CampaignAssignInterface
             $dataRATL = $dataAgent = $dataVM = array();
             $RATLNotifications = $RANotifications = $VMNotifications = array();
             foreach ($attributes['data'] as $key => $campaign) {
-                foreach ($campaign['users'] as $user) {
-                    $resultCampaign = Campaign::findOrFail($campaign['campaign_id']);
+                $userIds = array_column($campaign['users'], 'user_id');
+                $resultUsers = User::whereIn('id', $userIds)->get()->pluck('designation_id')->toArray();
+                if(count(array_unique($resultUsers)) == 1) {
+                    foreach ($campaign['users'] as $user) {
+                        $resultCampaign = Campaign::findOrFail($campaign['campaign_id']);
 
-                    //Check user type
-                    $resultUser = User::findOrFail($user['user_id']);
-                    switch ($resultUser->designation->slug) {
-                        case 'ra_team_leader' :
-                            $dataRATL[] = array(
-                                'campaign_id' => $campaign['campaign_id'],
-                                'user_id' => $user['user_id'],
-                                'display_date' => date('Y-m-d', strtotime($campaign['display_date'])),
-                                'allocation' => $user['allocation'],
-                                'assigned_by' => Auth::id()
-                            );
-                            $RATLNotifications[] = array(
-                                'sender_id' => Auth::id(),
-                                'recipient_id' => $user['user_id'],
-                                'message' => 'New campaign assigned - '.$resultCampaign->name,
-                                'url' => implode('/', array_slice(explode('/', route('team_leader.campaign.show', base64_encode($resultCampaign->id))), 4))
-                            );
-                            break;
-                        case 'research_analyst' :
-                            $dataAgent[] = array(
-                                'campaign_id' => $campaign['campaign_id'],
-                                'campaign_assign_ratl_id ' => $campaign['campaign_assign_ratl_id'],
-                                'user_id' => $user['user_id'],
-                                'display_date' => date('Y-m-d', strtotime($campaign['display_date'])),
-                                'allocation' => $user['allocation'],
-                                'reporting_file' => '',
-                                'assigned_by' => Auth::id()
-                            );
-                            $RANotifications[] = array(
-                                'sender_id' => Auth::id(),
-                                'recipient_id' => $user['user_id'],
-                                'message' => 'New campaign assigned - '.$resultCampaign->name,
-                                'url' => implode('/', array_slice(explode('/', route('agent.campaign.show', base64_encode($resultCampaign->id))), 4))
-                            );
-                            break;
-                        case 'sr_vendor_management_specialist' :
-                            $dataVM[] = array(
-                                'campaign_id' => $campaign['campaign_id'],
-                                'user_id' => $user['user_id'],
-                                'display_date' => date('Y-m-d', strtotime($campaign['display_date'])),
-                                'allocation' => $user['allocation'],
-                                'assigned_by' => Auth::id()
-                            );
+                        //Check user type
+                        $resultUser = User::findOrFail($user['user_id']);
+                        switch ($resultUser->designation->slug) {
+                            case 'ra_team_leader' :
+                                $dataRATL[] = array(
+                                    'campaign_id' => $campaign['campaign_id'],
+                                    'user_id' => $user['user_id'],
+                                    'display_date' => date('Y-m-d', strtotime($campaign['display_date'])),
+                                    'allocation' => $user['allocation'],
+                                    'assigned_by' => Auth::id()
+                                );
+                                $RATLNotifications[] = array(
+                                    'sender_id' => Auth::id(),
+                                    'recipient_id' => $user['user_id'],
+                                    'message' => 'New campaign assigned - '.$resultCampaign->name,
+                                    'url' => implode('/', array_slice(explode('/', route('team_leader.campaign.show', base64_encode($resultCampaign->id))), 4))
+                                );
+                                break;
+                            case 'research_analyst' :
+                                $resultUser = User::findOrFail($user['user_id']);
+                                $campaignAssignRATL = new CampaignAssignRATL();
+                                $campaignAssignRATL->campaign_id = $campaign['campaign_id'];
+                                $campaignAssignRATL->user_id = $resultUser->reporting_user_id;
+                                $campaignAssignRATL->display_date = date('Y-m-d', strtotime($campaign['display_date']));
+                                $campaignAssignRATL->allocation = $user['allocation'];
+                                $campaignAssignRATL->assigned_by = Auth::id();
+                                $campaignAssignRATL->save();
 
-                            $VMNotifications[] = array(
-                                'sender_id' => Auth::id(),
-                                'recipient_id' => $user['user_id'],
-                                'message' => 'New campaign assigned - '.$resultCampaign->name,
-                                'url' => implode('/', array_slice(explode('/', route('vendor_manager.campaign.show', base64_encode($resultCampaign->id))), 4))
-                            );
-                            break;
+                                $dataAgent[] = array(
+                                    'campaign_id' => $campaign['campaign_id'],
+                                    'campaign_assign_ratl_id' => $campaignAssignRATL->id,
+                                    'user_id' => $user['user_id'],
+                                    'display_date' => date('Y-m-d', strtotime($campaign['display_date'])),
+                                    'allocation' => $user['allocation'],
+                                    'reporting_file' => null,
+                                    'assigned_by' => Auth::id()
+                                );
+                                $RANotifications[] = array(
+                                    'sender_id' => Auth::id(),
+                                    'recipient_id' => $user['user_id'],
+                                    'message' => 'New campaign assigned - '.$resultCampaign->name,
+                                    'url' => implode('/', array_slice(explode('/', route('agent.campaign.show', base64_encode($resultCampaign->id))), 4))
+                                );
+                                break;
+                            case 'sr_vendor_management_specialist' :
+                                $dataVM[] = array(
+                                    'campaign_id' => $campaign['campaign_id'],
+                                    'user_id' => $user['user_id'],
+                                    'display_date' => date('Y-m-d', strtotime($campaign['display_date'])),
+                                    'allocation' => $user['allocation'],
+                                    'assigned_by' => Auth::id()
+                                );
+
+                                $VMNotifications[] = array(
+                                    'sender_id' => Auth::id(),
+                                    'recipient_id' => $user['user_id'],
+                                    'message' => 'New campaign assigned - '.$resultCampaign->name,
+                                    'url' => implode('/', array_slice(explode('/', route('vendor_manager.campaign.show', base64_encode($resultCampaign->id))), 4))
+                                );
+                                break;
+                        }
                     }
+                } else {
+                    return array('status' => FALSE, 'message' => 'Can not assign campaign, user\'s designation mismatch.');
                 }
+
             }
 
             $flag = 0;
@@ -321,7 +337,6 @@ class CampaignAssignRepository implements CampaignAssignInterface
             }
         } catch (\Exception $exception) {
             DB::rollBack();
-            dd($exception->getMessage());
             $response = array('status' => FALSE, 'message' => 'Something went wrong, please try again.');
         }
         return $response;

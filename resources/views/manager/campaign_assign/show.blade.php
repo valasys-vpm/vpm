@@ -215,6 +215,7 @@
                                                         </td>
                                                         <td>
                                                             <a href="javascript:;" onclick="viewAssignmentDetails('{{ base64_encode($resultCampaign->id) }}');" class="btn btn-outline-primary btn-sm btn-rounded mb-0" title="view assignment details" style="padding: 5px 8px;"><i class="feather icon-eye mr-0"></i></a>
+{{--                                                            <a href="javascript:;" onclick="updateDeliveryDetails('{{ base64_encode($resultCampaign->id) }}');" class="btn btn-outline-dark btn-sm btn-rounded mb-0" title="Update Delivery Details" style="padding: 5px 8px;"><i class="feather icon-edit mr-0"></i></a>--}}
                                                         </td>
                                                     </tr>
                                                     <tr class="pacing-details" style="display: none;">
@@ -341,6 +342,12 @@
                                             </div>
                                         </div>
                                     </div>
+
+                                    <div class="row mb-4">
+                                        <div id="div-update-delivery_details" class="col-md-3">
+                                            <button type="button" class="btn btn-dark btn-sm btn-square w-100" onclick="updateDeliveryDetails('{{ base64_encode($resultCampaign->id) }}');" style="padding: 6px 10px;"><i class="feather icon-edit"></i>Delivery Detail</button>
+                                        </div>
+                                    </div>
                                 </div>
                                 <!-- [ task-detail ] end -->
                             </div>
@@ -387,6 +394,44 @@
             </div>
         </div>
     </div>
+
+    <div id="modal-update-delivery-details" class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Client Delivery Details</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body">
+                    <div class="col-md-12">
+                        <form id="form-update-delivery-details">
+                            <input type="hidden" id="campaign_id" name="campaign_id" value="">
+                            <input type="hidden" name="id" value="">
+                            <div class="row">
+                                <div class="col-md-6 form-group">
+                                    <label for="lead_sent">Lead Sent</label>
+                                    <input type="number" class="form-control btn-square" id="lead_sent" name="lead_sent" placeholder="Enter lead sent" value="0">
+                                </div>
+                                <div class="col-md-6 form-group">
+                                    <label for="lead_approved">Lead Approved</label>
+                                    <input type="number" class="form-control btn-square" id="lead_approved" name="lead_approved" placeholder="Enter lead approved" value="0">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 form-group">
+                                    <label for="lead_available">Lead Available</label>
+                                    <input type="number" class="form-control btn-square" id="lead_available" name="lead_available" placeholder="Enter lead available" value="0">
+                                </div>
+                            </div>
+                            <button id="form-update-delivery-details-submit" type="button" class="btn btn-primary btn-square btn-sm float-right">Upload</button>
+                            <button type="reset" class="btn btn-secondary btn-square btn-sm float-right" data-dismiss="modal">Cancel</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 @endsection
 
 @section('javascript')

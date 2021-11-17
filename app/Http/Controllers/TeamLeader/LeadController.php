@@ -40,10 +40,8 @@ class LeadController extends Controller
 
         if($request->has('ca_ratl_id')) {
             $resultCAAgents = CampaignAssignAgent::where('campaign_assign_ratl_id', base64_decode($request->get('ca_ratl_id')))->get();
-
-            if($resultCAAgents->count()) {
-                $query->whereIn('ca_agent_id', $resultCAAgents->pluck('id')->toArray());
-            }
+            $query->whereIn('ca_agent_id', $resultCAAgents->pluck('id')->toArray());
+            //if($resultCAAgents->count())
         }
 
         $query->with('agent');

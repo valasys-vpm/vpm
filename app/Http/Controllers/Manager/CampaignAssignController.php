@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Manager;
 
 use App\Http\Controllers\Controller;
 use App\Models\Campaign;
+use App\Repository\Campaign\DeliveryDetailRepository\DeliveryDetailRepository;
 use App\Repository\CampaignAssignRepository\AgentRepository\AgentRepository;
 use App\Repository\CampaignAssignRepository\CampaignAssignRepository;
 use App\Repository\CampaignFilterRepository\CampaignFilterRepository;
@@ -14,6 +15,7 @@ use App\Repository\CountryRepository\CountryRepository;
 use App\Repository\RegionRepository\RegionRepository;
 use App\Repository\UserRepository\UserRepository;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CampaignAssignController extends Controller
 {
@@ -42,6 +44,10 @@ class CampaignAssignController extends Controller
      * @var RegionRepository
      */
     private $regionRepository;
+    /**
+     * @var DeliveryDetailRepository
+     */
+    private $deliveryDetailRepository;
 
     public function __construct(
         CampaignStatusRepository $campaignStatusRepository,
@@ -52,7 +58,8 @@ class CampaignAssignController extends Controller
         CampaignRepository $campaignRepository,
         UserRepository $userRepository,
         CampaignAssignRepository $campaignAssignRepository,
-        AgentRepository $agentRepository
+        AgentRepository $agentRepository,
+        DeliveryDetailRepository $deliveryDetailRepository
     )
     {
         $this->data = array();
@@ -65,6 +72,7 @@ class CampaignAssignController extends Controller
         $this->campaignTypeRepository = $campaignTypeRepository;
         $this->countryRepository = $countryRepository;
         $this->regionRepository = $regionRepository;
+        $this->deliveryDetailRepository = $deliveryDetailRepository;
     }
 
     public function index()
@@ -95,14 +103,43 @@ class CampaignAssignController extends Controller
         }
     }
 
-    public function show($id)
+    public function show($id, Request $request)
     {
         try {
-            $this->data['resultCampaign'] = $this->campaignRepository->find(base64_decode($id));
-            //dd($this->data['resultCampaign']->children->toArray());
+            $this->data['resultCampaign'] = $this->campaignRepository->find(base64_decode($id), array('delivery_detail'));
+
+            if($request->ajax() && !empty($this->data['resultCampaign'])) {
+                return response()->json(array('status' => true, 'message' => 'Data Found', 'data' => $this->data['resultCampaign']));
+            }
+
             return view('manager.campaign_assign.show', $this->data);
         } catch (\Exception $exception) {
-            return redirect()->route('manager.campaign.list')->with('error', ['title' => 'Error while processing request', 'message' => 'Campaign details not found']);
+            if($request->ajax()) {
+                return response()->json(array('status' => false, 'message' => 'Something went wrong.'));
+            } else {
+                return redirect()->route('manager.campaign.list')->with('error', ['title' => 'Error while processing request', 'message' => 'Campaign details not found']);
+            }
+        }
+    }
+
+    public function updateDeliveryDetails(Request $request)
+    {
+        $attributes = $request->all();
+        $attributes['updated_by'] = Auth::id();
+        if($request->has('id') && !empty($request->get('id'))) {
+            $cdd_id = base64_decode($request->get('id'));
+        } else {
+            $cdd_id = null;
+        }
+
+        if($request->has('campaign_id')) {
+            $attributes['campaign_id'] = base64_decode($attributes['campaign_id']);
+        }
+        $response = $this->deliveryDetailRepository->update($cdd_id, $attributes);
+        if($response['status'] == TRUE) {
+            return response()->json(array('status' => true, 'message' => $response['message']));
+        } else {
+            return response()->json(array('status' => false, 'message' => $response['message']));
         }
     }
 
@@ -134,7 +171,10 @@ class CampaignAssignController extends Controller
 
         //Search Data
         if(isset($searchValue) && $searchValue != "") {
-            $query->where("name", "like", "%$searchValue%");
+            $query->where("campaign_id", "like", "%$searchValue%");
+            $query->orWhere("name", "like", "%$searchValue%");
+            $query->orWhere("allocation", "like", "%$searchValue%");
+            $query->orWhere("deliver_count", "like", "%$searchValue%");
         }
         //Filters
         if(!empty($filters)) {

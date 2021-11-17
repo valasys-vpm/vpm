@@ -18,4 +18,7 @@ Route::prefix('campaign-assign')->name('campaign_assign.')->group(function()
     Route::any('/view-assigned-agents/{id}', [App\Http\Controllers\Manager\CampaignAssignController::class, 'viewAssignedAgents'])->name('view_assigned_agents');
     Route::any('/view-assigned-vendors/{id}', [App\Http\Controllers\Manager\CampaignAssignController::class, 'viewAssignmentVendors'])->name('view_assigned_vendors');
 
+    Route::any('/get-campaign-details/{id}', [App\Http\Controllers\Manager\CampaignAssignController::class, 'show'])->name('get_campaign_details');
+    Route::any('/update-delivery-details', [App\Http\Controllers\Manager\CampaignAssignController::class, 'updateDeliveryDetails'])->name('update_delivery_details');
+
 });

@@ -12,6 +12,8 @@ class Campaign extends Model
     protected $guarded = array();
     public $timestamps = true;
 
+    protected $appends = ['completed_count'];
+
     public function campaignType(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
         return $this->hasOne(CampaignType::class, 'id', 'campaign_type_id');
@@ -100,6 +102,21 @@ class Campaign extends Model
     public function children()
     {
         return $this->hasMany(Campaign::class, 'parent_id', 'id');
+    }
+
+    public function delivery_detail()
+    {
+        return $this->hasOne(CampaignDeliveryDetail::class, 'campaign_id', 'id');
+    }
+
+    public function agent_leads()
+    {
+        return $this->hasMany(AgentLead::class, 'campaign_id', 'id');
+    }
+
+    public function getCompletedCountAttribute()
+    {
+        return $this->hasMany(AgentLead::class, 'campaign_id', 'id')->count();
     }
 
 }

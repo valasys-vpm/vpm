@@ -9,7 +9,7 @@ let MONTHS = ['Jan','Feb','Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'
 $(function (){
 
     CAMPAIGN_TABLE = $('#table-campaigns').DataTable({
-        "lengthMenu": [ [500,400,300,200,100,-1], [500,400,300,200,100,'All'] ],
+        "lengthMenu": [ [5,500,400,300,200,100,-1], [5,500,400,300,200,100,'All'] ],
         "processing": true,
         "serverSide": true,
         "ajax": {
@@ -45,18 +45,22 @@ $(function (){
             {
                 orderable: false,
                 render: function (data, type, row) {
-                    let deliver_count = row.deliver_count;
+                    //let deliver_count = row.deliver_count;
+                    let completed_count = row.completed_count;
                     let allocation = row.allocation;
 
                     if(row.children.length) {
                         $.each(row.children, function (key, value) {
                             allocation = allocation + value.allocation;
-                            deliver_count = deliver_count + value.deliver_count;
+                            //deliver_count = deliver_count + value.deliver_count;
+                            completed_count = completed_count + value.completed_count;
                         });
                     }
 
-                    let percentage = (deliver_count/allocation)*100;
+                    //let percentage = (deliver_count/allocation)*100;
+                    let percentage = (completed_count/allocation)*100;
                     percentage = percentage.toFixed(2);
+
                     return '<div class="progress" style="height: 20px;width:100px;border:1px solid lightgrey;"><div class="progress-bar '+ (parseInt(percentage) < 100 ? 'bg-warning text-dark' : 'bg-success text-light' ) +'" role="progressbar" aria-valuenow="'+percentage+'" aria-valuemin="0" aria-valuemax="100" style="width: '+percentage+'%;font-weight:bold;">&nbsp;'+percentage+'%</div></div>';
                 }
             },
@@ -77,26 +81,97 @@ $(function (){
             },
             {
                 render: function (data, type, row) {
-                    let deliver_count = row.deliver_count;
+                    return row.completed_count;
+                }
+            },
+            {
+                render: function (data, type, row) {
                     let allocation = row.allocation;
-                    let shortfall_count = row.shortfall_count;
-
                     if(row.children.length) {
                         $.each(row.children, function (key, value) {
                             allocation = allocation + value.allocation;
-                            deliver_count = deliver_count + value.deliver_count;
-                            if(value.campaign_status_id === 6) {
-                                shortfall_count = value.shortfall_count;
-                            }
                         });
                     }
+                    return allocation;
+                }
+            },
+            {
+                render: function (data, type, row) {
+                    let lead_sent = 0;
 
-                    if(shortfall_count) {
-                        return deliver_count + ' <span class="text-danger" title="Shortfall Count">('+ shortfall_count +')</span>'+' / '+ allocation;
-                    } else {
-                        return deliver_count + ' / '+ allocation;
+                    if(row.delivery_detail) {
+                        if(row.delivery_detail.lead_sent) {
+                            lead_sent = row.delivery_detail.lead_sent;
+                        }
+                    }
+                    return lead_sent;
+                }
+            },
+            {
+                render: function (data, type, row) {
+                    let lead_approved = 0;
+
+                    if(row.delivery_detail) {
+                        if(row.delivery_detail.lead_approved) {
+                            lead_approved = row.delivery_detail.lead_approved;
+                        }
+                    }
+                    return lead_approved;
+                }
+            },
+            {
+                render: function (data, type, row) {
+                    let lead_approved = 0;
+                    let allocation = row.allocation;
+                    let percentage = 0;
+
+                    if(row.delivery_detail) {
+                        if(row.delivery_detail.lead_approved) {
+                            lead_approved = row.delivery_detail.lead_approved;
+                        }
+                    }
+                    if(allocation > 0) {
+                        percentage = (lead_approved/allocation)*100;
                     }
 
+                    percentage = percentage.toFixed(2);
+                    return '<div class="progress" style="height: 20px;width:100px;border:1px solid lightgrey;"><div class="progress-bar '+ (parseInt(percentage) < 100 ? 'bg-warning text-dark' : 'bg-success text-light' ) +'" role="progressbar" aria-valuenow="'+percentage+'" aria-valuemin="0" aria-valuemax="100" style="width: '+percentage+'%;font-weight:bold;">&nbsp;'+percentage+'%</div></div>';
+                }
+            },
+            {
+                render: function (data, type, row) {
+                    let lead_rejected = 0;
+
+                    if(row.delivery_detail) {
+                        if(row.delivery_detail.lead_rejected) {
+                            lead_rejected = row.delivery_detail.lead_rejected;
+                        }
+                    }
+                    return lead_rejected;
+                }
+            },
+            {
+                render: function (data, type, row) {
+                    let lead_available = 0;
+
+                    if(row.delivery_detail) {
+                        if(row.delivery_detail.lead_available) {
+                            lead_available = row.delivery_detail.lead_available;
+                        }
+                    }
+                    return lead_available;
+                }
+            },
+            {
+                render: function (data, type, row) {
+                    let lead_approved = 0;
+
+                    if(row.delivery_detail) {
+                        if(row.delivery_detail.lead_approved) {
+                            lead_approved = row.delivery_detail.lead_approved;
+                        }
+                    }
+                    return row.allocation - lead_approved;
                 }
             },
             {

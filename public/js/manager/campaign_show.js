@@ -190,6 +190,10 @@ $(function(){
         document.getElementById("modal-form-attach-specification").reset();
     });
 
+    $('#form-attach-campaign-file-reset').on('click', function (e) {
+        document.getElementById("modal-form-attach-campaign-file").reset();
+    });
+
     $('#modal-form-attach-specification-submit').on('click', function (e) {
         e.preventDefault();
         let form_data = new FormData($('#modal-form-attach-specification')[0]);

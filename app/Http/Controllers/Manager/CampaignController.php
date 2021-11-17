@@ -277,11 +277,17 @@ class CampaignController extends Controller
         $offset = $request->get("start");
 
         $query = Campaign::query();
+        $query->whereNull('parent_id');
+
+        $query->with('delivery_detail');
         $totalRecords = $query->count();
 
         //Search Data
         if(isset($searchValue) && $searchValue != "") {
-            $query->where("name", "like", "%$searchValue%");
+            $query->where("campaign_id", "like", "%$searchValue%");
+            $query->orWhere("name", "like", "%$searchValue%");
+            $query->orWhere("allocation", "like", "%$searchValue%");
+            $query->orWhere("deliver_count", "like", "%$searchValue%");
         }
         //Filters
         if(!empty($filters)) {

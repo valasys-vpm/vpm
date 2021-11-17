@@ -577,7 +577,7 @@
                                     <input type="file" class="form-control-file" id="specifications" name="specifications[]" multiple required>
                                 </div>
                             </div>
-                            <button id="form-attach-specification-reset" type="button" class="btn btn-secondary btn-square float-right">Clear</button>
+                            <button id="form-attach-specification-reset" type="button" class="btn btn-secondary btn-square float-right" data-dismiss="modal">Cancel</button>
                             <button id="modal-form-attach-specification-submit" type="button" class="btn btn-primary btn-square float-right">Upload</button>
                         </form>
                     </div>
@@ -656,7 +656,7 @@
                                 @endif
                             </div>
 
-                            <button type="reset" class="btn btn-secondary btn-square float-right">Clear</button>
+                            <button id="form-attach-campaign-file-reset" type="button" class="btn btn-secondary btn-square float-right" data-dismiss="modal">Cancel</button>
                             <button id="modal-form-attach-campaign-file-submit" type="button" class="btn btn-primary btn-square float-right">Upload</button>
                         </form>
                     </div>

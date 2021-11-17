@@ -76,7 +76,14 @@ class CampaignRepository implements CampaignInterface
 
     public function find($id, $with = array())
     {
-        return $this->campaign->findOrFail($id);
+
+        $query = Campaign::query();
+
+        if(in_array('delivery_detail', $with)) {
+            $query->with('delivery_detail');
+        }
+
+        return $query->findOrFail($id);
     }
 
     public function store($attributes)
