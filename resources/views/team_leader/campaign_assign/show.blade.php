@@ -38,7 +38,7 @@
                                     </div>
                                     <ul class="breadcrumb">
                                         <li class="breadcrumb-item"><a href="{{ route('team_leader.dashboard') }}"><i class="feather icon-home"></i></a></li>
-                                        <li class="breadcrumb-item"><a href="{{ route('team_leader.campaign.list') }}">Campaign Assign</a></li>
+                                        <li class="breadcrumb-item"><a href="{{ route('team_leader.campaign_assign.list') }}">Campaign Assign</a></li>
                                         <li class="breadcrumb-item"><a href="javascript:void(0);">Campaign Details</a></li>
                                     </ul>
 
@@ -258,6 +258,174 @@
                                         </div>
                                     </div>
 
+                                    <div class="card">
+                                        <div class="card-header">
+
+                                            <h5><i class="fas fa-users m-r-5"></i> Campaign Agents</h5>
+
+                                            <div class="card-header-right">
+                                                <div class="btn-group card-option">
+
+                                                    <button type="button" class="btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                        <i class="feather icon-more-vertical"></i>
+                                                    </button>
+                                                    <ul class="list-unstyled card-option dropdown-menu dropdown-menu-right">
+                                                        <li class="dropdown-item full-card"><a href="#!"><span><i class="feather icon-maximize"></i> maximize</span><span style="display:none"><i class="feather icon-minimize"></i> Restore</span></a></li>
+                                                        <li class="dropdown-item minimize-card"><a href="#!"><span><i class="feather icon-minus"></i> collapse</span><span style="display:none"><i class="feather icon-plus"></i> expand</span></a></li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="card-block" style="padding: 0 10px 10px 10px;">
+                                            <div class="table-responsive">
+                                                <table id="table-agents" class="table m-b-0 f-14 b-solid requid-table">
+                                                    <thead>
+                                                    <tr class="text-uppercase">
+                                                        <th class="text-center">Name</th>
+                                                        <th class="text-center">Completion</th>
+                                                        <th class="text-center">Deliver Count / <br>Allocation</th>
+                                                        <th class="text-center">Status</th>
+                                                        <th class="text-center">Action</th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody class="text-center text-muted">
+                                                    @php
+                                                        $total_agents = $resultCARATL->agents->count();
+                                                        $total_submitted = 0;
+                                                    @endphp
+                                                    @forelse($resultCARATL->agents as $ca_agent)
+                                                        <tr>
+                                                            <td>{{ $ca_agent->user->full_name }}</td>
+                                                            <td>
+                                                                @php
+                                                                    $percentage = ($ca_agent->agent_lead_count/$ca_agent->allocation)*100;
+                                                                    $percentage = number_format($percentage,2,".", "");
+                                                                    if($percentage == 100) {
+                                                                        $color_class = 'bg-success';
+                                                                    } else {
+                                                                        $color_class = 'bg-warning text-dark';
+                                                                    }
+                                                                @endphp
+                                                                <div class="progress" style="height: 20px;border: 1px solid #e2dada;">
+                                                                    <div class="progress-bar {{ $color_class }}" role="progressbar" aria-valuenow="{{$percentage}}" aria-valuemin="0" aria-valuemax="100" style="width: {{$percentage}}%; font-weight: bolder;">{{$percentage}}%</div>
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                {{ $ca_agent->agent_lead_count.' / '.$ca_agent->allocation }}
+                                                            </td>
+                                                            <td>
+                                                                @if(empty($ca_agent->started_at) && empty($ca_agent->submitted_at))
+                                                                    <span class="badge badge-pill badge-danger" style="padding: 5px;min-width: 70px;">Campaign Assigned</span>
+                                                                @else
+                                                                    @if(!empty($ca_agent->started_at) && empty($ca_agent->submitted_at))
+                                                                        <span class="badge badge-pill badge-warning" style="padding: 5px;min-width: 70px;">Campaign In Progress</span>
+                                                                    @else
+                                                                        @php $total_submitted++; @endphp
+                                                                        <span class="badge badge-pill badge-success" style="padding: 5px;min-width: 70px;">Campaign Submit</span>
+                                                                    @endif
+                                                                @endif
+                                                            </td>
+                                                            <td>
+                                                                @if(!empty($ca_agent->started_at))
+                                                                    <a href="javascript:;" onclick="viewAgentLeadDetails('{{ base64_encode($ca_agent->id) }}');" class="btn btn-outline-primary btn-sm btn-rounded mb-0" title="view agent lead details" style="padding: 5px 8px;"><i class="feather icon-eye mr-0"></i></a>
+                                                                @endif
+                                                            </td>
+                                                        </tr>
+                                                    @empty
+                                                    @endforelse
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row mb-4">
+                                        @if(empty($resultCARATL->submitted_at))
+                                            <div id="div-manage-leads" class="col-md-3">
+                                                <a href="{{ route('team_leader.lead.list', base64_encode($resultCARATL->id)) }}">
+                                                    <button type="button" class="btn btn-primary btn-sm btn-square w-100">Manage Leads</button>
+                                                </a>
+                                            </div>
+                                        @endif
+
+                                        @if(empty($resultCARATL->submitted_at))
+                                            <div id="div-submit-campaign" class="col-md-3">
+                                                <button type="button" @if($total_submitted < $total_agents) class="btn btn-danger btn-sm btn-square w-100" disabled title="Campaign Not Submitted By All Agents!" @else class="btn btn-success btn-sm btn-square w-100" @endif onclick="submitCampaign('{{ base64_encode($resultCARATL->id) }}');">Submit Campaign</button>
+                                            </div>
+                                        @endif
+                                    </div>
+
+                                    @if(isset($resultCampaignIssues) && $resultCampaignIssues->count())
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h5><i class="fas fa-info-circle m-r-5"></i> Camapign Issue(s)</h5>
+                                            <div class="card-header-right">
+                                                <div class="btn-group card-option">
+                                                    <button type="button" class="btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                        <i class="feather icon-more-vertical"></i>
+                                                    </button>
+                                                    <ul class="list-unstyled card-option dropdown-menu dropdown-menu-right">
+                                                        <li class="dropdown-item full-card"><a href="#!"><span><i class="feather icon-maximize"></i> maximize</span><span style="display:none"><i class="feather icon-minimize"></i> Restore</span></a></li>
+                                                        <li class="dropdown-item minimize-card"><a href="#!"><span><i class="feather icon-minus"></i> collapse</span><span style="display:none"><i class="feather icon-plus"></i> expand</span></a></li>
+                                                        <li class="dropdown-item reload-card"><a href="#!"><i class="feather icon-refresh-cw"></i> reload</a></li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="card-block" style="padding: 0 10px 10px 10px;">
+                                            <div class="table-responsive">
+                                                <table class="table m-b-0 f-14 b-solid requid-table">
+                                                    <thead>
+                                                    <tr class="text-uppercase">
+                                                        <th class="text-center">Raise By</th>
+                                                        <th class="text-center">Priority</th>
+                                                        <th class="text-center">Status</th>
+                                                        <th class="text-center">Title</th>
+                                                        <th class="text-center">Description</th>
+                                                        <th class="text-center">Created At</th>
+                                                        <th class="text-center">Response</th>
+                                                        <th class="text-center">Closed By</th>
+                                                        <th class="text-center">Closed At</th>
+                                                        <th class="text-center">Action</th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody class="text-center text-muted">
+                                                    @foreach($resultCampaignIssues as $key => $campaign_issue)
+                                                        <tr>
+                                                            <td>{{ $campaign_issue->user->full_name }}</td>
+                                                            <td>
+                                                                @switch($campaign_issue->priority)
+                                                                    @case('low') <span class="badge badge-pill badge-info" style="padding: 5px;min-width: 70px;">Low</span> @break;
+                                                                    @case('normal') <span class="badge badge-pill badge-warning" style="padding: 5px;min-width: 70px;">Normal</span> @break;
+                                                                    @case('high') <span class="badge badge-pill badge-danger" style="padding: 5px;min-width: 70px;">High</span> @break;
+                                                                @endswitch
+                                                            </td>
+                                                            <td>
+                                                                @switch($campaign_issue->status)
+                                                                    @case(0) <span class="badge badge-pill badge-warning" style="padding: 5px;min-width: 70px;">Open</span> @break;
+                                                                    @case(1) <span class="badge badge-pill badge-success" style="padding: 5px;min-width: 70px;">Closed</span> @break;
+                                                                @endswitch
+                                                            </td>
+                                                            <td>{{ $campaign_issue->title }}</td>
+                                                            <td>{{ $campaign_issue->description }}</td>
+                                                            <td>{{ date('d/M/Y', strtotime($campaign_issue->created_at)) }}</td>
+                                                            <td>@if(!empty($campaign_issue->response)) {{ $campaign_issue->response }} @else - @endif</td>
+                                                            <td>@if(!empty($campaign_issue->closed_by)) {{ $campaign_issue->closed_by_user->full_name }} @else - @endif</td>
+                                                            <td>@if(!empty($campaign_issue->closed_by)) {{ date('d/M/Y', strtotime($campaign_issue->updated_at)) }} @else - @endif</td>
+                                                            <td>
+                                                                @if(empty($campaign_issue->closed_by))
+                                                                <a href="javascript:;" onclick="closeCampaignIssue('{{ base64_encode($campaign_issue->id) }}');" class="btn btn-outline-primary btn-sm btn-rounded mb-0" title="Close Issue" style="padding: 5px 8px;"><i class="feather icon-edit mr-0"></i></a>
+                                                                @endif
+                                                            </td>
+                                                        </tr>
+                                                    @endforeach
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @endif
+
                                     <div id="div-get-data" class="card">
                                         <div class="card-header">
                                             <h5><i class="fas fa-chart-pie m-r-5"></i> Get Data</h5>
@@ -415,6 +583,77 @@
             </div>
         </div>
     </div>
+
+    <div id="modal-raise-issue" class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Raise Issue</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body">
+                    <div class="col-md-12">
+                        <form id="form-raise-issue" action="{{ route('agent.campaign_issue.store') }}" method="post">
+                            @csrf
+                            <input type="hidden" name="campaign_id" value="{{ base64_encode($resultCARATL->campaign_id) }}">
+                            <div class="row">
+                                <div class="col-md-12 form-group">
+                                    <label for="title">Title <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="title" name="title" placeholder="Enter title" required>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12 form-group">
+                                    <label for="description">Description <span class="text-danger">*</span></label>
+                                    <textarea class="form-control" id="description" name="description" placeholder="Enter description" required row="3"></textarea>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 form-group">
+                                    <label for="priority">Priority <span class="text-danger">*</span></label>
+                                    <select class="form-control btn-square" id="priority" name="priority">
+                                        <option value="low">Low</option>
+                                        <option value="normal">Normal</option>
+                                        <option value="high">high</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <button id="form-raise-issue-submit" type="submit" class="btn btn-primary btn-square float-right">Upload</button>
+                            <button type="reset" class="btn btn-secondary btn-square float-right" data-dismiss="modal">Cancel</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-close-issue" class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Raise Issue</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body">
+                    <div class="col-md-12">
+                        <form id="form-close-issue">
+                            @csrf
+                            <input type="hidden" name="id" value="">
+                            <div class="row">
+                                <div class="col-md-12 form-group">
+                                    <label for="response">Description <span class="text-danger">*</span></label>
+                                    <textarea class="form-control" id="response" name="response" placeholder="Enter response" required row="3"></textarea>
+                                </div>
+                            </div>
+                            <button id="form-close-issue-submit" type="button" class="btn btn-primary btn-square float-right">Close Issue</button>
+                            <button type="reset" class="btn btn-secondary btn-square float-right" data-dismiss="modal">Cancel</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 @endsection
 
 @section('javascript')

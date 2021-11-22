@@ -93,6 +93,24 @@ $(function(){
         });
     });
 
+    $('#form-close-issue-submit').on('click', function (e) {
+        e.preventDefault();
+        $.ajax({
+            type: 'post',
+            url: URL + '/team-leader/campaign-issue/update/' + $('#modal-close-issue').find('input[name="id"]').val(),
+            data: $('#form-close-issue').serialize(),
+            async : true,
+            success: function (response) {
+                if(response.status === true) {
+                    trigger_pnofify('success', 'Successful', response.message);
+                    window.location.reload();
+                } else {
+                    trigger_pnofify('error', 'Something went wrong', response.message);
+                }
+            }
+        });
+    });
+
 });
 
 function viewAssignmentDetails(id) {
@@ -132,4 +150,9 @@ function viewAssignmentDetails(id) {
             }
         }
     });
+}
+
+function closeCampaignIssue(_issue_id) {
+    $('#modal-close-issue').find('input[name="id"]').val(_issue_id);
+    $('#modal-close-issue').modal('show');
 }

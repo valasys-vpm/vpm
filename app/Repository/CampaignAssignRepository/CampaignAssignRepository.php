@@ -171,10 +171,11 @@ class CampaignAssignRepository implements CampaignAssignInterface
         if(!empty($result['VM'])) {
             $resultAssignedCampaigns = array_unique (array_merge ($resultAssignedCampaigns, $result['VM']->pluck('campaign_id')->toArray()));
         }
-
+        //dd($resultAssignedCampaigns);
         $resultCampaignIds = array();
         //get campaign with live incremental
-        $resultCampaigns = Campaign::whereNull('parent_id')->whereNotIn('id', $resultAssignedCampaigns)->get();
+        $resultCampaigns = Campaign::whereNotIn('id', $resultAssignedCampaigns)->get();
+        //dd($resultCampaigns->pluck('id')->toArray());
 
         if(!empty($resultCampaigns)) {
             foreach ($resultCampaigns as $campaign) {
@@ -189,6 +190,7 @@ class CampaignAssignRepository implements CampaignAssignInterface
                 }
             }
         }
+
         $query = Campaign::query();
         $query->whereIn('id', $resultCampaignIds);
         //dd($query->get()->pluck('id')->toArray());

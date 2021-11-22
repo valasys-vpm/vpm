@@ -74,6 +74,9 @@ Route::prefix('manager')->middleware(['web', 'check.manager'])->name('manager.')
     //Data Routes
     include('manager/data_routes.php');
 
+    //Campaign Issue Routes
+    include('manager/campaign_issue_routes.php');
+
 });
 
 Route::prefix('team-leader')->middleware(['web', 'check.team_leader'])->name('team_leader.')->group(function (){
@@ -95,6 +98,9 @@ Route::prefix('team-leader')->middleware(['web', 'check.team_leader'])->name('te
     //Data Routes
     include('team_leader/data_routes.php');
 
+    //Campaign Issue Routes
+    include('team_leader/campaign_issue_routes.php');
+
 });
 
 Route::prefix('agent')->middleware(['web', 'check.agent'])->name('agent.')->group(function (){
@@ -109,6 +115,9 @@ Route::prefix('agent')->middleware(['web', 'check.agent'])->name('agent.')->grou
 
     //Data Routes
     include('agent/data_routes.php');
+
+    //Campaign Issue Routes
+    include('agent/campaign_issue_routes.php');
 
 });
 

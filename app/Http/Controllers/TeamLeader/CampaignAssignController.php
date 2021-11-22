@@ -8,6 +8,7 @@ use App\Models\CampaignAssignAgent;
 use App\Models\CampaignAssignRATL;
 use App\Models\Data;
 use App\Repository\AgentDataRepository\AgentDataRepository;
+use App\Repository\Campaign\IssueRepository\IssueRepository;
 use App\Repository\CampaignAssignRepository\AgentRepository\AgentRepository;
 use App\Repository\CampaignAssignRepository\CampaignAssignRepository;
 use App\Repository\CampaignAssignRepository\RATLRepository\RATLRepository;
@@ -59,6 +60,10 @@ class CampaignAssignController extends Controller
      * @var AgentDataRepository
      */
     private $agentDataRepository;
+    /**
+     * @var IssueRepository
+     */
+    private $issueRepository;
 
     public function __construct(
         CampaignRepository $campaignRepository,
@@ -71,7 +76,8 @@ class CampaignAssignController extends Controller
         SuppressionDomainRepository $suppressionDomainRepository,
         SuppressionAccountNameRepository $suppressionAccountNameRepository,
         TargetDomainRepository $targetDomainRepository,
-        AgentDataRepository $agentDataRepository
+        AgentDataRepository $agentDataRepository,
+        IssueRepository $issueRepository
     )
     {
         $this->data = array();
@@ -86,6 +92,7 @@ class CampaignAssignController extends Controller
         $this->suppressionAccountNameRepository = $suppressionAccountNameRepository;
         $this->targetDomainRepository = $targetDomainRepository;
         $this->agentDataRepository = $agentDataRepository;
+        $this->issueRepository = $issueRepository;
     }
 
     public function index()
@@ -125,10 +132,12 @@ class CampaignAssignController extends Controller
 
             $this->data['resultCARATL'] = $this->RATLRepository->find(base64_decode($id));
             $this->data['resultCampaign'] = $this->campaignRepository->find($this->data['resultCARATL']->campaign->id);
+            $this->data['resultCampaignIssues'] = $this->issueRepository->get(array('campaign_ids' => [$this->data['resultCARATL']->campaign->id]));
 
             //get count if data already assigned
             $this->data['countAgentData'] = $this->agentDataRepository->get(array('ca_ratl_ids' => [$this->data['resultCARATL']->id]))->count();
 
+            //dd($this->data['resultCampaignIssues']->toArray());
             return view('team_leader.campaign_assign.show', $this->data);
 
         } catch (\Exception $exception) {

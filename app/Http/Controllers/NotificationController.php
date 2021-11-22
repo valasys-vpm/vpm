@@ -88,7 +88,7 @@ class NotificationController extends Controller
                 case 'team_leader':
                     $response = $this->RATLNotificationRepository->update($id, $attributes);
                     break;
-                case 'research_analyst':
+                case 'agent':
                     $response = $this->RANotificationRepository->update($id, $attributes);
                     break;
                 case 'qa_team_leader':
@@ -139,7 +139,7 @@ class NotificationController extends Controller
                         $response = $this->RATLNotificationRepository->update($notification->id, $attributes);
                     }
                     break;
-                case 'research_analyst':
+                case 'agent':
                     $resultNotifications = $this->RANotificationRepository->get(array('read_status' => 0));
                     foreach ($resultNotifications as $notification) {
                         $response = $this->RANotificationRepository->update($notification->id, $attributes);

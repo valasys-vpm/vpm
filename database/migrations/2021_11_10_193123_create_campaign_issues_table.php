@@ -17,16 +17,20 @@ class CreateCampaignIssuesTable extends Migration
             $table->increments('id');
 
             $table->unsignedInteger('campaign_id');
-            $table->foreign('campaign_id')->references('id')->on('campaigns')->onUpdate('cascade');
+            $table->foreign('campaign_id')->references('id')->on('campaigns');
 
             $table->unsignedInteger('user_id');
-            $table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade');
+            $table->foreign('user_id')->references('id')->on('users');
 
-            $table->integer('lead_pending')->default(0);
+            $table->enum('priority', ['low', 'normal', 'high']);
+            $table->string('title');
+            $table->text('description');
+            $table->text('response')->nullable();
 
-            $table->unsignedInteger('updated_by');
-            $table->foreign('updated_by')->references('id')->on('users')->onUpdate('cascade');
+            $table->unsignedInteger('closed_by')->nullable();
+            $table->foreign('closed_by')->references('id')->on('users');
 
+            $table->tinyInteger('status')->default(0);
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent();
             $table->softDeletes();

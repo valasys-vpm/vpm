@@ -22,6 +22,13 @@
         </a>
     </li>
 
+    <li class="nav-item @if(in_array(Request::route()->getName(), array('manager.campaign_issue.list'))) active @endif">
+        <a href="{{ route('manager.campaign_issue.list') }}" class="nav-link">
+            <span class="pcoded-micon"><i class="feather icon-info"></i></span>
+            <span class="pcoded-mtext">Campaign Issue Management</span>
+        </a>
+    </li>
+
     <li class="nav-item @if(in_array(Request::route()->getName(), array('manager.data.list'))) active @endif">
         <a href="{{ route('manager.data.list') }}" class="nav-link">
             <span class="pcoded-micon"><i class="feather icon-layers"></i></span>

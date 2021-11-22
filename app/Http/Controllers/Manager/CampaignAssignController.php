@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Manager;
 use App\Http\Controllers\Controller;
 use App\Models\Campaign;
 use App\Repository\Campaign\DeliveryDetailRepository\DeliveryDetailRepository;
+use App\Repository\Campaign\IssueRepository\IssueRepository;
 use App\Repository\CampaignAssignRepository\AgentRepository\AgentRepository;
 use App\Repository\CampaignAssignRepository\CampaignAssignRepository;
 use App\Repository\CampaignFilterRepository\CampaignFilterRepository;
@@ -48,6 +49,10 @@ class CampaignAssignController extends Controller
      * @var DeliveryDetailRepository
      */
     private $deliveryDetailRepository;
+    /**
+     * @var IssueRepository
+     */
+    private $issueRepository;
 
     public function __construct(
         CampaignStatusRepository $campaignStatusRepository,
@@ -59,7 +64,8 @@ class CampaignAssignController extends Controller
         UserRepository $userRepository,
         CampaignAssignRepository $campaignAssignRepository,
         AgentRepository $agentRepository,
-        DeliveryDetailRepository $deliveryDetailRepository
+        DeliveryDetailRepository $deliveryDetailRepository,
+        IssueRepository $issueRepository
     )
     {
         $this->data = array();
@@ -73,6 +79,7 @@ class CampaignAssignController extends Controller
         $this->countryRepository = $countryRepository;
         $this->regionRepository = $regionRepository;
         $this->deliveryDetailRepository = $deliveryDetailRepository;
+        $this->issueRepository = $issueRepository;
     }
 
     public function index()
@@ -107,6 +114,7 @@ class CampaignAssignController extends Controller
     {
         try {
             $this->data['resultCampaign'] = $this->campaignRepository->find(base64_decode($id), array('delivery_detail'));
+            $this->data['resultCampaignIssues'] = $this->issueRepository->get(array('campaign_ids' => [base64_decode($id)]));
 
             if($request->ajax() && !empty($this->data['resultCampaign'])) {
                 return response()->json(array('status' => true, 'message' => 'Data Found', 'data' => $this->data['resultCampaign']));

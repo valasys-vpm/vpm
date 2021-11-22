@@ -26,7 +26,7 @@
                                         <h5 class="m-b-10">Campaign Management</h5>
                                     </div>
                                     <ul class="breadcrumb">
-                                        <li class="breadcrumb-item"><a href="{{ route('agent.dashboard') }}"><i class="feather icon-home"></i></a></li>
+                                        <li class="breadcrumb-item"><a href="{{ route('manager.dashboard') }}"><i class="feather icon-home"></i></a></li>
                                         <li class="breadcrumb-item"><a href="javascript:void(0);">Campaign Management</a></li>
                                     </ul>
                                 </div>

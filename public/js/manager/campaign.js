@@ -448,6 +448,7 @@ $(function (){
                     }).hide().appendTo("body")[0].click();
                     trigger_pnofify('warning', 'Invalid Data', 'Campaigns imported with errors, please check excel file to invalid data.');
                 }
+
                 $('#modal-import-campaigns').modal('hide');
                 CAMPAIGN_TABLE.ajax.reload();
             }

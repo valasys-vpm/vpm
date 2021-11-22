@@ -185,9 +185,22 @@
                                             <div class="card-header-right">
                                                 <div class="btn-group card-option">
                                                     <span>
+                                                        @php
+                                                            if($resultCampaign->children->count()) {
+                                                                if($resultCampaign->children[0]->campaign_status_id == 4) {
+                                                                    $flagIncremental = true;
+                                                                } else {
+                                                                    $flagIncremental = false;
+                                                                }
+                                                            } else {
+                                                                $flagIncremental = true;
+                                                            }
+                                                        @endphp
+                                                        @if($resultCampaign->campaign_status_id == 4 && $flagIncremental)
                                                         <a href="{{ route('manager.campaign.create_incremental', base64_encode($resultCampaign->id)) }}">
                                                         <button class="btn btn-primary btn-sm btn-square pt-1 pb-1"><i class="feather icon-plus"></i>Incremental</button>
                                                         </a>
+                                                        @endif
                                                     </span>
                                                     <button type="button" class="btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                         <i class="feather icon-more-vertical"></i>
