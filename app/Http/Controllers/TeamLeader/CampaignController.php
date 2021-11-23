@@ -131,8 +131,10 @@ class CampaignController extends Controller
     {
         $attributes['submitted_at'] = date('Y-m-d H:i:s');
         $response = $this->RATLRepository->update(base64_decode($id), $attributes);
-        if($response['status']) {
-            if(!CampaignAssignRATL::whereNull('submitted_at')->count()) {
+        if($response['status'] == TRUE) {
+            $ca_ratl = CampaignAssignRATL::findOrFail(base64_decode($id));
+            //check submitted by all ratl's
+            if(!CampaignAssignRATL::where('campaign_id', $ca_ratl->campaign_id)->whereNull('submitted_at')->count()) {
                 $resultCARATL = $this->RATLRepository->find(base64_decode($id));
                 $resultRole = Role::whereSlug('qa_team_leader')->whereStatus(1)->first();
                 $resultUser = User::whereRoleId($resultRole->id)->whereStatus(1)->first();
@@ -143,13 +145,14 @@ class CampaignController extends Controller
                     'assigned_by' => $resultCARATL->user_id,
                 );
                 $responseCAQATL = $this->QATLRepository->store($attributes);
+
                 if($responseCAQATL['status']) {
                     return response()->json(array('status' => true, 'message' => $responseCAQATL['message']));
                 } else {
                     return response()->json(array('status' => false, 'message' => $responseCAQATL['message']));
                 }
             } else {
-                return response()->json(array('status' => true, 'message' => $response['message']));
+                return response()->json(array('status' => true, 'message' => 'Campaign submitted successfully'));
             }
         } else {
             return response()->json(array('status' => false, 'message' => $response['message']));

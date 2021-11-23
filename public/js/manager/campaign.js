@@ -43,6 +43,15 @@ $(function (){
                 }
             },
             {
+                render: function (data, type, row) {
+                    if(row.delivery_detail) {
+                        return '<em>'+row.delivery_detail.campaign_progress+'</em>';
+                    } else {
+                        return 'Not Available';
+                    }
+                }
+            },
+            {
                 orderable: false,
                 render: function (data, type, row) {
                     //let deliver_count = row.deliver_count;

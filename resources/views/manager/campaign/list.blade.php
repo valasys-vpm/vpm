@@ -57,6 +57,7 @@
                                                     <tr>
                                                         <th>Campaign ID</th>
                                                         <th>Name</th>
+                                                        <th class="text-center">Current<br>Status</th>
                                                         <th class="text-center">Completion (%)</th>
                                                         <th>Start Date</th>
                                                         <th>End Date</th>

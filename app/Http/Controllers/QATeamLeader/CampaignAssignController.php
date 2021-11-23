@@ -5,6 +5,7 @@ namespace App\Http\Controllers\QATeamLeader;
 use App\Http\Controllers\Controller;
 use App\Models\CampaignAssignQATL;
 use App\Models\CampaignAssignQualityAnalyst;
+use App\Models\CampaignDeliveryDetail;
 use App\Repository\CampaignAssignRepository\QATLRepository\QATLRepository;
 use App\Repository\CampaignAssignRepository\QualityAnalystRepository\QualityAnalystRepository;
 use App\Repository\CampaignRepository\CampaignRepository;
@@ -92,6 +93,8 @@ class CampaignAssignController extends Controller
             $attributes['submitted_at'] = date('Y-m-d H:i:s');
             $response = $this->QATLRepository->update(base64_decode($id), $attributes);
             if($response['status']) {
+                $ca_qatl = CampaignAssignQATL::findOrFail(base64_decode($id));
+                CampaignDeliveryDetail::where('campaign_id', $ca_qatl->campaign_id)->update(array('campaign_progress' => 'QC Completed', 'updated_by' => Auth::id()));
                 $finalResponse = array('status' => true, 'message' => 'Campaign submitted successfully');
             } else {
                 $finalResponse = array('status' => false, 'message' => $response['message']);

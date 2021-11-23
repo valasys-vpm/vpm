@@ -7,6 +7,7 @@ use App\Models\CampaignAssignAgent;
 use App\Models\CampaignAssignRATL;
 use App\Models\CampaignAssignVendor;
 use App\Models\CampaignAssignVendorManager;
+use App\Models\CampaignDeliveryDetail;
 use App\Models\RANotification;
 use App\Models\RATLNotification;
 use App\Models\User;
@@ -217,6 +218,8 @@ class CampaignAssignRepository implements CampaignAssignInterface
             $dataRATL = $dataAgent = $dataVM = array();
             $RATLNotifications = $RANotifications = $VMNotifications = array();
             foreach ($attributes['data'] as $key => $campaign) {
+                $campaignIds[] = $campaign['campaign_id'];
+
                 $userIds = array_column($campaign['users'], 'user_id');
                 $resultUsers = User::whereIn('id', $userIds)->get()->pluck('designation_id')->toArray();
                 if(count(array_unique($resultUsers)) == 1) {
@@ -318,6 +321,10 @@ class CampaignAssignRepository implements CampaignAssignInterface
             }
 
             if($flag) {
+                foreach ($campaignIds as $campaignId) {
+                    CampaignDeliveryDetail::where('campaign_id', $campaignId)->update(['campaign_progress' => 'Assigned', 'updated_by' => Auth::id()]);
+                }
+
                 //Send Notification
                 if(count($RATLNotifications)) {
                     RATLNotification::insert($RATLNotifications);

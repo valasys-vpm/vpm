@@ -346,11 +346,11 @@
                                                     <button type="button" class="btn btn-primary btn-sm btn-square w-100">Manage Leads</button>
                                                 </a>
                                             </div>
-                                        @endif
-
-                                        @if(empty($resultCARATL->submitted_at))
                                             <div id="div-submit-campaign" class="col-md-3">
                                                 <button type="button" @if($total_submitted < $total_agents) class="btn btn-danger btn-sm btn-square w-100" disabled title="Campaign Not Submitted By All Agents!" @else class="btn btn-success btn-sm btn-square w-100" @endif onclick="submitCampaign('{{ base64_encode($resultCARATL->id) }}');">Submit Campaign</button>
+                                            </div>
+                                            <div id="div-raise-issue" class="col-md-3">
+                                                <button type="button" class="btn btn-warning btn-sm btn-square w-100" data-toggle="modal" data-target="#modal-raise-issue">Raise Issue</button>
                                             </div>
                                         @endif
                                     </div>
@@ -413,7 +413,7 @@
                                                             <td>@if(!empty($campaign_issue->closed_by)) {{ $campaign_issue->closed_by_user->full_name }} @else - @endif</td>
                                                             <td>@if(!empty($campaign_issue->closed_by)) {{ date('d/M/Y', strtotime($campaign_issue->updated_at)) }} @else - @endif</td>
                                                             <td>
-                                                                @if(empty($campaign_issue->closed_by))
+                                                                @if(empty($campaign_issue->closed_by) && $campaign_issue->user_id != Auth::id())
                                                                 <a href="javascript:;" onclick="closeCampaignIssue('{{ base64_encode($campaign_issue->id) }}');" class="btn btn-outline-primary btn-sm btn-rounded mb-0" title="Close Issue" style="padding: 5px 8px;"><i class="feather icon-edit mr-0"></i></a>
                                                                 @endif
                                                             </td>
@@ -593,7 +593,7 @@
                 </div>
                 <div class="modal-body">
                     <div class="col-md-12">
-                        <form id="form-raise-issue" action="{{ route('agent.campaign_issue.store') }}" method="post">
+                        <form id="form-raise-issue" action="{{ route('team_leader.campaign_issue.store') }}" method="post">
                             @csrf
                             <input type="hidden" name="campaign_id" value="{{ base64_encode($resultCARATL->campaign_id) }}">
                             <div class="row">
@@ -618,7 +618,7 @@
                                     </select>
                                 </div>
                             </div>
-                            <button id="form-raise-issue-submit" type="submit" class="btn btn-primary btn-square float-right">Upload</button>
+                            <button id="form-raise-issue-submit" type="submit" class="btn btn-primary btn-square float-right">Raise Issue</button>
                             <button type="reset" class="btn btn-secondary btn-square float-right" data-dismiss="modal">Cancel</button>
                         </form>
                     </div>
