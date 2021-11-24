@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Manager;
 
 use App\Http\Controllers\Controller;
 use App\Models\Campaign;
+use App\Models\CampaignAssignRATL;
+use App\Models\User;
 use App\Repository\Campaign\DeliveryDetailRepository\DeliveryDetailRepository;
 use App\Repository\Campaign\IssueRepository\IssueRepository;
 use App\Repository\CampaignAssignRepository\AgentRepository\AgentRepository;
@@ -115,6 +117,17 @@ class CampaignAssignController extends Controller
         try {
             $this->data['resultCampaign'] = $this->campaignRepository->find(base64_decode($id), array('delivery_detail'));
             $this->data['resultCampaignIssues'] = $this->issueRepository->get(array('campaign_ids' => [base64_decode($id)]));
+
+            $resultAssignedUsers = CampaignAssignRATL::where('campaign_id', base64_decode($id))->where('status', 1)->get();
+            if(!empty($resultAssignedUsers) && $resultAssignedUsers->count()) {
+                $this->data['resultAssignedUsers'] = $resultAssignedUsers->pluck('user_id')->toArray();
+            } else {
+                $this->data['resultAssignedUsers'] = array();
+            }
+            $this->data['resultUsers'] = $this->userRepository->get(array(
+                'status' => 1,
+                'designation_slug' => array('ra_team_leader', 'ra_team_leader_business_delivery', 'research_analyst', 'sr_vendor_management_specialist'),
+            ));
 
             if($request->ajax() && !empty($this->data['resultCampaign'])) {
                 return response()->json(array('status' => true, 'message' => 'Data Found', 'data' => $this->data['resultCampaign']));
@@ -319,6 +332,33 @@ class CampaignAssignController extends Controller
             return response()->json(array('status' => true, 'data' => $result));
         } else {
             return response()->json(array('status' => false, 'message' => 'Data not found'));
+        }
+    }
+
+    public function revokeCampaign($id)
+    {
+        $response = $this->campaignAssignRepository->revokeCampaign(base64_decode($id));
+        if($response['status'] == TRUE) {
+            return response()->json(array('status' => true, 'message' => $response['message']));
+        } else {
+            return response()->json(array('status' => false, 'message' => $response['message']));
+        }
+    }
+
+    public function assignCampaign(Request $request)
+    {
+        $attributes = $request->all();
+        $new_attributes['campaign_id'] = base64_decode($attributes['campaign_id']);
+        $new_attributes['display_date'] = $attributes['display_date'];
+        foreach ($attributes['user_list'] as $user) {
+            $new_attributes['users'][] = array('user_id' => $user, 'allocation' => $attributes['allocation']);
+        }
+
+        $response = $this->campaignAssignRepository->store(array('data' => [$new_attributes]));
+        if($response['status'] == TRUE) {
+            return response()->json(array('status' => true, 'message' => $response['message']));
+        } else {
+            return response()->json(array('status' => false, 'message' => $response['message']));
         }
     }
 

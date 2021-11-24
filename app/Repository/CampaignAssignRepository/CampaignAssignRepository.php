@@ -18,7 +18,6 @@ use Illuminate\Support\Facades\DB;
 
 class CampaignAssignRepository implements CampaignAssignInterface
 {
-
     public function __construct()
     {
 
@@ -28,9 +27,9 @@ class CampaignAssignRepository implements CampaignAssignInterface
     {
         $resultAssignedCampaigns = array();
         //get campaigns already assigned
-        $result['RATL'] = CampaignAssignRATL::select('campaign_id')->whereStatus(1)->get();
-        $result['AGENT'] = CampaignAssignAgent::select('campaign_id')->whereStatus(1)->get();
-        $result['VM'] = CampaignAssignVendorManager::select('campaign_id')->whereStatus(1)->get();
+        $result['RATL'] = CampaignAssignRATL::select('campaign_id')->whereIn('status',[1,2])->get();
+        $result['AGENT'] = CampaignAssignAgent::select('campaign_id')->whereIn('status',[1,2])->get();
+        $result['VM'] = CampaignAssignVendorManager::select('campaign_id')->whereIn('status',[1,2])->get();
 
         if(!empty($result['RATL'])) {
             $resultAssignedCampaigns = array_unique (array_merge ($resultAssignedCampaigns, $result['RATL']->pluck('campaign_id')->toArray()));
@@ -344,6 +343,69 @@ class CampaignAssignRepository implements CampaignAssignInterface
             } else {
                 throw new \Exception('Something went wrong, please try again.', 1);
             }
+        } catch (\Exception $exception) {
+            DB::rollBack();
+            dd($exception->getMessage());
+            $response = array('status' => FALSE, 'message' => 'Something went wrong, please try again.');
+        }
+        return $response;
+    }
+
+    public function revokeCampaign($id)
+    {
+        $response = array('status' => FALSE, 'message' => 'Something went wrong, please try again.');
+        try {
+            DB::beginTransaction();
+            $submitted_at = date('Y-m-d H:i:s');
+
+            $resultCARATL = CampaignAssignRATL::find($id);
+            if(empty($resultCARATL)) {
+                $resultCAAgent = CampaignAssignAgent::find($id);
+                if(empty($resultCAAgent)) {
+                    throw new \Exception('Something went wrong, please try again.', 1);
+                } else {
+                    $resultCAAgent->submitted_at = $submitted_at;
+                    $resultCAAgent->status = 2;
+                    if($resultCAAgent->save()) {
+                        DB::commit();
+                        $response = array('status' => TRUE, 'message' => 'Campaign revoke successfully');
+                    } else {
+                        throw new \Exception('Something went wrong, please try again.', 1);
+                    }
+                }
+            } else {
+                $responseCAAgents = CampaignAssignAgent::where('campaign_assign_ratl_id', $resultCARATL->id)->update(array('submitted_at' => $submitted_at, 'status' => 2));
+
+                $resultCARATL->submitted_at = $submitted_at;
+                $resultCARATL->status = 2;
+                if($resultCARATL->save()) {
+                    DB::commit();
+                    $response = array('status' => TRUE, 'message' => 'Campaign revoke successfully');
+                } else {
+                    throw new \Exception('Something went wrong, please try again.', 1);
+                }
+            }
+
+        } catch (\Exception $exception) {
+            DB::rollBack();
+            $response = array('status' => FALSE, 'message' => 'Something went wrong, please try again.');
+        }
+        return $response;
+    }
+
+    public function assignCampaign($attributes)
+    {
+        $response = array('status' => FALSE, 'message' => 'Something went wrong, please try again.');
+        try {
+            DB::beginTransaction();
+            dd($attributes);
+            if(0) {
+                DB::commit();
+                $response = array('status' => TRUE, 'message' => 'Campaign revoke successfully');
+            } else {
+                throw new \Exception('Something went wrong, please try again.', 1);
+            }
+
         } catch (\Exception $exception) {
             DB::rollBack();
             $response = array('status' => FALSE, 'message' => 'Something went wrong, please try again.');

@@ -1,4 +1,5 @@
 @extends('layouts.master')
+@section('title', '| Campaign Details-'.$resultCampaign->campaign_id)
 
 @section('stylesheet')
     @parent
@@ -435,6 +436,9 @@
             <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title">Campaign Assignment Details</h5>
+                        <div class="float-right">
+                            <a id="button-assign-campaign" href="javascript:void(0);" data-campaign-id="" data-display-date="" onclick="assignCampaign();" class="btn btn-outline-dark btn-sm mb-0 float-right" title="Assign Campaign" style="padding: 5px 8px;position: absolute;right: 50px;"><i class="feather icon-user-plus mr-0"></i></a>
+                        </div>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">×</span>
                         </button>
@@ -451,6 +455,7 @@
                                     <th class="text-center">Total Agents</th>
                                     <th class="text-center">Assigned By</th>
                                     <th class="text-center">Status</th>
+                                    <th class="text-center">Action</th>
                                 </tr>
                                 </thead>
                                 <tbody class="text-center text-muted">
@@ -530,21 +535,53 @@
         </div>
     </div>
 
+    <div id="modal-assign-campaign" class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Assign Campaign</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body">
+                    <div class="col-md-12">
+                        <form id="form-assign-campaign">
+                            <div class="row">
+                                <input type="hidden" name="campaign_id" value="">
+                                <input type="hidden" name="display_date" value="">
+                                <div class="col-md-12 form-group">
+                                    <label for="user_list">Select User(s)</label>
+                                    <select class="form-control btn-square p-1 pl-2 select2-multiple" id="user_list" name="user_list[]" style="height: unset;" multiple>
+                                        @foreach($resultUsers as $user)
+                                            @if(!in_array($user->id, $resultAssignedUsers))
+                                            <option id="user_list_{{ $user->id }}" value="{{ $user->id }}" data-name="{{ $user->first_name.' '.$user->last_name }}">{{ $user->first_name.' '.$user->last_name.' - [ '.$user->role->name.' ]' }}</option>
+                                            @endif
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="col-md-12 form-group">
+                                    <label for="allocation">Allocation</label>
+                                    <input type="number" class="form-control" name="allocation" value="0">
+                                </div>
+                            </div>
+                            <button id="form-assign-campaign-submit" type="button" class="btn btn-primary btn-square float-right">Assign</button>
+                            <button type="reset" class="btn btn-secondary btn-square float-right" data-dismiss="modal">Cancel</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @section('javascript')
     @parent
     <!-- footable Js -->
     <script src="{{ asset('public/template/assets/plugins/footable/js/footable.min.js') }}"></script>
-    <!-- select2 Js -->
-    <script src="{{ asset('public/template/assets/plugins/select2/js/select2.full.min.js') }}"></script>
     <!-- material datetimepicker Js -->
-    <script src="https://momentjs.com/downloads/moment-with-locales.min.js"></script>
     <script src="{{ asset('public/template/assets/plugins/material-datetimepicker/js/bootstrap-material-datetimepicker.js') }}"></script>
     <!-- Ckeditor js -->
     <script src="{{ asset('public/template/assets/plugins/ckeditor/js/ckeditor.js') }}"></script>
     <!-- jquery-validation Js -->
     <script src="{{ asset('public/template/assets/plugins/jquery-validation/js/jquery.validate.min.js') }}"></script>
-
     <script src="{{ asset('public/js/manager/campaign_assign_show.js?='.time()) }}"></script>
 @append
