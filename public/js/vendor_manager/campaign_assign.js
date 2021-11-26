@@ -85,7 +85,7 @@ $(function (){
                         status_id = row.campaign.campaign_status_id;
                         campaign_type = ' (Incremental)'
                     }
-                    switch (status_id) {
+                    switch (parseInt(status_id)) {
                         case 1: return '<span class="badge badge-pill badge-success" style="padding: 5px;min-width:50px;"> Live'+campaign_type+' </span>';
                         case 2: return '<span class="badge badge-pill badge-warning" style="padding: 5px;min-width:50px;"> Paused'+campaign_type+' </span>';
                         case 3: return '<span class="badge badge-pill badge-danger" style="padding: 5px;min-width:50px;"> Cancelled'+campaign_type+' </span>';
