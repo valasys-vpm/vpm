@@ -31,4 +31,6 @@ Route::prefix('campaign')->name('campaign.')->group(function()
 
     Route::any('/import', [App\Http\Controllers\Manager\CampaignController::class, 'import'])->name('import');
 
+    Route::any('/get-campaign-history/{id}', [App\Http\Controllers\Manager\CampaignController::class, 'getCampaignHistory'])->name('get_campaign_history');
+
 });

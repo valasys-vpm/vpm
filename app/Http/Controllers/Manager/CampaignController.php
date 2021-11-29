@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Manager;
 
 use App\Http\Controllers\Controller;
 use App\Models\Campaign;
+use App\Repository\Campaign\History\CampaignHistoryRepository;
 use App\Repository\CampaignFilterRepository\CampaignFilterRepository;
 use App\Repository\CampaignRepository\CampaignRepository;
 use App\Repository\CampaignSpecificationRepository\CampaignSpecificationRepository;
@@ -27,6 +28,10 @@ class CampaignController extends Controller
     private $campaignRepository;
     private $campaignSpecificationRepository;
     private $pacingDetailRepository;
+    /**
+     * @var CampaignHistoryRepository
+     */
+    private $campaignHistoryRepository;
 
     public function __construct(
         CampaignStatusRepository $campaignStatusRepository,
@@ -37,7 +42,8 @@ class CampaignController extends Controller
         HolidayRepository $holidayRepository,
         CampaignRepository $campaignRepository,
         CampaignSpecificationRepository $campaignSpecificationRepository,
-        PacingDetailRepository $pacingDetailRepository
+        PacingDetailRepository $pacingDetailRepository,
+        CampaignHistoryRepository $campaignHistoryRepository
     )
     {
         $this->data = array();
@@ -50,6 +56,7 @@ class CampaignController extends Controller
         $this->campaignRepository = $campaignRepository;
         $this->campaignSpecificationRepository = $campaignSpecificationRepository;
         $this->pacingDetailRepository = $pacingDetailRepository;
+        $this->campaignHistoryRepository = $campaignHistoryRepository;
     }
 
     public function index()
@@ -71,7 +78,7 @@ class CampaignController extends Controller
             $this->data['resultCountries'] = $this->countryRepository->get(array('status' => 1));
             $this->data['resultRegions'] = $this->regionRepository->get(array('status' => 1));
             $this->data['resultCampaign'] = $this->campaignRepository->find(base64_decode($id));
-            //dd($this->data['resultCampaign']->children[0]->campaign_status_id);
+            //dd($this->data['resultCampaign']->toArray());
             return view('manager.campaign.show', $this->data);
         } catch (\Exception $exception) {
             return redirect()->route('manager.campaign.list')->with('error', ['title' => 'Error while processing request', 'message' => 'Campaign details not found']);
@@ -412,5 +419,17 @@ class CampaignController extends Controller
         );
 
         return response()->json($ajaxData);
+    }
+
+    public function getCampaignHistory($id, Request $request)
+    {
+        $filters = $request->all();
+        $filters['order_by']['column'] = 'created_at';
+        $filters['order_by']['dir'] = 'desc';
+        $filters['campaign_ids'] = [base64_decode($id)];
+
+        $this->data['resultCampaignHistories'] = $this->campaignHistoryRepository->get($filters);
+
+        return view('manager.extra.campaign_history', $this->data);
     }
 }

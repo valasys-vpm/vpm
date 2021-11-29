@@ -84,6 +84,8 @@ class CampaignRepository implements CampaignInterface
             $query->with('delivery_detail');
         }
 
+        //$query->with('children');
+
         return $query->findOrFail($id);
     }
 
@@ -302,13 +304,18 @@ class CampaignRepository implements CampaignInterface
                 //Add Delivery Detail entry
                 CampaignDeliveryDetail::insert(array('campaign_id' => $campaign->id, 'updated_by' => Auth::id()));
                 DB::commit();
+
+                //Add Campaign History
+                add_campaign_history($campaign->id, $campaign->parent_id, 'Campaign added - '.$campaign->name);
+                add_history('Campaign added', 'Campaign added - '.$campaign->name);
+
                 $response = array('status' => TRUE, 'message' => 'Campaign added successfully', 'campaign_id' => $campaign->campaign_id, 'id' => $campaign->id);
             } else {
                 throw new \Exception('Something went wrong, please try again.', 1);
             }
         } catch (\Exception $exception) {
             DB::rollBack();
-            //dd($exception->getMessage());
+            dd($exception->getMessage());
             $response = array('status' => FALSE, 'message' => 'Something went wrong, please try again.');
         }
         return $response;

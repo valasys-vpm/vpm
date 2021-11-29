@@ -5,6 +5,7 @@ let MONTHS = ['Jan','Feb','Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'
 let DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 let HOLIDAYS = [];
 let HOLIDAY_LIST = [];
+let CAMPAIGN_HISTORY_SKIP = 0;
 
 //Initializations
 $(function(){
@@ -158,6 +159,7 @@ $(function(){
             $(this).keyup();
         }
     });
+
 });
 
 
@@ -199,7 +201,7 @@ $(function(){
         let form_data = new FormData($('#modal-form-attach-specification')[0]);
 
         $.ajax({
-            url: $('meta[name="base-path"]').attr('content') +'/manager/campaign/attach-specification/'+$('#campaign_id').val(),
+            url: URL +'/manager/campaign/attach-specification/'+$('#campaign_id').val(),
             processData: false,
             contentType: false,
             data: form_data,
@@ -342,6 +344,12 @@ $(function(){
 
         document.getElementById("modal-form-attach-campaign-file").reset();
 
+    });
+
+    $("#btn-get-campaign-history").click();
+    $("#reload-campaign-history").on('click', function (){
+        CAMPAIGN_HISTORY_SKIP = 0;
+        $("#btn-get-campaign-history").click();
     });
 
 });
@@ -657,5 +665,22 @@ function getDatesMonthlyPacing_html(month, year) {
     }
 
     return html;
+}
+
+function getCampaignHistory(_this) {
+    $.ajax({
+        //url: '{{ route('campaign.get_campaign_history', base64_encode($resultCampaign->id)) }}',
+        url: URL + '/manager/campaign/get-campaign-history/' + $('meta[name="campaign-id"]').attr('content'),
+        data: { skip:CAMPAIGN_HISTORY_SKIP },
+        success: function(response){
+            if(CAMPAIGN_HISTORY_SKIP === 0) {
+                $("#campaign-history-ul").html('');
+            }
+            $("#campaign-history-ul").append(response);
+
+            CAMPAIGN_HISTORY_SKIP++;
+        },
+        error: function(jqXHR, textStatus, errorThrown) { checkSession(jqXHR); }
+    });
 }
 

@@ -62,6 +62,9 @@ Route::prefix('manager')->middleware(['web', 'check.manager'])->name('manager.')
 
     Route::get('/dashboard', [App\Http\Controllers\Manager\DashboardController::class, 'index'])->name('dashboard');
 
+    //Dashboard Routes
+    include('manager/dashboard_routes.php');
+
     //Campaign Management Routes
     include('manager/campaign_routes.php');
 
@@ -82,6 +85,9 @@ Route::prefix('manager')->middleware(['web', 'check.manager'])->name('manager.')
 Route::prefix('team-leader')->middleware(['web', 'check.team_leader'])->name('team_leader.')->group(function (){
 
     Route::get('/dashboard', [App\Http\Controllers\TeamLeader\DashboardController::class, 'index'])->name('dashboard');
+
+    //Dashboard Routes
+    include('team_leader/dashboard_routes.php');
 
     //Campaign Management Routes
     include('team_leader/campaign_routes.php');

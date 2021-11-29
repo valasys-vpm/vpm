@@ -1,5 +1,15 @@
 @extends('layouts.master')
 
+@section('style')
+    @parent
+    <style>
+        .card-customer i {
+            width: 45px !important;
+            height: 45px !important;
+        }
+    </style>
+@append
+
 @section('content')
     <div class="pcoded-main-container">
         <div class="pcoded-wrapper">
@@ -26,7 +36,44 @@
                     <div class="main-body">
                         <div class="page-wrapper">
                             <!-- [ Main Content ] start -->
-                            <h1 class="text-info">Hello Team Leader</h1>
+                            <div class="row" style="padding: 0px 15px;margin-bottom: 30px;">
+                                @foreach($resultCampaignStatuses as $key => $status)
+                                    <div class="col-md-4" style="padding: 4px !important;">
+                                        <div class="card card-customer shadow" style="margin-bottom: 2px;">
+                                            <div class="card-block" style="padding: 10px 25px !important;">
+                                                <div class="row align-items-center justify-content-center">
+                                                    <div class="col">
+                                                        <h2 class="mb-2 f-w-300 lead-counts" id="count-{{$status->slug}}">0</h2>
+                                                        <h5 class="text-muted mb-0">{{ $status->name }}</h5>
+                                                    </div>
+                                                    <div class="col-auto">
+                                                        @switch($status->slug)
+                                                            @case('live') <i
+                                                                class="feather icon-play f-20 text-white bg-success shadow"></i>
+                                                            @break
+                                                            @case('paused') <i
+                                                                class="feather icon-pause f-20 text-white bg-warning shadow"></i>
+                                                            @break
+                                                            @case('cancelled') <i
+                                                                class="feather icon-x f-20 text-white bg-danger shadow"></i>
+                                                            @break
+                                                            @case('delivered') <i
+                                                                class="feather icon-check f-20 text-white bg-info shadow"></i>
+                                                            @break
+                                                            @case('reactivated') <i
+                                                                class="feather icon-refresh-cw f-20 text-white bg-success shadow"></i>
+                                                            @break
+                                                            @case('shortfall') <i
+                                                                class="feather icon-chevrons-down f-20 text-white bg-secondary shadow"></i>
+                                                            @break
+                                                        @endswitch
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
                             <!-- [ Main Content ] end -->
                         </div>
                     </div>
@@ -38,23 +85,11 @@
 
 @section('javascript')
     @parent
-    <!-- amchart js -->
-    <script src="{{ asset('public/template') }}/assets/plugins/amchart/js/amcharts.js"></script>
-    <script src="{{ asset('public/template') }}/assets/plugins/amchart/js/gauge.js"></script>
-    <script src="{{ asset('public/template') }}/assets/plugins/amchart/js/serial.js"></script>
-    <script src="{{ asset('public/template') }}/assets/plugins/amchart/js/light.js"></script>
-    <script src="{{ asset('public/template') }}/assets/plugins/amchart/js/pie.min.js"></script>
-    <script src="{{ asset('public/template') }}/assets/plugins/amchart/js/ammap.min.js"></script>
-    <script src="{{ asset('public/template') }}/assets/plugins/amchart/js/usaLow.js"></script>
-    <script src="{{ asset('public/template') }}/assets/plugins/amchart/js/radar.js"></script>
-    <script src="{{ asset('public/template') }}/assets/plugins/amchart/js/worldLow.js"></script>
-
-    <!-- Float Chart js -->
-    <script src="{{ asset('public/template') }}/assets/plugins/flot/js/jquery.flot.js"></script>
-    <script src="{{ asset('public/template') }}/assets/plugins/flot/js/jquery.flot.categories.js"></script>
-    <script src="{{ asset('public/template') }}/assets/plugins/flot/js/curvedLines.js"></script>
-    <script src="{{ asset('public/template') }}/assets/plugins/flot/js/jquery.flot.tooltip.min.js"></script>
+    <!-- Resources -->
+    <script src="https://cdn.amcharts.com/lib/4/core.js"></script>
+    <script src="https://cdn.amcharts.com/lib/4/charts.js"></script>
+    <script src="https://cdn.amcharts.com/lib/4/themes/animated.js"></script>
 
     <!-- dashboard-custom js -->
-    <script src="{{ asset('public/template') }}/assets/js/pages/dashboard-crypto.js"></script>
+    <script src="{{ asset('public/js/team_leader/dashboard.js?='.time()) }}"></script>
 @append

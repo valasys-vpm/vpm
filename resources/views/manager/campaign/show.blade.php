@@ -2,6 +2,7 @@
 
 @section('stylesheet')
     @parent
+    <meta name="campaign-id" content="{{ base64_encode($resultCampaign->id) }}">
     <!-- footable css -->
     <link rel="stylesheet" href="{{ asset('public/template/') }}/assets/plugins/footable/css/footable.bootstrap.min.css">
     <link rel="stylesheet" href="{{ asset('public/template/') }}/assets/plugins/footable/css/footable.standalone.min.css">
@@ -306,7 +307,7 @@
                                                                         <td colspan="3">
                                                                             Sub allocations not updated,
                                                                             <br>
-                                                                            <a href="javascript:;" onclick="editSubAllocations('{{ base64_encode($children->id) }}');" title="Edit Sub-Allocations">Click Here</a> to update.
+                                                                            <a href="javascript:;" onclick="editSubAllocations('{{ base64_encode($resultCampaign->id) }}');" title="Edit Sub-Allocations">Click Here</a> to update.
                                                                         </td>
                                                                     </tr>
                                                                 @endforelse
@@ -404,6 +405,34 @@
                                                     @endforelse
                                                     </tbody>
                                                 </table>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="card" id="card-campaign-history" style="overflow-y: auto;">
+                                        <div class="card-header">
+                                            <h5><i class="fas fa-clock m-r-5"></i> Campaign History</h5>
+                                            <div class="card-header-right">
+                                                <div class="btn-group card-option">
+                                                    <button type="button" class="btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                        <i class="feather icon-more-vertical"></i>
+                                                    </button>
+                                                    <ul class="list-unstyled card-option dropdown-menu dropdown-menu-right">
+                                                        <li class="dropdown-item full-card"><a href="#!"><span><i class="feather icon-maximize"></i> maximize</span><span style="display:none"><i class="feather icon-minimize"></i> Restore</span></a></li>
+                                                        <li class="dropdown-item minimize-card"><a href="#!"><span><i class="feather icon-minus"></i> collapse</span><span style="display:none"><i class="feather icon-plus"></i> expand</span></a></li>
+                                                        <li class="dropdown-item reload-card"><a href="#!" id="reload-campaign-history"><i class="feather icon-refresh-cw"></i> reload</a></li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="card-block">
+                                            <ul class="task-list" id="campaign-history-ul">
+
+                                            </ul>
+                                        </div>
+                                        <div class="card-footer">
+                                            <div class="text-center">
+                                                <button id="btn-get-campaign-history" type="button" class="btn btn-warning shadow-4 btn-sm text-dark btn-square pt-1 pb-1" onclick="getCampaignHistory(this);"><i class="fas fa-spinner"></i> Load More</button>
                                             </div>
                                         </div>
                                     </div>
