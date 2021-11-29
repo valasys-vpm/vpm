@@ -4,21 +4,44 @@ namespace App\Http\Controllers\QATeamLeader;
 
 use App\Http\Controllers\Controller;
 use App\Models\CampaignAssignQATL;
+use App\Repository\CampaignAssignRepository\QATLRepository\QATLRepository;
+use App\Repository\CampaignRepository\CampaignRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class CampaignController extends Controller
 {
     private $data;
+    /**
+     * @var QATLRepository
+     */
+    private $QATLRepository;
+    /**
+     * @var CampaignRepository
+     */
+    private $campaignRepository;
 
-    public function __construct()
+    public function __construct(
+        QATLRepository $QATLRepository,
+        CampaignRepository $campaignRepository
+    )
     {
         $this->data = array();
+        $this->QATLRepository = $QATLRepository;
+        $this->campaignRepository = $campaignRepository;
     }
 
     public function index()
     {
         return view('qa_team_leader.campaign.list', $this->data);
+    }
+
+    public function show($qatl_id)
+    {
+        $this->data['resultCAQATL'] = $this->QATLRepository->find(base64_decode($qatl_id));
+        $this->data['resultCampaign'] = $this->campaignRepository->find($this->data['resultCAQATL']->campaign->id);
+
+        return view('qa_team_leader.campaign.show', $this->data);
     }
 
     public function getCampaigns(Request $request): \Illuminate\Http\JsonResponse
@@ -43,7 +66,12 @@ class CampaignController extends Controller
 
         //Search Data
         if(isset($searchValue) && $searchValue != "") {
-            $query->where("created_at", "like", "%$searchValue%");
+            $query->whereHas('campaign', function ($campaign) use($searchValue) {
+                $campaign->where("campaign_id", "like", "%$searchValue%");
+                $campaign->orWhere("name", "like", "%$searchValue%");
+                $campaign->orWhere("allocation", "like", "%$searchValue%");
+                $campaign->orWhere("deliver_count", "like", "%$searchValue%");
+            });
         }
         //Filters
         if(!empty($filters)) {

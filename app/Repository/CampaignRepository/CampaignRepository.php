@@ -5,6 +5,7 @@ namespace App\Repository\CampaignRepository;
 use App\Exports\ArrayToExcel;
 use App\Models\Campaign;
 use App\Models\CampaignCountry;
+use App\Models\CampaignDeliveryDetail;
 use App\Models\CampaignFile;
 use App\Models\CampaignFilter;
 use App\Models\CampaignSpecification;
@@ -76,7 +77,14 @@ class CampaignRepository implements CampaignInterface
 
     public function find($id, $with = array())
     {
-        return $this->campaign->findOrFail($id);
+
+        $query = Campaign::query();
+
+        if(in_array('delivery_detail', $with)) {
+            $query->with('delivery_detail');
+        }
+
+        return $query->findOrFail($id);
     }
 
     public function store($attributes)
@@ -291,6 +299,8 @@ class CampaignRepository implements CampaignInterface
                     $responseNotification = ManagerNotification::insert($dataNotification);
                 }
 
+                //Add Delivery Detail entry
+                CampaignDeliveryDetail::insert(array('campaign_id' => $campaign->id, 'updated_by' => Auth::id()));
                 DB::commit();
                 $response = array('status' => TRUE, 'message' => 'Campaign added successfully', 'campaign_id' => $campaign->campaign_id, 'id' => $campaign->id);
             } else {
@@ -423,6 +433,12 @@ class CampaignRepository implements CampaignInterface
                 if(isset($getChanges['end_date'])) {
                     $resultPacingDetails = PacingDetail::where('date', '>', $getChanges['end_date'])->delete();
                 }
+
+                //if delivered change progress status
+                if($attributes['campaign_status_id'] == 4) {
+                    CampaignDeliveryDetail::where('campaign_id', $campaign->id)->update(array('campaign_progress' => 'Delivered', 'updated_by' => Auth::id()));
+                }
+
                 DB::commit();
 
 

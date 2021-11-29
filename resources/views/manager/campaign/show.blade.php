@@ -185,9 +185,22 @@
                                             <div class="card-header-right">
                                                 <div class="btn-group card-option">
                                                     <span>
+                                                        @php
+                                                            if($resultCampaign->children->count()) {
+                                                                if($resultCampaign->children[0]->campaign_status_id == 4) {
+                                                                    $flagIncremental = true;
+                                                                } else {
+                                                                    $flagIncremental = false;
+                                                                }
+                                                            } else {
+                                                                $flagIncremental = true;
+                                                            }
+                                                        @endphp
+                                                        @if($resultCampaign->campaign_status_id == 4 && $flagIncremental)
                                                         <a href="{{ route('manager.campaign.create_incremental', base64_encode($resultCampaign->id)) }}">
                                                         <button class="btn btn-primary btn-sm btn-square pt-1 pb-1"><i class="feather icon-plus"></i>Incremental</button>
                                                         </a>
+                                                        @endif
                                                     </span>
                                                     <button type="button" class="btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                         <i class="feather icon-more-vertical"></i>
@@ -577,7 +590,7 @@
                                     <input type="file" class="form-control-file" id="specifications" name="specifications[]" multiple required>
                                 </div>
                             </div>
-                            <button id="form-attach-specification-reset" type="button" class="btn btn-secondary btn-square float-right">Clear</button>
+                            <button id="form-attach-specification-reset" type="button" class="btn btn-secondary btn-square float-right" data-dismiss="modal">Cancel</button>
                             <button id="modal-form-attach-specification-submit" type="button" class="btn btn-primary btn-square float-right">Upload</button>
                         </form>
                     </div>
@@ -656,7 +669,7 @@
                                 @endif
                             </div>
 
-                            <button type="reset" class="btn btn-secondary btn-square float-right">Clear</button>
+                            <button id="form-attach-campaign-file-reset" type="button" class="btn btn-secondary btn-square float-right" data-dismiss="modal">Cancel</button>
                             <button id="modal-form-attach-campaign-file-submit" type="button" class="btn btn-primary btn-square float-right">Upload</button>
                         </form>
                     </div>

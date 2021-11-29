@@ -1,8 +1,12 @@
+@php
+    $module = \App\Models\Module::whereRoleId(Auth::user()->role_id)->first();
+@endphp
+
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
-    <title>@yield('title')</title>
+    <title>@if(!empty($notifications) && $notifications->count()) ({{ $notifications->count() }}) @endif {{ $module->name }} @yield('title')</title>
     <!-- HTML5 Shim and Respond.js IE11 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 11]>
@@ -76,9 +80,7 @@
 <nav class="pcoded-navbar">
     <div class="navbar-wrapper">
         <div class="navbar-brand header-logo">
-            @php
-            $module = \App\Models\Module::whereRoleId(Auth::user()->role_id)->first();
-            @endphp
+
             <a href="{{route($module->route_name)}}" class="b-brand">
                 <span class="b-title">Valasys Media - CRM</span>
             </a>

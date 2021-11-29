@@ -93,6 +93,24 @@ $(function(){
         });
     });
 
+    $('#form-close-issue-submit').on('click', function (e) {
+        e.preventDefault();
+        $.ajax({
+            type: 'post',
+            url: URL + '/team-leader/campaign-issue/update/' + $('#modal-close-issue').find('input[name="id"]').val(),
+            data: $('#form-close-issue').serialize(),
+            async : true,
+            success: function (response) {
+                if(response.status === true) {
+                    trigger_pnofify('success', 'Successful', response.message);
+                    window.location.reload();
+                } else {
+                    trigger_pnofify('error', 'Something went wrong', response.message);
+                }
+            }
+        });
+    });
+
 });
 
 function viewAssignmentDetails(id) {
@@ -132,4 +150,30 @@ function viewAssignmentDetails(id) {
             }
         }
     });
+}
+
+function submitCampaign(_id) {
+    if(_id && confirm('Are you sure to submit campaign?')) {
+        $.ajax({
+            type: 'post',
+            url: URL + '/team-leader/campaign/submit-campaign/' + _id,
+            dataType: 'json',
+            success: function (response) {
+                if(response.status === true) {
+                    $('#div-submit-campaign').css('display', 'none');
+                    $('#div-manage-leads').css('display', 'none');
+                    trigger_pnofify('success', 'Successful', response.message);
+                } else {
+                    trigger_pnofify('error', 'Something went wrong', response.message);
+                }
+            }
+        });
+    } else {
+
+    }
+}
+
+function closeCampaignIssue(_issue_id) {
+    $('#modal-close-issue').find('input[name="id"]').val(_issue_id);
+    $('#modal-close-issue').modal('show');
 }

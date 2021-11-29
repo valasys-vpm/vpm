@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\SendEmailJob;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class DashboardController extends Controller
 {
@@ -16,7 +18,7 @@ class DashboardController extends Controller
 
     public function index()
     {
-        return view('admin.dashboard');
+        return view('admin.dashboard', $this->data);
     }
 
 }

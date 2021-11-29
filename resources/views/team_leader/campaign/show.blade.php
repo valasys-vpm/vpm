@@ -344,7 +344,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="row mb-4">
+                                    <div class="row mb-4" style="display: none;">
                                         <div class="col-md-3" style="display: none;">
                                             <button type="button" class="btn btn-success btn-sm btn-square w-100">Button 1</button>
                                         </div>

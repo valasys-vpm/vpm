@@ -3,30 +3,14 @@
 @section('stylesheet')
     @parent
     <!-- footable css -->
-    <link rel="stylesheet" href="{{ asset('public/template/') }}/assets/plugins/footable/css/footable.bootstrap.min.css">
-    <link rel="stylesheet" href="{{ asset('public/template/') }}/assets/plugins/footable/css/footable.standalone.min.css">
-
-    <!-- select2 css -->
-    <link rel="stylesheet" href="{{ asset('public/template/assets/plugins/select2/css/select2.min.css') }}">
-
-    <!-- material datetimepicker css -->
-    <link rel="stylesheet" href="{{ asset('public/template') }}/assets/plugins/material-datetimepicker/css/bootstrap-material-datetimepicker.css">
+    <link rel="stylesheet" href="{{ asset('public/template/assets/plugins/footable/css/footable.bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('public/template/assets/plugins/footable/css/footable.standalone.min.css') }}">
 
     <style>
         .modal {
             z-index: 99999999 !important;
         }
         .dtp{z-index:999999999 !important;}
-
-        #table-agents.table td {
-            padding: 10px 10px !important;
-            vertical-align: inherit !important;
-        }
-
-        #table-agent-lead-details.table td {
-            padding: 5px 10px !important;
-            vertical-align: inherit !important;
-        }
     </style>
 @append
 
@@ -159,7 +143,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="card-block" style="padding: 0 10px 10px 10px;">
+                                        <div class="card-block">
                                             <div class="table-responsive">
                                                 <table class="table m-b-0 f-14 b-solid requid-table">
                                                     <thead>
@@ -168,43 +152,27 @@
                                                         <th class="text-center">Start Date</th>
                                                         <th class="text-center">End Date</th>
                                                         <th class="text-center">Pacing</th>
-                                                        <th class="text-center">Completion</th>
-                                                        <th class="text-center">Deliver Count / <br>Allocation</th>
+                                                        <th class="text-center">Allocation</th>
                                                         <th class="text-center">Status</th>
-                                                        <th class="text-center">Action</th>
                                                     </tr>
                                                     </thead>
                                                     <tbody class="text-center text-muted">
                                                     <tr>
                                                         <td><i class="feather icon-plus-square toggle-pacing-details" style="cursor: pointer;font-size: 17px;"></i></td>
-                                                        <td>{{ date('d-M-Y', strtotime($resultCARATL->campaign->start_date)) }}</td>
-                                                        <td>{{ date('d-M-Y', strtotime($resultCARATL->display_date)) }}</td>
-                                                        <td>{{ ucfirst($resultCARATL->campaign->pacing) }}</td>
+                                                        <td>{{ date('d-M-Y', strtotime($resultCAQATL->campaign->start_date)) }}</td>
+                                                        <td>{{ date('d-M-Y', strtotime($resultCAQATL->display_date)) }}</td>
+                                                        <td>{{ ucfirst($resultCAQATL->campaign->pacing) }}</td>
                                                         <td>
-                                                            @php
-                                                                $percentage = ($resultCARATL->agent_lead_total_count/$resultCARATL->allocation)*100;
-                                                                $percentage = number_format($percentage,2,".", "");
-                                                                if($percentage == 100) {
-                                                                    $color_class = 'bg-success';
-                                                                } else {
-                                                                    $color_class = 'bg-warning text-dark';
-                                                                }
-                                                            @endphp
-                                                            <div class="progress mb-4" style="height: 20px;border: 1px solid #e2dada;">
-                                                                <div class="progress-bar {{ $color_class }}" role="progressbar" aria-valuenow="{{$percentage}}" aria-valuemin="0" aria-valuemax="100" style="width: {{$percentage}}%; font-weight: bolder;">{{$percentage}}%</div>
-                                                            </div>
-                                                        </td>
-                                                        <td>
-                                                            {{ $resultCARATL->agent_lead_total_count.' / '.$resultCARATL->allocation }}
+                                                            {{ $resultCAQATL->campaign->allocation }}
                                                         </td>
                                                         <td>
                                                             @php
                                                                 $campaign_type = '';
-                                                                if($resultCARATL->campaign->type == 'incremental') {
+                                                                if($resultCAQATL->campaign->type == 'incremental') {
                                                                     $campaign_type = ' (Incremental)';
                                                                 }
                                                             @endphp
-                                                            @switch($resultCARATL->campaign->campaign_status_id)
+                                                            @switch($resultCAQATL->campaign->campaign_status_id)
                                                                 @case(1)
                                                                 <span class="badge badge-pill badge-success" style="padding: 5px;min-width: 70px;">Live{{ $campaign_type }}</span>
                                                                 @break
@@ -225,9 +193,9 @@
                                                                 @break
                                                             @endswitch
                                                         </td>
-                                                        <td>
-                                                            <a href="javascript:;" onclick="viewAssignmentDetails('{{ base64_encode($resultCARATL->id) }}');" class="btn btn-outline-primary btn-sm btn-rounded mb-0" title="view assignment details" style="padding: 5px 8px;"><i class="feather icon-eye mr-0"></i></a>
-                                                        </td>
+<!--                                                        <td>
+                                                            <a href="javascript:;" onclick="alert('Feature in progress!!!');" class="btn btn-outline-primary btn-sm btn-rounded mb-0" title="Click Me" style="padding: 5px 8px;"><i class="feather icon-eye mr-0"></i></a>
+                                                        </td>-->
                                                     </tr>
                                                     <tr class="pacing-details" style="display: none;">
                                                         <td colspan="7" class="bg-light text-left">
@@ -260,105 +228,6 @@
                                                     </tbody>
                                                 </table>
                                             </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="card">
-                                        <div class="card-header">
-
-                                            <h5><i class="fas fa-users m-r-5"></i> Campaign Agents</h5>
-
-                                            <div class="card-header-right">
-                                                <div class="btn-group card-option">
-
-                                                    <button type="button" class="btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                        <i class="feather icon-more-vertical"></i>
-                                                    </button>
-                                                    <ul class="list-unstyled card-option dropdown-menu dropdown-menu-right">
-                                                        <li class="dropdown-item full-card"><a href="#!"><span><i class="feather icon-maximize"></i> maximize</span><span style="display:none"><i class="feather icon-minimize"></i> Restore</span></a></li>
-                                                        <li class="dropdown-item minimize-card"><a href="#!"><span><i class="feather icon-minus"></i> collapse</span><span style="display:none"><i class="feather icon-plus"></i> expand</span></a></li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="card-block" style="padding: 0 10px 10px 10px;">
-                                            <div class="table-responsive">
-                                                <table id="table-agents" class="table m-b-0 f-14 b-solid requid-table">
-                                                    <thead>
-                                                    <tr class="text-uppercase">
-                                                        <th class="text-center">Name</th>
-                                                        <th class="text-center">Completion</th>
-                                                        <th class="text-center">Deliver Count / <br>Allocation</th>
-                                                        <th class="text-center">Status</th>
-                                                        <th class="text-center">Action</th>
-                                                    </tr>
-                                                    </thead>
-                                                    <tbody class="text-center text-muted">
-                                                    @php
-                                                    $total_agents = $resultCARATL->agents->count();
-                                                    $total_submitted = 0;
-                                                    @endphp
-                                                    @forelse($resultCARATL->agents as $ca_agent)
-                                                    <tr>
-                                                        <td>{{ $ca_agent->user->full_name }}</td>
-                                                        <td>
-                                                            @php
-                                                                $percentage = ($ca_agent->agent_lead_count/$ca_agent->allocation)*100;
-                                                                $percentage = number_format($percentage,2,".", "");
-                                                                if($percentage == 100) {
-                                                                    $color_class = 'bg-success';
-                                                                } else {
-                                                                    $color_class = 'bg-warning text-dark';
-                                                                }
-                                                            @endphp
-                                                            <div class="progress" style="height: 20px;border: 1px solid #e2dada;">
-                                                                <div class="progress-bar {{ $color_class }}" role="progressbar" aria-valuenow="{{$percentage}}" aria-valuemin="0" aria-valuemax="100" style="width: {{$percentage}}%; font-weight: bolder;">{{$percentage}}%</div>
-                                                            </div>
-                                                        </td>
-                                                        <td>
-                                                            {{ $ca_agent->agent_lead_count.' / '.$ca_agent->allocation }}
-                                                        </td>
-                                                        <td>
-                                                            @if(empty($ca_agent->started_at) && empty($ca_agent->submitted_at))
-                                                                <span class="badge badge-pill badge-danger" style="padding: 5px;min-width: 70px;">Campaign Assigned</span>
-                                                            @else
-                                                                @if(!empty($ca_agent->started_at) && empty($ca_agent->submitted_at))
-                                                                    <span class="badge badge-pill badge-warning" style="padding: 5px;min-width: 70px;">Campaign In Progress</span>
-                                                                @else
-                                                                    @php $total_submitted++; @endphp
-                                                                    <span class="badge badge-pill badge-success" style="padding: 5px;min-width: 70px;">Campaign Submit</span>
-                                                                @endif
-                                                            @endif
-                                                        </td>
-                                                        <td>
-                                                            @if(!empty($ca_agent->started_at))
-                                                            <a href="javascript:;" onclick="viewAgentLeadDetails('{{ base64_encode($ca_agent->id) }}');" class="btn btn-outline-primary btn-sm btn-rounded mb-0" title="view agent lead details" style="padding: 5px 8px;"><i class="feather icon-eye mr-0"></i></a>
-                                                            @endif
-                                                        </td>
-                                                    </tr>
-                                                    @empty
-                                                    @endforelse
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="row mb-4">
-                                        <div class="col-md-3">
-                                            <button type="button" class="btn btn-success btn-sm btn-square w-100">Button 1</button>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <a href="{{ route('team_leader.lead.list', base64_encode($resultCARATL->id)) }}">
-                                                <button type="button" class="btn btn-primary btn-sm btn-square w-100">Manage Leads</button>
-                                            </a>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <button type="button" class="btn btn-warning btn-sm btn-square w-100">Button 3</button>
-                                        </div>
-
-                                        <div class="col-md-3">
-                                            <button type="button" @if($total_submitted < $total_agents) class="btn btn-danger btn-sm btn-square w-100" disabled title="Campaign Not Submitted By All Agents!" @else class="btn btn-success btn-sm btn-square w-100" @endif onclick="submitCampaign('{{ base64_encode($resultCARATL->id) }}');">Submit Campaign</button>
                                         </div>
                                     </div>
 
@@ -427,14 +296,6 @@
     @parent
     <!-- footable Js -->
     <script src="{{ asset('public/template/assets/plugins/footable/js/footable.min.js') }}"></script>
-    <!-- select2 Js -->
-    <script src="{{ asset('public/template/assets/plugins/select2/js/select2.full.min.js') }}"></script>
-    <!-- material datetimepicker Js -->
-    <script src="{{ asset('public/template/assets/plugins/material-datetimepicker/js/bootstrap-material-datetimepicker.js') }}"></script>
-    <!-- Ckeditor js -->
-    <script src="{{ asset('public/template/assets/plugins/ckeditor/js/ckeditor.js') }}"></script>
-    <!-- jquery-validation Js -->
-    <script src="{{ asset('public/template/assets/plugins/jquery-validation/js/jquery.validate.min.js') }}"></script>
 
-    <script src="{{ asset('public/js/team_leader/campaign_show.js?='.time()) }}"></script>
+    <script src="{{ asset('public/js/qa_team_leader/campaign_show.js?='.time()) }}"></script>
 @append

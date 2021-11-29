@@ -24,6 +24,7 @@ class CreateCampaignDeliveryDetailsTable extends Migration
             $table->integer('lead_rejected')->default(0);
             $table->integer('lead_available')->default(0);
             $table->integer('lead_pending')->default(0);
+            $table->string('campaign_progress')->default('Campaign IN');
 
             $table->unsignedInteger('updated_by');
             $table->foreign('updated_by')->references('id')->on('users')->onUpdate('cascade');

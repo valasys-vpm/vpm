@@ -38,6 +38,7 @@ function startCampaign(_id) {
                     $('#div-submit-campaign').css('display', 'block');
                     $('#div-manage-leads').css('display', 'block');
                     trigger_pnofify('success', 'Successful', 'Campaign Started.');
+                    window.location.reload();
                 } else {
                     trigger_pnofify('error', 'Something went wrong', response.message);
                 }

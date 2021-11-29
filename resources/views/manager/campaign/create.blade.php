@@ -167,25 +167,25 @@
                                                             </div>
                                                             <div class="col-md-4 form-group">
                                                                 <label for="target_domain">Domain Target List</label>
-                                                                <input type="file" class="form-control-file btn btn-outline-secondary btn btn-square" id="target_domain" name="target_domain">
+                                                                <input type="file" class="form-control-file btn btn-outline-success btn btn-square" id="target_domain" name="target_domain">
                                                             </div>
                                                             <div class="col-md-4 form-group">
                                                                 <label for="target_account_name">Account Target List</label>
-                                                                <input type="file" class="form-control-file btn btn-outline-secondary btn btn-square" id="target_account_name" name="target_account_name">
+                                                                <input type="file" class="form-control-file btn btn-outline-success btn btn-square" id="target_account_name" name="target_account_name">
                                                             </div>
                                                         </div>
                                                         <div class="row">
                                                             <div class="col-md-4 form-group">
                                                                 <label for="suppression_email">Email Suppression</label>
-                                                                <input type="file" class="form-control-file btn btn-outline-success btn btn-square" id="suppression_email" name="suppression_email">
+                                                                <input type="file" class="form-control-file btn btn-outline-danger btn btn-square" id="suppression_email" name="suppression_email">
                                                             </div>
                                                             <div class="col-md-4 form-group">
                                                                 <label for="suppression_domain">Domain Suppression</label>
-                                                                <input type="file" class="form-control-file btn btn-outline-success btn btn-square" id="suppression_domain" name="suppression_domain">
+                                                                <input type="file" class="form-control-file btn btn-outline-danger btn btn-square" id="suppression_domain" name="suppression_domain">
                                                             </div>
                                                             <div class="col-md-4 form-group">
                                                                 <label for="suppression_account_name">Account Suppression</label>
-                                                                <input type="file" class="form-control-file btn btn-outline-success btn btn-square" id="suppression_account_name" name="suppression_account_name">
+                                                                <input type="file" class="form-control-file btn btn-outline-danger btn btn-square" id="suppression_account_name" name="suppression_account_name">
                                                             </div>
                                                         </div>
                                                         <div class="row">

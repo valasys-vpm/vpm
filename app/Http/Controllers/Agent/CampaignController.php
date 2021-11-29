@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\CampaignAssignAgent;
 use App\Repository\AgentDataRepository\AgentDataRepository;
 use App\Repository\AgentLeadRepository\AgentLeadRepository;
+use App\Repository\Campaign\IssueRepository\IssueRepository;
 use App\Repository\CampaignAssignRepository\AgentRepository\AgentRepository;
 use App\Repository\CampaignRepository\CampaignRepository;
 use Illuminate\Http\Request;
@@ -21,12 +22,17 @@ class CampaignController extends Controller
      * @var AgentDataRepository
      */
     private $agentDataRepository;
+    /**
+     * @var IssueRepository
+     */
+    private $issueRepository;
 
     public function __construct(
         CampaignRepository $campaignRepository,
         AgentRepository $agentRepository,
         AgentLeadRepository $agentLeadRepository,
-        AgentDataRepository $agentDataRepository
+        AgentDataRepository $agentDataRepository,
+        IssueRepository $issueRepository
     )
     {
         $this->data = array();
@@ -34,6 +40,7 @@ class CampaignController extends Controller
         $this->agentRepository = $agentRepository;
         $this->agentLeadRepository = $agentLeadRepository;
         $this->agentDataRepository = $agentDataRepository;
+        $this->issueRepository = $issueRepository;
     }
 
     public function index()
@@ -47,6 +54,8 @@ class CampaignController extends Controller
             $this->data['countAgentData'] = $this->agentDataRepository->get(array('ca_agent_ids' => [base64_decode($id)]))->count();
             $this->data['resultCAAgent'] = $this->agentRepository->find(base64_decode($id));
             $this->data['resultCampaign'] = $this->campaignRepository->find($this->data['resultCAAgent']->campaign_id);
+            $this->data['resultCampaignIssues'] = $this->issueRepository->get(array('campaign_ids' => [$this->data['resultCAAgent']->campaign_id]));
+
             if(isset($this->data['resultCampaign']->parent_id) && !empty($this->data['resultCampaign']->parent_id)) {
                 $this->data['resultCampaignParent'] = $this->campaignRepository->find($this->data['resultCampaign']->parent_id);
             }
@@ -76,7 +85,12 @@ class CampaignController extends Controller
 
         //Search Data
         if(isset($searchValue) && $searchValue != "") {
-            $query->where("created_at", "like", "%$searchValue%");
+            $query->whereHas('campaign', function ($campaign) use($searchValue) {
+                $campaign->where("campaign_id", "like", "%$searchValue%");
+                $campaign->orWhere("name", "like", "%$searchValue%");
+                $campaign->orWhere("allocation", "like", "%$searchValue%");
+                $campaign->orWhere("deliver_count", "like", "%$searchValue%");
+            });
         }
         //Filters
         if(!empty($filters)) {

@@ -4,6 +4,8 @@ namespace App\Repository\CampaignAssignRepository\QATLRepository;
 
 use App\Models\Campaign;
 use App\Models\CampaignAssignQATL;
+use App\Models\CampaignDeliveryDetail;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class QATLRepository implements QATLInterface
@@ -56,6 +58,7 @@ class QATLRepository implements QATLInterface
             }
             $ca_qatl->save();
             if($ca_qatl->id) {
+                CampaignDeliveryDetail::where('campaign_id', $ca_qatl->campaign_id)->update(array('campaign_progress' => 'In QC', 'updated_by' => Auth::id()));
                 DB::commit();
                 $response = array('status' => TRUE, 'message' => 'Campaign sent to quality team, successfully');
             } else {

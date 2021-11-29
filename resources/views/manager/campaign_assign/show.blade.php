@@ -1,4 +1,5 @@
 @extends('layouts.master')
+@section('title', '| Campaign Details-'.$resultCampaign->campaign_id)
 
 @section('stylesheet')
     @parent
@@ -215,6 +216,7 @@
                                                         </td>
                                                         <td>
                                                             <a href="javascript:;" onclick="viewAssignmentDetails('{{ base64_encode($resultCampaign->id) }}');" class="btn btn-outline-primary btn-sm btn-rounded mb-0" title="view assignment details" style="padding: 5px 8px;"><i class="feather icon-eye mr-0"></i></a>
+{{--                                                            <a href="javascript:;" onclick="updateDeliveryDetails('{{ base64_encode($resultCampaign->id) }}');" class="btn btn-outline-dark btn-sm btn-rounded mb-0" title="Update Delivery Details" style="padding: 5px 8px;"><i class="feather icon-edit mr-0"></i></a>--}}
                                                         </td>
                                                     </tr>
                                                     <tr class="pacing-details" style="display: none;">
@@ -341,6 +343,83 @@
                                             </div>
                                         </div>
                                     </div>
+
+                                    <div class="row mb-4">
+                                        <div id="div-update-delivery_details" class="col-md-3">
+                                            <button type="button" class="btn btn-dark btn-sm btn-square w-100" onclick="updateDeliveryDetails('{{ base64_encode($resultCampaign->id) }}');" style="padding: 6px 10px;"><i class="feather icon-edit"></i>Delivery Detail</button>
+                                        </div>
+                                    </div>
+
+                                    @if(isset($resultCampaignIssues) && $resultCampaignIssues->count())
+                                        <div class="card">
+                                            <div class="card-header">
+                                                <h5><i class="fas fa-info-circle m-r-5"></i> Camapign Issue(s)</h5>
+                                                <div class="card-header-right">
+                                                    <div class="btn-group card-option">
+                                                        <button type="button" class="btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                            <i class="feather icon-more-vertical"></i>
+                                                        </button>
+                                                        <ul class="list-unstyled card-option dropdown-menu dropdown-menu-right">
+                                                            <li class="dropdown-item full-card"><a href="#!"><span><i class="feather icon-maximize"></i> maximize</span><span style="display:none"><i class="feather icon-minimize"></i> Restore</span></a></li>
+                                                            <li class="dropdown-item minimize-card"><a href="#!"><span><i class="feather icon-minus"></i> collapse</span><span style="display:none"><i class="feather icon-plus"></i> expand</span></a></li>
+                                                            <li class="dropdown-item reload-card"><a href="#!"><i class="feather icon-refresh-cw"></i> reload</a></li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="card-block" style="padding: 0 10px 10px 10px;">
+                                                <div class="table-responsive">
+                                                    <table class="table m-b-0 f-14 b-solid requid-table">
+                                                        <thead>
+                                                        <tr class="text-uppercase">
+                                                            <th class="text-center">Raise By</th>
+                                                            <th class="text-center">Priority</th>
+                                                            <th class="text-center">Status</th>
+                                                            <th class="text-center">Title</th>
+                                                            <th class="text-center">Description</th>
+                                                            <th class="text-center">Created At</th>
+                                                            <th class="text-center">Response</th>
+                                                            <th class="text-center">Closed By</th>
+                                                            <th class="text-center">Closed At</th>
+                                                            <th class="text-center">Action</th>
+                                                        </tr>
+                                                        </thead>
+                                                        <tbody class="text-center text-muted">
+                                                        @foreach($resultCampaignIssues as $key => $campaign_issue)
+                                                            <tr>
+                                                                <td>{{ $campaign_issue->user->full_name }}</td>
+                                                                <td>
+                                                                    @switch($campaign_issue->priority)
+                                                                        @case('low') <span class="badge badge-pill badge-info" style="padding: 5px;min-width: 70px;">Low</span> @break;
+                                                                        @case('normal') <span class="badge badge-pill badge-warning" style="padding: 5px;min-width: 70px;">Normal</span> @break;
+                                                                        @case('high') <span class="badge badge-pill badge-danger" style="padding: 5px;min-width: 70px;">High</span> @break;
+                                                                    @endswitch
+                                                                </td>
+                                                                <td>
+                                                                    @switch($campaign_issue->status)
+                                                                        @case(0) <span class="badge badge-pill badge-warning" style="padding: 5px;min-width: 70px;">Open</span> @break;
+                                                                        @case(1) <span class="badge badge-pill badge-success" style="padding: 5px;min-width: 70px;">Closed</span> @break;
+                                                                    @endswitch
+                                                                </td>
+                                                                <td>{{ $campaign_issue->title }}</td>
+                                                                <td>{{ $campaign_issue->description }}</td>
+                                                                <td>{{ date('d/M/Y', strtotime($campaign_issue->created_at)) }}</td>
+                                                                <td>@if(!empty($campaign_issue->response)) {{ $campaign_issue->response }} @else - @endif</td>
+                                                                <td>@if(!empty($campaign_issue->closed_by)) {{ $campaign_issue->closed_by_user->full_name }} @else - @endif</td>
+                                                                <td>@if(!empty($campaign_issue->closed_by)) {{ date('d/M/Y', strtotime($campaign_issue->updated_at)) }} @else - @endif</td>
+                                                                <td>
+                                                                    @if(empty($campaign_issue->closed_by))
+                                                                        <a href="javascript:;" onclick="closeCampaignIssue('{{ base64_encode($campaign_issue->id) }}');" class="btn btn-outline-primary btn-sm btn-rounded mb-0" title="Close Issue" style="padding: 5px 8px;"><i class="feather icon-edit mr-0"></i></a>
+                                                                    @endif
+                                                                </td>
+                                                            </tr>
+                                                        @endforeach
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endif
                                 </div>
                                 <!-- [ task-detail ] end -->
                             </div>
@@ -357,6 +436,9 @@
             <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title">Campaign Assignment Details</h5>
+                        <div class="float-right">
+                            <a id="button-assign-campaign" href="javascript:void(0);" data-campaign-id="" data-display-date="" onclick="assignCampaign();" class="btn btn-outline-dark btn-sm mb-0 float-right" title="Assign Campaign" style="padding: 5px 8px;position: absolute;right: 50px;"><i class="feather icon-user-plus mr-0"></i></a>
+                        </div>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">×</span>
                         </button>
@@ -373,6 +455,7 @@
                                     <th class="text-center">Total Agents</th>
                                     <th class="text-center">Assigned By</th>
                                     <th class="text-center">Status</th>
+                                    <th class="text-center">Action</th>
                                 </tr>
                                 </thead>
                                 <tbody class="text-center text-muted">
@@ -387,21 +470,118 @@
             </div>
         </div>
     </div>
+
+    <div id="modal-update-delivery-details" class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Client Delivery Details</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body">
+                    <div class="col-md-12">
+                        <form id="form-update-delivery-details">
+                            <input type="hidden" id="campaign_id" name="campaign_id" value="">
+                            <input type="hidden" name="id" value="">
+                            <div class="row">
+                                <div class="col-md-6 form-group">
+                                    <label for="lead_sent">Lead Sent</label>
+                                    <input type="number" class="form-control btn-square" id="lead_sent" name="lead_sent" placeholder="Enter lead sent" value="0">
+                                </div>
+                                <div class="col-md-6 form-group">
+                                    <label for="lead_approved">Lead Approved</label>
+                                    <input type="number" class="form-control btn-square" id="lead_approved" name="lead_approved" placeholder="Enter lead approved" value="0">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 form-group">
+                                    <label for="lead_available">Lead Available</label>
+                                    <input type="number" class="form-control btn-square" id="lead_available" name="lead_available" placeholder="Enter lead available" value="0">
+                                </div>
+                            </div>
+                            <button id="form-update-delivery-details-submit" type="button" class="btn btn-primary btn-square btn-sm float-right">Upload</button>
+                            <button type="reset" class="btn btn-secondary btn-square btn-sm float-right" data-dismiss="modal">Cancel</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-close-issue" class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Raise Issue</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body">
+                    <div class="col-md-12">
+                        <form id="form-close-issue">
+                            @csrf
+                            <input type="hidden" name="id" value="">
+                            <div class="row">
+                                <div class="col-md-12 form-group">
+                                    <label for="response">Description <span class="text-danger">*</span></label>
+                                    <textarea class="form-control" id="response" name="response" placeholder="Enter response" required row="3"></textarea>
+                                </div>
+                            </div>
+                            <button id="form-close-issue-submit" type="button" class="btn btn-primary btn-square float-right">Close Issue</button>
+                            <button type="reset" class="btn btn-secondary btn-square float-right" data-dismiss="modal">Cancel</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-assign-campaign" class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Assign Campaign</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body">
+                    <div class="col-md-12">
+                        <form id="form-assign-campaign">
+                            <div class="row">
+                                <input type="hidden" name="campaign_id" value="">
+                                <input type="hidden" name="display_date" value="">
+                                <div class="col-md-12 form-group">
+                                    <label for="user_list">Select User(s)</label>
+                                    <select class="form-control btn-square p-1 pl-2 select2-multiple" id="user_list" name="user_list[]" style="height: unset;" multiple>
+                                        @foreach($resultUsers as $user)
+                                            @if(!in_array($user->id, $resultAssignedUsers))
+                                            <option id="user_list_{{ $user->id }}" value="{{ $user->id }}" data-name="{{ $user->first_name.' '.$user->last_name }}">{{ $user->first_name.' '.$user->last_name.' - [ '.$user->role->name.' ]' }}</option>
+                                            @endif
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="col-md-12 form-group">
+                                    <label for="allocation">Allocation</label>
+                                    <input type="number" class="form-control" name="allocation" value="0">
+                                </div>
+                            </div>
+                            <button id="form-assign-campaign-submit" type="button" class="btn btn-primary btn-square float-right">Assign</button>
+                            <button type="reset" class="btn btn-secondary btn-square float-right" data-dismiss="modal">Cancel</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @section('javascript')
     @parent
     <!-- footable Js -->
     <script src="{{ asset('public/template/assets/plugins/footable/js/footable.min.js') }}"></script>
-    <!-- select2 Js -->
-    <script src="{{ asset('public/template/assets/plugins/select2/js/select2.full.min.js') }}"></script>
     <!-- material datetimepicker Js -->
-    <script src="https://momentjs.com/downloads/moment-with-locales.min.js"></script>
     <script src="{{ asset('public/template/assets/plugins/material-datetimepicker/js/bootstrap-material-datetimepicker.js') }}"></script>
     <!-- Ckeditor js -->
     <script src="{{ asset('public/template/assets/plugins/ckeditor/js/ckeditor.js') }}"></script>
     <!-- jquery-validation Js -->
     <script src="{{ asset('public/template/assets/plugins/jquery-validation/js/jquery.validate.min.js') }}"></script>
-
     <script src="{{ asset('public/js/manager/campaign_assign_show.js?='.time()) }}"></script>
 @append

@@ -1,4 +1,4 @@
-
+let URL = $('meta[name="base-path"]').attr('content');
 let MONTHS = ['Jan','Feb','Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 let DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
@@ -29,10 +29,76 @@ $(function(){
         }
     });
 
+    $("#user_list").select2({
+        placeholder: " --- Select User(s) ---",
+        dropdownParent: $('#modal-assign-campaign')
+    });
+
 });
 
 
 $(function(){
+
+    $('#form-update-delivery-details-submit').on('click', function (e) {
+        e.preventDefault();
+        let form_data = new FormData($('#form-update-delivery-details')[0]);
+
+        $.ajax({
+            url: URL +'/manager/campaign-assign/update-delivery-details',
+            processData: false,
+            contentType: false,
+            data: form_data,
+            type: 'post',
+            success: function(response) {
+                if(response.status === true) {
+                    $('#modal-update-delivery-details').modal('hide');
+                    trigger_pnofify('success', 'Successful', response.message);
+                } else {
+                    trigger_pnofify('error', 'Error while processing request', response.message);
+                }
+            }
+        });
+
+        document.getElementById("modal-form-attach-specification").reset();
+
+    });
+
+    $('#form-close-issue-submit').on('click', function (e) {
+        e.preventDefault();
+        $.ajax({
+            type: 'post',
+            url: URL + '/manager/campaign-issue/update/' + $('#modal-close-issue').find('input[name="id"]').val(),
+            data: $('#form-close-issue').serialize(),
+            async : true,
+            success: function (response) {
+                if(response.status === true) {
+                    $("#modal-assign-campaign").modal('hide');
+                    trigger_pnofify('success', 'Successful', response.message);
+                    //window.location.reload();
+                } else {
+                    trigger_pnofify('error', 'Something went wrong', response.message);
+                }
+            }
+        });
+    });
+
+    $('#form-assign-campaign-submit').on('click', function (e) {
+        e.preventDefault();
+        $.ajax({
+            type: 'post',
+            url: URL + '/manager/campaign-assign/assign-campaign',
+            data: $('#form-assign-campaign').serialize(),
+            async : true,
+            success: function (response) {
+                if(response.status === true) {
+                    trigger_pnofify('success', 'Successful', response.message);
+                    window.location.reload();
+                } else {
+                    trigger_pnofify('error', 'Something went wrong', response.message);
+                }
+            }
+        });
+    });
 
 });
 
@@ -49,6 +115,22 @@ function viewAssignmentDetails(id) {
                 if(response.data.resultRATLs.length) {
                     data = response.data.resultRATLs;
                     $.each(data, function (key, value) {
+                        let status = '-';
+                        switch(value.status) {
+                            case 1: status = 'Active';break;
+                            case 0: status = 'Inactive';break;
+                            case 2: status = 'Revoked';break;
+                        }
+
+                        let buttons = '';
+                        if(value.submitted_at) {
+
+                        } else {
+                            buttons += '<a href="javascript:void(0);" onclick="revokeCampaign(\''+btoa(value.id)+'\');" class="btn btn-outline-danger btn-sm btn-rounded mb-0" title="Revoke Campaign" style="padding: 5px 8px;"><i class="feather icon-refresh-cw mr-0"></i></a>';
+                        }
+
+                        $('#button-assign-campaign').data('display-date', value.display_date);
+
                         html += '' +
                             '<tr>\n' +
                             '   <td><i class="feather icon-plus-square toggle-agent-details" style="cursor: pointer;font-size: 17px;" onclick="getAssignedAgents('+ value.id +', this);"></i></td>\n' +
@@ -57,25 +139,28 @@ function viewAssignmentDetails(id) {
                             '   <td>'+ value.allocation +'</td>\n' +
                             '   <td>'+ value.agents.length +'</td>\n' +
                             '   <td>'+ value.user_assigned_by.first_name +' '+ value.user_assigned_by.last_name +'</td>\n' +
-                            '   <td></td>\n' +
+                            '   <td>'+ status +'</td>\n' +
+                            '   <td>' +
+                            buttons +
+                            '   </td>\n' +
                             '</tr>' +
-                        '<tr id="agent-details-'+value.id+'" class="agent-details" style="display: none;">' +
-                        '   <td colspan="7" class="bg-light text-left">' +
-                        '       <table class="table table-hover foo-table text-center">\n' +
-                        '           <thead>\n' +
-                        '               <tr class="text-uppercase">\n' +
-                        '                   <th class="text-center">Name</th>\n' +
-                        '                   <th class="text-center">End Date</th>\n' +
-                        '                   <th class="text-center">Allocation</th>\n' +
-                        '                   <th class="text-center">Assigned By</th>\n' +
-                        '               </tr>\n' +
-                        '           </thead>' +
-                        '           <tbody>' +
-                        '           </tbody>' +
-                        '       </table>' +
-                        '   </td>' +
-                        '</tr>' +
-                        '';
+                            '<tr id="agent-details-'+value.id+'" class="agent-details" style="display: none;">' +
+                            '   <td colspan="7" class="bg-light text-left">' +
+                            '       <table class="table table-hover foo-table text-center">\n' +
+                            '           <thead>\n' +
+                            '               <tr class="text-uppercase">\n' +
+                            '                   <th class="text-center">Name</th>\n' +
+                            '                   <th class="text-center">End Date</th>\n' +
+                            '                   <th class="text-center">Allocation</th>\n' +
+                            '                   <th class="text-center">Assigned By</th>\n' +
+                            '               </tr>\n' +
+                            '           </thead>' +
+                            '           <tbody>' +
+                            '           </tbody>' +
+                            '       </table>' +
+                            '   </td>' +
+                            '</tr>' +
+                            '';
                     });
                 }
 
@@ -95,6 +180,8 @@ function viewAssignmentDetails(id) {
                         '';
                     });
                 }
+
+                $('#button-assign-campaign').data('campaign-id', id);
 
 
                 $("#modal-view-assignment-details").find('tbody').html(html);
@@ -146,4 +233,62 @@ function getAssignedAgents(_id, _this) {
 
 
     return html;
+}
+
+function updateDeliveryDetails(_campaign_id) {
+    $.ajax({
+        type: 'get',
+        url: URL + '/manager/campaign-assign/get-campaign-details/' + _campaign_id,
+        success: function (response){
+            if(response.status === true) {
+                $("#modal-update-delivery-details").find('#campaign_id').val(_campaign_id);
+                if (response.data.delivery_detail) {
+                    let delivery_detail = response.data.delivery_detail;
+                    $("#form-update-delivery-details").find('input[name="id"]').val(btoa(delivery_detail.id));
+                    $("#form-update-delivery-details").find('input[name="lead_sent"]').val(delivery_detail.lead_sent);
+                    $("#form-update-delivery-details").find('input[name="lead_approved"]').val(delivery_detail.lead_approved);
+                    $("#form-update-delivery-details").find('input[name="lead_available"]').val(delivery_detail.lead_available);
+                }
+                $("#modal-update-delivery-details").modal('show');
+            } else {
+                trigger_pnofify('error', 'Error while processing request', response.message);
+            }
+        }
+    });
+}
+
+function closeCampaignIssue(_issue_id) {
+    $('#modal-close-issue').find('input[name="id"]').val(_issue_id);
+    $('#modal-close-issue').modal('show');
+}
+
+function revokeCampaign(_id) {
+    if(_id && confirm('Are you sure to revoke campaign?')) {
+        $("#modal-view-assignment-details").modal('hide');
+        $.ajax({
+            type: 'post',
+            url: URL + '/manager/campaign-assign/revoke-campaign/' + _id,
+            dataType: 'json',
+            success: function (response) {
+                if(response.status === true) {
+                    trigger_pnofify('success', 'Successful', response.message);
+                } else {
+                    trigger_pnofify('error', 'Something went wrong', response.message);
+                }
+            }
+        });
+    } else {
+
+    }
+}
+
+function assignCampaign() {
+    if(confirm('Are you sure to assign campaign?')) {
+        $('#modal-assign-campaign').find('input[name="campaign_id"]').val($('#button-assign-campaign').data('campaign-id'));
+        $('#modal-assign-campaign').find('input[name="display_date"]').val($('#button-assign-campaign').data('display-date'));
+        $("#modal-view-assignment-details").modal('hide');
+        $("#modal-assign-campaign").modal('show');
+    } else {
+
+    }
 }

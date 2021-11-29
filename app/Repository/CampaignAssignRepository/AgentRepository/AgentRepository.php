@@ -6,6 +6,7 @@ use App\Models\Campaign;
 use App\Models\CampaignAssignAgent;
 use App\Models\CampaignAssignRATL;
 use App\Models\CampaignAssignVendorManager;
+use App\Models\CampaignDeliveryDetail;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -42,7 +43,7 @@ class AgentRepository implements AgentInterface
             DB::beginTransaction();
             $dataAgent = array();
             foreach ($attributes['data'] as $key => $campaign) {
-
+                $campaignIds[] = $campaign['campaign_id'];
                 $resultCampaign = Campaign::findOrFail($campaign['campaign_id']);
                 $resultCampaignAssignRATL = CampaignAssignRATL::findOrFail($campaign['campaign_assign_ratl_id']);
 
@@ -76,6 +77,9 @@ class AgentRepository implements AgentInterface
 
             if(!empty($dataAgent)) {
                 if(CampaignAssignAgent::insert($dataAgent)) {
+                    foreach ($campaignIds as $campaignId) {
+                        CampaignDeliveryDetail::where('campaign_id', $campaignId)->update(array('campaign_progress' => 'Agents Working', 'updated_by' => Auth::id()));
+                    }
                     DB::commit();
                     $response = array('status' => TRUE, 'message' => 'Campaign assigned successfully');
                 } else {
@@ -85,7 +89,6 @@ class AgentRepository implements AgentInterface
 
         } catch (\Exception $exception) {
             DB::rollBack();
-            //dd($exception->getMessage());
             $response = array('status' => FALSE, 'message' => 'Something went wrong, please try again.');
         }
         return $response;

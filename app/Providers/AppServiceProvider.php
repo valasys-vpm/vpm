@@ -38,7 +38,6 @@ class AppServiceProvider extends ServiceProvider
                 $module = Module::whereRoleId(Auth::user()->role_id)->first();
 
                 $notifications = null;
-
                 switch ($module->slug) {
                     case 'admin': break;
                     case 'manager':
@@ -47,7 +46,7 @@ class AppServiceProvider extends ServiceProvider
                     case 'team_leader':
                         $notifications = RATLNotification::where('recipient_id', Auth::id())->where('read_status', 0)->get();
                         break;
-                    case 'research_analyst':
+                    case 'agent':
                         $notifications = RANotification::where('recipient_id', Auth::id())->where('read_status', 0)->get();
                         break;
                     case 'qa_team_leader':

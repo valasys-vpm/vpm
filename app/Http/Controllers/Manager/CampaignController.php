@@ -71,7 +71,7 @@ class CampaignController extends Controller
             $this->data['resultCountries'] = $this->countryRepository->get(array('status' => 1));
             $this->data['resultRegions'] = $this->regionRepository->get(array('status' => 1));
             $this->data['resultCampaign'] = $this->campaignRepository->find(base64_decode($id));
-            //dd($this->data['resultCampaign']->campaignFiles->toArray());
+            //dd($this->data['resultCampaign']->children[0]->campaign_status_id);
             return view('manager.campaign.show', $this->data);
         } catch (\Exception $exception) {
             return redirect()->route('manager.campaign.list')->with('error', ['title' => 'Error while processing request', 'message' => 'Campaign details not found']);
@@ -251,18 +251,21 @@ class CampaignController extends Controller
     public function import(Request $request)
     {
         $attributes = $request->all();
-
         $response = $this->campaignRepository->import($attributes);
 
-        if($response['status'] == TRUE) {
-            return response(json_encode(array('status' => true, 'message' => $response['message'])), 201);
-        } else {
-            if(!empty($response['file'])) {
-                return $response['file'];
-                //return response(json_encode(array('status' => false, 'message' => $response['message'], 'file' => base64_encode($response['file']))));
+        if(isset($attributes['campaign_file']) && !empty($attributes['campaign_file'])) {
+            if($response['status'] == TRUE) {
+                return response(json_encode(array('status' => true, 'message' => $response['message'])), 201);
             } else {
-                return response(json_encode(array('status' => false, 'message' => $response['message'])));
+                if(!empty($response['file'])) {
+                    return $response['file'];
+                    //return response(json_encode(array('status' => false, 'message' => $response['message'], 'file' => base64_encode($response['file']))));
+                } else {
+                    return response(json_encode(array('status' => false, 'message' => $response['message'])),201);
+                }
             }
+        } else {
+            return response(json_encode(array('status' => false, 'message' => 'Please upload file')),201);
         }
     }
 
@@ -277,11 +280,17 @@ class CampaignController extends Controller
         $offset = $request->get("start");
 
         $query = Campaign::query();
+        $query->whereNull('parent_id');
+
+        $query->with('delivery_detail');
         $totalRecords = $query->count();
 
         //Search Data
         if(isset($searchValue) && $searchValue != "") {
-            $query->where("name", "like", "%$searchValue%");
+            $query->where("campaign_id", "like", "%$searchValue%");
+            $query->orWhere("name", "like", "%$searchValue%");
+            $query->orWhere("allocation", "like", "%$searchValue%");
+            $query->orWhere("deliver_count", "like", "%$searchValue%");
         }
         //Filters
         if(!empty($filters)) {
