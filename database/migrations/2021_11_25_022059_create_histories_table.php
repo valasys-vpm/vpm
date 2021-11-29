@@ -14,8 +14,16 @@ class CreateHistoriesTable extends Migration
     public function up()
     {
         Schema::create('histories', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+            $table->increments('id');
+
+            $table->unsignedInteger('user_id');
+            $table->foreign('user_id')->references('id')->on('users');
+
+            $table->string('action');
+            $table->text('message');
+            $table->text('data')->default('{}');
+
+            $table->timestamp('created_at')->useCurrent();
         });
     }
 
