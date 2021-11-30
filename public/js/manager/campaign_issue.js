@@ -42,7 +42,7 @@ $(function (){
             },
             {
                 render: function (data, type, row) {
-                    switch (row.status) {
+                    switch (parseInt(row.status)) {
                         case 1: return '<span class="badge badge-pill badge-success" style="padding: 5px;min-width:50px;"> Closed</span>';
                         case 0: return '<span class="badge badge-pill badge-warning" style="padding: 5px;min-width:50px;"> Open</span>';
                     }
