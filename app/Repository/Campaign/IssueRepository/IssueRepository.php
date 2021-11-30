@@ -4,6 +4,7 @@ namespace App\Repository\Campaign\IssueRepository;
 
 use App\Models\Campaign;
 use App\Models\CampaignAssignAgent;
+use App\Models\CampaignAssignRATL;
 use App\Models\CampaignIssue;
 use App\Models\ManagerNotification;
 use App\Models\RANotification;
@@ -100,6 +101,7 @@ class IssueRepository implements IssueInterface
         try {
             DB::beginTransaction();
             $campaign_issue = CampaignIssue::findOrFail($id);
+
             if(isset($attributes['campaign_id']) && !empty($attributes['campaign_id'])) {
                 $campaign_issue->campaign_id = $attributes['campaign_id'];
             }
@@ -162,7 +164,7 @@ class IssueRepository implements IssueInterface
                         }
                         break;
                     case 'team_leader' :
-                        $resultCARATL = CampaignAssignAgent::where('campaign_id', $campaign_issue->campaign_id)->where('user_id', $campaign_issue->user_id)->first();
+                        $resultCARATL = CampaignAssignRATL::where('campaign_id', $campaign_issue->campaign_id)->where('user_id', $campaign_issue->user_id)->first();
                         $dataNotification = array();
                         $dataNotification[] = array(
                             'sender_id' => Auth::id(),
