@@ -27,12 +27,14 @@ class CheckAgent
 
         $user = Auth::user();
 
-        if(!isset($user->logged_on)) {
-            Auth::logout();
+        if(!isset($user->logged_on) || empty($user->logged_on)) {
+            return redirect()->route('lockscreen');
+
+            //Auth::logout();
             if($request->ajax()) {
                 return response('Session Timeout',302);
             }
-            return redirect()->route('login');
+            //return redirect()->route('login');
         }
 
         $module = Module::whereRoleId($user->role_id)->first();

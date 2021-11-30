@@ -28,6 +28,8 @@ Route::middleware(['guest'])->group(function (){
 });
 
 Route::any('/logout', [App\Http\Controllers\HomeController::class, 'logout'])->name('logout');
+Route::any('/lockscreen', [App\Http\Controllers\HomeController::class, 'lockscreen'])->name('lockscreen');
+Route::any('/unlockscreen', [App\Http\Controllers\HomeController::class, 'unlockscreen'])->name('unlockscreen');
 
 
 Route::prefix('admin')->middleware(['web', 'check.admin'])->name('admin.')->group(function (){
@@ -113,6 +115,9 @@ Route::prefix('team-leader')->middleware(['web', 'check.team_leader'])->name('te
 Route::prefix('agent')->middleware(['web', 'check.agent'])->name('agent.')->group(function (){
 
     Route::get('/dashboard', [App\Http\Controllers\Agent\DashboardController::class, 'index'])->name('dashboard');
+
+    //User Routes
+    include('agent/user_routes.php');
 
     //Campaign Management Routes
     include('agent/campaign_routes.php');

@@ -21,6 +21,12 @@
         </ul>
         <ul class="navbar-nav ml-auto">
             <li>
+                <a href="javascript:;">
+                    <button type="button" @class('btn btn-outline-dark btn-sm m-0')>Time-In: 23:29</button>
+                </a>
+            </li>
+
+            <li>
                 <div class="dropdown">
                     <a class="dropdown-toggle" href="#" data-toggle="dropdown"><i class="icon feather icon-bell"></i> @if(!empty($notifications) && $notifications->count()) <span id="new-notification-count" class="badge badge-warning" style="position: relative;bottom: 10px;z-index: -1;">{{ $notifications->count() }}</span> @endif </a>
                     <div class="dropdown-menu dropdown-menu-right notification">
@@ -81,14 +87,14 @@
                     </a>
                     <div class="dropdown-menu dropdown-menu-right profile-notification">
                         <div class="pro-head">
-                            <img src="{{ asset('public/template') }}/assets/images/user/avatar-2.jpg" class="img-radius" alt="User-Profile-Image">
-                            <span>{{Auth::user()->email}}</span>
+                            <img src="{{ asset('public/template/assets/images/user/avatar-2.jpg') }}" class="img-radius" alt="User-Profile-Image">
+                            <span>{{Auth::user()->full_name}}</span>
                             <a href="{{ route('logout') }}" class="dud-logout" title="Logout">
                                 <i class="feather icon-log-out"></i>
                             </a>
                         </div>
                         <ul class="pro-body">
-                            {{--<li><a href="{{ route('user.profile') }}" class="dropdown-item"><i class="feather icon-user"></i> My Profile</a></li>--}}
+                            <li><a href="@if(Request::route()->getName() != 'agent.user.my_profile') {{ route($module->slug.'.user.my_profile') }} @else javascript:; @endif" class="dropdown-item"><i class="feather icon-user"></i> My Profile</a></li>
                             <li><a href="{{ route('logout') }}" class="dropdown-item"><i class="feather icon-log-out"></i> Logout</a></li>
                         </ul>
                     </div>
