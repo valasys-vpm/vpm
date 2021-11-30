@@ -27,7 +27,8 @@ class CheckQualityAnalyst
 
         $user = Auth::user();
 
-        if(!isset($user->logged_on)) {
+        if(!isset($user->logged_on) || empty($user->logged_on)) {
+            return redirect()->route('lockscreen');
             Auth::logout();
             if($request->ajax()) {
                 return response('Session Timeout',302);
