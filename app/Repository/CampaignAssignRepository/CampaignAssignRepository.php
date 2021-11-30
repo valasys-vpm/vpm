@@ -240,7 +240,7 @@ class CampaignAssignRepository implements CampaignAssignInterface
                                     'sender_id' => Auth::id(),
                                     'recipient_id' => $user['user_id'],
                                     'message' => 'New campaign assigned - '.$resultCampaign->name,
-                                    'url' => implode('/', array_slice(explode('/', route('team_leader.campaign.show', base64_encode($resultCampaign->id))), 4))
+                                    'url' => implode('/', array_slice(explode('/', route('team_leader.campaign.list')), 4))
                                 );
                                 break;
                             case 'research_analyst' :
@@ -266,7 +266,7 @@ class CampaignAssignRepository implements CampaignAssignInterface
                                     'sender_id' => Auth::id(),
                                     'recipient_id' => $user['user_id'],
                                     'message' => 'New campaign assigned - '.$resultCampaign->name,
-                                    'url' => implode('/', array_slice(explode('/', route('agent.campaign.show', base64_encode($resultCampaign->id))), 4))
+                                    'url' => implode('/', array_slice(explode('/', route('agent.campaign.list')), 4))
                                 );
                                 break;
                             case 'sr_vendor_management_specialist' :
@@ -282,7 +282,7 @@ class CampaignAssignRepository implements CampaignAssignInterface
                                     'sender_id' => Auth::id(),
                                     'recipient_id' => $user['user_id'],
                                     'message' => 'New campaign assigned - '.$resultCampaign->name,
-                                    'url' => implode('/', array_slice(explode('/', route('vendor_manager.campaign.show', base64_encode($resultCampaign->id))), 4))
+                                    'url' => implode('/', array_slice(explode('/', route('vendor_manager.campaign.list')), 4))
                                 );
                                 break;
                         }

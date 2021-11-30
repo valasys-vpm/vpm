@@ -41,7 +41,11 @@ class EMERepository implements EMEInterface
         try {
             DB::beginTransaction();
             $resultCAEME = CampaignAssignEME::where('campaign_id', $attributes['campaign_id'])->where('user_id', $attributes['user_id'])->first();
-            $campaign_assign_eme = CampaignAssignEME::findOrNew($resultCAEME->id);
+            if(!empty($resultCAEME)) {
+                $campaign_assign_eme = CampaignAssignEME::findOrFail($resultCAEME->id);
+            } else {
+                $campaign_assign_eme = new CampaignAssignEME();
+            }
             $campaign_assign_eme->campaign_id = $attributes['campaign_id'];
             $campaign_assign_eme->user_id = $attributes['user_id'];
             $campaign_assign_eme->display_date = $attributes['display_date'];

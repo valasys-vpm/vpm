@@ -61,6 +61,7 @@ function submitCampaign(_id) {
                     $('#div-submit-campaign').css('display', 'none');
                     $('#div-start-again-campaign').css('display', 'block');
                     $('#div-manage-leads').css('display', 'none');
+                    $('#div-raise-issue').css('display', 'none');
                     trigger_pnofify('success', 'Successful', 'Campaign submitted successfully.');
                 } else {
                     trigger_pnofify('error', 'Something went wrong', response.message);
