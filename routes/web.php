@@ -65,6 +65,9 @@ Route::prefix('manager')->middleware(['web', 'check.manager'])->name('manager.')
 
     Route::get('/dashboard', [App\Http\Controllers\Manager\DashboardController::class, 'index'])->name('dashboard');
 
+    //User Routes
+    include('manager/user_routes.php');
+
     //Dashboard Routes
     include('manager/dashboard_routes.php');
 
@@ -88,6 +91,9 @@ Route::prefix('manager')->middleware(['web', 'check.manager'])->name('manager.')
 Route::prefix('team-leader')->middleware(['web', 'check.team_leader'])->name('team_leader.')->group(function (){
 
     Route::get('/dashboard', [App\Http\Controllers\TeamLeader\DashboardController::class, 'index'])->name('dashboard');
+
+    //User Routes
+    include('team_leader/user_routes.php');
 
     //Dashboard Routes
     include('team_leader/dashboard_routes.php');
@@ -137,6 +143,9 @@ Route::prefix('qa-team-leader')->middleware(['web', 'check.qa_team_leader'])->na
 
     Route::get('/dashboard', [App\Http\Controllers\QATeamLeader\DashboardController::class, 'index'])->name('dashboard');
 
+    //User Routes
+    include('qa_team_leader/user_routes.php');
+
     //Campaign Management Routes
     include('qa_team_leader/campaign_routes.php');
 
@@ -152,6 +161,9 @@ Route::prefix('quality-analyst')->middleware(['web', 'check.quality_analyst'])->
 
     Route::get('/dashboard', [App\Http\Controllers\QualityAnalyst\DashboardController::class, 'index'])->name('dashboard');
 
+    //User Routes
+    include('quality_analyst/user_routes.php');
+
     //Campaign Management Routes
     include('quality_analyst/campaign_routes.php');
 
@@ -161,6 +173,9 @@ Route::prefix('email-marketing-executive')->middleware(['web', 'check.email_mark
 
     Route::get('/dashboard', [App\Http\Controllers\EmailMarketingExecutive\DashboardController::class, 'index'])->name('dashboard');
 
+    //User Routes
+    include('email_marketing_executive/user_routes.php');
+
     //Campaign Management Routes
     include('email_marketing_executive/campaign_routes.php');
 
@@ -169,6 +184,9 @@ Route::prefix('email-marketing-executive')->middleware(['web', 'check.email_mark
 Route::prefix('vendor-manager')->middleware(['web', 'check.vendor_manager'])->name('vendor_manager.')->group(function (){
 
     Route::get('/dashboard', [App\Http\Controllers\VendorManager\DashboardController::class, 'index'])->name('dashboard');
+
+    //User Routes
+    include('vendor_manager/user_routes.php');
 
     //Vendor Routes
     include('vendor_manager/vendor_routes.php');
