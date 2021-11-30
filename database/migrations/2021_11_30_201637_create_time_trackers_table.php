@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateCampaignHistoriesTable extends Migration
+class CreateTimeTrackersTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,22 +13,22 @@ class CreateCampaignHistoriesTable extends Migration
      */
     public function up()
     {
-        Schema::create('campaign_histories', function (Blueprint $table) {
+        Schema::create('time_trackers', function (Blueprint $table) {
             $table->increments('id');
-
-            $table->unsignedInteger('campaign_id');
-            $table->foreign('campaign_id')->references('id')->on('campaigns');
-
-            $table->unsignedInteger('parent_campaign_id');
-            $table->foreign('parent_campaign_id')->references('id')->on('campaigns');
 
             $table->unsignedInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users');
 
-            $table->text('message');
-            $table->text('data')->nullable();
+            $table->dateTime('time_in');
+            $table->dateTime('time_out')->nullable();
+
+            $table->string('reason')->nullable();
+
+            $table->string('type')->nullable();
 
             $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('updated_at')->useCurrent();
+            $table->softDeletes();
         });
     }
 
@@ -39,6 +39,6 @@ class CreateCampaignHistoriesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('campaign_histories');
+        Schema::dropIfExists('time_trackers');
     }
 }
