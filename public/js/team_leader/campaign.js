@@ -137,7 +137,8 @@ $(function (){
                     $(row).addClass('border-shortfall');
                     break;
             }
-        }
+        },
+        order:[]
     });
 
 });

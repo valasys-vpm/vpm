@@ -140,7 +140,8 @@ $(function (){
                     $(row).addClass('border-shortfall');
                     break;
             }
-        }
+        },
+        order:[]
     });
 
     $('#button-campaign-assign').on('click', function(e) {

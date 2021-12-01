@@ -48,7 +48,7 @@
                         <div class="input-group mb-3" style="display: none;">
                             <input value="{{ $email }}" type="email" class="form-control" placeholder="Email" name="email" required disabled>
                         </div>
-                        <div class="input-group mb-4">
+                        <div class="input-group mb-4" style="display: none;">
                             <input type="password" class="form-control" placeholder="password" value="" autocomplete="off">
                         </div>
                         <button class="btn btn-outline-light shadow-2 mb-4" type="submit">Login</button>

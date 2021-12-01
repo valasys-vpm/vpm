@@ -47,6 +47,7 @@ $(function (){
                 }
             },
             {
+                orderable: false,
                 render: function (data, type, row) {
                     return row.agents.length;
                 }
@@ -148,7 +149,8 @@ $(function (){
                     $(row).addClass('border-shortfall');
                     break;
             }
-        }
+        },
+        order:[]
     });
 
     $('#button-campaign-assign').on('click', function(e) {

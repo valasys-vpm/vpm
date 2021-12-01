@@ -183,15 +183,24 @@ class CampaignAssignController extends Controller
         }
 
         //Order By
-        $orderColumn = $order[0]['column'];
-        $orderDirection = $order[0]['dir'];
+        //Order By
+        $orderColumn = null;
+        if ($request->has('order')){
+            $order = $request->get('order');
+            $orderColumn = $order[0]['column'];
+            $orderDirection = $order[0]['dir'];
+        }
+
         switch ($orderColumn) {
-            case '0': $query->orderBy('id', $orderDirection); break;
-            case '1': $query->orderBy('id', $orderDirection); break;
-            case '2': $query->orderBy('id', $orderDirection); break;
-            case '3': $query->orderBy('id', $orderDirection); break;
-            case '4': $query->orderBy('id', $orderDirection); break;
-            default: $query->orderBy('id'); break;
+            case '0': $query->orderBy('campaign_id', $orderDirection); break;
+            case '1': $query->orderBy('name', $orderDirection); break;
+            case '2':
+                break;
+            case '3': $query->orderBy('start_date', $orderDirection); break;
+            case '4': $query->orderBy('end_date', $orderDirection); break;
+            case '5': $query->orderBy('allocation', $orderDirection); break;
+            case '6': $query->orderBy('campaign_status_id', $orderDirection); break;
+            default: $query->orderBy('created_at', 'DESC'); break;
         }
 
         $totalFilterRecords = $query->count();
