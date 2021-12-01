@@ -120,7 +120,7 @@ $(function (){
             if(data.campaign.children.length) {
                 status_id = data.campaign.children[0].campaign_status_id;
             }
-            switch (status_id) {
+            switch (parseInt(status_id)) {
                 case 1:
                     $(row).addClass('border-live');
                     break;
