@@ -9,6 +9,7 @@ use App\Repository\DesignationRepository\DesignationRepository;
 use App\Repository\RoleRepository\RoleRepository;
 use App\Repository\UserRepository\UserRepository;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
@@ -162,6 +163,23 @@ class UserController extends Controller
             return 'false';
         } else {
             return 'true';
+        }
+    }
+
+    public function my_profile()
+    {
+        $this->data['resultUser'] = $this->userRepository->find(Auth::id());
+        return view('admin.user.my_profile', $this->data);
+    }
+
+    public function change_password(Request $request)
+    {
+        $attributes = $request->all();
+        $response = $this->userRepository->update(Auth::id(), $attributes);
+        if($response['status'] == TRUE) {
+            return redirect()->back()->with('success', ['title' => 'Request Successful', 'message' => 'Password updated successfully']);
+        } else {
+            return back()->withInput()->with('error', ['title' => 'Error while processing request', 'message' => $response['message']]);
         }
     }
 

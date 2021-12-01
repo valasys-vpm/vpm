@@ -77,7 +77,7 @@
 <!-- [ Pre-loader ] End -->
 
 <!-- [ navigation menu ] start -->
-<nav class="pcoded-navbar navbar-image navbar-image-4" style="background-position: center top;">
+<nav class="pcoded-navbar navbar-image navbar-image-1" style="background-position: center top;">
     <div class="navbar-wrapper">
         <div class="navbar-brand header-logo">
 
