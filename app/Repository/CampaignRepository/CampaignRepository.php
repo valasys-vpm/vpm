@@ -311,11 +311,10 @@ class CampaignRepository implements CampaignInterface
 
                 $response = array('status' => TRUE, 'message' => 'Campaign added successfully', 'campaign_id' => $campaign->campaign_id, 'id' => $campaign->id);
             } else {
-                throw new \Exception('Something went wrong, please try again.', 1);
+                throw new \Exception('Please check data and try again.', 1);
             }
         } catch (\Exception $exception) {
             DB::rollBack();
-            dd($exception->getMessage());
             $response = array('status' => FALSE, 'message' => 'Something went wrong, please try again.');
         }
         return $response;
