@@ -120,6 +120,7 @@ $(function (){
             'state' : { required : true,non_empty_value: true },
             'zipcode' : { required : true,non_empty_value: true },
             'country' : { required : true,non_empty_value: true },
+            'industry' : { required : true,non_empty_value: true },
             'employee_size' : { required : true,non_empty_value: true },
             'revenue' : { required : true,non_empty_value: true },
             'company_domain' : {
@@ -150,6 +151,7 @@ $(function (){
             'state' : { required : "Please enter state" },
             'zipcode' : { required : "Please enter zipcode" },
             'country' : { required : "Please enter country" },
+            'industry' : { required : "Please enter industry" },
             'employee_size' : { required : "Please enter size" },
             'revenue' : { required : "Please enter revenue" },
             'company_domain' : {
