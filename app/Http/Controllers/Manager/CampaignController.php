@@ -145,10 +145,9 @@ class CampaignController extends Controller
         $period   = new \DatePeriod($start_date, $interval, $end_date);
         $this->data['resultMonthList'] = array();
         $this->data['total_sub_allocation'] = 0;
-
+        dd($period);
         foreach ($period as $month) {
             $resultSubAllocations = $this->pacingDetailRepository->get(base64_decode($id), array('month' => $month->format("m"),'year' => $month->format("Y")));
-            dd($resultSubAllocations);
             $this->data['resultMonthList'][] = array(
                     'month_name' => $month->format("M-Y"),
                     'month' => $month->format("m"),
