@@ -31,7 +31,7 @@ $(function(){
         ClassicEditor
             .create(document.querySelector('.classic-editor'))
             .then( editor => {
-                //console.log( 'Editor was initialized', editor );
+                console.log( 'Editor was initialized', editor );
                 myEditor = editor;
             } )
             .catch(error => {
