@@ -146,27 +146,23 @@ class CampaignController extends Controller
         $this->data['resultMonthList'] = array();
         $this->data['total_sub_allocation'] = 0;
 
-        $monthArray = array();
-        $start = $month = strtotime($this->data['resultCampaign']->start_date);
+        $month = strtotime($this->data['resultCampaign']->start_date);
         $end = strtotime(date('Y-m-t', strtotime($this->data['resultCampaign']->end_date)));
+
         while($month < $end)
         {
-            $monthArray[] = date('Y-m-d F', $month);
-            //echo date('F Y', $month), PHP_EOL;
+            $resultSubAllocations = $this->pacingDetailRepository->get(base64_decode($id), array('month' => date('m', $month),'year' => date('Y', $month)));
+            $this->data['resultMonthList'][] = array(
+                'month_name' => date('M', $month),
+                'month' => date('m', $month),
+                'year' => date('Y', $month),
+                'sub_allocations' => $resultSubAllocations,
+                'days' => $resultSubAllocations->pluck('day')->unique()->toArray()
+            );
+
             $month = strtotime("+1 month", $month);
         }
-        dd($monthArray);
-        foreach ($period as $month) {
-            $resultSubAllocations = $this->pacingDetailRepository->get(base64_decode($id), array('month' => $month->format("m"),'year' => $month->format("Y")));
-            $this->data['resultMonthList'][] = array(
-                    'month_name' => $month->format("M-Y"),
-                    'month' => $month->format("m"),
-                    'year' => $month->format("Y"),
-                    'sub_allocations' => $resultSubAllocations,
-                    'days' => $resultSubAllocations->pluck('day')->unique()->toArray()
-                );
-        }
-        dd($this->data['resultMonthList']);
+
         if(!empty($this->data)) {
             return response()->json(array('status' => true, 'message' => 'Data found', 'data' => $this->data));
         } else {
