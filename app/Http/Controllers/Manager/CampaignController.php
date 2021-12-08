@@ -156,7 +156,7 @@ class CampaignController extends Controller
                     'days' => $resultSubAllocations->pluck('day')->unique()->toArray()
                 );
         }
-
+        dd($this->data);
         if(!empty($this->data)) {
             return response()->json(array('status' => true, 'message' => 'Data found', 'data' => $this->data));
         } else {
