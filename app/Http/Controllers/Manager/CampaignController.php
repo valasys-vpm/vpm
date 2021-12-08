@@ -148,7 +148,7 @@ class CampaignController extends Controller
 
         $monthArray = array();
         $start = $month = strtotime($this->data['resultCampaign']->start_date);
-        $end = strtotime($this->data['resultCampaign']->end_date);
+        $end = strtotime(date('Y-m-t', strtotime($this->data['resultCampaign']->end_date)));
         while($month < $end)
         {
             $monthArray[] = date('Y-m-d F', $month);
