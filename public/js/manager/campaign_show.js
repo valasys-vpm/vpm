@@ -427,7 +427,6 @@ function editSubAllocations(id) {
                 $('#v-pills-tabContent').html('');
 
                 if(response.status === true) {
-                    console.log(response.data);
                     let data = response.data;
                     $('#modal-edit-sub-allocations').find('.label-start-date').html(moment(data.resultCampaign.start_date).format('DD-MMM-YYYY'));
                     $('#campaign_start_date').val(moment(data.resultCampaign.start_date).format('DD-MMM-YYYY'));
@@ -540,6 +539,7 @@ function getSubAllocations_html(data, pacing) {
     let html = '';
     let total_allocation = parseInt($("#total-sub-allocation").html());
     console.log('total_allocation:-'+total_allocation);
+    console.log(data);
     if(data.sub_allocations.length > 0) {
         $.each(data.sub_allocations, function(key, value){
             console.log(value);
