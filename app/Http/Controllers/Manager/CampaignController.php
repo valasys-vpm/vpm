@@ -148,6 +148,7 @@ class CampaignController extends Controller
 
         foreach ($period as $month) {
             $resultSubAllocations = $this->pacingDetailRepository->get(base64_decode($id), array('month' => $month->format("m"),'year' => $month->format("Y")));
+            dd($resultSubAllocations);
             $this->data['resultMonthList'][] = array(
                     'month_name' => $month->format("M-Y"),
                     'month' => $month->format("m"),
@@ -156,7 +157,7 @@ class CampaignController extends Controller
                     'days' => $resultSubAllocations->pluck('day')->unique()->toArray()
                 );
         }
-        dd($this->data);
+        dd($this->data['resultMonthList']);
         if(!empty($this->data)) {
             return response()->json(array('status' => true, 'message' => 'Data found', 'data' => $this->data));
         } else {
