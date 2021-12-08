@@ -169,7 +169,7 @@ class CampaignAssignController extends Controller
             //get count if data already assigned
             $this->data['countAgentData'] = $this->agentDataRepository->get(array('ca_ratl_ids' => [$this->data['resultCARATL']->id]))->count();
 
-            //dd($this->data['resultCampaignIssues']->toArray());
+            //dd($this->data);
             return view('team_leader.campaign_assign.show', $this->data);
 
         } catch (\Exception $exception) {

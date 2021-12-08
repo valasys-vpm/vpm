@@ -6,23 +6,30 @@ use App\Http\Controllers\Controller;
 use App\Models\AgentLead;
 use App\Models\CampaignAssignAgent;
 use App\Repository\CampaignAssignRepository\AgentRepository\AgentRepository;
+use App\Repository\CampaignAssignRepository\RATLRepository\RATLRepository;
 use Illuminate\Http\Request;
 
 class LeadController extends Controller
 {
     private $data;
     private $agentRepository;
+    /**
+     * @var RATLRepository
+     */
+    private $RATLRepository;
 
     public function __construct(
-        AgentRepository $agentRepository
+        AgentRepository $agentRepository,
+        RATLRepository $RATLRepository
     )
     {
         $this->agentRepository = $agentRepository;
+        $this->RATLRepository = $RATLRepository;
     }
 
     public function index($ca_ratl_id)
     {
-        $this->data['resultCARATL'] = $this->agentRepository->find(base64_decode($ca_ratl_id));
+        $this->data['resultCARATL'] = $this->RATLRepository->find(base64_decode($ca_ratl_id));
         return view('team_leader.lead.list', $this->data);
     }
 
