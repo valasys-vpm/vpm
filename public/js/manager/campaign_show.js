@@ -538,13 +538,11 @@ function getDaySelection_html(pacing, value) {
 function getSubAllocations_html(data, pacing) {
     let html = '';
     let total_allocation = parseInt($("#total-sub-allocation").html());
-    console.log('total_allocation:-'+total_allocation);
-    console.log(data);
     if(data.sub_allocations.length > 0) {
         $.each(data.sub_allocations, function(key, value){
-            console.log(value);
+            console.log(valuesub_allocation);
             if(value.sub_allocation > 0) {
-                total_allocation = total_allocation + value.sub_allocation;
+                total_allocation = total_allocation + parseInt(value.sub_allocation);
             }
             html += '<div class="col-md-6">\n' +
                 '       <div class="input-group mb-3">\n' +
