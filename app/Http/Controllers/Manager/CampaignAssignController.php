@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Manager;
 
 use App\Http\Controllers\Controller;
 use App\Models\Campaign;
+use App\Models\CampaignAssignAgent;
 use App\Models\CampaignAssignRATL;
+use App\Models\CampaignAssignVendorManager;
 use App\Models\User;
 use App\Repository\Campaign\DeliveryDetailRepository\DeliveryDetailRepository;
 use App\Repository\Campaign\IssueRepository\IssueRepository;
@@ -118,12 +120,20 @@ class CampaignAssignController extends Controller
             $this->data['resultCampaign'] = $this->campaignRepository->find(base64_decode($id), array('delivery_detail'));
             $this->data['resultCampaignIssues'] = $this->issueRepository->get(array('campaign_ids' => [base64_decode($id)]));
 
-            $resultAssignedUsers = CampaignAssignRATL::where('campaign_id', base64_decode($id))->where('status', 1)->get();
-            if(!empty($resultAssignedUsers) && $resultAssignedUsers->count()) {
-                $this->data['resultAssignedUsers'] = $resultAssignedUsers->pluck('user_id')->toArray();
-            } else {
-                $this->data['resultAssignedUsers'] = array();
+            $this->data['resultAssignedUsers'] = array();
+            $resultCARATLs = CampaignAssignRATL::where('campaign_id', base64_decode($id))->where('status', 1)->get();
+            if(!empty($resultCARATLs) && $resultCARATLs->count()) {
+                $this->data['resultAssignedUsers'] = array_merge($this->data['resultAssignedUsers'], $resultCARATLs->pluck('user_id')->toArray());
             }
+            $resultCAAgents = CampaignAssignAgent::where('campaign_id', base64_decode($id))->where('status', 1)->get();
+            if(!empty($resultCAAgents) && $resultCAAgents->count()) {
+                $this->data['resultAssignedUsers'] = array_merge($this->data['resultAssignedUsers'], $resultCARATLs->pluck('user_id')->toArray());
+            }
+            $resultCAVMs = CampaignAssignVendorManager::where('campaign_id', base64_decode($id))->where('status', 1)->get();
+            if(!empty($resultCAVMs) && $resultCAVMs->count()) {
+                $this->data['resultAssignedUsers'] = array_merge($this->data['resultAssignedUsers'], $resultCARATLs->pluck('user_id')->toArray());
+            }
+
             $this->data['resultUsers'] = $this->userRepository->get(array(
                 'status' => 1,
                 'designation_slug' => array('ra_team_leader', 'ra_team_leader_business_delivery', 'research_analyst', 'sr_vendor_management_specialist'),
