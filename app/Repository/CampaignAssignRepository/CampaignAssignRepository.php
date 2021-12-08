@@ -250,7 +250,6 @@ class CampaignAssignRepository implements CampaignAssignInterface
     {
         $response = array('status' => FALSE, 'message' => 'Something went wrong, please try again.');
         try {
-            dd($attributes);
             DB::beginTransaction();
             $resultCampaign = Campaign::findOrFail($attributes['campaign_id']);
             $resultUsers = User::whereIn('id', array_column($attributes['users'], 'user_id'))->get()->pluck('designation_id')->toArray();
@@ -349,8 +348,7 @@ class CampaignAssignRepository implements CampaignAssignInterface
             }
         } catch (\Exception $exception) {
             DB::rollBack();
-            dd($exception->getMessage());
-            $response = array('status' => FALSE, 'message' => 'Something went wrong, please try again.');
+            $response = array('status' => FALSE, 'message' => 'Something went wrong, please try again. [EC-M-CAC-CAR-S-100]');
         }
         return $response;
     }

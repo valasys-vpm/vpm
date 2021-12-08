@@ -353,7 +353,7 @@ class CampaignAssignController extends Controller
         foreach ($attributes['user_list'] as $user) {
             $new_attributes['users'][] = array('user_id' => $user, 'allocation' => $attributes['allocation']);
         }
-        $response = $this->campaignAssignRepository->store(array('data' => [$new_attributes]));
+        $response = $this->campaignAssignRepository->store($new_attributes);
         if($response['status'] == TRUE) {
             return response()->json(array('status' => true, 'message' => $response['message']));
         } else {
