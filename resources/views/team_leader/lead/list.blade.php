@@ -29,8 +29,8 @@
                                     </div>
                                     <ul class="breadcrumb">
                                         <li class="breadcrumb-item"><a href="{{ route('team_leader.dashboard') }}"><i class="feather icon-home"></i></a></li>
-                                        <li class="breadcrumb-item"><a href="{{ route('team_leader.campaign.list') }}">Campaign Management</a></li>
-                                        <li class="breadcrumb-item"><a href="{{ route('team_leader.campaign.show', base64_encode($resultCARATL->id)) }}">Campaign Details</a></li>
+                                        <li class="breadcrumb-item"><a href="{{ route('team_leader.campaign_assign.list') }}">Campaign Management</a></li>
+                                        <li class="breadcrumb-item"><a href="{{ route('team_leader.campaign_assign.show', base64_encode($resultCARATL->id)) }}">Campaign Details</a></li>
                                         <li class="breadcrumb-item"><a href="javascript:void(0);">Manage Leads</a></li>
                                     </ul>
                                 </div>
