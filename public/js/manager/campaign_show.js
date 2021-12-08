@@ -539,8 +539,10 @@ function getDaySelection_html(pacing, value) {
 function getSubAllocations_html(data, pacing) {
     let html = '';
     let total_allocation = parseInt($("#total-sub-allocation").html());
+    console.log('total_allocation:-'+total_allocation);
     if(data.sub_allocations.length > 0) {
         $.each(data.sub_allocations, function(key, value){
+            console.log(value);
             if(value.sub_allocation > 0) {
                 total_allocation = total_allocation + value.sub_allocation;
             }
@@ -551,6 +553,7 @@ function getSubAllocations_html(data, pacing) {
                 '       </div>\n' +
                 '   </div>\n';
         });
+        console.log('total_allocation:-'+total_allocation);
         $("#total-sub-allocation").html(total_allocation);
     } else {
         switch (pacing) {
