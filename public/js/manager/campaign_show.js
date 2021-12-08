@@ -541,7 +541,7 @@ function getSubAllocations_html(data, pacing) {
     if(data.sub_allocations.length > 0) {
         $.each(data.sub_allocations, function(key, value){
             if(value.sub_allocation > 0) {
-                console.log(valuesub_allocation);
+                console.log(value.sub_allocation);
                 total_allocation = total_allocation + parseInt(value.sub_allocation);
             }
             html += '<div class="col-md-6">\n' +
