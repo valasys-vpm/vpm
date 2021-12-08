@@ -151,8 +151,9 @@ class CampaignController extends Controller
         $end = strtotime($this->data['resultCampaign']->end_date);
         while($month < $end)
         {
-            echo date('F Y', $month), PHP_EOL;
-            $monthArray[] = $month = strtotime("+1 month", $month);
+            $monthArray[] = date('Y-m-d F', $month);
+            //echo date('F Y', $month), PHP_EOL;
+            $month = strtotime("+1 month", $month);
         }
         dd($monthArray);
         foreach ($period as $month) {
