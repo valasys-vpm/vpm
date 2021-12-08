@@ -127,11 +127,11 @@ class CampaignAssignController extends Controller
             }
             $resultCAAgents = CampaignAssignAgent::where('campaign_id', base64_decode($id))->where('status', 1)->get();
             if(!empty($resultCAAgents) && $resultCAAgents->count()) {
-                $this->data['resultAssignedUsers'] = array_merge($this->data['resultAssignedUsers'], $resultCARATLs->pluck('user_id')->toArray());
+                $this->data['resultAssignedUsers'] = array_merge($this->data['resultAssignedUsers'], $resultCAAgents->pluck('user_id')->toArray());
             }
             $resultCAVMs = CampaignAssignVendorManager::where('campaign_id', base64_decode($id))->where('status', 1)->get();
             if(!empty($resultCAVMs) && $resultCAVMs->count()) {
-                $this->data['resultAssignedUsers'] = array_merge($this->data['resultAssignedUsers'], $resultCARATLs->pluck('user_id')->toArray());
+                $this->data['resultAssignedUsers'] = array_merge($this->data['resultAssignedUsers'], $resultCAVMs->pluck('user_id')->toArray());
             }
 
             $this->data['resultUsers'] = $this->userRepository->get(array(
