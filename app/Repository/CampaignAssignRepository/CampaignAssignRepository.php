@@ -250,10 +250,10 @@ class CampaignAssignRepository implements CampaignAssignInterface
     {
         $response = array('status' => FALSE, 'message' => 'Something went wrong, please try again.');
         try {
+            dd($attributes);
             DB::beginTransaction();
             $resultCampaign = Campaign::findOrFail($attributes['campaign_id']);
             $resultUsers = User::whereIn('id', array_column($attributes['users'], 'user_id'))->get()->pluck('designation_id')->toArray();
-
             $flag = 0;
             $user_names = '';
 
