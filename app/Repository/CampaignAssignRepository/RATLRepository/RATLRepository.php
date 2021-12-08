@@ -4,10 +4,23 @@ namespace App\Repository\CampaignAssignRepository\RATLRepository;
 
 use App\Models\Campaign;
 use App\Models\CampaignAssignRATL;
+use App\Repository\Notification\RATL\RATLNotificationRepository;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class RATLRepository implements RATLInterface
 {
+    /**
+     * @var RATLNotificationRepository
+     */
+    private $RATLNotificationRepository;
+
+    public function __construct(
+        RATLNotificationRepository $RATLNotificationRepository
+    )
+    {
+        $this->RATLNotificationRepository = $RATLNotificationRepository;
+    }
 
     public function get($filters = array())
     {
@@ -39,7 +52,50 @@ class RATLRepository implements RATLInterface
 
     public function store($attributes)
     {
-        // TODO: Implement store() method.
+        $response = array('status' => FALSE, 'message' => 'Something went wrong, please try again.');
+        try {
+            DB::beginTransaction();
+            $resultCampaign = Campaign::findOrFail($attributes['campaign_id']);
+            $ca_ratl = new CampaignAssignRATL();
+
+            $ca_ratl->campaign_id = $attributes['campaign_id'];
+            $ca_ratl->user_id = $attributes['user_id'];
+            $ca_ratl->display_date = $attributes['display_date'];
+            $ca_ratl->allocation = $attributes['allocation'];
+
+            if(isset($attributes['started_at']) && !empty($attributes['started_at'])) {
+                $ca_ratl->started_at = date('Y-m-d H:i:s', strtotime($attributes['started_at']));
+            }
+
+            if(isset($attributes['submitted_at']) && !empty($attributes['submitted_at'])) {
+                $ca_ratl->submitted_at = date('Y-m-d H:i:s', strtotime($attributes['submitted_at']));
+            }
+
+            $ca_ratl->assigned_by = $attributes['assigned_by'];
+
+            if(array_key_exists('status', $attributes)) {
+                $ca_ratl->status = $attributes['status'];
+            }
+            $ca_ratl->save();
+
+            if($ca_ratl->id) {
+                //Send Notification
+                $this->RATLNotificationRepository->store(array(
+                    'sender_id' => $attributes['assigned_by'],
+                    'recipient_id' => $attributes['user_id'],
+                    'message' => 'New campaign assigned - '.$resultCampaign->name,
+                    'url' => implode('/', array_slice(explode('/', route('team_leader.campaign.show', base64_encode($ca_ratl->id))), 4))
+                ));
+                DB::commit();
+                $response = array('status' => TRUE, 'message' => 'Campaign assigned successfully', 'details' => $ca_ratl );
+            } else {
+                throw new \Exception('Something went wrong, please try again.', 1);
+            }
+        } catch (\Exception $exception) {
+            DB::rollBack();
+            $response = array('status' => FALSE, 'message' => 'Something went wrong, please try again.');
+        }
+        return $response;
     }
 
     public function update($id, $attributes)
@@ -84,7 +140,7 @@ class RATLRepository implements RATLInterface
 
             if($ca_ratl->save()) {
                 DB::commit();
-                $response = array('status' => TRUE, 'message' => 'Details updated successfully');
+                $response = array('status' => TRUE, 'message' => 'Details updated successfully', 'details' => $ca_ratl);
             } else {
                 throw new \Exception('Something went wrong, please try again.', 1);
             }

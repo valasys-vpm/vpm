@@ -7,6 +7,7 @@ use App\Exports\NPFExport;
 use App\Http\Controllers\Controller;
 use App\Models\Campaign;
 use App\Models\CampaignAssignQualityAnalyst;
+use App\Models\User;
 use App\Repository\CampaignAssignRepository\EMERepository\EMERepository as CAEMERepository;
 use App\Repository\CampaignAssignRepository\QualityAnalystRepository\QualityAnalystRepository;
 use App\Repository\CampaignEBBFileRepository\CampaignEBBFileRepository;
@@ -75,7 +76,13 @@ class CampaignController extends Controller
             $attributes = $request->all();
             $attributes['submitted_at'] = date('Y-m-d H:i:s');
             $response = $this->qualityAnalystRepository->update(base64_decode($id), $attributes);
-            if($response['status']) {
+            if($response['status'] == TRUE) {
+                //Add Campaign History
+                $resultCampaign = Campaign::findOrFail($response['details']->campaign_id);
+                $resultUser = User::findOrFail($response['details']->user_id);
+                add_campaign_history($resultCampaign->id, $resultCampaign->parent_id, 'Campaign submitted by QA -'.$resultUser->full_name);
+                add_history('Campaign submitted by QA', 'Campaign submitted by QA -'.$resultUser->full_name);
+
                 $finalResponse = array('status' => true, 'message' => 'Campaign submitted successfully');
             } else {
                 $finalResponse = array('status' => false, 'message' => $response['message']);

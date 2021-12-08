@@ -138,7 +138,7 @@
             <div class="modal-content">
                 <form id="form-campaign-user-assignment" method="post" action="{{ route('team_leader.campaign_assign.store') }}" enctype="multipart/form-data">
                     @csrf
-                    <input type="hidden" id="campaign_assign_ratl_id" name="data[0][campaign_assign_ratl_id]" value="">
+                    <input type="hidden" id="campaign_assign_ratl_id" name="campaign_assign_ratl_id" value="">
                     <div class="modal-header">
                         <h5 class="modal-title">Assign campaign to agent(s)</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">

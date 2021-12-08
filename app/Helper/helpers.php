@@ -86,3 +86,27 @@ if(!function_exists('update_time_tracker')) {
         return TimeTrackerRepository::update($id, $data);
     }
 }
+
+if(!function_exists('get_history_message')) {
+    function get_history_message($oldData, $newData)
+    {
+        $historyMessage = '';
+
+        if(!empty($newData)) {
+            foreach ($newData as $key => $value) {
+                $keyName = $key;
+                if(strpos('_id', $key)) {
+                    $keyName = str_replace('_id', '', $key);
+                }
+
+                if(!empty($oldData[$key])) {
+                    $old = $oldData[$key];
+                } else {
+                    $old = 'Not Updated';
+                }
+                $historyMessage .= '<br>- '.ucwords(str_replace('_',' ', $keyName)).': from <b>'.$old.'</b> to <b>'.$newData[$key].'</b>';
+            }
+        }
+        return $historyMessage;
+    }
+}

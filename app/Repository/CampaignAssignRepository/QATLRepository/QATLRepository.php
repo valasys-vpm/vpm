@@ -5,6 +5,7 @@ namespace App\Repository\CampaignAssignRepository\QATLRepository;
 use App\Models\Campaign;
 use App\Models\CampaignAssignQATL;
 use App\Models\CampaignDeliveryDetail;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -58,7 +59,13 @@ class QATLRepository implements QATLInterface
             }
             $ca_qatl->save();
             if($ca_qatl->id) {
-                CampaignDeliveryDetail::where('campaign_id', $ca_qatl->campaign_id)->update(array('campaign_progress' => 'In QC', 'updated_by' => Auth::id()));
+                //Add Campaign History
+                $resultCampaign = Campaign::findOrFail($ca_qatl->campaign_id);
+                $resultUser = User::findOrFail($ca_qatl->user_id);
+                add_campaign_history($resultCampaign->id, $resultCampaign->parent_id, 'Campaign assigned to QATL -'.$resultUser->full_name);
+                add_history('Campaign assigned to QATL', 'Campaign assigned to QATL -'.$resultUser->full_name);
+
+                CampaignDeliveryDetail::where('campaign_id', $ca_qatl->campaign_id)->update(array('campaign_progress' => 'In Quality Check', 'updated_by' => Auth::id()));
                 DB::commit();
                 $response = array('status' => TRUE, 'message' => 'Campaign sent to quality team, successfully');
             } else {
@@ -132,7 +139,7 @@ class QATLRepository implements QATLInterface
 
             if($ca_qatl->save()) {
                 DB::commit();
-                $response = array('status' => TRUE, 'message' => 'Details updated successfully');
+                $response = array('status' => TRUE, 'message' => 'Details updated successfully', 'details' => $ca_qatl);
             } else {
                 throw new \Exception('Something went wrong, please try again.', 1);
             }

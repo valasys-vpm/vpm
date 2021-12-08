@@ -20,7 +20,7 @@
             </li>
         </ul>
         <ul class="navbar-nav ml-auto">
-            <li>
+            <li style="display: none;">
                 <a href="javascript:;">
                     <button type="button" @class('btn btn-outline-dark btn-sm m-0')>Time-In: 23:29</button>
                 </a>

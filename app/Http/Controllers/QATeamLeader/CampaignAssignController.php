@@ -3,15 +3,18 @@
 namespace App\Http\Controllers\QATeamLeader;
 
 use App\Http\Controllers\Controller;
+use App\Models\Campaign;
 use App\Models\CampaignAssignQATL;
 use App\Models\CampaignAssignQualityAnalyst;
 use App\Models\CampaignDeliveryDetail;
+use App\Models\User;
 use App\Repository\CampaignAssignRepository\QATLRepository\QATLRepository;
 use App\Repository\CampaignAssignRepository\QualityAnalystRepository\QualityAnalystRepository;
 use App\Repository\CampaignRepository\CampaignRepository;
 use App\Repository\UserRepository\UserRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 
 class CampaignAssignController extends Controller
 {
@@ -92,9 +95,23 @@ class CampaignAssignController extends Controller
             $attributes = $request->all();
             $attributes['submitted_at'] = date('Y-m-d H:i:s');
             $response = $this->QATLRepository->update(base64_decode($id), $attributes);
-            if($response['status']) {
-                $ca_qatl = CampaignAssignQATL::findOrFail(base64_decode($id));
-                CampaignDeliveryDetail::where('campaign_id', $ca_qatl->campaign_id)->update(array('campaign_progress' => 'QC Completed', 'updated_by' => Auth::id()));
+            if($response['status'] == TRUE) {
+                CampaignDeliveryDetail::where('campaign_id', $response['details']->campaign_id)->update(array('campaign_progress' => 'QC Completed', 'updated_by' => Auth::id()));
+                //Send Mail
+                $details = array(
+                    'campaign_name' => $response['details']->campaign->name,
+                    'download_link' => 'public/storage/campaigns/'.$response['details']->campaign->campaign_id.'/quality/delivery/'.$response['details']->file_name
+                );
+                Mail::send('email.campaign.final_delivery', $details, function ($email) use ($details){
+                    $email->to(['sagar@valasys.com'])->subject('VPM | Delivery file for - '.$details['campaign_name']);
+                });
+
+                //Add Campaign History
+                $resultCampaign = Campaign::findOrFail($response['details']->campaign_id);
+                $resultUser = User::findOrFail($response['details']->user_id);
+                add_campaign_history($resultCampaign->id, $resultCampaign->parent_id, 'Campaign submitted by QATL -'.$resultUser->full_name);
+                add_history('Campaign submitted by QATL', 'Campaign submitted by QATL -'.$resultUser->full_name);
+
                 $finalResponse = array('status' => true, 'message' => 'Campaign submitted successfully');
             } else {
                 $finalResponse = array('status' => false, 'message' => $response['message']);
@@ -144,8 +161,13 @@ class CampaignAssignController extends Controller
         }
 
         //Order By
-        $orderColumn = $order[0]['column'];
-        $orderDirection = $order[0]['dir'];
+        $orderColumn = null;
+        if ($request->has('order')){
+            $order = $request->get('order');
+            $orderColumn = $order[0]['column'];
+            $orderDirection = $order[0]['dir'];
+        }
+
         switch ($orderColumn) {
             case '0': $query->orderBy('id', $orderDirection); break;
             case '1': $query->orderBy('id', $orderDirection); break;

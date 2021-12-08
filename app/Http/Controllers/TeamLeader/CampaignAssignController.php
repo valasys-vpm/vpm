@@ -7,6 +7,7 @@ use App\Models\Campaign;
 use App\Models\CampaignAssignAgent;
 use App\Models\CampaignAssignRATL;
 use App\Models\Data;
+use App\Models\User;
 use App\Repository\AgentDataRepository\AgentDataRepository;
 use App\Repository\Campaign\IssueRepository\IssueRepository;
 use App\Repository\CampaignAssignRepository\AgentRepository\AgentRepository;
@@ -109,10 +110,41 @@ class CampaignAssignController extends Controller
 
     public function store(Request $request): \Illuminate\Http\RedirectResponse
     {
-        $attributes = $request->all();
-        $response = $this->agentRepository->store($attributes);
+        $response = array('status' => FALSE, 'message' => 'Something went wrong, please try again.');
+        $user_names = '';
+        try {
+            $attributes = $request->all();
+            if(!$request->has('display_date')) {
+                $resultCampaignAssignRATL = CampaignAssignRATL::findOrFail($attributes['campaign_assign_ratl_id']);
+                $attributes['display_date'] = date('Y-m-d', strtotime($resultCampaignAssignRATL->display_date));
+            }
+            $attributes['assigned_by'] = Auth::id();
+            $resultCampaign = Campaign::findOrFail($attributes['campaign_id']);
+            foreach ($attributes['users'] as $user) {
+                $resultUser = User::findOrFail($user['user_id']);
+                $user_names .= $resultUser->full_name.', ';
+                $attributes['user_id'] = $user['user_id'];
+                $attributes['allocation'] = $user['allocation'];
+
+                $result = $this->agentRepository->store($attributes);
+
+                if($result['status'] == TRUE) {
+                    $response = array('status' => TRUE, 'message' => 'Campaign assigned successfully');
+                } else {
+                    throw new \Exception('Something went wrong, please try again.', 1);
+                }
+            }
+        } catch (\Exception $exception) {
+            $response = array('status' => FALSE, 'message' => 'Something went wrong, please try again.');
+        }
+
         if($response['status'] == TRUE) {
-            $res = $this->RATLRepository->update($attributes['data'][0]['campaign_assign_ratl_id'], array('started_at' => date('Y-m-d H:i:s')));
+            $res = $this->RATLRepository->update($attributes['campaign_assign_ratl_id'], array('started_at' => date('Y-m-d H:i:s')));
+
+            //Add Campaign History
+            add_campaign_history($resultCampaign->id, $resultCampaign->parent_id, 'Campaign assigned to agent(s) - '.$user_names);
+            add_history('Campaign assigned to agent(s)', 'Campaign assigned to agent(s) - '.$user_names);
+
             return redirect()->route('team_leader.campaign_assign.list')->with('success', ['title' => 'Successful', 'message' => $response['message']]);
         } else {
             return back()->withInput()->with('error', ['title' => 'Error while processing request', 'message' => $response['message']]);

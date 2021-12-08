@@ -13,14 +13,51 @@ use App\Models\RATLNotification;
 use App\Models\User;
 use App\Models\Vendor;
 use App\Models\VMNotification;
+use App\Repository\CampaignAssignRepository\AgentRepository\AgentRepository;
+use App\Repository\CampaignAssignRepository\RATLRepository\RATLRepository;
+use App\Repository\CampaignAssignRepository\VendorManagerRepository\VendorManagerRepository;
+use App\Repository\Notification\RA\RANotificationRepository;
+use App\Repository\Notification\RATL\RATLNotificationRepository;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class CampaignAssignRepository implements CampaignAssignInterface
 {
-    public function __construct()
+    /**
+     * @var RATLRepository
+     */
+    private $RATLRepository;
+    /**
+     * @var RATLNotificationRepository
+     */
+    private $RATLNotificationRepository;
+    /**
+     * @var AgentRepository
+     */
+    private $agentRepository;
+    /**
+     * @var RANotificationRepository
+     */
+    private $RANotificationRepository;
+    /**
+     * @var VendorManagerRepository
+     */
+    private $vendorManagerRepository;
+
+    public function __construct(
+        RATLRepository $RATLRepository,
+        AgentRepository $agentRepository,
+        VendorManagerRepository $vendorManagerRepository,
+        RATLNotificationRepository $RATLNotificationRepository,
+        RANotificationRepository $RANotificationRepository
+    )
     {
 
+        $this->RATLRepository = $RATLRepository;
+        $this->RATLNotificationRepository = $RATLNotificationRepository;
+        $this->agentRepository = $agentRepository;
+        $this->RANotificationRepository = $RANotificationRepository;
+        $this->vendorManagerRepository = $vendorManagerRepository;
     }
 
     public function getAssignedCampaigns($filters = array())
@@ -214,129 +251,96 @@ class CampaignAssignRepository implements CampaignAssignInterface
         $response = array('status' => FALSE, 'message' => 'Something went wrong, please try again.');
         try {
             DB::beginTransaction();
-            $dataRATL = $dataAgent = $dataVM = array();
-            $RATLNotifications = $RANotifications = $VMNotifications = array();
-            foreach ($attributes['data'] as $key => $campaign) {
-                $campaignIds[] = $campaign['campaign_id'];
-
-                $userIds = array_column($campaign['users'], 'user_id');
-                $resultUsers = User::whereIn('id', $userIds)->get()->pluck('designation_id')->toArray();
-                if(count(array_unique($resultUsers)) == 1) {
-                    foreach ($campaign['users'] as $user) {
-                        $resultCampaign = Campaign::findOrFail($campaign['campaign_id']);
-
-                        //Check user type
-                        $resultUser = User::findOrFail($user['user_id']);
-                        switch ($resultUser->designation->slug) {
-                            case 'ra_team_leader' :
-                                $dataRATL[] = array(
-                                    'campaign_id' => $campaign['campaign_id'],
-                                    'user_id' => $user['user_id'],
-                                    'display_date' => date('Y-m-d', strtotime($campaign['display_date'])),
-                                    'allocation' => $user['allocation'],
-                                    'assigned_by' => Auth::id()
-                                );
-                                $RATLNotifications[] = array(
-                                    'sender_id' => Auth::id(),
-                                    'recipient_id' => $user['user_id'],
-                                    'message' => 'New campaign assigned - '.$resultCampaign->name,
-                                    'url' => implode('/', array_slice(explode('/', route('team_leader.campaign.list')), 4))
-                                );
-                                break;
-                            case 'research_analyst' :
-                                $resultUser = User::findOrFail($user['user_id']);
-                                $campaignAssignRATL = new CampaignAssignRATL();
-                                $campaignAssignRATL->campaign_id = $campaign['campaign_id'];
-                                $campaignAssignRATL->user_id = $resultUser->reporting_user_id;
-                                $campaignAssignRATL->display_date = date('Y-m-d', strtotime($campaign['display_date']));
-                                $campaignAssignRATL->allocation = $user['allocation'];
-                                $campaignAssignRATL->assigned_by = Auth::id();
-                                $campaignAssignRATL->save();
-
-                                $dataAgent[] = array(
-                                    'campaign_id' => $campaign['campaign_id'],
-                                    'campaign_assign_ratl_id' => $campaignAssignRATL->id,
-                                    'user_id' => $user['user_id'],
-                                    'display_date' => date('Y-m-d', strtotime($campaign['display_date'])),
-                                    'allocation' => $user['allocation'],
-                                    'reporting_file' => null,
-                                    'assigned_by' => Auth::id()
-                                );
-                                $RANotifications[] = array(
-                                    'sender_id' => Auth::id(),
-                                    'recipient_id' => $user['user_id'],
-                                    'message' => 'New campaign assigned - '.$resultCampaign->name,
-                                    'url' => implode('/', array_slice(explode('/', route('agent.campaign.list')), 4))
-                                );
-                                break;
-                            case 'sr_vendor_management_specialist' :
-                                $dataVM[] = array(
-                                    'campaign_id' => $campaign['campaign_id'],
-                                    'user_id' => $user['user_id'],
-                                    'display_date' => date('Y-m-d', strtotime($campaign['display_date'])),
-                                    'allocation' => $user['allocation'],
-                                    'assigned_by' => Auth::id()
-                                );
-
-                                $VMNotifications[] = array(
-                                    'sender_id' => Auth::id(),
-                                    'recipient_id' => $user['user_id'],
-                                    'message' => 'New campaign assigned - '.$resultCampaign->name,
-                                    'url' => implode('/', array_slice(explode('/', route('vendor_manager.campaign.list')), 4))
-                                );
-                                break;
-                        }
-                    }
-                } else {
-                    return array('status' => FALSE, 'message' => 'Can not assign campaign, user\'s designation mismatch.');
-                }
-
-            }
+            $resultCampaign = Campaign::findOrFail($attributes['campaign_id']);
+            $resultUsers = User::whereIn('id', array_column($attributes['users'], 'user_id'))->get()->pluck('designation_id')->toArray();
 
             $flag = 0;
+            $user_names = '';
 
-            if(!empty($dataRATL)) {
-                if(CampaignAssignRATL::insert($dataRATL)) {
-                    $flag = 1;
-                } else {
-                    throw new \Exception('Something went wrong, please try again.', 1);
-                }
-            }
+            if(count(array_unique($resultUsers)) == 1) {
+                foreach ($attributes['users'] as $user) {
+                    //Check user type
+                    $resultUser = User::findOrFail($user['user_id']);
 
-            if(!empty($dataAgent)) {
-                if(CampaignAssignAgent::insert($dataAgent)) {
-                    $flag = 1;
-                } else {
-                    throw new \Exception('Something went wrong, please try again.', 1);
-                }
-            }
+                    switch ($resultUser->designation->slug) {
+                        case 'ra_team_leader' :
+                            $result = $this->RATLRepository->store(array(
+                                'campaign_id' => $attributes['campaign_id'],
+                                'user_id' => $user['user_id'],
+                                'display_date' => date('Y-m-d', strtotime($attributes['display_date'])),
+                                'allocation' => $user['allocation'],
+                                'assigned_by' => Auth::id()
+                            ));
+                            if($result['status'] == TRUE) {
+                                $flag = 1;
+                                $user_names .= $resultUser->full_name.', ';
+                            } else {
+                                throw new \Exception('Something went wrong, please try again.', 1);
+                            }
+                            break;
+                        case 'research_analyst' :
+                            $ca_ratl_id = 0;
+                            //Find RATL entry
+                            $resultCARATL = CampaignAssignRATL::where('campaign_id', $attributes['campaign_id'])->where('user_id', $resultUser->reporting_user_id)->where('status', 1)->first();
+                            if(!empty($resultCARATL) && $resultCARATL->id) {
+                                $ca_ratl_id = $resultCARATL->id;
+                            } else {
+                                $result = $this->RATLRepository->store(array(
+                                    'campaign_id' => $attributes['campaign_id'],
+                                    'user_id' => $user['user_id'],
+                                    'display_date' => date('Y-m-d', strtotime($attributes['display_date'])),
+                                    'allocation' => $user['allocation'],
+                                    'assigned_by' => Auth::id()
+                                ));
+                                if($result['status'] == TRUE) {
+                                    $ca_ratl_id = $result['details']->id;
+                                } else {
+                                    throw new \Exception('Something went wrong, please try again.', 1);
+                                }
+                            }
 
-            if(!empty($dataVM)) {
-                if(CampaignAssignVendorManager::insert($dataVM)) {
-                    $flag = 1;
-                } else {
-                    throw new \Exception('Something went wrong, please try again.', 1);
+                            $result = $this->agentRepository->store(array(
+                                'campaign_id' => $attributes['campaign_id'],
+                                'campaign_assign_ratl_id' => $ca_ratl_id,
+                                'user_id' => $user['user_id'],
+                                'display_date' => date('Y-m-d', strtotime($attributes['display_date'])),
+                                'allocation' => $user['allocation'],
+                                'reporting_file' => null,
+                                'assigned_by' => Auth::id()
+                            ));
+
+                            if($result['status'] == TRUE) {
+                                $flag = 1;
+                                $user_names .= $resultUser->full_name.', ';
+                            } else {
+                                throw new \Exception('Something went wrong, please try again.', 1);
+                            }
+                            break;
+                        case 'sr_vendor_management_specialist' :
+                            $result = $this->vendorManagerRepository->store(array(
+                                'campaign_id' => $attributes['campaign_id'],
+                                'user_id' => $user['user_id'],
+                                'display_date' => date('Y-m-d', strtotime($attributes['display_date'])),
+                                'allocation' => $user['allocation'],
+                                'assigned_by' => Auth::id()
+                            ));
+                            if($result['status'] == TRUE) {
+                                $flag = 1;
+                                $user_names .= $resultUser->full_name.', ';
+                            } else {
+                                throw new \Exception('Something went wrong, please try again.', 1);
+                            }
+                            break;
+                    }
                 }
+            } else {
+                return array('status' => FALSE, 'message' => 'Can not assign campaign, user\'s designation mismatch.');
             }
 
             if($flag) {
-                foreach ($campaignIds as $campaignId) {
-                    CampaignDeliveryDetail::where('campaign_id', $campaignId)->update(['campaign_progress' => 'Assigned', 'updated_by' => Auth::id()]);
-                }
-
-                //Send Notification
-                if(count($RATLNotifications)) {
-                    RATLNotification::insert($RATLNotifications);
-                }
-
-                if(count($RANotifications)) {
-                    RANotification::insert($RANotifications);
-                }
-
-                if(count($VMNotifications)) {
-                    VMNotification::insert($VMNotifications);
-                }
-
+                //Add Campaign History
+                add_campaign_history($resultCampaign->id, $resultCampaign->parent_id, 'Campaign assigned to - '.$user_names);
+                add_history('Campaign assigned', 'Campaign assigned to - '.$user_names);
 
                 DB::commit();
                 $response = array('status' => TRUE, 'message' => 'Campaign assigned successfully');
@@ -345,7 +349,6 @@ class CampaignAssignRepository implements CampaignAssignInterface
             }
         } catch (\Exception $exception) {
             DB::rollBack();
-            dd($exception->getMessage());
             $response = array('status' => FALSE, 'message' => 'Something went wrong, please try again.');
         }
         return $response;

@@ -5,6 +5,7 @@ namespace App\Repository\CampaignAssignRepository\EMERepository;
 use App\Models\Campaign;
 use App\Models\CampaignAssignEME;
 use App\Models\CampaignNPFFile;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -71,6 +72,12 @@ class EMERepository implements EMEInterface
                     );
                 }
                 if(count($dataCampaignNPFFiles) && CampaignNPFFile::insert($dataCampaignNPFFiles)) {
+                    //Add Campaign History
+                    $resultCampaign = Campaign::findOrFail($campaign_assign_eme->campaign_id);
+                    $resultUser = User::findOrFail($campaign_assign_eme->user_id);
+                    add_campaign_history($resultCampaign->id, $resultCampaign->parent_id, 'NPF File uploaded & Campaign sent for promotion to -'.$resultUser->full_name);
+                    add_history('Campaign sent for promotion', 'NPF File uploaded & Campaign sent for promotion to -'.$resultUser->full_name);
+
                     DB::commit();
                     $response = array('status' => TRUE, 'message' => 'NPF File(s) uploaded successfully');
                 } else {
@@ -122,7 +129,7 @@ class EMERepository implements EMEInterface
 
             if($campaign_assign_eme->save()) {
                 DB::commit();
-                $response = array('status' => TRUE, 'message' => 'EME details updated successfully');
+                $response = array('status' => TRUE, 'message' => 'EME details updated successfully', 'details' => $campaign_assign_eme);
             } else {
                 throw new \Exception('Something went wrong, please try again.', 1);
             }

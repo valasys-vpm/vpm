@@ -28,7 +28,13 @@ $(function(){
     // classic editor
     $(window).on('load', function() {
         // classic editor
-        ClassicEditor.create(document.querySelector('.classic-editor')).catch(error => {
+        ClassicEditor
+            .create(document.querySelector('.classic-editor'))
+            .then( editor => {
+                //console.log( 'Editor was initialized', editor );
+                myEditor = editor;
+            } )
+            .catch(error => {
             console.error(error);
         });
     });
@@ -168,10 +174,19 @@ $(function(){
     $('#modal-form-update-campaign-details-submit').on('click', function (e) {
         e.preventDefault();
         if($("#modal-form-update-campaign-details").valid()) {
+
             $.ajax({
                 type: 'post',
                 url: $('meta[name="base-path"]').attr('content') + '/manager/campaign/update/'+$('#campaign_id').val(),
-                data: $('#modal-form-update-campaign-details').serialize(),
+                data: {
+                    campaign_id: $('#campaign_id').val(),
+                    name: $('#name').val(),
+                    v_mail_campaign_id: $('#v_mail_campaign_id').val(),
+                    campaign_filter_id: $('#campaign_filter_id').val(),
+                    campaign_type_id: $('#campaign_type_id').val(),
+                    country_id: $('#country_id').val(),
+                    note: myEditor.getData()
+                }, // $('#modal-form-update-campaign-details').serialize() + myEditor.getData(),
                 success: function (response) {
                     console.log(response);
                     if(response.status === true) {

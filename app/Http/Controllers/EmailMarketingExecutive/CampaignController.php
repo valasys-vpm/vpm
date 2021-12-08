@@ -6,6 +6,7 @@ use App\Exports\NPFExport;
 use App\Http\Controllers\Controller;
 use App\Models\Campaign;
 use App\Models\CampaignAssignEME;
+use App\Models\User;
 use App\Repository\CampaignAssignRepository\EMERepository\EMERepository as CAEMERepository;
 use App\Repository\CampaignEBBFileRepository\CampaignEBBFileRepository;
 use App\Repository\CampaignNPFFileRepository\CampaignNPFFileRepository;
@@ -77,7 +78,13 @@ class CampaignController extends Controller
     {
         $attributes['submitted_at'] = date('Y-m-d H:i:s');
         $response = $this->CAEMERepository->update(base64_decode($id), $attributes);
-        if($response['status']) {
+        if($response['status'] == TRUE) {
+            //Add Campaign History
+            $resultCampaign = Campaign::findOrFail($response['details']->campaign_id);
+            $resultUser = User::findOrFail($response['details']->user_id);
+            add_campaign_history($resultCampaign->id, $resultCampaign->parent_id, 'Campaign promotion completed by -'.$resultUser->full_name);
+            add_history('Campaign promotion completed', 'Campaign promotion completed by -'.$resultUser->full_name);
+
             return response()->json(array('status' => true, 'message' => 'Campaign submitted successfully'));
         } else {
             return response()->json(array('status' => false, 'message' => $response['message']));

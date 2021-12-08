@@ -132,9 +132,13 @@ class CampaignController extends Controller
         $attributes['submitted_at'] = date('Y-m-d H:i:s');
         $response = $this->RATLRepository->update(base64_decode($id), $attributes);
         if($response['status'] == TRUE) {
-            $ca_ratl = CampaignAssignRATL::findOrFail(base64_decode($id));
+            //Add Campaign History
+            $resultCampaign = Campaign::findOrFail($response['details']->campaign_id);
+            add_campaign_history($resultCampaign->id, $resultCampaign->parent_id, 'Submitted the campaign');
+            add_history('Campaign Submitted By RATL', 'Submitted the campaign');
+
             //check submitted by all ratl's
-            if(!CampaignAssignRATL::where('campaign_id', $ca_ratl->campaign_id)->whereNull('submitted_at')->count()) {
+            if(!CampaignAssignRATL::where('campaign_id', $response['details']->campaign_id)->whereNull('submitted_at')->count()) {
                 $resultCARATL = $this->RATLRepository->find(base64_decode($id));
                 $resultRole = Role::whereSlug('qa_team_leader')->whereStatus(1)->first();
                 $resultUser = User::whereRoleId($resultRole->id)->whereStatus(1)->first();

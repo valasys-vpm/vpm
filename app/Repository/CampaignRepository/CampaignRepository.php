@@ -11,6 +11,7 @@ use App\Models\CampaignFilter;
 use App\Models\CampaignSpecification;
 use App\Models\CampaignStatus;
 use App\Models\CampaignType;
+use App\Models\Country;
 use App\Models\ManagerNotification;
 use App\Models\PacingDetail;
 use App\Models\User;
@@ -120,7 +121,7 @@ class CampaignRepository implements CampaignInterface
             $campaign->campaign_filter_id  = $attributes['campaign_filter_id'];
             $campaign->campaign_type_id  = $attributes['campaign_type_id'];
 
-            if(isset($attributes['note']) && $attributes['note'] > 0) {
+            if(isset($attributes['note']) && !empty($attributes['note'])) {
                 $campaign->note = $attributes['note'];
             }
 
@@ -322,7 +323,6 @@ class CampaignRepository implements CampaignInterface
 
     public function update($id, $attributes): array
     {
-
         //dd($attributes);
         $response = array('status' => FALSE, 'message' => 'Something went wrong, please try again.');
         try {
@@ -333,6 +333,7 @@ class CampaignRepository implements CampaignInterface
             }
 
             $campaign = $this->find($id);
+            $campaign_copy = $campaign->toArray();
 
             if(isset($attributes['name']) && !empty($attributes['name'])) {
                 $campaign->name = $attributes['name'];
@@ -387,66 +388,82 @@ class CampaignRepository implements CampaignInterface
             $campaign->save();
 
             if($campaign->id) {
+                $campaign_updated = $campaign->getChanges();
+                unset($campaign_updated['updated_at']);
 
                 //Save Campaign's Countries
+                $resultCampaignCountries = CampaignCountry::whereCampaignId($campaign->id)->get();
                 if(isset($attributes['country_id'])) {
+
                     CampaignCountry::whereCampaignId($campaign->id)->delete();
                     $insertCampaignCountries = array();
+                    $countryNames = array();
                     foreach ($attributes['country_id'] as $country) {
+                        $resultCountry = Country::find($country);
+                        $countryNames[] = $resultCountry->name;
                         array_push($insertCampaignCountries, ['campaign_id' => $campaign->id, 'country_id' => $country]);
                     }
-                    CampaignCountry::insert($insertCampaignCountries);
-                }
-
-                //Save Campaign's Specifications
-                if(isset($attributes['specifications']) && !empty($attributes['specifications'])) {
-                    $insertCampaignSpecifications = array();
-                    foreach ($attributes['specifications'] as $file) {
-                        $extension = $file->getClientOriginalExtension();
-                        //$filename  = $campaign->campaign_id.'-' . str_shuffle(time()) . '.' . $extension;
-                        $filename  = $file->getClientOriginalName();
-                        $path = 'public/campaigns/'.$campaign->campaign_id;
-                        $result  = $file->storeAs($path, $filename);
-                        $insertCampaignSpecifications[] = [
-                            'campaign_id' => $campaign->id,
-                            'file_name' => $filename,
-                            'extension' => $extension
-                        ];
+                    if(!empty($insertCampaignCountries)) {
+                        CampaignCountry::insert($insertCampaignCountries);
+                        $campaign_updated['country_id'] = implode(',', $countryNames);
                     }
-                    CampaignSpecification::insert($insertCampaignSpecifications);
-                }
-
-                //Save Pacing Details/Sub-Allocation
-                if(isset($attributes['sub-allocation'])) {
-                    PacingDetail::whereCampaignId($campaign->id)->delete();
-                    //Pacing Details
-                    $insertPacingDetails = array();
-                    foreach ($attributes['sub-allocation'] as $date => $sub_allocation) {
-                        $insertPacingDetails[] = [
-                            'campaign_id' => $campaign->id,
-                            'date' => $date,
-                            'sub_allocation' => $sub_allocation,
-                            'day' => date('w', strtotime($date))
-                        ];
-                    }
-                    PacingDetail::insert($insertPacingDetails);
-                    //--Pacing Details
-                }
-                $getChanges = $campaign->getChanges();
-                if(isset($getChanges['start_date'])) {
-                    $resultPacingDetails = PacingDetail::where('date', '<', $getChanges['start_date'])->delete();
-                }
-                if(isset($getChanges['end_date'])) {
-                    $resultPacingDetails = PacingDetail::where('date', '>', $getChanges['end_date'])->delete();
                 }
 
                 //if delivered change progress status
-                if($attributes['campaign_status_id'] == 4) {
+                if(array_key_exists('campaign_status_id', $campaign_updated) && $attributes['campaign_status_id'] == 4) {
                     CampaignDeliveryDetail::where('campaign_id', $campaign->id)->update(array('campaign_progress' => 'Delivered', 'updated_by' => Auth::id()));
                 }
 
                 DB::commit();
 
+                //Add Campaign History
+                $oldData = $newData = array();
+                if(!empty($campaign_updated)) {
+                    foreach ($campaign_updated as $key => $value) {
+                        switch ($key) {
+                            case 'campaign_filter_id':
+                                $old = CampaignType::find($campaign_copy[$key]);
+                                $new = CampaignType::find($value);
+
+                                $oldData[$key] = $old->name;
+                                $newData[$key] = $new->name;
+                                break;
+                            case 'campaign_type_id':
+                                $old = CampaignFilter::find($campaign_copy[$key]);
+                                $new = CampaignFilter::find($value);
+
+                                $oldData[$key] = $old->name;
+                                $newData[$key] = $new->name;
+                                break;
+                            case 'campaign_status_id': break;
+                            case 'country_id':
+                                if(!empty($resultCampaignCountries) && $resultCampaignCountries->count()) {
+                                    $oldCountries = array();
+                                    foreach ($resultCampaignCountries as $country) {
+                                        $oldCountries[] = $country->country->name;
+                                    }
+                                    $oldCountries = implode(',', $oldCountries);
+                                } else {
+                                    $oldCountries = null;
+                                }
+                                if($oldCountries != $value) {
+                                    $oldData['country'] = $oldCountries;
+                                    $newData['country'] = $value;
+                                }
+
+                                break;
+                            default:
+                                $oldData[$key] = $campaign_copy[$key];
+                                $newData[$key] = $value;
+                        }
+
+                    }
+                    if(!empty($newData)) {
+                        $historyMessage = get_history_message($oldData, $newData);
+                        add_campaign_history($campaign->id, $campaign->parent_id, 'Campaign details updated - '.$historyMessage, array('oldData' => $oldData, 'newData' => $newData));
+                        add_history('Campaign details updated', 'Campaign updated data are - '.$historyMessage, array('oldData' => $oldData, 'newData' => $newData));
+                    }
+                }
 
                 $response = array('status' => TRUE, 'message' => 'Campaign details updated successfully');
             } else {
@@ -454,7 +471,6 @@ class CampaignRepository implements CampaignInterface
             }
         } catch (\Exception $exception) {
             DB::rollBack();
-            //dd($exception->getMessage());
             $response = array('status' => FALSE, 'message' => 'Something went wrong, please try again.');
         }
         return $response;
