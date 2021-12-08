@@ -215,7 +215,6 @@ class CampaignAssignController extends Controller
         }
 
         //Order By
-        //Order By
         $orderColumn = null;
         if ($request->has('order')){
             $order = $request->get('order');
