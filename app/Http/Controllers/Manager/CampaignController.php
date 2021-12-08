@@ -145,9 +145,14 @@ class CampaignController extends Controller
         $period   = new \DatePeriod($start_date, $interval, $end_date);
         $this->data['resultMonthList'] = array();
         $this->data['total_sub_allocation'] = 0;
+
         $monthArray = array();
-        foreach ($period as $month) {
-            $monthArray[] = $month->format("Y-m-d");
+        $start = $month = strtotime($this->data['resultCampaign']->start_date);
+        $end = strtotime($this->data['resultCampaign']->end_date);
+        while($month < $end)
+        {
+            echo date('F Y', $month), PHP_EOL;
+            $monthArray[] = $month = strtotime("+1 month", $month);
         }
         dd($monthArray);
         foreach ($period as $month) {
