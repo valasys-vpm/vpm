@@ -21,6 +21,7 @@
 @append
 
 @section('content')
+
     <div class="pcoded-main-container">
         <div class="pcoded-wrapper">
             <div class="pcoded-content">
@@ -580,6 +581,55 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-view-lead-details" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-xl" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Campaign Lead Details</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body" style="padding-top: 0px !important;">
+                    <div class="table-responsive">
+                        <table id="table-agent-lead-details" class="table m-b-0 f-14 b-solid requid-table">
+                            <thead>
+                            <tr class="text-uppercase">
+                                <th>#</th>
+                                <th>First Name</th>
+                                <th>Last Name</th>
+                                <th>Company Name</th>
+                                <th>Email Address</th>
+                                <th>Phone Number</th>
+                                <th>Address 1</th>
+                                <th>Address 2</th>
+                                <th>City</th>
+                                <th>State</th>
+                                <th>Zipcode</th>
+                                <th>Country</th>
+                                <th>Employee Size</th>
+                                <th>Revenue</th>
+                                <th>Company Domain</th>
+                                <th>Website</th>
+                                <th>Company LinkedIn URL</th>
+                                <th>LinkedIn Profile Link</th>
+                                <th>LinkedIn Profile SN Link</th>
+                                <th>Date</th>
+                            </tr>
+                            </thead>
+                            <tbody class="text-center text-muted">
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
             </div>
         </div>
     </div>

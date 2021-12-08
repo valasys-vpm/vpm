@@ -35,7 +35,7 @@ $(function () {
 //Idle Time Functionality
     // Set timeout variables.
     let timoutWarning = 840000; // Display warning in 14 Mins.
-    let timoutNow = 300000; // Timeout in 15 mins.
+    let timoutNow = 500000; // Timeout in 15 mins.
     let logoutUrl = $('meta[name="base-path"]').attr('content') + '/logout'; // URL to logout page.
     let lockscreen = $('meta[name="base-path"]').attr('content') + '/lockscreen'; // URL to logout page.
 
