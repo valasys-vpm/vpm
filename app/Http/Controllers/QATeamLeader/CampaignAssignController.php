@@ -106,14 +106,11 @@ class CampaignAssignController extends Controller
                 $html_body = view('email.campaign.final_delivery', $details)->render();
 
                 $api_response = send_mail(array(
-                    'to' => 'vpm@valasys.com,tejaswini@valasys.com',
-                    'cc' => 'tejaswi@valasys.com,sagar@valasys.com',
-                    'bcc' => 'ankush@valasys.com',
+                    'to' => ['vpm@valasys.com','tejaswini@valasys.com'],
+                    'cc' => ['tejaswi@valasys.com','sagar@valasys.com'],
                     'subject' => 'VPM | Delivery file for - '.$details['campaign_name'],
                     'body' => $html_body
                 ));
-
-                dd($api_response);
 
                 //Add Campaign History
                 $resultCampaign = Campaign::findOrFail($response['details']->campaign_id);
