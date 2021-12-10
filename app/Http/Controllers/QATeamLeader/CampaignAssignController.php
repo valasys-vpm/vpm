@@ -113,7 +113,6 @@ class CampaignAssignController extends Controller
                     'body' => $html_body
                 ));
 
-
                 //Add Campaign History
                 $resultCampaign = Campaign::findOrFail($response['details']->campaign_id);
                 $resultUser = User::findOrFail($response['details']->user_id);
