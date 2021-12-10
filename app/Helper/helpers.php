@@ -3,6 +3,7 @@
 use App\Repository\Campaign\History\CampaignHistoryRepository;
 use App\Repository\History\HistoryRepository;
 use App\Repository\TimeTracker\TimeTrackerRepository;
+use Illuminate\Support\Facades\Http;
 
 if(!function_exists('add_campaign_history')) {
     function add_campaign_history($campaign_id, $parent_campaign_id, $message, $data = array())
@@ -108,5 +109,34 @@ if(!function_exists('get_history_message')) {
             }
         }
         return $historyMessage;
+    }
+}
+
+if(!function_exists('send_mail')) {
+    function send_mail($details)
+    {
+        $email_data = array();
+
+        if(array_key_exists('to', $details) && !empty($details['to'])) {
+            $email_data['to'] = $details['to'];
+        }
+
+        if(array_key_exists('cc', $details) && !empty($details['cc'])) {
+            $email_data['cc'] = $details['cc'];
+        }
+
+        if(array_key_exists('bcc', $details) && !empty($details['bcc'])) {
+            $email_data['bcc'] = $details['bcc'];
+        }
+
+        if(array_key_exists('subject', $details) && !empty($details['subject'])) {
+            $email_data['subject'] = $details['subject'];
+        }
+
+        if(array_key_exists('body', $details) && !empty($details['body'])) {
+            $email_data['body'] = $details['body'];
+        }
+
+        return Http::post('https://api.valasysb2bmarketing.com/api/email/send', $email_data);
     }
 }

@@ -97,14 +97,22 @@ class CampaignAssignController extends Controller
             $response = $this->QATLRepository->update(base64_decode($id), $attributes);
             if($response['status'] == TRUE) {
                 CampaignDeliveryDetail::where('campaign_id', $response['details']->campaign_id)->update(array('campaign_progress' => 'QC Completed', 'updated_by' => Auth::id()));
+
                 //Send Mail
                 $details = array(
                     'campaign_name' => $response['details']->campaign->name,
                     'download_link' => 'public/storage/campaigns/'.$response['details']->campaign->campaign_id.'/quality/delivery/'.$response['details']->file_name
                 );
-                Mail::send('email.campaign.final_delivery', $details, function ($email) use ($details){
-                    $email->to(['sagar@valasys.com'])->subject('VPM | Delivery file for - '.$details['campaign_name']);
-                });
+                $html_body = view('email.campaign.final_delivery', $details)->render();
+
+                send_mail(array(
+                    'to' => 'vpm@valasys.com,tejaswini@valasys.com',
+                    'cc' => 'tejaswi@valasys.com,sagar@valasys.cm',
+                    'bcc' => 'ankush@valasys.com',
+                    'subject' => 'VPM | Delivery file for - '.$details['campaign_name'],
+                    'body' => $html_body
+                ));
+
 
                 //Add Campaign History
                 $resultCampaign = Campaign::findOrFail($response['details']->campaign_id);

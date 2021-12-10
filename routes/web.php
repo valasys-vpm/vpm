@@ -35,6 +35,7 @@ Route::any('/unlockscreen', [App\Http\Controllers\HomeController::class, 'unlock
 Route::prefix('admin')->middleware(['web', 'check.admin'])->name('admin.')->group(function (){
 
     Route::get('/dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/test', [App\Http\Controllers\Admin\DashboardController::class, 'test'])->name('test');
 
     //User Management Routes
     include('admin/user_routes.php');
