@@ -101,7 +101,7 @@ class CampaignAssignController extends Controller
                 //Send Mail
                 $details = array(
                     'campaign_name' => $response['details']->campaign->name,
-                    'download_link' => 'public/storage/campaigns/'.$response['details']->campaign->campaign_id.'/quality/delivery/'.$response['details']->file_name
+                    'download_link' => secured_url(url('public/storage/campaigns/'.$response['details']->campaign->campaign_id.'/quality/delivery/'.$response['details']->file_name))
                 );
                 $html_body = view('email.campaign.final_delivery', $details)->render();
 

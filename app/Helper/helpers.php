@@ -141,13 +141,16 @@ if(!function_exists('send_mail')) {
     }
 }
 
-if(!function_exists('secure_url')) {
-    function secure_url($url)
+if(!function_exists('secured_url')) {
+    function secured_url($url)
     {
-        if(strpos($url, "http://")) {
-            return str_replace("http://","https://",$url);
+        $url_details = parse_url($url);
+
+        if($url_details['scheme'] == 'http') {
+            return str_replace("http://","https://", $url);
         } else {
             return $url;
         }
+
     }
 }
