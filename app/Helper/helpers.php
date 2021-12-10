@@ -140,3 +140,14 @@ if(!function_exists('send_mail')) {
         return Http::post('https://api.valasysb2bmarketing.com/api/email/send', $email_data);
     }
 }
+
+if(!function_exists('secure_url')) {
+    function secure_url($url)
+    {
+        if(strpos($url, "http://")) {
+            return str_replace("http://","https://",$url);
+        } else {
+            return $url;
+        }
+    }
+}

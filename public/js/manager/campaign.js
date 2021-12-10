@@ -438,24 +438,27 @@ $(function (){
                 return xhr;
             },
             success: function(response, status, xhr) {
-                if(xhr.status === 201) {
-                    if(response.status === true) {
-                        //$('#modal-import-campaigns').modal('hide');
-                        trigger_pnofify('success', 'Successful', response.message);
-                    } else {
-                        trigger_pnofify('error', 'Error while processing request', response.message);
-                    }
-                } else {
-                    let date = new Date();
-                    let blob = new Blob([response], {type: '' + xhr.getResponseHeader("content-type")})
-                    console.log(blob);
-                    let a = $('<a />'), url = window.URL.createObjectURL(blob);
-                    a.attr({
-                        'href': url,
-                        'download': 'Invalid_Campaigns_'+date.getTime()+'.xlsx',
-                        'text': "click"
-                    }).hide().appendTo("body")[0].click();
-                    trigger_pnofify('warning', 'Invalid Data', 'Campaigns imported with errors, please check excel file to invalid data.');
+                switch (xhr.status) {
+                    case 200:
+                        trigger_pnofify('success', 'Successful', 'All Campaigns imported successfully');
+                        break;
+                    case 201:
+                        trigger_pnofify('error', 'Error while processing request', 'Something went wrong, please try again.');
+                        break;
+                    case 202:
+                        trigger_pnofify('error', 'Error while processing request', 'Please select valid file');
+                        break;
+                    default:
+                        let date = new Date();
+                        let blob = new Blob([response], {type: '' + xhr.getResponseHeader("content-type")})
+                        console.log(blob);
+                        let a = $('<a />'), url = window.URL.createObjectURL(blob);
+                        a.attr({
+                            'href': url,
+                            'download': 'Invalid_Campaigns_'+date.getTime()+'.xlsx',
+                            'text': "click"
+                        }).hide().appendTo("body")[0].click();
+                        trigger_pnofify('warning', 'Invalid Data', 'Campaigns imported with errors, please check excel file to invalid data.');
                 }
 
                 $('#modal-import-campaigns').modal('hide');

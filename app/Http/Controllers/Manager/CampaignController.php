@@ -268,7 +268,7 @@ class CampaignController extends Controller
 
         if(isset($attributes['campaign_file']) && !empty($attributes['campaign_file'])) {
             if($response['status'] == TRUE) {
-                return response(json_encode(array('status' => true, 'message' => $response['message'])), 201);
+                return response(json_encode(array('status' => true, 'message' => $response['message'])), 200);
             } else {
                 if(!empty($response['file'])) {
                     return $response['file'];
@@ -278,7 +278,7 @@ class CampaignController extends Controller
                 }
             }
         } else {
-            return response(json_encode(array('status' => false, 'message' => 'Please upload file')),201);
+            return response(json_encode(array('status' => false, 'message' => 'Please upload file')),202);
         }
     }
 

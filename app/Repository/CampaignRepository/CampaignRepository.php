@@ -701,6 +701,7 @@ class CampaignRepository implements CampaignInterface
             //Validate Data
             foreach ($excelData[0] as $key => $row) {
                 $responseValidate = $this->validateCampaignData($row);
+
                 if($responseValidate['status'] == TRUE) {
                     $validatedData[] = $responseValidate['validatedData'];
                 } else {
@@ -720,7 +721,7 @@ class CampaignRepository implements CampaignInterface
                 $responseStore = $this->store($attributes);
                 if($responseStore['status'] == TRUE) {
                     if(isset($attributes['specification_file']) && !empty($attributes['specification_file'])) {
-                        $zip = Zip::open($request->file('specification_file'));
+                        $zip = Zip::open($attributes['specification_file']);
                         $fileList = $zip->listFiles();
                         if(!empty($fileList)) {
                             $campaign_path = 'public/storage/campaigns/'.$response['campaign_id'].'/';
@@ -798,7 +799,6 @@ class CampaignRepository implements CampaignInterface
                 $invalidCells[2] = 'Invalid';
             }
 
-
             //Validate Campaign Filter $data[3]
             if(!empty(trim($data[3]))) {
                 $campaignFilter = CampaignFilter::whereName(trim($data[3]))->first();
@@ -832,8 +832,13 @@ class CampaignRepository implements CampaignInterface
             $start_date = $end_date = null;
             //Validate Start Date $data[5]
             if(!empty(trim($data[5]))) {
-                $start_date = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($data[5]);
-                $start_date = date_format($start_date, 'Y-m-d');
+                if(is_numeric($data[5])) {
+                    $start_date = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($data[5]);
+                    $start_date = date_format($start_date, 'Y-m-d');
+                } else {
+                    $start_date = date('Y-m-d', strtotime($data[5]));
+                }
+
                 if($start_date != '1970-01-01') {
                     $validatedData['start_date'] = $start_date;
                 } else {
@@ -847,8 +852,13 @@ class CampaignRepository implements CampaignInterface
 
             //Validate End Date $data[6]
             if(!empty(trim($data[6]))) {
-                $end_date = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($data[6]);
-                $end_date = date_format($end_date, 'Y-m-d');
+                if(is_numeric($data[6])) {
+                    $end_date = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($data[6]);
+                    $end_date = date_format($end_date, 'Y-m-d');
+                } else {
+                    $end_date = date('Y-m-d', strtotime($data[6]));
+                }
+
                 if($end_date != '1970-01-01') {
                     $validatedData['end_date'] = $end_date;
                 } else {
@@ -923,6 +933,7 @@ class CampaignRepository implements CampaignInterface
             } else {
                 throw new \Exception('Something went wrong, please try again.', 1);
             }
+
 
         } catch (\Exception $exception) {
             //dd($exception->getMessage());

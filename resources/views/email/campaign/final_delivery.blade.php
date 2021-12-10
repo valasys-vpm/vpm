@@ -151,7 +151,7 @@
                                                 <table border="0" cellspacing="0" cellpadding="0">
                                                     <tr>
                                                         <td class="text-button-orange"style="background:#e85711; color:#ffffff; font-family:'Nunito', sans-serif; font-weight: 300; font-size:14px; line-height:18px; text-align:center; padding:10px 30px; border-radius:20px;">
-                                                            <a href="{{ url($download_link) }}" target="_blank" class="link-white"style="color:#ffffff; text-decoration:none;">
+                                                            <a href="{{ secure_url(url($download_link)) }}" target="_blank" download class="link-white"style="color:#ffffff; text-decoration:none;">
                                                                 <span class="link-white"style="color:#ffffff; text-decoration:none;">Download Delivery File</span>
                                                             </a>
                                                         </td>
