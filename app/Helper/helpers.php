@@ -118,17 +118,17 @@ if(!function_exists('send_mail')) {
         $email_data = array();
 
         if(array_key_exists('to', $details) && !empty($details['to'])) {
-            $email_data['to'] = explode(',', $details['to']);
+            $email_data['to'] = $details['to'];
         }
 
         if(array_key_exists('cc', $details) && !empty($details['cc'])) {
-            $email_data['cc'] =explode(',', $details['cc']);
+            $email_data['cc'] = $details['cc'];
         }
 
         if(array_key_exists('bcc', $details) && !empty($details['bcc'])) {
-            $email_data['bcc'] = explode(',', $details['bcc']);
+            $email_data['bcc'] = $details['bcc'];
         }
-        dd($email_data);
+
         if(array_key_exists('subject', $details) && !empty($details['subject'])) {
             $email_data['subject'] = $details['subject'];
         }
