@@ -66,12 +66,12 @@ class AgentRepository implements AgentInterface
 
             //Save reporting file to storage
             $filename = null;
-            if(isset($attributes['reporting_file']) && !empty($campaign['reporting_file'])) {
+            if(isset($attributes['reporting_file']) && !empty($attributes['reporting_file'])) {
                 $path = 'public/campaigns/'.$resultCampaign->campaign_id.'/reporting_file';
-                $file = $campaign['reporting_file'];
+                $file = $attributes['reporting_file'];
                 $extension = $file->getClientOriginalExtension();
                 $filenameOriginal  = $file->getClientOriginalName();
-                $filename  = $campaign['campaign_assign_ratl_id'].'-' . $filenameOriginal . '.' . $extension;
+                $filename  = $attributes['campaign_assign_ratl_id'].'-' . $filenameOriginal . '.' . $extension;
                 $resultFile  = $file->storeAs($path, $filename);
                 $ca_agent->reporting_file = $filename;
             }
