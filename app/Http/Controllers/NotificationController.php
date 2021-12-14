@@ -106,7 +106,7 @@ class NotificationController extends Controller
             }
 
             if($response['status'] == TRUE) {
-                return redirect(url($response['data']->url));
+                return redirect($response['data']->url);
             } else {
                 return redirect()->back()->with('error', ['title' => 'Error', 'message' => $response['message']]);
             }

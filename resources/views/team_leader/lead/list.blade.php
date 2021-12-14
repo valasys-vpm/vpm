@@ -57,6 +57,7 @@
                                                         <th colspan="18">Lead Details</th>
                                                     </tr>
                                                     <tr>
+                                                        <th>Action</th>
                                                         <th>Agent</th>
                                                         <th>Date</th>
                                                         <th>First Name</th>
@@ -100,6 +101,31 @@
             </div>
         </div>
     </section>
+
+    <div id="modal-reject-lead" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <form id="form-reject-lead" method="post">
+                    <input type="hidden" name="agent_lead_id"  value="">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Reject agent's lead</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="">
+                            <textarea class="form-control" name="comment" id="" rows="3" placeholder="Please specify reason..."></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" id="form-reject-lead-submit">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @section('javascript')

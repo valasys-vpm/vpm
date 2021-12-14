@@ -84,7 +84,7 @@ class RATLRepository implements RATLInterface
                     'sender_id' => $attributes['assigned_by'],
                     'recipient_id' => $attributes['user_id'],
                     'message' => 'New campaign assigned - '.$resultCampaign->name,
-                    'url' => implode('/', array_slice(explode('/', route('team_leader.campaign.show', base64_encode($ca_ratl->id))), 4))
+                    'url' => route('team_leader.campaign.show', base64_encode($ca_ratl->id))
                 ));
                 DB::commit();
                 $response = array('status' => TRUE, 'message' => 'Campaign assigned successfully', 'details' => $ca_ratl );

@@ -70,6 +70,25 @@ class LeadController extends Controller
         }
     }
 
+    public function edit($agent_lead_id)
+    {
+        $this->data['resultAgentLead'] = $this->agentLeadRepository->find(base64_decode($agent_lead_id));
+        $this->data['resultCAAgent'] = $this->agentRepository->find($this->data['resultAgentLead']->ca_agent_id);
+        return view('agent.lead.edit', $this->data);
+    }
+
+    public function update($agent_lead_id, Request $request): \Illuminate\Http\RedirectResponse
+    {
+        $attributes = $request->all();
+        $attributes['status'] = 1;
+        $response = $this->agentLeadRepository->update(base64_decode($agent_lead_id), $attributes);
+        if($response['status'] == TRUE) {
+            return redirect()->route('agent.lead.list', base64_encode($response['details']->ca_agent_id))->with('success', ['title' => 'Successful', 'message' => $response['message']]);
+        } else {
+            return back()->withInput()->with('error', ['title' => 'Error while processing request', 'message' => $response['message']]);
+        }
+    }
+
     public function getLeads(Request $request): \Illuminate\Http\JsonResponse
     {
         //dd($request->all());
@@ -105,8 +124,12 @@ class LeadController extends Controller
 
 
         //Order By
-        $orderColumn = $order[0]['column'];
-        $orderDirection = $order[0]['dir'];
+        $orderColumn = null;
+        if ($request->has('order')){
+            $order = $request->get('order');
+            $orderColumn = $order[0]['column'];
+            $orderDirection = $order[0]['dir'];
+        }
         switch ($orderColumn) {
             case '0': $query->orderBy('first_name', $orderDirection); break;
             case '1': $query->orderBy('first_name', $orderDirection); break;

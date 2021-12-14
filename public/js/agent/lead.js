@@ -27,6 +27,14 @@ $(function (){
         },
         "columns": [
             {
+                orderable: false,
+                render: function (data, type, row) {
+                    let html = '';
+                    html += '<a href="'+URL+'/agent/lead/edit/'+btoa(row.id)+'" class="btn btn-outline-secondary btn-rounded btn-sm" title="Edit lead Details" style="padding: 2px 5px;"><i class="feather icon-edit mr-0" ></i></a>';
+                    return html;
+                }
+            },
+            {
                 data: 'first_name'
             },
             {
@@ -99,15 +107,7 @@ $(function (){
                 render: function (data, type, row) {
                     return moment(row.created_at).format('YYYY-MM-DD HH:mm:ss');
                 }
-            }/*,
-            {
-                orderable: false,
-                render: function (data, type, row) {
-                    let html = '';
-                    html += '<a href="'+URL+'/agent/lead/view-details/'+btoa(row.id)+'" class="btn btn-outline-info btn-rounded btn-sm" title="View Campaign Details"><i class="feather icon-eye mr-0"></i></a>';
-                    return html;
-                }
-            },*/
+            }
         ],
         "fnDrawCallback": function (nRow, aData, iDisplayIndex, iDisplayIndexFull) {
             $('.dark-left-toolbar').each(function() {
@@ -127,24 +127,9 @@ $(function (){
             });
         },
         "createdRow": function(row, data, dataIndex){
-            switch (data.campaign.campaign_status_id) {
-                case 1:
-                    $(row).addClass('border-live');
-                    break;
-                case 2:
-                    $(row).addClass('border-paused');
-                    break;
-                case 3:
+            switch (parseInt(data.status)) {
+                case 0:
                     $(row).addClass('border-cancelled');
-                    break;
-                case 4:
-                    $(row).addClass('border-delivered');
-                    break;
-                case 5:
-                    $(row).addClass('border-reactivated');
-                    break;
-                case 6:
-                    $(row).addClass('border-shortfall');
                     break;
             }
         }

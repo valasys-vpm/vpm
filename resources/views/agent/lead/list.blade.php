@@ -4,6 +4,9 @@
     @parent
     <!-- data tables css -->
     <link rel="stylesheet" href="{{asset('public/template/assets/plugins/data-tables/css/datatables.min.css')}}">
+    <!-- custom campaign table css -->
+    <link rel="stylesheet" href="{{asset('public/css/campaign_table_custom.css')}}">
+
     <meta name="ca-agent-id" content="{{ base64_encode($resultCAAgent->id) }}">
 
     <style>
@@ -58,6 +61,7 @@
                                                 <table id="table-leads" class="display table nowrap table-striped table-hover">
                                                     <thead>
                                                     <tr>
+                                                        <th>Action</th>
                                                         <th>First Name</th>
                                                         <th>Last Name</th>
                                                         <th>Company Name</th>
@@ -82,7 +86,6 @@
                                                         <th>LinkedIn Profile SN URL</th>
                                                         <th>Comment</th>
                                                         <th>Created At</th>
-
                                                     </tr>
                                                     </thead>
                                                     <tbody>

@@ -65,7 +65,7 @@ class VendorManagerRepository implements VendorManagerInterface
                     'sender_id' => $attributes['assigned_by'],
                     'recipient_id' => $attributes['user_id'],
                     'message' => 'New campaign assigned - '.$resultCampaign->name,
-                    'url' => implode('/', array_slice(explode('/', route('vendor_manager.campaign.show', base64_encode($ca_vm->id))), 4))
+                    'url' => route('vendor_manager.campaign.show', base64_encode($ca_vm->id))
                 ));
                 DB::commit();
                 $response = array('status' => TRUE, 'message' => 'Campaign assigned successfully', 'details' => $ca_vm );

@@ -7,6 +7,11 @@ Route::prefix('lead')->name('lead.')->group(function()
     Route::get('/{id}/create', [App\Http\Controllers\Agent\LeadController::class, 'create'])->name('create');
     Route::post('/store', [App\Http\Controllers\Agent\LeadController::class, 'store'])->name('store');
 
+    Route::get('edit/{id}', [App\Http\Controllers\Agent\LeadController::class, 'edit'])->name('edit');
+    Route::post('update/{id}', [App\Http\Controllers\Agent\LeadController::class, 'update'])->name('update');
+
+    Route::post('destroy/{id}', [App\Http\Controllers\Agent\LeadController::class, 'destroy'])->name('destroy');
+
     Route::any('/get-leads', [App\Http\Controllers\Agent\LeadController::class, 'getLeads'])->name('get_leads');
 
 

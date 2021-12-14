@@ -96,7 +96,7 @@ class AgentRepository implements AgentInterface
                     'sender_id' => $attributes['assigned_by'],
                     'recipient_id' => $attributes['user_id'],
                     'message' => 'New campaign assigned - '.$resultCampaign->name,
-                    'url' => implode('/', array_slice(explode('/', route('agent.campaign.show', base64_encode($ca_agent->id))), 4))
+                    'url' => route('agent.campaign.show', base64_encode($ca_agent->id))
                 ));
 
                 DB::commit();

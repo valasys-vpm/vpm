@@ -51,6 +51,7 @@ class CreateAgentLeadsTable extends Migration
             $table->text('comment')->nullable();
             //---Lead Details
 
+            $table->tinyInteger('status')->default(1);
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_At')->useCurrent();
             $table->softDeletes();
