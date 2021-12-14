@@ -56,7 +56,7 @@ class CampaignController extends Controller
             $this->data['resultCAAgent'] = $this->agentRepository->find(base64_decode($id));
             $this->data['resultCampaign'] = $this->campaignRepository->find($this->data['resultCAAgent']->campaign_id);
             $this->data['resultCampaignIssues'] = $this->issueRepository->get(array('campaign_ids' => [$this->data['resultCAAgent']->campaign_id]));
-
+            //dd($this->data['resultCAAgent']->toArray());
             if(isset($this->data['resultCampaign']->parent_id) && !empty($this->data['resultCampaign']->parent_id)) {
                 $this->data['resultCampaignParent'] = $this->campaignRepository->find($this->data['resultCampaign']->parent_id);
             }

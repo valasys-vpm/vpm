@@ -297,7 +297,7 @@
 
                                             @if(empty($resultCAAgent->submitted_at))
                                             <div id="div-submit-campaign"  class="col-md-3">
-                                                <button type="button" class="btn btn-danger btn-sm btn-square w-100" onclick="submitCampaign('{{ base64_encode($resultCAAgent->id) }}');">Submit Campaign</button>
+                                                <button type="button" class="btn btn-danger btn-sm btn-square w-100" onclick="submitCampaign('{{ base64_encode($resultCAAgent->id) }}');" @if($resultCAAgent->agent_lead_count < 1) disabled @endif>Submit Campaign</button>
                                             </div>
                                             <div id="div-raise-issue" class="col-md-3">
                                                 <button type="button" class="btn btn-warning btn-sm btn-square w-100" data-toggle="modal" data-target="#modal-raise-issue">Raise Issue</button>

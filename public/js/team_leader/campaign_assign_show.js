@@ -226,6 +226,25 @@ function submitCampaign(_id) {
     }
 }
 
+function sendForQualityCheck(_id) {
+    if(_id && confirm('Are you sure to send for quality check?')) {
+        $.ajax({
+            type: 'post',
+            url: URL + '/team-leader/campaign-assign/send-for-quality-check/' + _id,
+            dataType: 'json',
+            success: function (response) {
+                if(response.status === true) {
+                    trigger_pnofify('success', 'Successful', response.message);
+                } else {
+                    trigger_pnofify('error', 'Something went wrong', response.message);
+                }
+            }
+        });
+    } else {
+
+    }
+}
+
 function closeCampaignIssue(_issue_id) {
     $('#modal-close-issue').find('input[name="id"]').val(_issue_id);
     $('#modal-close-issue').modal('show');

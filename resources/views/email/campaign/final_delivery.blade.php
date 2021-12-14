@@ -143,20 +143,7 @@
                                         </tr>
                                         <tr>
                                             <td class="text-center"style="color:#666565; font-family:'Raleway', Arial,sans-serif; font-size:17px; font-weight: 300; line-height:22px; text-align:left; padding-bottom:40px;">
-                                                Please click below button to download delivery file for the campaign - {{ $campaign_name }}.
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td align="center">
-                                                <table border="0" cellspacing="0" cellpadding="0">
-                                                    <tr>
-                                                        <td class="text-button-orange"style="background:#e85711; color:#ffffff; font-family:'Nunito', sans-serif; font-weight: 300; font-size:14px; line-height:18px; text-align:center; padding:10px 30px; border-radius:20px;">
-                                                            <a href="{{ $download_link }}" target="_blank" download class="link-white"style="color:#ffffff; text-decoration:none;">
-                                                                <span class="link-white"style="color:#ffffff; text-decoration:none;">Download Delivery File</span>
-                                                            </a>
-                                                        </td>
-                                                    </tr>
-                                                </table>
+                                                Delivery file is submitted by QATL for the campaign - {{ $campaign_name }}.
                                             </td>
                                         </tr>
                                     </table>

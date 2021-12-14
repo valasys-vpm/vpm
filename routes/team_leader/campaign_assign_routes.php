@@ -16,4 +16,6 @@ Route::prefix('campaign-assign')->name('campaign_assign.')->group(function()
     Route::any('/assign-data', [App\Http\Controllers\TeamLeader\CampaignAssignController::class, 'assignData'])->name('assign_data');
     Route::any('/upload-npf-file', [App\Http\Controllers\TeamLeader\CampaignAssignController::class, 'uploadNPF'])->name('upload_npf');
 
+    Route::any('/send-for-quality-check/{caratl_id}', [App\Http\Controllers\TeamLeader\CampaignAssignController::class, 'sendForQualityCheck'])->name('send_for_quality_check');
+
 });

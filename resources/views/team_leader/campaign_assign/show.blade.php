@@ -350,6 +350,9 @@
                                             <div id="div-submit-campaign" class="col-md-3">
                                                 <button type="button" @if($total_submitted < $total_agents) class="btn btn-danger btn-sm btn-square w-100" disabled title="Campaign Not Submitted By All Agents!" @else class="btn btn-success btn-sm btn-square w-100" @endif onclick="submitCampaign('{{ base64_encode($resultCARATL->id) }}');">Submit Campaign</button>
                                             </div>
+                                            <div id="div-send-for-quality" class="col-md-3">
+                                                <button type="button" class="btn btn-dark btn-sm btn-square w-100" onclick="sendForQualityCheck('{{ base64_encode($resultCARATL->id) }}');">Send For QC</button>
+                                            </div>
                                             <div id="div-raise-issue" class="col-md-3">
                                                 <button type="button" class="btn btn-warning btn-sm btn-square w-100" data-toggle="modal" data-target="#modal-raise-issue">Raise Issue</button>
                                             </div>

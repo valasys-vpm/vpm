@@ -6,6 +6,7 @@ use App\Models\Campaign;
 use App\Models\CampaignAssignQATL;
 use App\Models\CampaignDeliveryDetail;
 use App\Models\User;
+use App\Repository\Notification\QATL\QATLNotificationRepository;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -66,6 +67,15 @@ class QATLRepository implements QATLInterface
                 add_history('Campaign assigned to QATL', 'Campaign assigned to QATL -'.$resultUser->full_name);
 
                 CampaignDeliveryDetail::where('campaign_id', $ca_qatl->campaign_id)->update(array('campaign_progress' => 'In Quality Check', 'updated_by' => Auth::id()));
+
+                //Send notification to QATL
+                QATLNotificationRepository::store(array(
+                    'sender_id' => $attributes['assigned_by'],
+                    'recipient_id' => $attributes['user_id'],
+                    'message' => 'New campaign assigned - '.$resultCampaign->name,
+                    'url' => route('qa_team_leader.campaign.show', base64_encode($ca_qatl->id))
+                ));
+
                 DB::commit();
                 $response = array('status' => TRUE, 'message' => 'Campaign sent to quality team, successfully');
             } else {
@@ -138,6 +148,15 @@ class QATLRepository implements QATLInterface
             }
 
             if($ca_qatl->save()) {
+
+                //Send notification to QATL
+                QATLNotificationRepository::store(array(
+                    'sender_id' => $attributes['assigned_by'],
+                    'recipient_id' => $attributes['user_id'],
+                    'message' => 'Campaign/Lead details updated - '.$resultCampaign->name,
+                    'url' => route('qa_team_leader.campaign.show', base64_encode($resultCampaign->id))
+                ));
+
                 DB::commit();
                 $response = array('status' => TRUE, 'message' => 'Details updated successfully', 'details' => $ca_qatl);
             } else {

@@ -209,7 +209,6 @@ class CampaignController extends Controller
             }
 
         }
-
     }
 
     public function validateVMailCampaignId(Request $request)

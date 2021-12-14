@@ -4,6 +4,7 @@ namespace App\Http\Controllers\TeamLeader;
 
 use App\Http\Controllers\Controller;
 use App\Models\Campaign;
+use App\Models\CampaignAssignQATL;
 use App\Models\CampaignAssignRATL;
 use App\Models\Role;
 use App\Models\User;
@@ -11,6 +12,7 @@ use App\Repository\AgentLeadRepository\AgentLeadRepository;
 use App\Repository\CampaignAssignRepository\QATLRepository\QATLRepository;
 use App\Repository\CampaignAssignRepository\RATLRepository\RATLRepository;
 use App\Repository\CampaignRepository\CampaignRepository;
+use App\Repository\Notification\QATL\QATLNotificationRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -94,12 +96,14 @@ class CampaignController extends Controller
         }
 
         switch ($orderColumn) {
-            case '0': $query->orderBy('id', $orderDirection); break;
-            case '1': $query->orderBy('id', $orderDirection); break;
-            case '2': $query->orderBy('id', $orderDirection); break;
-            case '3': $query->orderBy('id', $orderDirection); break;
-            case '4': $query->orderBy('id', $orderDirection); break;
-            default: $query->orderBy('id'); break;
+            case '0': $query->orderBy('campaign_id', $orderDirection); break;
+            case '1': $query->orderBy('name', $orderDirection); break;
+            case '2': break;
+            case '3': $query->orderBy('start_date', $orderDirection); break;
+            case '4': $query->orderBy('end_date', $orderDirection); break;
+            case '5': $query->orderBy('allocation', $orderDirection); break;
+            case '6': $query->orderBy('campaign_status_id', $orderDirection); break;
+            default: $query->orderBy('created_at', 'DESC'); break;
         }
 
         $totalFilterRecords = $query->count();
@@ -144,16 +148,33 @@ class CampaignController extends Controller
 
             //check submitted by all ratl's
             if(!CampaignAssignRATL::where('campaign_id', $response['details']->campaign_id)->whereNull('submitted_at')->count()) {
+
                 $resultCARATL = $this->RATLRepository->find(base64_decode($id));
                 $resultRole = Role::whereSlug('qa_team_leader')->whereStatus(1)->first();
                 $resultUser = User::whereRoleId($resultRole->id)->whereStatus(1)->first();
-                $attributes = array(
-                    'campaign_id' => $resultCARATL->campaign_id,
-                    'user_id' => $resultUser->id,
-                    'display_date' => $resultCARATL->display_date,
-                    'assigned_by' => $resultCARATL->user_id,
-                );
-                $responseCAQATL = $this->QATLRepository->store($attributes);
+                $resultCAQATL = CampaignAssignQATL::where('campaign_id', $resultCARATL->campaign_id)->where('user_id', $resultUser->id)->first();
+
+                if(empty($resultCAQATL->id)) {
+                    $attributes = array(
+                        'campaign_id' => $resultCARATL->campaign_id,
+                        'user_id' => $resultUser->id,
+                        'display_date' => $resultCARATL->display_date,
+                        'assigned_by' => $resultCARATL->user_id,
+                    );
+                    $responseCAQATL = $this->QATLRepository->store($attributes);
+                } else {
+                    $responseCAQATL['status'] = TRUE;
+                    $responseCAQATL['message'] = 'Campaign submitted successfully';
+
+                    //Send notification to qatl
+                    QATLNotificationRepository::store(array(
+                        'sender_id' => $resultCARATL->user_id,
+                        'recipient_id' => $resultUser->id,
+                        'message' => 'Campaign submitted by RATLs - '.$resultCampaign->name,
+                        'url' => route('qa_team_leader.campaign.show', base64_encode($resultCAQATL->campaign_id))
+                    ));
+                }
+
 
                 if($responseCAQATL['status']) {
                     return response()->json(array('status' => true, 'message' => $responseCAQATL['message']));

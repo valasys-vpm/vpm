@@ -5,16 +5,20 @@ namespace App\Http\Controllers\TeamLeader;
 use App\Http\Controllers\Controller;
 use App\Models\Campaign;
 use App\Models\CampaignAssignAgent;
+use App\Models\CampaignAssignQATL;
 use App\Models\CampaignAssignRATL;
 use App\Models\Data;
+use App\Models\Role;
 use App\Models\User;
 use App\Repository\AgentDataRepository\AgentDataRepository;
 use App\Repository\Campaign\IssueRepository\IssueRepository;
 use App\Repository\CampaignAssignRepository\AgentRepository\AgentRepository;
 use App\Repository\CampaignAssignRepository\CampaignAssignRepository;
+use App\Repository\CampaignAssignRepository\QATLRepository\QATLRepository;
 use App\Repository\CampaignAssignRepository\RATLRepository\RATLRepository;
 use App\Repository\CampaignRepository\CampaignRepository;
 use App\Repository\DataRepository\DataRepository;
+use App\Repository\Notification\QATL\QATLNotificationRepository;
 use App\Repository\UserRepository\UserRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -65,6 +69,10 @@ class CampaignAssignController extends Controller
      * @var IssueRepository
      */
     private $issueRepository;
+    /**
+     * @var QATLRepository
+     */
+    private $QATLRepository;
 
     public function __construct(
         CampaignRepository $campaignRepository,
@@ -78,7 +86,8 @@ class CampaignAssignController extends Controller
         SuppressionAccountNameRepository $suppressionAccountNameRepository,
         TargetDomainRepository $targetDomainRepository,
         AgentDataRepository $agentDataRepository,
-        IssueRepository $issueRepository
+        IssueRepository $issueRepository,
+        QATLRepository $QATLRepository
     )
     {
         $this->data = array();
@@ -94,6 +103,7 @@ class CampaignAssignController extends Controller
         $this->targetDomainRepository = $targetDomainRepository;
         $this->agentDataRepository = $agentDataRepository;
         $this->issueRepository = $issueRepository;
+        $this->QATLRepository = $QATLRepository;
     }
 
     public function index()
@@ -300,6 +310,42 @@ class CampaignAssignController extends Controller
             return response()->json(array('status' => true, 'message' => $response['message'], 'countAgentData' => $countAgentData));
         } else {
             return response()->json(array('status' => false, 'message' => 'Something went wrong, please try again.'));
+        }
+    }
+
+    public function sendForQualityCheck($ca_ratl_id)
+    {
+        $resultCARATL = $this->RATLRepository->find(base64_decode($ca_ratl_id));
+        $resultRole = Role::whereSlug('qa_team_leader')->whereStatus(1)->first();
+        $resultUser = User::whereRoleId($resultRole->id)->whereStatus(1)->first();
+        $resultCAQATL = CampaignAssignQATL::where('campaign_id', $resultCARATL->campaign_id)->where('user_id', $resultUser->id)->first();
+        if(empty($resultCAQATL->id)) {
+
+            $attributes = array(
+                'campaign_id' => $resultCARATL->campaign_id,
+                'user_id' => $resultUser->id,
+                'display_date' => $resultCARATL->display_date,
+                'assigned_by' => $resultCARATL->user_id,
+            );
+            $responseCAQATL = $this->QATLRepository->store($attributes);
+        } else {
+
+            $responseCAQATL['status'] = TRUE;
+            $responseCAQATL['message'] = 'Campaign submitted successfully';
+
+            //Send notification to qatl
+            QATLNotificationRepository::store(array(
+                'sender_id' => $resultCARATL->user_id,
+                'recipient_id' => $resultUser->id,
+                'message' => 'Campaign submitted by RATLs - '.$resultCARATL->campaign->name,
+                'url' => route('qa_team_leader.campaign.show', base64_encode($resultCAQATL->id))
+            ));
+        }
+
+        if($responseCAQATL['status']) {
+            return response()->json(array('status' => true, 'message' => $responseCAQATL['message']));
+        } else {
+            return response()->json(array('status' => false, 'message' => $responseCAQATL['message']));
         }
     }
 
