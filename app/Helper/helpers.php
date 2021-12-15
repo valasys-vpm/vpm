@@ -154,3 +154,15 @@ if(!function_exists('secured_url')) {
 
     }
 }
+
+if(!function_exists('is_live_server')) {
+    function is_live_server()
+    {
+        if(env('APP_URL') == 'http://localhost/vpm' || env('APP_URL') == 'https://testing.valasysmedia.com') {
+            return false;
+        } else {
+            return true;
+        }
+
+    }
+}

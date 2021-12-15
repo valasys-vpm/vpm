@@ -49,12 +49,16 @@ class GuestController extends Controller
 
                     if($password_reset->email) {
                         $details = array(
-                            'reset_link' => route('reset_password', $token)
+                            'reset_link' => secured_url(route('reset_password', $token))
                         );
-                        //dd($details);
                         //Send reset link by email
+                        if(is_live_server()) {
+                            $email = [$resultUser->email];
+                        } else {
+                            $email = ['tejaswini@valasys.com', 'sagar@valasys.com'];
+                        }
                         $api_response = send_mail(array(
-                            'to' => [$resultUser->email],
+                            'to' => $email,
                             'subject' => 'VPM | Reset Password',
                             'body' => view('email.reset_link', $details)->render()
                         ));
@@ -70,11 +74,7 @@ class GuestController extends Controller
             } else {
                 $response = array('status' => FALSE, 'message' => 'Invalid email address');
             }
-
-
-
         } catch (\Exception $exception) {
-            dd($exception->getMessage());
             $response = array('status' => FALSE, 'message' => 'Something went wrong, please try again later.');
         }
 
