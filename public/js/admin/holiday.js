@@ -28,7 +28,7 @@ $(function (){
             },
             {
                 render: function (data, type, row) {
-                    switch (row.status) {
+                    switch (parseInt(row.status)) {
                         case 1: return '<span class="badge badge-pill badge-success" style="padding: 5px;min-width:50px;">Active</span>';
                         case 0: return '<span class="badge badge-pill badge-danger" style="padding: 5px;min-width:50px;">Inactive</span>';
                     }
