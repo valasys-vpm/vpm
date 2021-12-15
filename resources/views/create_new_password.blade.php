@@ -44,10 +44,10 @@
         <div class="col-lg-4 align-items-stret h-100 align-items-center d-flex justify-content-center">
             <div class=" auth-content text-center">
                 <div class="mb-4">
-                    <i class="feather icon-unlock auth-icon"></i>
+                    <i class="feather icon-mail auth-icon"></i>
                 </div>
-                <h3 class="mb-4">Login</h3>
-                <form method="post" action="">
+                <h3 class="mb-4">Create New Password</h3>
+                <form method="post" action="{{ route('store_new_password') }}">
                     @csrf
                     @if(session('success'))
                         <div class="input-group mb-3">
@@ -59,20 +59,15 @@
                             <span class="text-danger">{{session('error')}}</span>
                         </div>
                     @endif
+                    <input type="hidden" name="token" value="{{ $token }}">
                     <div class="input-group mb-3">
-                        <input @if(Cookie::has('login_email')) value="{{ Cookie::get('login_email') }}" @endif type="email" class="form-control" placeholder="Email" name="email" required>
+                        <input type="password" class="form-control" placeholder="Enter new password" name="password" required>
                     </div>
-                    <div class="input-group mb-4">
-                        <input @if(Cookie::has('login_password')) value="{{ Cookie::get('login_password') }}" @endif type="password" class="form-control" placeholder="password" name="password" required>
+                    <div class="input-group mb-3">
+                        <input type="password" class="form-control" placeholder="Re-enter new password" name="confirm_password" required>
                     </div>
-                    <div class="form-group text-left">
-                        <div class="checkbox checkbox-fill d-inline">
-                            <input type="checkbox" name="remember_me" id="checkbox-fill-a1" checked>
-                            <label for="checkbox-fill-a1" class="cr"> Save credentials</label>
-                        </div>
-                    </div>
-                    <button class="btn btn-primary shadow-2 mb-4" type="submit">Login</button>
-                    <p class="mb-2 text-muted">Forgot password? <a href="{{ route('forgot_password') }}">Reset Password</a></p>
+                    <button class="btn btn-primary shadow-2 mb-4" type="submit">Submit</button>
+                    <p class="mb-0 text-muted">Already have an account? <a href="{{ route('login') }}">Login</a></p>
                 </form>
             </div>
         </div>

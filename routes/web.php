@@ -25,6 +25,11 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 
 Route::middleware(['guest'])->group(function (){
     Route::view('/login', 'login')->name('login');
+    Route::get('/forgot-password', [App\Http\Controllers\GuestController::class, 'forgot_password'])->name('forgot_password');
+    Route::post('/send-reset-link', [App\Http\Controllers\GuestController::class, 'send_reset_link'])->name('send_reset_link');
+    Route::any('/reset-password/{token}', [App\Http\Controllers\GuestController::class, 'reset_password'])->name('reset_password');
+    Route::get('/create-new-password/{token}', [App\Http\Controllers\GuestController::class, 'create_new_password'])->name('create_new_password');
+    Route::post('/store-new-password', [App\Http\Controllers\GuestController::class, 'store_new_password'])->name('store_new_password');
 });
 
 Route::any('/logout', [App\Http\Controllers\HomeController::class, 'logout'])->name('logout');
