@@ -10,7 +10,7 @@ $(function (){
 
     DATA_TABLE = $('#table-data').DataTable({
         scrollY: 300,
-        "lengthMenu": [ [500,400,300,200,100,-1], [500,400,300,200,100,'All'] ],
+        "lengthMenu": [ [50,500,400,300,200,100,-1], [50,500,400,300,200,100,'All'] ],
         "processing": true,
         "serverSide": true,
         "ajax": {
