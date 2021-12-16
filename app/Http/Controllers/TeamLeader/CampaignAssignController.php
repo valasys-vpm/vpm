@@ -204,7 +204,12 @@ class CampaignAssignController extends Controller
         $query = CampaignAssignRATL::query();
         $query->whereIn('id', $this->data['resultAssignedCampaigns']->pluck('id')->toArray());
         $query->whereUserId(Auth::id());
+
         $query->with('campaign');
+        $query->whereHas('campaign', function($children) {
+            $children->whereIn('campaign_status_id', [1,5,6]);
+        });
+
         $query->with('campaign.children');
         $query->with('agents');
 

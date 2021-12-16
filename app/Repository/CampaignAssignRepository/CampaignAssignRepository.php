@@ -306,15 +306,21 @@ class CampaignAssignRepository implements CampaignAssignInterface
                                 }
                             }
 
-                            $result = $this->agentRepository->store(array(
-                                'campaign_id' => $attributes['campaign_id'],
-                                'campaign_assign_ratl_id' => $ca_ratl_id,
-                                'user_id' => $user['user_id'],
-                                'display_date' => date('Y-m-d', strtotime($attributes['display_date'])),
-                                'allocation' => $user['allocation'],
-                                'reporting_file' => null,
-                                'assigned_by' => Auth::id()
-                            ));
+                            $resultCAAgent = CampaignAssignAgent::where('campaign_id', $attributes['campaign_id'])->where('user_id', $user['user_id'])->where('status', 1)->first();
+
+                            if(isset($resultCAAgent) && $resultCAAgent->id) {
+                                $result['status'] = TRUE;
+                            } else {
+                                $result = $this->agentRepository->store(array(
+                                    'campaign_id' => $attributes['campaign_id'],
+                                    'campaign_assign_ratl_id' => $ca_ratl_id,
+                                    'user_id' => $user['user_id'],
+                                    'display_date' => date('Y-m-d', strtotime($attributes['display_date'])),
+                                    'allocation' => $user['allocation'],
+                                    'reporting_file' => null,
+                                    'assigned_by' => Auth::id()
+                                ));
+                            }
 
                             if($result['status'] == TRUE) {
                                 $flag = 1;
@@ -324,13 +330,21 @@ class CampaignAssignRepository implements CampaignAssignInterface
                             }
                             break;
                         case 'sr_vendor_management_specialist' :
-                            $result = $this->vendorManagerRepository->store(array(
-                                'campaign_id' => $attributes['campaign_id'],
-                                'user_id' => $user['user_id'],
-                                'display_date' => date('Y-m-d', strtotime($attributes['display_date'])),
-                                'allocation' => $user['allocation'],
-                                'assigned_by' => Auth::id()
-                            ));
+
+                            $resultCAVM = CampaignAssignVendorManager::where('campaign_id', $attributes['campaign_id'])->where('user_id', $user['user_id'])->where('status', 1)->first();
+
+                            if(isset($resultCAVM) && $resultCAVM->id) {
+                                $result['status'] = TRUE;
+                            } else {
+                                $result = $this->vendorManagerRepository->store(array(
+                                    'campaign_id' => $attributes['campaign_id'],
+                                    'user_id' => $user['user_id'],
+                                    'display_date' => date('Y-m-d', strtotime($attributes['display_date'])),
+                                    'allocation' => $user['allocation'],
+                                    'assigned_by' => Auth::id()
+                                ));
+                            }
+
                             if($result['status'] == TRUE) {
                                 $flag = 1;
                                 $user_names .= $resultUser->full_name.', ';
