@@ -296,7 +296,7 @@ class CampaignRepository implements CampaignInterface
                             'sender_id' => Auth::id(),
                             'recipient_id' => $manager->id,
                             'message' => 'New campaign added - '.$campaign->name,
-                            'url' => implode('/', array_slice(explode('/', route('manager.campaign.show', base64_encode($campaign->id))), 4))
+                            'url' => secured_url(route('manager.campaign.show', base64_encode($campaign->id)))
                         );
                     }
                     $responseNotification = ManagerNotification::insert($dataNotification);

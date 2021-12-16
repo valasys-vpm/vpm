@@ -68,7 +68,7 @@ class IssueRepository implements IssueInterface
                             'sender_id' => Auth::id(),
                             'recipient_id' => $manager->id,
                             'message' => 'Campaign issue raised by - '.Auth::user()->full_name,
-                            'url' => implode('/', array_slice(explode('/', route('manager.campaign_assign.show', base64_encode($campaign_issue->campaign_id))), 4))
+                            'url' => route('manager.campaign_assign.show', base64_encode($campaign_issue->campaign_id))
                         );
                     }
                     $responseNotification = ManagerNotification::insert($dataNotification);
@@ -79,7 +79,7 @@ class IssueRepository implements IssueInterface
                         'sender_id' => Auth::id(),
                         'recipient_id' => Auth::user()->reporting_user_id,
                         'message' => 'Campaign issue raised by - '.Auth::user()->full_name,
-                        'url' => implode('/', array_slice(explode('/', route('team_leader.campaign_assign.show', base64_encode($campaign_issue->campaign_id))), 4))
+                        'url' => route('team_leader.campaign_assign.show', base64_encode($campaign_issue->campaign_id))
                     );
                     $responseNotification = RATLNotification::insert($dataNotification);
                 }
@@ -149,7 +149,7 @@ class IssueRepository implements IssueInterface
                             'sender_id' => Auth::id(),
                             'recipient_id' => $campaign_issue->user_id,
                             'message' => 'Campaign issue updated by - '.Auth::user()->full_name,
-                            'url' => implode('/', array_slice(explode('/', route('agent.campaign.show', base64_encode($resultCAAgent->id))), 4))
+                            'url' => route('agent.campaign.show', base64_encode($resultCAAgent->id))
                         );
                         $responseNotification = RANotification::insert($dataNotification);
                         if($resultUser->reporting_user_id != Auth::id()) {
@@ -158,7 +158,7 @@ class IssueRepository implements IssueInterface
                                 'sender_id' => Auth::id(),
                                 'recipient_id' => $resultUser->reporting_user_id,
                                 'message' => 'Campaign issue updated by - '.Auth::user()->full_name,
-                                'url' => implode('/', array_slice(explode('/', route('team_leader.campaign_assign.show', base64_encode($resultCAAgent->campaign_assign_ratl_id))), 4))
+                                'url' => route('team_leader.campaign_assign.show', base64_encode($resultCAAgent->campaign_assign_ratl_id))
                             );
                             $responseNotification = RATLNotification::insert($dataNotification);
                         }
@@ -170,7 +170,7 @@ class IssueRepository implements IssueInterface
                             'sender_id' => Auth::id(),
                             'recipient_id' => $resultUser->reporting_user_id,
                             'message' => 'Campaign issue updated by - '.Auth::user()->full_name,
-                            'url' => implode('/', array_slice(explode('/', route('team_leader.campaign_assign.show', base64_encode($resultCARATL->id))), 4))
+                            'url' => route('team_leader.campaign_assign.show', base64_encode($resultCARATL->id))
                         );
                         $responseNotification = RATLNotification::insert($dataNotification);
                         break;
@@ -184,7 +184,7 @@ class IssueRepository implements IssueInterface
                             'sender_id' => Auth::id(),
                             'recipient_id' => $manager->id,
                             'message' => 'Campaign issue updated by - '.Auth::user()->full_name,
-                            'url' => implode('/', array_slice(explode('/', route('manager.campaign_assign.show', base64_encode($campaign_issue->campaign_id))), 4))
+                            'url' => route('manager.campaign_assign.show', base64_encode($campaign_issue->campaign_id))
                         );
                     }
                     $responseNotification = ManagerNotification::insert($dataNotification);
