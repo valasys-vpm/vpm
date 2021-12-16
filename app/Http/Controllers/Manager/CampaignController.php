@@ -263,6 +263,7 @@ class CampaignController extends Controller
     public function import(Request $request)
     {
         $attributes = $request->all();
+        //dd($attributes);
         $response = $this->campaignRepository->import($attributes);
 
         if(isset($attributes['campaign_file']) && !empty($attributes['campaign_file'])) {

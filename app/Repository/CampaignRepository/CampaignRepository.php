@@ -693,6 +693,10 @@ class CampaignRepository implements CampaignInterface
     {
         $response = array('status' => FALSE, 'message' => 'Something went wrong, please try again.');
         try {
+
+            if(isset($attributes['specification_file']) && !empty($attributes['specification_file'])) {
+                $specification_file = $attributes['specification_file'];
+            }
             ini_set('memory_limit', '-1');
             ini_set('max_execution_time', '0');
 
@@ -723,12 +727,13 @@ class CampaignRepository implements CampaignInterface
 
             foreach ($validatedData as $index => $attributes) {
                 $responseStore = $this->store($attributes);
+
                 if($responseStore['status'] == TRUE) {
-                    if(isset($attributes['specification_file']) && !empty($attributes['specification_file'])) {
-                        $zip = Zip::open($attributes['specification_file']);
+                    if(isset($specification_file) && !empty($specification_file)) {
+                        $zip = Zip::open($specification_file);
                         $fileList = $zip->listFiles();
                         if(!empty($fileList)) {
-                            $campaign_path = 'public/storage/campaigns/'.$response['campaign_id'].'/';
+                            $campaign_path = 'public/storage/campaigns/'.$responseStore['campaign_id'].'/';
                             $unzips_path = 'public/storage/unzips';
                             foreach ($fileList as $filename) {
                                 $exploded = explode('/', $filename);
@@ -740,7 +745,7 @@ class CampaignRepository implements CampaignInterface
                                     File::move($unzips_path.'/'.$exploded[0].'/'.$exploded[1], $campaign_path.$exploded[1]);
                                     File::deleteDirectory($unzips_path.'/'.$exploded[0]);
 
-                                    CampaignSpecification::insert([['campaign_id' => $response['id'], 'file_name' => explode('/', $filename)[1], 'extension' => pathinfo($exploded[1], PATHINFO_EXTENSION)]]);
+                                    CampaignSpecification::insert([['campaign_id' => $responseStore['id'], 'file_name' => explode('/', $filename)[1], 'extension' => pathinfo($exploded[1], PATHINFO_EXTENSION)]]);
                                 }
                             }
                         }
@@ -758,7 +763,7 @@ class CampaignRepository implements CampaignInterface
                 $response = array('status' => TRUE, 'message' => 'All Campaigns imported successfully');
             }
         } catch (\Exception $exception) {
-            //dd($exception->getMessage());
+            dd($exception->getMessage());
             $response = array('status' => FALSE, 'message' => 'Something went wrong, please try again.');
         }
         return $response;
