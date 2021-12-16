@@ -263,13 +263,20 @@ class CampaignAssignRepository implements CampaignAssignInterface
 
                     switch ($resultUser->designation->slug) {
                         case 'ra_team_leader' :
-                            $result = $this->RATLRepository->store(array(
-                                'campaign_id' => $attributes['campaign_id'],
-                                'user_id' => $user['user_id'],
-                                'display_date' => date('Y-m-d', strtotime($attributes['display_date'])),
-                                'allocation' => $user['allocation'],
-                                'assigned_by' => Auth::id()
-                            ));
+                            $resultCARATL = CampaignAssignRATL::where('campaign_id', $attributes['campaign_id'])->where('user_id', $resultUser->reporting_user_id)->where('status', 1)->first();
+
+                            if(isset($resultCARATL) && $resultCARATL->id) {
+                                $result['status'] = TRUE;
+                            } else {
+                                $result = $this->RATLRepository->store(array(
+                                    'campaign_id' => $attributes['campaign_id'],
+                                    'user_id' => $user['user_id'],
+                                    'display_date' => date('Y-m-d', strtotime($attributes['display_date'])),
+                                    'allocation' => $user['allocation'],
+                                    'assigned_by' => Auth::id()
+                                ));
+                            }
+
                             if($result['status'] == TRUE) {
                                 $flag = 1;
                                 $user_names .= $resultUser->full_name.', ';
@@ -277,6 +284,7 @@ class CampaignAssignRepository implements CampaignAssignInterface
                                 throw new \Exception('Something went wrong, please try again.', 1);
                             }
                             break;
+
                         case 'research_analyst' :
                             $ca_ratl_id = 0;
                             //Find RATL entry
