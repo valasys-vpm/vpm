@@ -161,6 +161,11 @@ class CampaignAssignRepository implements CampaignAssignInterface
 
         $query = CampaignAssignRATL::query();
         $query->with('campaign');
+
+        $query->whereHas('campaign', function($children) {
+            $children->whereIn('campaign_status_id', [1,5,6]);
+        });
+
         $query->whereUserId($id);
         $query->whereNotIn('campaign_id', $resultAssignedCampaigns);
         return $query->get();
