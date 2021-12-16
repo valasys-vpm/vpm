@@ -9,7 +9,7 @@ let MONTHS = ['Jan','Feb','Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'
 $(function (){
 
     CAMPAIGN_TABLE = $('#table-campaigns').DataTable({
-        "lengthMenu": [ [500,400,300,200,100,-1], [500,400,300,200,100,'All'] ],
+        "lengthMenu": [ [10, 500,400,300,200,100,-1], [10, 500,400,300,200,100,'All'] ],
         "processing": true,
         "serverSide": true,
         "ajax": {

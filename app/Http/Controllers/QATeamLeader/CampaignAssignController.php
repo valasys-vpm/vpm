@@ -143,6 +143,7 @@ class CampaignAssignController extends Controller
         $query = CampaignAssignQATL::query();
 
         $query->whereUserId(Auth::id());
+
         $query->with('campaign');
         $query->with('campaign.children');
 

@@ -122,6 +122,7 @@ class QATLRepository implements QATLInterface
             if(isset($attributes['started_at']) && $attributes['started_at']) {
                 $ca_qatl->started_at = date('Y-m-d H:i:s', strtotime($attributes['started_at']));
             }
+
             if(array_key_exists('submitted_at', $attributes)) {
                 $ca_qatl->submitted_at = date('Y-m-d H:i:s', strtotime($attributes['submitted_at']));
             }
@@ -151,8 +152,8 @@ class QATLRepository implements QATLInterface
 
                 //Send notification to QATL
                 QATLNotificationRepository::store(array(
-                    'sender_id' => $attributes['assigned_by'],
-                    'recipient_id' => $attributes['user_id'],
+                    'sender_id' => $ca_qatl->assigned_by,
+                    'recipient_id' => $ca_qatl->user_id,
                     'message' => 'Campaign/Lead details updated - '.$resultCampaign->name,
                     'url' => route('qa_team_leader.campaign.show', base64_encode($resultCampaign->id))
                 ));
