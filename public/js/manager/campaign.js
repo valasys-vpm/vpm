@@ -95,10 +95,10 @@ $(function (){
             },
             {
                 render: function (data, type, row) {
-                    let allocation = row.allocation;
+                    let allocation = parseInt(row.allocation);
                     if(row.children.length) {
                         $.each(row.children, function (key, value) {
-                            allocation = allocation + value.allocation;
+                            allocation = parseInt(allocation) + parseInt(value.allocation);
                         });
                     }
                     return allocation;

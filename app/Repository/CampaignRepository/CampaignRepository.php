@@ -98,7 +98,7 @@ class CampaignRepository implements CampaignInterface
             DB::beginTransaction();
             $campaign = new Campaign();
 
-            if(isset($attributes['parent_id'])) {
+            if(isset($attributes['parent_id']) && base64_decode($attributes['parent_id'])) {
                 $resultCampaign = $this->find(base64_decode($attributes['parent_id']));
                 $campaignId = $resultCampaign->campaign_id;
                 $campaign->type  = 'incremental';
@@ -303,7 +303,11 @@ class CampaignRepository implements CampaignInterface
                 }
 
                 //Add Delivery Detail entry
-                CampaignDeliveryDetail::insert(array('campaign_id' => $campaign->id, 'updated_by' => Auth::id()));
+                if(isset($attributes['parent_id'])) {
+                    CampaignDeliveryDetail::where('campaign_id', $campaign->parent_id)->update(array('campaign_progress' => 'Campaign IN - INCR', 'updated_by' => Auth::id()));
+                } else {
+                    CampaignDeliveryDetail::insert(array('campaign_id' => $campaign->id, 'updated_by' => Auth::id()));
+                }
                 DB::commit();
 
                 //Add Campaign History
