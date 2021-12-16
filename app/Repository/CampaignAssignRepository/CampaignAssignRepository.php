@@ -263,7 +263,7 @@ class CampaignAssignRepository implements CampaignAssignInterface
 
                     switch ($resultUser->designation->slug) {
                         case 'ra_team_leader' :
-                            $resultCARATL = CampaignAssignRATL::where('campaign_id', $attributes['campaign_id'])->where('user_id', $resultUser->reporting_user_id)->where('status', 1)->first();
+                            $resultCARATL = CampaignAssignRATL::where('campaign_id', $attributes['campaign_id'])->where('user_id', $user['user_id'])->where('status', 1)->first();
 
                             if(isset($resultCARATL) && $resultCARATL->id) {
                                 $result['status'] = TRUE;
