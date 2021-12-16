@@ -38,14 +38,14 @@
                                 @endif
                             </div>
                         </div>
-                        <ul class="noti-body">
+                        <ul class="noti-body" style="max-height: 400px;overflow-y: scroll;overflow-x: hidden;">
 
                             @if(!empty($notifications) && $notifications->count())
                                 <li class="n-title new-notification">
                                     <p class="m-b-0">NEW</p>
                                 </li>
                                 @foreach($notifications as $key => $notification)
-                                <li class="notification new-notification">
+                                <li class="notification new-notification border-bottom border-light" style="padding: 10px 30px 10px 15px;">
                                     <div class="media">
                                         <img class="img-radius" src="{{ asset('public/template') }}/assets/images/user/avatar-2.jpg" alt="Generic placeholder image">
                                         <div class="media-body">

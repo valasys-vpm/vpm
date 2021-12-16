@@ -41,25 +41,25 @@ class AppServiceProvider extends ServiceProvider
                 switch ($module->slug) {
                     case 'admin': break;
                     case 'manager':
-                        $notifications = ManagerNotification::where('recipient_id', Auth::id())->where('read_status', 0)->get();
+                        $notifications = ManagerNotification::where('recipient_id', Auth::id())->where('read_status', 0)->orderBy('created_at', 'DESC')->get();
                         break;
                     case 'team_leader':
-                        $notifications = RATLNotification::where('recipient_id', Auth::id())->where('read_status', 0)->get();
+                        $notifications = RATLNotification::where('recipient_id', Auth::id())->where('read_status', 0)->orderBy('created_at', 'DESC')->get();
                         break;
                     case 'agent':
-                        $notifications = RANotification::where('recipient_id', Auth::id())->where('read_status', 0)->get();
+                        $notifications = RANotification::where('recipient_id', Auth::id())->where('read_status', 0)->orderBy('created_at', 'DESC')->get();
                         break;
                     case 'qa_team_leader':
-                        $notifications = QATLNotification::where('recipient_id', Auth::id())->where('read_status', 0)->get();
+                        $notifications = QATLNotification::where('recipient_id', Auth::id())->where('read_status', 0)->orderBy('created_at', 'DESC')->get();
                         break;
                     case 'quality_analyst':
-                        $notifications = QANotification::where('recipient_id', Auth::id())->where('read_status', 0)->get();
+                        $notifications = QANotification::where('recipient_id', Auth::id())->where('read_status', 0)->orderBy('created_at', 'DESC')->get();
                         break;
                     case 'email_marketing_executive':
-                        $notifications = EMENotification::where('recipient_id', Auth::id())->where('read_status', 0)->get();
+                        $notifications = EMENotification::where('recipient_id', Auth::id())->where('read_status', 0)->orderBy('created_at', 'DESC')->get();
                         break;
                     case 'vendor_management':
-                        $notifications = VMNotification::where('recipient_id', Auth::id())->where('read_status', 0)->get();
+                        $notifications = VMNotification::where('recipient_id', Auth::id())->where('read_status', 0)->orderBy('created_at', 'DESC')->get();
                         break;
                 }
                 $view->with('notifications', $notifications);
