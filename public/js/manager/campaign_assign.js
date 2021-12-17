@@ -95,16 +95,16 @@ $(function (){
             },
             {
                 render: function (data, type, row) {
-                    let deliver_count = row.deliver_count;
-                    let allocation = row.allocation;
-                    let shortfall_count = row.shortfall_count;
+                    let deliver_count = parseInt(row.deliver_count);
+                    let allocation = parseInt(row.allocation);
+                    let shortfall_count = parseInt(row.shortfall_count);
 
                     if(row.children.length) {
                         $.each(row.children, function (key, value) {
-                            allocation = allocation + value.allocation;
-                            deliver_count = deliver_count + value.deliver_count;
-                            if(value.campaign_status_id === 6) {
-                                shortfall_count = value.shortfall_count;
+                            allocation = allocation + parseInt(value.allocation);
+                            deliver_count = deliver_count + parseInt(value.deliver_count);
+                            if(parseInt(value.campaign_status_id) === 6) {
+                                shortfall_count = parseInt(value.shortfall_count);
                             }
                         });
                     }
