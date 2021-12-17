@@ -189,6 +189,8 @@ class CampaignAssignController extends Controller
         $offset = $request->get("start");
 
         $query = Campaign::query();
+        $query->whereNull('parent_id');
+
         $query->whereIn('id', $this->data['resultAssignedCampaigns']->pluck('id')->toArray());
         $query->with([
             'assigned_ratls',
@@ -202,11 +204,14 @@ class CampaignAssignController extends Controller
 
         //Search Data
         if(isset($searchValue) && $searchValue != "") {
-            $query->where("campaign_id", "like", "%$searchValue%");
-            $query->orWhere("name", "like", "%$searchValue%");
-            $query->orWhere("allocation", "like", "%$searchValue%");
-            $query->orWhere("deliver_count", "like", "%$searchValue%");
+            $query->where(function($query) use ($searchValue){
+                $query->where("campaign_id", "like", "%$searchValue%");
+                $query->orWhere("name", "like", "%$searchValue%");
+                $query->orWhere("allocation", "like", "%$searchValue%");
+                $query->orWhere("deliver_count", "like", "%$searchValue%");
+            });
         }
+        
         //Filters
         if(!empty($filters)) {
 
@@ -309,7 +314,6 @@ class CampaignAssignController extends Controller
             $query->limit($limit);
         }
         //Do not take incremental and reactivated
-        $query->whereNull('parent_id');
         $query->with('children', function($children) {
             $children->orderBy('created_at', 'DESC');
         });
