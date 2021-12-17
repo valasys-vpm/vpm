@@ -12,7 +12,7 @@ class Campaign extends Model
     protected $guarded = array();
     public $timestamps = true;
 
-    protected $appends = ['completed_count'];
+    protected $appends = ['completed_count', 'delivery_file'];
 
     public function campaignType(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
@@ -117,6 +117,16 @@ class Campaign extends Model
     public function getCompletedCountAttribute()
     {
         return $this->hasMany(AgentLead::class, 'campaign_id', 'id')->count();
+    }
+
+    public function getDeliveryFileAttribute()
+    {
+        $resultCAQATL = CampaignAssignQATL::where('campaign_id', $this->id)->whereNotNull('submitted_at')->whereNotNull('file_name')->first();
+        if(isset($resultCAQATL) && $resultCAQATL->id) {
+            return $resultCAQATL->file_name;
+        } else {
+            return null;
+        }
     }
 
 }

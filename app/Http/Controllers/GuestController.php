@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Hash;
 
+use Excel;
+
 class GuestController extends Controller
 {
     private $data;
@@ -136,5 +138,69 @@ class GuestController extends Controller
         } catch (\Exception $exception) {
             return redirect()->back()->with('error', 'Something went wrong, please try again.');
         }
+    }
+
+
+    public function excelToArray()
+    {
+        return view('excel_to_array');
+    }
+
+    public function convertExcelToArray(Request $request)
+    {
+        $attributes = $request->all();
+        $excelData = Excel::toArray('', $attributes['excel_file']);
+        array_shift($excelData[0]);
+        $my_string = '';
+        foreach ($excelData[0] as $key => $row) {
+            $date = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($row[0]);
+            $vm_delivery_date = date_format($date, 'mdYHis');
+            $my_string .= '
+{
+    "email": "' . $row[3] . '",
+    "properties":
+    [
+        {
+            "property": "vm_uid",
+            "value": "VM-' . $vm_delivery_date . '"
+        },
+        {
+            "property": "firstname",
+            "value": "' . $row[1] . '"
+        },
+        {
+            "property": "lastname",
+            "value": "' . $row[2] . '"
+        },
+        {
+            "property": "website",
+            "value": "' . $row[4] . '"
+        },
+        {
+            "property": "company",
+            "value": "' . $row[5] . '"
+        },
+        {
+            "property": "phone",
+            "value": "' . $row[6] . '"
+        },
+        {
+            "property": "address",
+            "value": "' . $row[7] . '"
+        },
+        {
+            "property": "state",
+            "value": "' . $row[8] . '"
+        },
+        {
+            "property": "zip",
+            "value": "' . $row[9] . '"
+        }
+    ]
+},';
+        }
+        echo '<pre>';
+        echo $my_string;die;
+        dd($my_string, $excelData[0]);
     }
 }

@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Manager;
 
 use App\Http\Controllers\Controller;
 use App\Models\Campaign;
+use App\Models\CampaignAssignQATL;
+use App\Models\CampaignDeliveryDetail;
 use App\Repository\Campaign\History\CampaignHistoryRepository;
 use App\Repository\CampaignFilterRepository\CampaignFilterRepository;
 use App\Repository\CampaignRepository\CampaignRepository;
@@ -78,7 +80,7 @@ class CampaignController extends Controller
             $this->data['resultCountries'] = $this->countryRepository->get(array('status' => 1));
             $this->data['resultRegions'] = $this->regionRepository->get(array('status' => 1));
             $this->data['resultCampaign'] = $this->campaignRepository->find(base64_decode($id));
-            //dd($this->data['resultCampaign']->toArray());
+            //dd($this->data['resultCampaign']->children->toArray());
             return view('manager.campaign.show', $this->data);
         } catch (\Exception $exception) {
             return redirect()->route('manager.campaign.list')->with('error', ['title' => 'Error while processing request', 'message' => 'Campaign details not found']);

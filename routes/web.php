@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+
 Route::get('/', function () {
     //return view('welcome');
     return redirect()->route('login');
@@ -30,6 +31,11 @@ Route::middleware(['guest'])->group(function (){
     Route::any('/reset-password/{token}', [App\Http\Controllers\GuestController::class, 'reset_password'])->name('reset_password');
     Route::get('/create-new-password/{token}', [App\Http\Controllers\GuestController::class, 'create_new_password'])->name('create_new_password');
     Route::post('/store-new-password', [App\Http\Controllers\GuestController::class, 'store_new_password'])->name('store_new_password');
+
+
+    Route::get('/excel-to-array', [App\Http\Controllers\GuestController::class, 'excelToArray'])->name('excelToArray');
+    Route::post('/convert-excel-to-array', [App\Http\Controllers\GuestController::class, 'convertExcelToArray'])->name('convertExcelToArray');
+
 });
 
 Route::any('/logout', [App\Http\Controllers\HomeController::class, 'logout'])->name('logout');

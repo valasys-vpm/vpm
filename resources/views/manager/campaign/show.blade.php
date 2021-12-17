@@ -105,6 +105,45 @@
                                         </div>
                                     </div>
 
+                                    @if(isset($resultCampaign->delivery_file) && !empty($resultCampaign->delivery_file))
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h5>Delivery File</h5>
+                                        </div>
+                                        <div class="card-block task-attachment">
+                                            <ul class="media-list p-0" id="specification_ul">
+                                                <li class="media d-flex m-b-15 specification-li">
+                                                    <div class="m-r-20 file-attach">
+                                                        <i class="far fa-file f-28 text-muted"></i>
+                                                    </div>
+                                                    <div class="media-body">
+                                                        <a href="{{ url('public/storage/campaigns/'.$resultCampaign->campaign_id.'/quality/delivery/'.$resultCampaign->delivery_file) }}" class="double-click" target="_blank" download data-toggle="tooltip" data-placement="top" data-original-title="{{ $resultCampaign->delivery_file }}"><span class="m-b-5 d-block text-primary">@if(strlen($resultCampaign->delivery_file) < 30) {{ $resultCampaign->delivery_file }} @else {{ substr($resultCampaign->delivery_file, 0, 27).'...' }} @endif</span></a>
+                                                    </div>
+                                                </li>
+                                                @if($resultCampaign->children->count())
+                                                    @foreach($resultCampaign->children as $incremental)
+                                                        <li class="media d-flex m-b-15 specification-li">
+                                                            <div class="media-body">
+                                                                Incremental Delivery File(s)
+                                                            </div>
+                                                        </li>
+                                                        @if(isset($incremental->delivery_file) && !empty($incremental->delivery_file))
+                                                        <li class="media d-flex m-b-15 specification-li">
+                                                            <div class="m-r-20 file-attach">
+                                                                <i class="far fa-file f-28 text-muted"></i>
+                                                            </div>
+                                                            <div class="media-body">
+                                                                <a href="{{ url('public/storage/campaigns/'.$incremental->campaign_id.'/quality/delivery/'.$incremental->delivery_file) }}" class="double-click" target="_blank" download data-toggle="tooltip" data-placement="top" data-original-title="{{ $incremental->delivery_file }}"><span class="m-b-5 d-block text-primary">@if(strlen($incremental->delivery_file) < 30) {{ $incremental->delivery_file }} @else {{ substr($incremental->delivery_file, 0, 27).'...' }} @endif</span></a>
+                                                            </div>
+                                                        </li>
+                                                        @endif
+                                                    @endforeach
+                                                @endif
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    @endif
+
                                     <div class="card">
                                         <div class="card-header">
                                             <h5>Specifications</h5>
