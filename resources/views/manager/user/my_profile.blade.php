@@ -52,23 +52,23 @@
                                                 <tbody>
                                                 <tr>
                                                     <td>Email:</td>
-                                                    <td class="text-right"><span class="float-right">{{ $resultUser->email }}</span></td>
+                                                    <td class="text-right text-wrap"><span class="float-right">{{ $resultUser->email }}</span></td>
                                                 </tr>
                                                 <tr>
                                                     <td>Employee Code:</td>
-                                                    <td class="text-right"><span class="float-right">{{ $resultUser->employee_code }}</span></td>
+                                                    <td class="text-right text-wrap"><span class="float-right">{{ $resultUser->employee_code }}</span></td>
                                                 </tr>
                                                 <tr>
                                                     <td>Department:</td>
-                                                    <td class="text-right">{{ $resultUser->department->name }}</td>
+                                                    <td class="text-right text-wrap">{{ $resultUser->department->name }}</td>
                                                 </tr>
                                                 <tr>
                                                     <td>Designation:</td>
-                                                    <td class="text-right">{{ $resultUser->designation->name }}</td>
+                                                    <td class="text-right text-wrap">{{ $resultUser->designation->name }}</td>
                                                 </tr>
                                                 <tr>
                                                     <td>Status:</td>
-                                                    <td class="text-right">
+                                                    <td class="text-right text-wrap">
                                                         @switch($resultUser->status)
                                                             @case(1) <span @class('text-success')>Active</span> @break
                                                             @case(0) <span @class('text-danger')>Inactive</span> @break
