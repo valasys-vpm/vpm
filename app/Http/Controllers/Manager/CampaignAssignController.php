@@ -211,7 +211,7 @@ class CampaignAssignController extends Controller
                 $query->orWhere("deliver_count", "like", "%$searchValue%");
             });
         }
-        
+
         //Filters
         if(!empty($filters)) {
 

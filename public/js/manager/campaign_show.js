@@ -39,6 +39,13 @@ $(function(){
         });
     });
 
+    $( '#modal-edit-campaign-details' ).modal( {
+        focus: false,
+
+        // Do not show modal when innitialized.
+        show: false
+    } );
+
     $('.foo-table').footable({
         "paging": { "enabled": true }
     });
