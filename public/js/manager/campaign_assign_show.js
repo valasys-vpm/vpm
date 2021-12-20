@@ -72,9 +72,9 @@ $(function(){
             async : true,
             success: function (response) {
                 if(response.status === true) {
-                    $("#modal-assign-campaign").modal('hide');
+                    $("#modal-close-issue").modal('hide');
                     trigger_pnofify('success', 'Successful', response.message);
-                    //window.location.reload();
+                    window.location.reload();
                 } else {
                     trigger_pnofify('error', 'Something went wrong', response.message);
                 }
