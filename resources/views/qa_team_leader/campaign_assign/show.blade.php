@@ -162,7 +162,6 @@
                                                         <th class="text-center">Pacing</th>
                                                         <th class="text-center">Allocation</th>
                                                         <th class="text-center">Status</th>
-                                                        <th class="text-center">Action</th>
                                                     </tr>
                                                     </thead>
                                                     <tbody class="text-center text-muted">
@@ -201,9 +200,6 @@
                                                                 <span class="badge badge-pill badge-secondary" style="padding: 5px;min-width: 80px;">Shortfall{{ $campaign_type }}</span>
                                                                 @break
                                                             @endswitch
-                                                        </td>
-                                                        <td>
-                                                            <a href="javascript:;" onclick="alert('Feature in progress!!!');" class="btn btn-outline-primary btn-sm btn-rounded mb-0" title="Click Me" style="padding: 5px 8px;"><i class="feather icon-eye mr-0"></i></a>
                                                         </td>
                                                     </tr>
                                                     <tr class="pacing-details" style="display: none;">
