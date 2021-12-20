@@ -39,13 +39,6 @@ $(function(){
         });
     });
 
-    $( '#modal-edit-campaign-details' ).modal( {
-        focus: false,
-
-        // Do not show modal when innitialized.
-        show: false
-    } );
-
     $('.foo-table').footable({
         "paging": { "enabled": true }
     });
@@ -79,61 +72,6 @@ $(function(){
         } else {
             $("#div-shortfall-count").hide();
             $("#shortfall_count").attr('disabled','disabled');
-        }
-    });
-
-    //Validate Form
-    $("#modal-form-update-campaign-details").validate({
-        focusInvalid: false,
-        rules: {
-            'name' : { required : true },
-            'v_mail_campaign_id' : {
-                required: false,
-                remote : {
-                    url : $('meta[name="base-path"]').attr('content')+'/manager/campaign/validate-v-mail-campaign-id',
-                    data: { campaign_id : $('#campaign_id').val() }
-                }
-            },
-            'campaign_filter_id' : { required : true },
-            'campaign_type_id' : { required : true },
-            'country_id[]' : { required : true },
-        },
-        messages: {
-            'name' : { required : "Please enter campaign name" },
-            'v_mail_campaign_id' : {
-                remote : "V-Mail Campaign Id already exists"
-            },
-            'campaign_filter_id' : { required : "Please select campaign filter" },
-            'campaign_type_id' : { required : "Please select campaign tye" },
-            'country_id[]' : { required : "Please select country(s)" },
-        },
-        errorPlacement: function errorPlacement(error, element) {
-            var $parent = $(element).parents('.form-group');
-
-            // Do not duplicate errors
-            if ($parent.find('.jquery-validation-error').length) {
-                return;
-            }
-
-            $parent.append(
-                error.addClass('jquery-validation-error small form-text invalid-feedback')
-            );
-        },
-        highlight: function(element) {
-            var $el = $(element);
-            var $parent = $el.parents('.form-group');
-
-            $el.addClass('is-invalid');
-
-            // Select2 and Tagsinput
-            if ($el.hasClass('select2-hidden-accessible') || $el.attr('data-role') === 'tagsinput') {
-                $el.parent().addClass('is-invalid');
-            }
-        },
-        unhighlight: function(element) {
-            if($(element).attr('aria-invalid') === 'false') {
-                $(element).parents('.form-group').find('.is-invalid').removeClass('is-invalid');
-            }
         }
     });
 
@@ -177,38 +115,6 @@ $(function(){
 
 
 $(function(){
-
-    $('#modal-form-update-campaign-details-submit').on('click', function (e) {
-        e.preventDefault();
-        if($("#modal-form-update-campaign-details").valid()) {
-
-            $.ajax({
-                type: 'post',
-                url: $('meta[name="base-path"]').attr('content') + '/manager/campaign/update/'+$('#campaign_id').val(),
-                data: {
-                    campaign_id: $('#campaign_id').val(),
-                    name: $('#name').val(),
-                    v_mail_campaign_id: $('#v_mail_campaign_id').val(),
-                    campaign_filter_id: $('#campaign_filter_id').val(),
-                    campaign_type_id: $('#campaign_type_id').val(),
-                    country_id: $('#country_id').val(),
-                    note: myEditor.getData()
-                }, // $('#modal-form-update-campaign-details').serialize() + myEditor.getData(),
-                success: function (response) {
-                    console.log(response);
-                    if(response.status === true) {
-                        $('#modal-edit-campaign-details').modal('hide');
-                        trigger_pnofify('success', 'Successful', response.message);
-                        window.location.reload();
-                    } else {
-                        trigger_pnofify('error', 'Something went wrong', response.message);
-                    }
-                }
-            });
-        } else {
-            trigger_pnofify('error', 'Invalid Data', 'Please enter valid details');
-        }
-    });
 
     $('#form-attach-specification-reset').on('click', function (e) {
         document.getElementById("modal-form-attach-specification").reset();

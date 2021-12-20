@@ -172,6 +172,21 @@ class CampaignController extends Controller
         }
     }
 
+    public function edit($campaign_id, Request $request)
+    {
+        try {
+            $this->data['resultCampaignStatuses'] = $this->campaignStatusRepository->get(array('status' => 1));
+            $this->data['resultCampaignFilters'] = $this->campaignFilterRepository->get(array('status' => 1));
+            $this->data['resultCampaignTypes'] = $this->campaignTypeRepository->get(array('status' => 1));
+            $this->data['resultCountries'] = $this->countryRepository->get(array('status' => 1));
+            $this->data['resultRegions'] = $this->regionRepository->get(array('status' => 1));
+            $this->data['resultCampaign'] = $this->campaignRepository->find(base64_decode($campaign_id));
+            return view('manager.campaign.edit', $this->data);
+        } catch (\Exception $exception) {
+            return redirect()->route('manager.campaign.list')->with('error', ['title' => 'Error while processing request', 'message' => 'Campaign details not found']);
+        }
+    }
+
     public function update($id, Request $request)
     {
         $attributes = $request->all();

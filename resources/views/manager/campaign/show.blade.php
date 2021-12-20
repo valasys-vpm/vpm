@@ -72,7 +72,7 @@
                                         <div class="card-header">
                                             <h5>Campaign Details</h5>
                                             <div class="card-header-right">
-                                                <button type="button" class="btn btn-outline-primary btn-sm btn-square" onclick="editCampaignDetails()"><i class="feather icon-edit mr-0"></i> Edit</button>
+                                                <a href="{{ route('manager.campaign.edit', base64_encode($resultCampaign->id)) }}"><button type="button" class="btn btn-outline-primary btn-sm btn-square"><i class="feather icon-edit mr-0"></i> Edit</button></a>
                                             </div>
                                         </div>
                                         <div class="card-block">
