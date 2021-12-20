@@ -287,15 +287,15 @@
 
                                         @if(empty($resultCAAgent->caratl->submitted_at) && !empty($resultCAAgent->started_at))
 
-                                            @if($countAgentData)
-                                            <div class="col-md-3">
-                                                <a href="{{ route('agent.data.list', base64_encode($resultCAAgent->id)) }}">
-                                                    <button type="button" class="btn btn-info btn-sm btn-square w-100">View Data</button>
-                                                </a>
-                                            </div>
-                                            @endif
-
                                             @if(empty($resultCAAgent->submitted_at))
+
+                                                @if($countAgentData)
+                                                    <div class="col-md-3">
+                                                        <a href="{{ route('agent.data.list', base64_encode($resultCAAgent->id)) }}">
+                                                            <button type="button" class="btn btn-info btn-sm btn-square w-100">View Data</button>
+                                                        </a>
+                                                    </div>
+                                                @endif
                                             <div id="div-submit-campaign"  class="col-md-3">
                                                 <button type="button" class="btn btn-danger btn-sm btn-square w-100" onclick="submitCampaign('{{ base64_encode($resultCAAgent->id) }}');" @if($resultCAAgent->agent_lead_count < 1) disabled @endif>Submit Campaign</button>
                                             </div>
