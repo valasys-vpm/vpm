@@ -76,7 +76,7 @@
                                                         <div class="row">
                                                             <div class="col-md-4 form-group">
                                                                 <label for="email_address">Email Address<span class="text-danger">*</span></label>
-                                                                <input autofocus type="text" class="form-control btn-square" id="email_address" name="email_address" placeholder="Enter email address" @if(isset($resultData)) value="{{ $resultData->email_address }}" @endif>
+                                                                <input autofocus type="email" class="form-control btn-square" id="email_address" name="email_address" placeholder="Enter email address" @if(isset($resultData)) value="{{ $resultData->email_address }}" @endif>
                                                             </div>
                                                             <div class="col-md-4 form-group">
                                                                 <label for="specific_title">Specific Title<span class="text-danger">*</span></label>

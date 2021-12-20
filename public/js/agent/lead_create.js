@@ -102,6 +102,7 @@ $(function (){
                 }
             },
             'email_address' : {
+                email: true,
                 required : true,
                 non_empty_value: true,
                 remote : {
