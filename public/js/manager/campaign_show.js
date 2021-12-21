@@ -421,10 +421,10 @@ function getDaySelection_html(pacing, value) {
         days = value.days;
     } else {
         $.each(value.days, function (key, value){
-            days.push(value);
+            days.push(parseInt(value));
         });
     }
-
+    console.log(days);
     switch (pacing) {
         case 'Daily':
             html += '<label for="days">Select Day(s)<span class="text-danger">*</span></label>\n' +
