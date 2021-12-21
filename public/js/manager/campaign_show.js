@@ -111,6 +111,14 @@ $(function(){
         }
     });
 
+    $('body').on("input", ".only-non-zero-number", function (){
+        if(this.value < 1) {
+            $(this).val('');
+        } else {
+            $(this).val(parseInt(this.value));
+        }
+    });
+
 });
 
 

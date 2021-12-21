@@ -598,15 +598,15 @@
                                 <div class="row">
                                     <div class="col-md-6 form-group">
                                         <label for="start_date">Start Date<span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control btn-square" id="start_date" name="start_date" placeholder="Select Start Date">
+                                        <input type="text" class="form-control btn-square" id="start_date" name="start_date" placeholder="Select Start Date" required>
                                     </div>
                                     <div class="col-md-6 form-group">
                                         <label for="end_date">End Date<span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control btn-square" id="end_date" name="end_date" placeholder="Select End Date">
+                                        <input type="text" class="form-control btn-square" id="end_date" name="end_date" placeholder="Select End Date" required>
                                     </div>
                                     <div class="col-md-6 form-group">
                                         <label for="allocation">Allocation<span class="text-danger">*</span></label>
-                                        <input type="number" class="form-control btn-square only-non-zero-number" id="allocation" name="allocation" placeholder="Enter allocation">
+                                        <input type="number" class="form-control btn-square only-non-zero-number" id="allocation" name="allocation" placeholder="Enter allocation" required>
                                     </div>
                                     <div class="col-md-6 form-group">
                                         <label for="deliver_count">Deliver Count<span class="text-danger">*</span></label>

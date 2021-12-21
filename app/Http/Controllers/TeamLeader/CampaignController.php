@@ -53,7 +53,6 @@ class CampaignController extends Controller
             $this->data['resultCampaign'] = $this->campaignRepository->find($this->data['resultCARATL']->campaign->id);
             return view('team_leader.campaign.show', $this->data);
         } catch (\Exception $exception) {
-            dd($exception->getMessage());
             return redirect()->back();
         }
 
