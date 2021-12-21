@@ -429,8 +429,6 @@ function getDaySelection_html(pacing, value) {
     $.each(days_temp, function (key, value){
         days.push(parseInt(value));
     });
-    
-    console.log(days);
 
     switch (pacing) {
         case 'Daily':

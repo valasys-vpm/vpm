@@ -173,10 +173,9 @@
                                                         <td>{{ ucfirst($resultCARATL->campaign->pacing) }}</td>
                                                         <td>
                                                             @php
-                                                                $deliverCount = 0;
-                                                                $percentage = ($deliverCount/$resultCARATL->allocation)*100;
+                                                                $percentage = ($resultCARATL->agent_lead_total_count/$resultCARATL->allocation)*100;
                                                                 $percentage = number_format($percentage,2,".", "");
-                                                                if($percentage == 100) {
+                                                                if($percentage >= 100) {
                                                                     $color_class = 'bg-success';
                                                                 } else {
                                                                     $color_class = 'bg-warning text-dark';
@@ -190,7 +189,7 @@
                                                             @if($resultCARATL->campaign->campaign_status_id === 6)
                                                                 {{ $resultCARATL->campaign->deliver_count }} <span class="text-danger" title="Shortfall Count">({{ $resultCARATL->campaign->shortfall_count }})</span> / {{ $resultCARATL->allocation }}
                                                             @else
-                                                                {{ $resultCARATL->campaign->deliver_count.' / '.$resultCARATL->allocation }}
+                                                                {{ $resultCARATL->agent_lead_total_count.' / '.$resultCARATL->allocation }}
                                                             @endif
                                                         </td>
                                                         <td>
@@ -301,7 +300,7 @@
                                                                 @php
                                                                     $percentage = ($ca_agent->agent_lead_count/$ca_agent->allocation)*100;
                                                                     $percentage = number_format($percentage,2,".", "");
-                                                                    if($percentage == 100) {
+                                                                    if($percentage >= 100) {
                                                                         $color_class = 'bg-success';
                                                                     } else {
                                                                         $color_class = 'bg-warning text-dark';

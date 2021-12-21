@@ -66,9 +66,9 @@ $(function (){
             },
             {
                 render: function (data, type, row) {
-                    let deliver_count = 0;
-                    let allocation = row.allocation;
-                    let shortfall_count = 0;
+                    let deliver_count = parseInt(row.agent_lead_total_count);
+                    let allocation = parseInt(row.allocation);
+                    let shortfall_count = parseInt(row.campaign.shortfall_count);
 
                     if(shortfall_count) {
                         return deliver_count + ' <span class="text-danger" title="Shortfall Count">('+ shortfall_count +')</span>'+' / '+ allocation;
