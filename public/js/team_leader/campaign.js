@@ -35,8 +35,8 @@ $(function (){
             },
             {
                 render: function (data, type, row) {
-                    let deliver_count = row.agent_lead_total_count;
-                    let allocation = row.allocation;
+                    let deliver_count = parseInt(row.agent_lead_total_count);
+                    let allocation = parseInt(row.allocation);
                     let percentage = (deliver_count/allocation)*100;
 
                     percentage = percentage.toFixed(2);
