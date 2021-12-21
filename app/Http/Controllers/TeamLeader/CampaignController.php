@@ -48,10 +48,15 @@ class CampaignController extends Controller
 
     public function show($id)
     {
-        $this->data['resultCARATL'] = $this->RATLRepository->find(base64_decode($id));
-        $this->data['resultCampaign'] = $this->campaignRepository->find($this->data['resultCARATL']->campaign->id);
+        try {
+            $this->data['resultCARATL'] = $this->RATLRepository->find(base64_decode($id));
+            $this->data['resultCampaign'] = $this->campaignRepository->find($this->data['resultCARATL']->campaign->id);
+            return view('team_leader.campaign.show', $this->data);
+        } catch (\Exception $exception) {
+            dd($exception->getMessage());
+            return redirect()->back();
+        }
 
-        return view('team_leader.campaign.show', $this->data);
     }
 
     public function getCampaigns(Request $request): \Illuminate\Http\JsonResponse

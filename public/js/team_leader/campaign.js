@@ -38,7 +38,7 @@ $(function (){
                     let deliver_count = parseInt(row.agent_lead_total_count);
                     let allocation = parseInt(row.allocation);
                     let percentage = (deliver_count/allocation)*100;
-                    console.log(deliver_count, allocation, percentage);
+
                     percentage = percentage.toFixed(2);
                     return '<div class="progress" style="height: 20px;width:100px;border:1px solid lightgrey;"><div class="progress-bar '+ (parseInt(percentage) < 100 ? 'bg-warning text-dark' : 'bg-success text-light' ) +'" role="progressbar" aria-valuenow="'+percentage+'" aria-valuemin="0" aria-valuemax="100" style="width: '+percentage+'%;font-weight:bold;">&nbsp;'+percentage+'%</div></div>';
                 }
