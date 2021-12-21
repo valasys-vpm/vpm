@@ -31,7 +31,7 @@ $(function(){
         ClassicEditor
             .create(document.querySelector('.classic-editor'))
             .then( editor => {
-                console.log( 'Editor was initialized', editor );
+                // console.log( 'Editor was initialized', editor );
                 myEditor = editor;
             } )
             .catch(error => {
@@ -367,7 +367,7 @@ function editSubAllocations(id) {
                                     '</div>' +
                                 '</div>' +
 
-                                '<div class="row" id="'+ value.month_name +'-dates">' +
+                                '<div class="row" id="'+ value.month_name + '-' + value.year +'-dates">' +
                                     getSubAllocations_html(value, response.data.resultCampaign.pacing) +
                                 '</div>' +
                             '</div>';
@@ -462,7 +462,6 @@ function getSubAllocations_html(data, pacing) {
     if(data.sub_allocations.length > 0) {
         $.each(data.sub_allocations, function(key, value){
             if(value.sub_allocation > 0) {
-                console.log(value.sub_allocation);
                 total_allocation = total_allocation + parseInt(value.sub_allocation);
             }
             html += '<div class="col-md-6">\n' +
@@ -472,7 +471,6 @@ function getSubAllocations_html(data, pacing) {
                 '       </div>\n' +
                 '   </div>\n';
         });
-        console.log('total_allocation:-'+total_allocation);
         $("#total-sub-allocation").html(total_allocation);
     } else {
         switch (pacing) {
@@ -510,7 +508,6 @@ function getHtmlPacingDates(_this) {
         $.merge(allDates, getDaysInMonthYear(parseInt(month), parseInt(year), parseInt(this)));
     });
     allDates.sort((a, b) => a.valueOf() - b.valueOf());
-
     let html = '';
 
     $('body').find('#'+MONTHS[month]+'-'+year+'-dates').html(html);
