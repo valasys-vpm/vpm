@@ -416,15 +416,22 @@ function removeSpecification(_this, specification_id) {
 
 function getDaySelection_html(pacing, value) {
     let html = '';
+    let days_temp = [];
     let days = [];
     if(Array.isArray(value.days)) {
-        days = value.days;
+        days_temp = value.days;
     } else {
         $.each(value.days, function (key, value){
-            days.push(parseInt(value));
+            days_temp.push(value);
         });
     }
+
+    $.each(days_temp, function (key, value){
+        days.push(parseInt(value));
+    });
+    
     console.log(days);
+
     switch (pacing) {
         case 'Daily':
             html += '<label for="days">Select Day(s)<span class="text-danger">*</span></label>\n' +
