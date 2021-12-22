@@ -343,7 +343,7 @@ class CampaignRepository implements CampaignInterface
                 $campaign->name = $attributes['name'];
             }
 
-            if(array_key_exists('v_mail_campaign_id', $attributes)) {
+            if(isset($attributes['v_mail_campaign_id']) && !empty($attributes['v_mail_campaign_id'])) {
                 $campaign->v_mail_campaign_id = $attributes['v_mail_campaign_id'];
             }
 
@@ -423,6 +423,7 @@ class CampaignRepository implements CampaignInterface
                 //Add Campaign History
                 $oldData = $newData = array();
                 if(!empty($campaign_updated)) {
+
                     foreach ($campaign_updated as $key => $value) {
                         switch ($key) {
                             case 'campaign_filter_id':
@@ -454,14 +455,13 @@ class CampaignRepository implements CampaignInterface
                                     $oldData['country'] = $oldCountries;
                                     $newData['country'] = $value;
                                 }
-
                                 break;
                             default:
                                 $oldData[$key] = $campaign_copy[$key];
                                 $newData[$key] = $value;
                         }
-
                     }
+
                     if(!empty($newData)) {
                         $historyMessage = get_history_message($oldData, $newData);
                         add_campaign_history($campaign->id, $campaign->parent_id, 'Campaign details updated - '.$historyMessage, array('oldData' => $oldData, 'newData' => $newData));
