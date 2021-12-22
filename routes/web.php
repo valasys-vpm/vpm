@@ -62,6 +62,7 @@ Route::prefix('admin')->middleware(['web', 'check.admin'])->name('admin.')->grou
     include('admin/campaign_filter_routes.php');
     include('admin/campaign_type_routes.php');
     include('admin/campaign_status_routes.php');
+    include('admin/agent_work_type_routes.php');
 
     //Geo Management Routes
     include('admin/geo_routes.php');

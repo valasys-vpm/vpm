@@ -3,30 +3,38 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\SiteSetting;
-use App\Repository\SiteSettingRepository\SiteSettingRepository;
+use App\Models\AgentWorkType;
+use App\Repository\AgentWorkType\AgentWorkTypeRepository;
 use Illuminate\Http\Request;
 
-class SiteSettingController extends Controller
+class AgentWorkTypeController extends Controller
 {
     private $data;
-    private $siteSettingRepository;
+    /**
+     * @var AgentWorkTypeRepository
+     */
+    private $agentWorkTypeRepository;
 
-    public function __construct(SiteSettingRepository $siteSettingRepository)
+    public function __construct(AgentWorkTypeRepository $agentWorkTypeRepository)
     {
         $this->data = array();
-        $this->siteSettingRepository = $siteSettingRepository;
+        $this->agentWorkTypeRepository = $agentWorkTypeRepository;
     }
 
     public function index()
     {
-        return view('admin.site_setting.list');
+        return view('admin.agent_work_type.list', $this->data);
+    }
+
+    public function show($id)
+    {
+        // TODO:
     }
 
     public function store(Request $request): \Illuminate\Http\JsonResponse
     {
         $attributes = $request->all();
-        $response = $this->siteSettingRepository->store($attributes);
+        $response = $this->agentWorkTypeRepository->store($attributes);
         if($response['status'] == TRUE) {
             return response()->json(array('status' => true, 'message' => $response['message']));
         } else {
@@ -36,9 +44,9 @@ class SiteSettingController extends Controller
 
     public function edit($id): \Illuminate\Http\JsonResponse
     {
-        $resultDepartment = $this->siteSettingRepository->find(base64_decode($id));
-        if(!empty($resultDepartment)) {
-            return response()->json(array('status' => true, 'data' => $resultDepartment));
+        $resultAgentWorkType = $this->agentWorkTypeRepository->find(base64_decode($id));
+        if(isset($resultAgentWorkType) && !empty($resultAgentWorkType->id)) {
+            return response()->json(array('status' => true, 'data' => $resultAgentWorkType));
         } else {
             return response()->json(array('status' => false, 'message' => 'Data not found'));
         }
@@ -47,7 +55,7 @@ class SiteSettingController extends Controller
     public function update($id, Request $request): \Illuminate\Http\JsonResponse
     {
         $attributes = $request->all();
-        $response = $this->siteSettingRepository->update(base64_decode($id),$attributes);
+        $response = $this->agentWorkTypeRepository->update(base64_decode($id),$attributes);
         if($response['status'] == TRUE) {
             return response()->json(array('status' => true, 'message' => $response['message']));
         } else {
@@ -57,7 +65,7 @@ class SiteSettingController extends Controller
 
     public function destroy($id): \Illuminate\Http\JsonResponse
     {
-        $response = $this->siteSettingRepository->destroy(base64_decode($id));
+        $response = $this->agentWorkTypeRepository->destroy(base64_decode($id));
         if($response['status'] == TRUE) {
             return response()->json(array('status' => true, 'message' => $response['message']));
         } else {
@@ -65,7 +73,7 @@ class SiteSettingController extends Controller
         }
     }
 
-    public function getSiteSettings(Request $request): \Illuminate\Http\JsonResponse
+    public function getAgentWorkTypes(Request $request): \Illuminate\Http\JsonResponse
     {
         $filters = array_filter(json_decode($request->get('filters'), true));
         $search_data = $request->get('search');
@@ -75,13 +83,12 @@ class SiteSettingController extends Controller
         $limit = $request->get("length"); // Rows display per page
         $offset = $request->get("start");
 
-        $query = SiteSetting::query();
+        $query = AgentWorkType::query();
         $totalRecords = $query->count();
 
         //Search Data
         if(isset($searchValue) && $searchValue != "") {
-            $query->where("key", "like", "%$searchValue%");
-            $query->orWhere("value", "like", "%$searchValue%");
+            $query->where("name", "like", "%$searchValue%");
         }
         //Filters
         if(!empty($filters)) { }
@@ -94,13 +101,13 @@ class SiteSettingController extends Controller
             $orderColumn = $order[0]['column'];
             $orderDirection = $order[0]['dir'];
         }
+
         switch ($orderColumn) {
-            case '0': $query->orderBy('key', $orderDirection); break;
-            case '1': $query->orderBy('value', $orderDirection); break;
-            case '2': $query->orderBy('status', $orderDirection); break;
-            case '3': $query->orderBy('created_at', $orderDirection); break;
-            case '4': $query->orderBy('updated_at', $orderDirection); break;
-            default: $query->orderBy('key'); break;
+            case '0': $query->orderBy('name', $orderDirection); break;
+            case '1': $query->orderBy('status', $orderDirection); break;
+            case '2': $query->orderBy('created_at', $orderDirection); break;
+            case '3': $query->orderBy('updated_at', $orderDirection); break;
+            default: $query->orderBy('name'); break;
         }
 
         $totalFilterRecords = $query->count();
@@ -117,4 +124,5 @@ class SiteSettingController extends Controller
 
         return response()->json($ajaxData);
     }
+
 }

@@ -22,7 +22,7 @@ $(function (){
 $(function (){
 
     CAMPAIGN_TABLE = $('#table-campaigns').DataTable({
-        "lengthMenu": [ [500,400,300,200,100,-1], [500,400,300,200,100,'All'] ],
+        "lengthMenu": [ [25,500,400,300,200,100,-1], [25,500,400,300,200,100,'All'] ],
         "processing": true,
         "serverSide": true,
         "ajax": {

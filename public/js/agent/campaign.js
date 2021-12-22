@@ -70,6 +70,9 @@ $(function (){
                 }
             },
             {
+                data: 'agent_work_type.name'
+            },
+            {
                 render: function (data, type, row) {
                     let status_id  = row.campaign.campaign_status_id;
                     let campaign_type = '';

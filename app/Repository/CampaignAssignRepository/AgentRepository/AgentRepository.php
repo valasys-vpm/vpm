@@ -58,6 +58,7 @@ class AgentRepository implements AgentInterface
 
             $ca_agent->campaign_assign_ratl_id = $attributes['campaign_assign_ratl_id'];
             $ca_agent->campaign_id = $attributes['campaign_id'];
+            $ca_agent->agent_work_type_id = $attributes['agent_work_type_id'];
             $ca_agent->user_id = $attributes['user_id'];
             $ca_agent->display_date = $attributes['display_date'];
             if(isset($attributes['allocation']) && !empty($attributes['allocation'])) {
@@ -124,6 +125,10 @@ class AgentRepository implements AgentInterface
 
             if(isset($attributes['campaign_assign_ratl_id']) && $attributes['campaign_assign_ratl_id']) {
                 $campaign_assign_agent->campaign_assign_ratl_id = $attributes['campaign_assign_ratl_id'];
+            }
+
+            if(isset($attributes['agent_work_type_id']) && $attributes['agent_work_type_id']) {
+                $campaign_assign_agent->agent_work_type_id = $attributes['agent_work_type_id'];
             }
 
             if(isset($attributes['campaign_id']) && $attributes['campaign_id']) {

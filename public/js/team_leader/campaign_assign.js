@@ -202,6 +202,12 @@ function getCampaignCard_html(_campaign_id, _user_list) {
         '                   <div class="col-md-5"><h6 class="card-title">Select Reporting Format File</h6></div>' +
         '                   <div class="col-md-7"><h6 class="card-title">: <input type="file" name="reporting_file"></h6></div>' +
         '               </div>' +
+        '               <div class="row">' +
+        '                   <div class="col-md-5"><h6 class="card-title">Select Work Type</h6></div>' +
+        '                   <div class="col-md-7">: ' +
+                            $('#div-select-agent-work-types').html() +
+        '                   </div>' +
+        '               </div>' +
         '           </div>' +
         '           <div class="col-md-6 border-left">' +
         '               <h5 class="card-title mb-2">User(s) to Assign</h5>' +

@@ -11,6 +11,7 @@ use App\Models\Data;
 use App\Models\Role;
 use App\Models\User;
 use App\Repository\AgentDataRepository\AgentDataRepository;
+use App\Repository\AgentWorkType\AgentWorkTypeRepository;
 use App\Repository\Campaign\IssueRepository\IssueRepository;
 use App\Repository\CampaignAssignRepository\AgentRepository\AgentRepository;
 use App\Repository\CampaignAssignRepository\CampaignAssignRepository;
@@ -114,7 +115,10 @@ class CampaignAssignController extends Controller
             'designation_slug' => array('research_analyst'),
             'reporting_to' => array(Auth::id())
         ));
-        //dd($this->data['resultCampaigns']->toArray());
+
+        $this->data['resultAgentWorkTypes'] = AgentWorkTypeRepository::get(array('status' => 1));
+
+        //dd($this->data['resultAgentWorkTypes']->toArray());
         return view('team_leader.campaign_assign.list', $this->data);
     }
 
@@ -179,7 +183,7 @@ class CampaignAssignController extends Controller
             //get count if data already assigned
             $this->data['countAgentData'] = $this->agentDataRepository->get(array('ca_ratl_ids' => [$this->data['resultCARATL']->id]))->count();
 
-            //dd($this->data['resultCARATL']->toArray());
+            //dd($this->data['resultAgentWorkTypes']->toArray());
             return view('team_leader.campaign_assign.show', $this->data);
 
         } catch (\Exception $exception) {

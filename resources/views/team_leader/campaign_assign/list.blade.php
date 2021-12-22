@@ -156,6 +156,18 @@
             </div>
         </div>
     </div>
+
+    <div id="html-elements" style="display: none;">
+        <div id="div-select-agent-work-types">
+            <select name="agent_work_type_id" id="select_agent_work_type">
+                @if(isset($resultAgentWorkTypes) && !empty($resultAgentWorkTypes) && $resultAgentWorkTypes->count())
+                @foreach($resultAgentWorkTypes as $agent_work_type)
+                        <option value="{{ $agent_work_type->id }}">{{ $agent_work_type->name }}</option>
+                @endforeach
+                @endif
+            </select>
+        </div>
+    </div>
 @endsection
 
 @section('javascript')

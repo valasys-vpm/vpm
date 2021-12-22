@@ -18,6 +18,12 @@ class CampaignAssignAgent extends Model
     {
         return $this->hasOne(Campaign::class, 'id', 'campaign_id');
     }
+
+    public function agent_work_type()
+    {
+        return $this->hasOne(AgentWorkType::class, 'id', 'agent_work_type_id');
+    }
+
     public function user()
     {
         return $this->hasOne(User::class, 'id', 'user_id');

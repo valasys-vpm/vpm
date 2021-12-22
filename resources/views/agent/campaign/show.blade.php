@@ -205,6 +205,7 @@
                                                 <table class="table m-b-0 f-14 b-solid requid-table">
                                                     <thead>
                                                     <tr class="text-uppercase">
+                                                        <th class="text-center">Work<br>Type</th>
                                                         <th class="text-center">Start Date</th>
                                                         <th class="text-center">End Date</th>
                                                         <th class="text-center">Pacing</th>
@@ -215,6 +216,9 @@
                                                     </thead>
                                                     <tbody class="text-center text-muted">
                                                     <tr>
+                                                        <td>
+                                                            {{ $resultCAAgent->agent_work_type->name }}
+                                                        </td>
                                                         <td>{{ date('d-M-Y', strtotime($resultCampaign->start_date)) }}</td>
                                                         <td>{{ date('d-M-Y', strtotime($resultCAAgent->display_date)) }}</td>
                                                         <td>{{ ucfirst($resultCampaign->pacing) }}</td>
@@ -229,7 +233,7 @@
                                                                 }
                                                             @endphp
                                                             <div class="progress mb-4" style="height: 20px;border: 1px solid #e2dada;">
-                                                                <div class="progress-bar {{ $color_class }}" role="progressbar" aria-valuenow="{{$percentage}}" aria-valuemin="0" aria-valuemax="100" style="width: {{$percentage}}%; font-weight: bolder;">{{$percentage}}%</div>
+                                                                <div class="progress-bar {{ $color_class }}" role="progressbar" aria-valuenow="{{$percentage}}" aria-valuemin="0" aria-valuemax="100" style="width: {{$percentage}}%; font-weight: bolder;">&nbsp;&nbsp;{{$percentage}}%</div>
                                                             </div>
                                                         </td>
                                                         <td>

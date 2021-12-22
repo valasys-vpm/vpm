@@ -22,6 +22,9 @@ class CreateCampaignAssignAgentsTable extends Migration
             $table->unsignedInteger('campaign_id');
             $table->foreign('campaign_id')->references('id')->on('campaigns')->onUpdate('cascade');
 
+            $table->unsignedInteger('agent_work_type_id');
+            $table->foreign('agent_work_type_id')->references('id')->on('agent_work_types');
+
             $table->unsignedInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade');
 
