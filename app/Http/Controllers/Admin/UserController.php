@@ -114,11 +114,17 @@ class UserController extends Controller
             $orderDirection = $order[0]['dir'];
         }
         switch ($orderColumn) {
-            case '0': $query->orderBy('first_name', $orderDirection); break;
-            case '1': $query->orderBy('status', $orderDirection); break;
-            case '2': $query->orderBy('created_at', $orderDirection); break;
-            case '3': $query->orderBy('updated_at', $orderDirection); break;
-            default: $query->orderBy('name'); break;
+            case '0': $query->orderBy('logged_on', $orderDirection); break;
+            case '1': $query->orderBy('employee_code', $orderDirection); break;
+            case '2': $query->orderBy('first_name', $orderDirection); break;
+            case '3': $query->orderBy('email', $orderDirection); break;
+            case '4': $query->orderBy('role', $orderDirection); break;
+            case '5': $query->orderBy('department', $orderDirection); break;
+            case '6': $query->orderBy('designation', $orderDirection); break;
+            case '7': $query->orderBy('status', $orderDirection); break;
+            case '8': $query->orderBy('created_at', $orderDirection); break;
+            case '9': $query->orderBy('updated_at', $orderDirection); break;
+            default: $query->orderBy('created_at', 'DESC'); break;
         }
 
         $totalFilterRecords = $query->count();

@@ -41,12 +41,15 @@ $(function (){
             },
             {
                 data: 'role.name',
+                orderable: false
             },
             {
                 data: 'department.name',
+                orderable: false
             },
             {
                 data: 'designation.name',
+                orderable: false
             },
             {
                 render: function (data, type, row) {
@@ -94,6 +97,7 @@ $(function (){
                 });
             });
         },
+        order: []
     });
 
     $('#modal-form-button-submit').on('click', function (e) {
