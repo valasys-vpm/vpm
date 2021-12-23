@@ -33,7 +33,8 @@ let EmailDomainSuggester = {
             EmailDomainSuggester.addDatalist(value);
         } else {
             // empty list
-            EmailDomainSuggester.datalist.empty();
+            EmailDomainSuggester.addDatalist(value);
+            //EmailDomainSuggester.datalist.empty();
         }
 
     },
