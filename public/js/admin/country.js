@@ -4,7 +4,7 @@ let COUNTRY_TABLE;
 $(function (){
 
     COUNTRY_TABLE = $('#table-countries').DataTable({
-        "lengthMenu": [ [10,10,20,30,'all'], [10,10,20,30,'All'] ],
+        "lengthMenu": [ [100,50,25,10,-1], [100,50,25,10,'All'] ],
         "processing": true,
         "serverSide": true,
         "ajax": {

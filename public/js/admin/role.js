@@ -4,7 +4,7 @@ let ROLE_TABLE;
 $(function (){
 
     ROLE_TABLE = $('#table-roles').DataTable({
-        "lengthMenu": [ [5,10,20,30,'all'], [5,10,20,30,'All'] ],
+        "lengthMenu": [ [5,10,20,30,-1], [5,10,20,30,'All'] ],
         "processing": true,
         "serverSide": true,
         "ajax": {

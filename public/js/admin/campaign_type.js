@@ -4,7 +4,7 @@ let CAMPAIGN_TYPE_TABLE;
 $(function (){
 
     CAMPAIGN_TYPE_TABLE = $('#table-campaign-types').DataTable({
-        "lengthMenu": [ [10,20,50,'all'], [10,20,50,'All'] ],
+        "lengthMenu": [ [10,20,50,-1], [10,20,50,'All'] ],
         "processing": true,
         "serverSide": true,
         "ajax": {

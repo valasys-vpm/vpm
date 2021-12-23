@@ -4,7 +4,7 @@ let CAMPAIGN_STATUS_TABLE;
 $(function (){
 
     CAMPAIGN_STATUS_TABLE = $('#table-campaign-statuses').DataTable({
-        "lengthMenu": [ [10,20,50,'all'], [10,20,50,'All'] ],
+        "lengthMenu": [ [10,20,50,-1], [10,20,50,'All'] ],
         "processing": true,
         "serverSide": true,
         "ajax": {

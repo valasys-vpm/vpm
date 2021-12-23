@@ -4,7 +4,7 @@ let CAMPAIGN_FILTER_TABLE;
 $(function (){
 
     CAMPAIGN_FILTER_TABLE = $('#table-campaign-filters').DataTable({
-        "lengthMenu": [ [10,20,50,'all'], [10,20,50,'All'] ],
+        "lengthMenu": [ [10,20,50,-1], [10,20,50,'All'] ],
         "processing": true,
         "serverSide": true,
         "ajax": {

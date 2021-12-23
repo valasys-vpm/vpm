@@ -4,7 +4,7 @@ let DESIGNATION_TABLE;
 $(function (){
 
     DESIGNATION_TABLE = $('#table-designations').DataTable({
-        "lengthMenu": [ [5,10,20,30,'all'], [5,10,20,30,'All'] ],
+        "lengthMenu": [ [5,10,20,30,-1], [5,10,20,30,'All'] ],
         "processing": true,
         "serverSide": true,
         "ajax": {

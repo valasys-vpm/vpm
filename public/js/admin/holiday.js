@@ -4,7 +4,7 @@ let HOLIDAY_TABLE;
 $(function (){
 
     HOLIDAY_TABLE = $('#table-holidays').DataTable({
-        "lengthMenu": [ [5,10,20,30,'all'], [5,10,20,30,'All'] ],
+        "lengthMenu": [ [100,50,25,10,-1], [100,50,25,10,'All'] ],
         "processing": true,
         "serverSide": true,
         "ajax": {

@@ -4,7 +4,7 @@ let AGENT_WORK_TYPE_TABLE;
 $(function (){
 
     AGENT_WORK_TYPE_TABLE = $('#table-agent-work-types').DataTable({
-        "lengthMenu": [ [5,10,20,30,'all'], [5,10,20,30,'All'] ],
+        "lengthMenu": [ [10,20,50,-1], [10,20,50,'All'] ],
         "processing": true,
         "serverSide": true,
         "ajax": {

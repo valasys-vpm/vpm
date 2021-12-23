@@ -5,7 +5,7 @@ let URL = $('meta[name="base-path"]').attr('content');
 $(function (){
 
     USER_TABLE = $('#table-users').DataTable({
-        "lengthMenu": [ [10,20,50,100,'all'], [10,20,50,100,'All'] ],
+        "lengthMenu": [ [100,50,25,10,-1], [100,50,25,10,'All'] ],
         "processing": true,
         "serverSide": true,
         "ajax": {

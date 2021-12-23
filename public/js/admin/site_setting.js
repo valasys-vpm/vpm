@@ -4,7 +4,7 @@ let SITE_SETTING_TABLE;
 $(function (){
 
     SITE_SETTING_TABLE = $('#table-site-settings').DataTable({
-        "lengthMenu": [ [10,20,50,'all'], [10,20,50,'All'] ],
+        "lengthMenu": [ [10,20,50,-1], [10,20,50,'All'] ],
         "processing": true,
         "serverSide": true,
         "ajax": {
