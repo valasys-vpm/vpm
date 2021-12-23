@@ -35,7 +35,7 @@ class UserController extends Controller
 
     public function index()
     {
-        $this->data['resultUsers'] = $this->userRepository->get(array('status' => 1));
+        $this->data['resultUsers'] = $this->userRepository->get(array('status' => 1, 'role_slug' => ['admin', 'manager', 'team_leader']));
         $this->data['resultRoles'] = $this->roleRepository->get(array('status' => 1));
         $this->data['resultDepartments'] = $this->departmentRepository->get(array('status' => 1));
         $this->data['resultDesignations'] = $this->designationRepository->get(array('status' => 1));
