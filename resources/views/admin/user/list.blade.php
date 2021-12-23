@@ -110,7 +110,7 @@
                             </div>
                             <div class="col-md-4 form-group">
                                 <label for="email">Email <span class="text-danger">*</span></label>
-                                <input type="email" class="form-control btn-square" id="email" name="email" placeholder="Enter email address" required>
+                                <input type="email" class="form-control btn-square email-suggession" id="email" name="email" placeholder="Enter email address" required>
                             </div>
                             <div class="col-md-4 form-group">
                                 <label for="reporting_user_id">Reporting to <span class="text-danger">*</span></label>
@@ -182,6 +182,7 @@
     <script src="{{ asset('public/template/assets/plugins/jquery-validation/js/jquery.validate.min.js') }}"></script>
 
     <script src="{{ asset('public/js/admin/user.js?='.time()) }}"></script>
+    <script src="{{ asset('public/js/extras/email_suggessions.js?='.time()) }}"></script>
 @append
 
 
