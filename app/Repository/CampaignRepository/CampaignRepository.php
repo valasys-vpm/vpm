@@ -516,7 +516,6 @@ class CampaignRepository implements CampaignInterface
             }
         } catch (\Exception $exception) {
             DB::rollBack();
-            //dd($exception->getMessage());
             $response = array('status' => FALSE, 'message' => 'Something went wrong, please try again.');
         }
         return $response;
@@ -683,7 +682,6 @@ class CampaignRepository implements CampaignInterface
             }
         } catch (\Exception $exception) {
             DB::rollBack();
-            //dd($exception->getMessage());
             $response = array('status' => FALSE, 'message' => 'Something went wrong, please try again.');
         }
         return $response;
@@ -763,7 +761,6 @@ class CampaignRepository implements CampaignInterface
                 $response = array('status' => TRUE, 'message' => 'All Campaigns imported successfully');
             }
         } catch (\Exception $exception) {
-            dd($exception->getMessage());
             $response = array('status' => FALSE, 'message' => 'Something went wrong, please try again.');
         }
         return $response;
@@ -945,7 +942,6 @@ class CampaignRepository implements CampaignInterface
 
 
         } catch (\Exception $exception) {
-            //dd($exception->getMessage());
             $response = array(
                 'status' => FALSE,
                 'errorMessage' => $errorMessage,

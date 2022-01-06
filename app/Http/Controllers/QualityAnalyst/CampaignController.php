@@ -179,7 +179,6 @@ class CampaignController extends Controller
                 throw new \Exception('Something went wrong, please try again.', 1);
             }
         } catch (\Exception $exception) {
-            //dd($exception->getMessage());
             $response = array('status' => false, 'message' => 'Something went wrong, please try again.');
         }
 
@@ -203,7 +202,6 @@ class CampaignController extends Controller
                 throw new \Exception('Something went wrong, please try again.', 1);
             }
         } catch (\Exception $exception) {
-            //dd($exception->getMessage());
             $response = array('status' => false, 'message' => 'Something went wrong, please try again.');
         }
 

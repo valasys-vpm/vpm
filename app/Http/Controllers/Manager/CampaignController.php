@@ -224,7 +224,6 @@ class CampaignController extends Controller
             } else {
                 return back()->withInput()->with('error', ['title' => 'Error while processing request', 'message' => $response['message']]);
             }
-
         }
     }
 

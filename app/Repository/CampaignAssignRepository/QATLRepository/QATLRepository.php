@@ -84,7 +84,6 @@ class QATLRepository implements QATLInterface
 
         } catch (\Exception $exception) {
             DB::rollBack();
-            //dd($exception->getMessage());
             $response = array('status' => FALSE, 'message' => 'Something went wrong, please try again.');
         }
         return $response;

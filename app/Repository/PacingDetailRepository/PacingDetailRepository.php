@@ -59,24 +59,28 @@ class PacingDetailRepository implements PacingDetailInterface
             PacingDetail::whereCampaignId($campaign->id)->delete();
 
             $insertPacingDetails = array();
-            foreach ($attributes['sub-allocation'] as $date => $sub_allocation) {
-                $insertPacingDetails[] = [
-                    'campaign_id' => $campaign->id,
-                    'date' => $date,
-                    'sub_allocation' => $sub_allocation,
-                    'day' => date('w', strtotime($date))
-                ];
+            if(isset($attributes['sub-allocation']) && !empty($attributes['sub-allocation'])) {
+                foreach ($attributes['sub-allocation'] as $date => $sub_allocation) {
+                    $insertPacingDetails[] = [
+                        'campaign_id' => $campaign->id,
+                        'date' => $date,
+                        'sub_allocation' => $sub_allocation,
+                        'day' => date('w', strtotime($date))
+                    ];
+                }
+
+                if(PacingDetail::insert($insertPacingDetails)) {
+                    DB::commit();
+                    $response = array('status' => TRUE, 'message' => 'Sub allocations updated successfully');
+                } else {
+                    throw new \Exception('Something went wrong, please try again.', 1);
+                }
+            } else {
+                throw new \Exception('Please enter valid sub-allocations', 1);
             }
 
-            if(PacingDetail::insert($insertPacingDetails)) {
-                DB::commit();
-                $response = array('status' => TRUE, 'message' => 'Sub allocations updated successfully');
-            } else {
-                throw new \Exception('Something went wrong, please try again.', 1);
-            }
         } catch (\Exception $exception) {
             DB::rollBack();
-            dd($exception->getMessage());
             $response = array('status' => FALSE, 'message' => 'Something went wrong, please try again.');
         }
         return $response;
