@@ -60,6 +60,7 @@ class PacingDetailRepository implements PacingDetailInterface
 
             $insertPacingDetails = array();
             if(isset($attributes['sub-allocation']) && !empty($attributes['sub-allocation'])) {
+                $historyMessage = '';
                 foreach ($attributes['sub-allocation'] as $date => $sub_allocation) {
                     $insertPacingDetails[] = [
                         'campaign_id' => $campaign->id,
@@ -67,11 +68,18 @@ class PacingDetailRepository implements PacingDetailInterface
                         'sub_allocation' => $sub_allocation,
                         'day' => date('w', strtotime($date))
                     ];
+                    $historyMessage = $historyMessage.'<br><b>'.date('d-M-Y', strtotime($date)).' : '.'</b>'.$sub_allocation;
                 }
 
                 if(PacingDetail::insert($insertPacingDetails)) {
                     DB::commit();
                     $response = array('status' => TRUE, 'message' => 'Sub allocations updated successfully');
+
+                    //Save History
+                    if(!empty($historyMessage)) {
+                        add_campaign_history($campaign->id, $campaign->parent_id, 'Campaign sub-allocation updated - '.$historyMessage, array('newData' => $insertPacingDetails));
+                        add_history('Campaign details updated', 'Campaign sub-allocation updated - '.$historyMessage, array('newData' => $insertPacingDetails));
+                    }
                 } else {
                     throw new \Exception('Something went wrong, please try again.', 1);
                 }
