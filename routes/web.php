@@ -190,6 +190,9 @@ Route::prefix('email-marketing-executive')->middleware(['web', 'check.email_mark
     include('email_marketing_executive/user_routes.php');
 
     //Campaign Management Routes
+    include('email_marketing_executive/campaign_management_routes.php');
+
+    //My Campaign Routes
     include('email_marketing_executive/campaign_routes.php');
 
 });
@@ -212,10 +215,22 @@ Route::prefix('vendor-manager')->middleware(['web', 'check.vendor_manager'])->na
 
 });
 
+
+//Holiday Routes
+Route::prefix('holiday')->name('holiday.')->group(function()
+{
+    Route::get('/list', [App\Http\Controllers\Admin\HolidayController::class, 'index'])->name('list');
+    Route::any('/get-holidays', [App\Http\Controllers\Admin\HolidayController::class, 'getHolidays'])->name('get_holidays');
+
+    Route::any('/get-holiday-list', [App\Http\Controllers\Manager\HolidayController::class, 'getHolidayList'])->name('get_holiday_list');
+});
+
 //Notification Routes
 
 Route::any('/notification/mark-all-as-read', [App\Http\Controllers\NotificationController::class, 'markAllAsRead'])->name('notification.mark_all_as_read');
 Route::any('/notification/view-details/{id}', [App\Http\Controllers\NotificationController::class, 'update'])->name('notification.view_details');
+
+
 
 
 

@@ -8,6 +8,13 @@
         </a>
     </li>
 
+    <li class="nav-item @if(in_array(Request::route()->getName(), array('email_marketing_executive.campaign_management.list', 'email_marketing_executive.campaign_management.show'))) active @endif">
+        <a href="{{ route('email_marketing_executive.campaign_management.list') }}" class="nav-link">
+            <span class="pcoded-micon"><i class="feather icon-list"></i></span>
+            <span class="pcoded-mtext">Campaign Management</span>
+        </a>
+    </li>
+
     <li class="nav-item @if(in_array(Request::route()->getName(), array('email_marketing_executive.campaign.list', 'email_marketing_executive.campaign.show'))) active @endif">
         <a href="{{ route('email_marketing_executive.campaign.list') }}" class="nav-link">
             <span class="pcoded-micon"><i class="feather icon-list"></i></span>

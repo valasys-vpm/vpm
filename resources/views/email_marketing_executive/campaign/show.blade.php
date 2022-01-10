@@ -49,8 +49,8 @@
                                         </div>
                                     </div>
                                     <ul class="breadcrumb">
-                                        <li class="breadcrumb-item"><a href="{{ route('quality_analyst.dashboard') }}"><i class="feather icon-home"></i></a></li>
-                                        <li class="breadcrumb-item"><a href="{{ route('quality_analyst.campaign.list') }}">My Campaigns</a></li>
+                                        <li class="breadcrumb-item"><a href="{{ route('email_marketing_executive.dashboard') }}"><i class="feather icon-home"></i></a></li>
+                                        <li class="breadcrumb-item"><a href="{{ route('email_marketing_executive.campaign.list') }}">My Campaigns</a></li>
                                         <li class="breadcrumb-item"><a href="javascript:void(0);">Campaign Details</a></li>
                                     </ul>
 
@@ -199,7 +199,7 @@
                                                         <th class="text-center">Pacing</th>
                                                         <th class="text-center">Allocation</th>
                                                         <th class="text-center">Status</th>
-                                                        <th class="text-center">Action</th>
+<!--                                                        <th class="text-center">Action</th>-->
                                                     </tr>
                                                     </thead>
                                                     <tbody class="text-center text-muted">
@@ -239,9 +239,9 @@
                                                                 @break
                                                             @endswitch
                                                         </td>
-                                                        <td>
+<!--                                                        <td>
                                                             <a href="javascript:;" onclick="alert('Feature in progress!!!');" class="btn btn-outline-primary btn-sm btn-rounded mb-0" title="view details" style="padding: 5px 8px;"><i class="feather icon-eye mr-0"></i></a>
-                                                        </td>
+                                                        </td>-->
                                                     </tr>
                                                     <tr class="pacing-details" style="display: none;">
                                                         <td colspan="7" class="bg-light text-left">
@@ -280,6 +280,11 @@
                                     <div class="row mb-4">
                                         @if(empty($resultCAEME->submitted_at))
                                         <div id="div-upload-ebb" class="col-md-3">
+                                            <a href="{{ url('public/storage/campaigns/'.$resultCAEME->campaign->campaign_id.'/quality/npf/'.$resultCampaignNPFFiles[0]->file_name) }}" target="_blank" download>
+                                                <button type="button" class="btn btn-dark btn-sm btn-square w-100"><i class="feather icon-download"></i>Download NPF</button>
+                                            </a>
+                                        </div>
+                                            <div id="div-upload-ebb" class="col-md-3">
                                             <button type="button" class="btn btn-primary btn-sm btn-square w-100" data-toggle="modal" data-target="#modal-upload-ebb"><i class="feather icon-upload"></i>Upload EBB</button>
                                         </div>
                                         <div id="div-submit-campaign" class="col-md-3">
