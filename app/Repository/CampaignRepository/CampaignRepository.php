@@ -735,7 +735,7 @@ class CampaignRepository implements CampaignInterface
                             $unzips_path = 'public/storage/unzips';
                             foreach ($fileList as $filename) {
                                 $exploded = explode('/', $filename);
-                                if($attributes['name'] == $exploded[0]) {
+                                if($attributes['name'] == $exploded[0] && !empty($exploded[1])) {
                                     $zip->extract($unzips_path, $filename);
                                     if(!File::exists($campaign_path)) {
                                         File::makeDirectory($campaign_path, $mode = 0777, true, true);
