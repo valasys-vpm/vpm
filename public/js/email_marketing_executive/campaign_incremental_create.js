@@ -12,7 +12,7 @@ let HOLIDAY_LIST = [];
 $(function (){
 
     $.ajax({
-        url: URL + '/email-marketing-executive/holiday/get-holiday-list',
+        url: URL + '/holiday/get-holiday-list',
         type: "get",
         success: function(response) {
             if(response.status === true) {
