@@ -58,19 +58,10 @@
                                                         <th>Campaign ID</th>
                                                         <th>Name</th>
                                                         <th class="text-center">Current<br>Status</th>
-                                                        <th class="text-center">Completion (%)</th>
+{{--                                                        <th class="text-center">Completion (%)</th>--}}
                                                         <th>Start Date</th>
                                                         <th>End Date</th>
-                                                        <th>Completed</th>
                                                         <th>Allocation</th>
-
-                                                        <th class="text-center">Lead<br>Sent</th>
-                                                        <th class="text-center">Lead<br>Approved</th>
-                                                        <th class="text-center">Lead<br>Delivery %</th>
-                                                        <th class="text-center">Lead<br>Rejected</th>
-                                                        <th class="text-center">Lead<br>Available</th>
-                                                        <th class="text-center">Lead<br>Pending</th>
-
                                                         <th class="text-center">Status</th>
                                                         <th>Action</th>
                                                     </tr>

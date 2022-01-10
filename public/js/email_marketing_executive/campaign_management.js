@@ -51,7 +51,7 @@ $(function (){
                     }
                 }
             },
-            {
+            /*{
                 orderable: false,
                 render: function (data, type, row) {
                     //let deliver_count = row.deliver_count;
@@ -72,7 +72,7 @@ $(function (){
 
                     return '<div class="progress" style="height: 20px;width:100px;border:1px solid lightgrey;"><div class="progress-bar '+ (parseInt(percentage) < 100 ? 'bg-warning text-dark' : 'bg-success text-light' ) +'" role="progressbar" aria-valuenow="'+percentage+'" aria-valuemin="0" aria-valuemax="100" style="width: '+percentage+'%;font-weight:bold;">&nbsp;'+percentage+'%</div></div>';
                 }
-            },
+            },*/
             {
                 render: function (data, type, row) {
                     let date = new Date(row.start_date);
@@ -90,11 +90,6 @@ $(function (){
             },
             {
                 render: function (data, type, row) {
-                    return row.completed_count;
-                }
-            },
-            {
-                render: function (data, type, row) {
                     let allocation = parseInt(row.allocation);
                     if(row.children.length) {
                         $.each(row.children, function (key, value) {
@@ -102,85 +97,6 @@ $(function (){
                         });
                     }
                     return allocation;
-                }
-            },
-            {
-                render: function (data, type, row) {
-                    let lead_sent = 0;
-
-                    if(row.delivery_detail) {
-                        if(row.delivery_detail.lead_sent) {
-                            lead_sent = row.delivery_detail.lead_sent;
-                        }
-                    }
-                    return lead_sent;
-                }
-            },
-            {
-                render: function (data, type, row) {
-                    let lead_approved = 0;
-
-                    if(row.delivery_detail) {
-                        if(row.delivery_detail.lead_approved) {
-                            lead_approved = row.delivery_detail.lead_approved;
-                        }
-                    }
-                    return lead_approved;
-                }
-            },
-            {
-                render: function (data, type, row) {
-                    let lead_approved = 0;
-                    let allocation = row.allocation;
-                    let percentage = 0;
-
-                    if(row.delivery_detail) {
-                        if(row.delivery_detail.lead_approved) {
-                            lead_approved = row.delivery_detail.lead_approved;
-                        }
-                    }
-                    if(allocation > 0) {
-                        percentage = (lead_approved/allocation)*100;
-                    }
-
-                    percentage = percentage.toFixed(2);
-                    return '<div class="progress" style="height: 20px;width:100px;border:1px solid lightgrey;"><div class="progress-bar '+ (parseInt(percentage) < 100 ? 'bg-warning text-dark' : 'bg-success text-light' ) +'" role="progressbar" aria-valuenow="'+percentage+'" aria-valuemin="0" aria-valuemax="100" style="width: '+percentage+'%;font-weight:bold;">&nbsp;'+percentage+'%</div></div>';
-                }
-            },
-            {
-                render: function (data, type, row) {
-                    let lead_rejected = 0;
-
-                    if(row.delivery_detail) {
-                        if(row.delivery_detail.lead_rejected) {
-                            lead_rejected = row.delivery_detail.lead_rejected;
-                        }
-                    }
-                    return lead_rejected;
-                }
-            },
-            {
-                render: function (data, type, row) {
-                    let lead_available = 0;
-
-                    if(row.delivery_detail) {
-                        if(row.delivery_detail.lead_available) {
-                            lead_available = row.delivery_detail.lead_available;
-                        }
-                    }
-                    return lead_available;
-                }
-            },
-            {
-                render: function (data, type, row) {
-                    let lead_approved = 0;
-
-                    if(row.delivery_detail) {
-                        if(row.delivery_detail.lead_approved) {
-                            lead_approved = row.delivery_detail.lead_approved;
-                        }
-                    }
-                    return row.allocation - lead_approved;
                 }
             },
             {

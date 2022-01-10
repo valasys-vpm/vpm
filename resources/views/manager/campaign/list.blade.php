@@ -64,12 +64,12 @@
                                                         <th>Completed</th>
                                                         <th>Allocation</th>
 
-                                                        <th class="text-center">Lead<br>Sent</th>
-                                                        <th class="text-center">Lead<br>Approved</th>
-                                                        <th class="text-center">Lead<br>Delivery %</th>
-                                                        <th class="text-center">Lead<br>Rejected</th>
-                                                        <th class="text-center">Lead<br>Available</th>
-                                                        <th class="text-center">Lead<br>Pending</th>
+                                                        <th class="text-center">Leads<br>Sent</th>
+                                                        <th class="text-center">Leads<br>Approved</th>
+                                                        <th class="text-center">Leads<br>Delivery %</th>
+                                                        <th class="text-center">Leads<br>Rejected</th>
+                                                        <th class="text-center">Leads<br>Available</th>
+                                                        <th class="text-center">Leads<br>Pending</th>
 
                                                         <th class="text-center">Status</th>
                                                         <th>Action</th>
