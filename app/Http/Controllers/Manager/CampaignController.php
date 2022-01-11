@@ -284,7 +284,7 @@ class CampaignController extends Controller
 
         if(isset($attributes['campaign_file']) && !empty($attributes['campaign_file'])) {
             if($response['status'] == TRUE) {
-                return response(json_encode(array('status' => true, 'message' => $response['message'])), 200);
+                return response(json_encode(array('status' => true, 'message' => $response['message'])), 205);
             } else {
                 if(!empty($response['file'])) {
                     return $response['file'];

@@ -438,8 +438,9 @@ $(function (){
                 return xhr;
             },
             success: function(response, status, xhr) {
+                console.log(xhr);
                 switch (xhr.status) {
-                    case 200:
+                    case 205:
                         trigger_pnofify('success', 'Successful', 'All Campaigns imported successfully');
                         break;
                     case 201:
