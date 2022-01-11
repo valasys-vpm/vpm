@@ -41,6 +41,10 @@ class UserRepository implements UserInterface
 
         $query->with(['role', 'department', 'designation']);
 
+        if(isset($filters['order_by']) && !empty($filters['order_by'])) {
+            $query->orderBy($filters['order_by']['value'], $filters['order_by']['order']);
+        }
+
         return $query->get();
     }
 

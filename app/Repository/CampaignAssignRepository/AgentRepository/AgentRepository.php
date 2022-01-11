@@ -52,6 +52,7 @@ class AgentRepository implements AgentInterface
         $response = array('status' => FALSE, 'message' => 'Something went wrong, please try again.');
         try {
             DB::beginTransaction();
+            $resultUser = User::findOrFail($attributes['user_id']);
             $resultCampaign = Campaign::findOrFail($attributes['campaign_id']);
 
             $ca_agent = new CampaignAssignAgent();
@@ -91,13 +92,21 @@ class AgentRepository implements AgentInterface
             $ca_agent->save();
             if($ca_agent->id) {
                 CampaignDeliveryDetail::where('campaign_id', $attributes['campaign_id'])->update(array('campaign_progress' => 'Agents Working', 'updated_by' => Auth::id()));
-
+                $notificationURL = '';
+                switch ($resultUser->designation->slug) {
+                    case 'research_analyst':
+                        $notificationURL = route('agent.campaign.show', base64_encode($ca_agent->id));
+                        break;
+                    case 'email_marketing_executive':
+                        $notificationURL = route('email_marketing_executive.campaign.show', base64_encode($ca_agent->id));
+                        break;
+                }
                 //Send Notification
                 $this->RANotificationRepository->store(array(
                     'sender_id' => $attributes['assigned_by'],
                     'recipient_id' => $attributes['user_id'],
                     'message' => 'New campaign assigned - '.$resultCampaign->name,
-                    'url' => route('agent.campaign.show', base64_encode($ca_agent->id))
+                    'url' => $notificationURL
                 ));
 
                 DB::commit();

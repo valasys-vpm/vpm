@@ -112,8 +112,9 @@ class CampaignAssignController extends Controller
         $this->data['resultCampaigns'] = $this->campaignAssignRepository->getCampaignToAssignForTL(Auth::id());
         $this->data['resultUsers'] = $this->userRepository->get(array(
             'status' => 1,
-            'designation_slug' => array('research_analyst'),
-            'reporting_to' => array(Auth::id())
+            'designation_slug' => array('research_analyst', 'email_marketing_executive'),
+            'order_by' => array('value' => 'first_name', 'order' => 'ASC'),
+            //'reporting_to' => array(Auth::id())
         ));
 
         $this->data['resultAgentWorkTypes'] = AgentWorkTypeRepository::get(array('status' => 1));
@@ -222,7 +223,7 @@ class CampaignAssignController extends Controller
             $query->whereHas('campaign', function ($campaign) use($searchValue) {
                 $campaign->where("campaign_id", "like", "%$searchValue%");
                 $campaign->orWhere("name", "like", "%$searchValue%");
-                $campaign->orWhere("deliver_count", "like", "%$searchValue%");
+                //$campaign->orWhere("deliver_count", "like", "%$searchValue%");
             });
             $query->orWhere("allocation", "like", "%$searchValue%");
         }

@@ -189,11 +189,23 @@ Route::prefix('email-marketing-executive')->middleware(['web', 'check.email_mark
     //User Routes
     include('email_marketing_executive/user_routes.php');
 
+    //My Campaign Routes
+    include('email_marketing_executive/campaign_routes.php');
+
+    //Campaign Management Routes
+    include('email_marketing_executive/lead_routes.php');
+
+    //Data Routes
+    include('email_marketing_executive/data_routes.php');
+
+    //Campaign Issue Routes
+    include('email_marketing_executive/campaign_issue_routes.php');
+
     //Campaign Management Routes
     include('email_marketing_executive/campaign_management_routes.php');
 
-    //My Campaign Routes
-    include('email_marketing_executive/campaign_routes.php');
+    //My Promotion Campaign Routes
+    include('email_marketing_executive/promotion_campaign_routes.php');
 
 });
 

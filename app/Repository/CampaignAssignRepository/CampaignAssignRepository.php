@@ -145,6 +145,14 @@ class CampaignAssignRepository implements CampaignAssignInterface
 
     public function getCampaignToAssignForTL($id, $filters = array())
     {
+        $mainQuery = CampaignAssignRATL::query();
+        $mainQuery->whereUserId($id);
+
+        $query = CampaignAssignAgent::query();
+        $query->whereIn('campaign_assign_ratl_id', $mainQuery->get()->pluck('id')->toArray());
+        $resultCampaignAssigned = $query->get();
+
+        /*
         //get TL's member list
         $resultUsers = User::whereReportingUserId($id)->whereStatus(1)->get();
 
@@ -158,17 +166,19 @@ class CampaignAssignRepository implements CampaignAssignInterface
         if(!empty($result['AGENT'])) {
             $resultAssignedCampaigns = array_unique (array_merge ($resultAssignedCampaigns, $result['AGENT']->pluck('campaign_id')->toArray()));
         }
+        */
 
-        $query = CampaignAssignRATL::query();
-        $query->with('campaign');
+        //$query = CampaignAssignRATL::query();
+        //$query->with('campaign');
 
-        $query->whereHas('campaign', function($children) {
+        $mainQuery->whereHas('campaign', function($children) {
             $children->whereIn('campaign_status_id', [1,5,6]);
         });
 
-        $query->whereUserId($id);
-        $query->whereNotIn('campaign_id', $resultAssignedCampaigns);
-        return $query->get();
+        $mainQuery->whereUserId($id);
+        //query->whereNotIn('campaign_id', $resultAssignedCampaigns);
+        $mainQuery->whereNotIn('id', $resultCampaignAssigned->pluck('campaign_assign_ratl_id')->toArray());
+        return $mainQuery->get();
     }
 
     public function getCampaignToAssignForVM($id, $filters = array())

@@ -4,9 +4,10 @@
     @parent
     <!-- data tables css -->
     <link rel="stylesheet" href="{{asset('public/template/assets/plugins/data-tables/css/datatables.min.css')}}">
+    <!-- toolbar css -->
+    <link rel="stylesheet" href="{{asset('public/template/assets/plugins/toolbar/css/jquery.toolbar.css')}}">
     <!-- custom campaign table css -->
     <link rel="stylesheet" href="{{asset('public/css/campaign_table_custom.css')}}">
-
 @append
 
 @section('content')
@@ -23,7 +24,8 @@
                                         <h5 class="m-b-10">My Campaigns</h5>
                                     </div>
                                     <ul class="breadcrumb">
-                                        <li class="breadcrumb-item"><a href="{{ route('agent.dashboard') }}"><i class="feather icon-home"></i></a></li>
+                                        <li class="breadcrumb-item"><a href="{{ route('email_marketing_executive.dashboard') }}"><i class="feather icon-home"></i></a></li>
+                                        <li class="breadcrumb-item"><a href="javascript:void(0);">Promotion</a></li>
                                         <li class="breadcrumb-item"><a href="javascript:void(0);">My Campaigns</a></li>
                                     </ul>
                                 </div>
@@ -48,11 +50,9 @@
                                                     <tr>
                                                         <th>Campaign ID</th>
                                                         <th>Name</th>
-                                                        <th>Completion</th>
                                                         <th>Start Date</th>
                                                         <th>End Date</th>
-                                                        <th>Deliver Count /<br> Allocation</th>
-                                                        <th>Work Type</th>
+                                                        <th>Allocation</th>
                                                         <th>Status</th>
                                                         <th>Action</th>
                                                     </tr>
@@ -79,8 +79,12 @@
     @parent
     <!-- datatable Js -->
     <script src="{{ asset('public/template/assets/plugins/data-tables/js/datatables.min.js') }}"></script>
-    <!-- custom Js -->
-    <script src="{{ asset('public/js/email_marketing_executive/campaign.js?='.time()) }}"></script>
+    <!-- toolbar Js -->
+    <script src="{{ asset('public/template/assets/plugins/toolbar/js/jquery.toolbar.min.js') }}"></script>
+    <!-- jquery-validation Js -->
+    <script src="{{ asset('public/template/assets/plugins/jquery-validation/js/jquery.validate.min.js') }}"></script>
+
+    <script src="{{ asset('public/js/email_marketing_executive/promotion_campaign.js?='.time()) }}"></script>
 @append
 
 
