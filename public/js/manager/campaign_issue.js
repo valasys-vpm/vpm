@@ -114,6 +114,44 @@ $(function (){
         order:[]
     });
 
+    //Validate Form
+    $("#form-close-issue").validate({
+        ignore: [],
+        focusInvalid: false,
+        rules: {
+            'response' : { required : true },
+        },
+        messages: {
+            'response' : { required : "Please enter response" },
+        },
+        errorPlacement: function errorPlacement(error, element) {
+            var $parent = $(element).parents('.form-group');
+
+            // Do not duplicate errors
+            if ($parent.find('.jquery-validation-error').length) {
+                return;
+            }
+
+            $parent.append(
+                error.addClass('jquery-validation-error small form-text invalid-feedback')
+            );
+        },
+        highlight: function(element) {
+            var $el = $(element);
+            var $parent = $el.parents('.form-group');
+
+            $el.addClass('is-invalid');
+
+            // Select2 and Tagsinput
+            if ($el.hasClass('select2-hidden-accessible') || $el.attr('data-role') === 'tagsinput') {
+                $el.parent().addClass('is-invalid');
+            }
+        },
+        unhighlight: function(element) {
+            $(element).parents('.form-group').find('.is-invalid').removeClass('is-invalid');
+        }
+    });
+
     $('#modal-form-button-submit').on('click', function (e) {
         e.preventDefault();
         if($("#modal-campaign-form").valid()) {
@@ -149,21 +187,24 @@ $(function (){
 
     $('#form-close-issue-submit').on('click', function (e) {
         e.preventDefault();
-        $.ajax({
-            type: 'post',
-            url: URL + '/manager/campaign-issue/update/' + $('#modal-close-issue').find('input[name="id"]').val(),
-            data: $('#form-close-issue').serialize(),
-            async : true,
-            success: function (response) {
-                if(response.status === true) {
-                    trigger_pnofify('success', 'Successful', response.message);
-                    $('#modal-close-issue').modal('hide');
-                    CAMPAIGN_ISSUE_TABLE.ajax.reload();
-                } else {
-                    trigger_pnofify('error', 'Something went wrong', response.message);
+        if($("#form-close-issue").valid()) {
+            $.ajax({
+                type: 'post',
+                url: URL + '/manager/campaign-issue/update/' + $('#modal-close-issue').find('input[name="id"]').val(),
+                data: $('#form-close-issue').serialize(),
+                async : true,
+                success: function (response) {
+                    if(response.status === true) {
+                        trigger_pnofify('success', 'Successful', response.message);
+                        $('#modal-close-issue').modal('hide');
+                        CAMPAIGN_ISSUE_TABLE.ajax.reload();
+                    } else {
+                        trigger_pnofify('error', 'Something went wrong', response.message);
+                    }
                 }
-            }
-        });
+            });
+        } else {
+        }
     });
 
 });

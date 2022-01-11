@@ -60,6 +60,10 @@ class CampaignIssueController extends Controller
 
         //Search Data
         if(isset($searchValue) && $searchValue != "") {
+            $query->whereHas('campaign', function ($campaign) use($searchValue) {
+                $campaign->where("campaign_id", "like", "%$searchValue%");
+            });
+            $query->orWhere("title", "like", "%$searchValue%");
             /*$query->where("campaign_id", "like", "%$searchValue%");
             $query->orWhere("name", "like", "%$searchValue%");*/
         }
