@@ -278,6 +278,7 @@ class CampaignAssignRepository implements CampaignAssignInterface
 
                     switch ($resultUser->designation->slug) {
                         case 'ra_team_leader' :
+                        case 'ra_team_leader_business_delivery' :
                             $resultCARATL = CampaignAssignRATL::where('campaign_id', $attributes['campaign_id'])->where('user_id', $user['user_id'])->where('status', 1)->first();
 
                             if(isset($resultCARATL) && $resultCARATL->id) {
@@ -344,6 +345,7 @@ class CampaignAssignRepository implements CampaignAssignInterface
                                 throw new \Exception('Something went wrong, please try again.', 1);
                             }
                             break;
+
                         case 'sr_vendor_management_specialist' :
 
                             $resultCAVM = CampaignAssignVendorManager::where('campaign_id', $attributes['campaign_id'])->where('user_id', $user['user_id'])->where('status', 1)->first();
