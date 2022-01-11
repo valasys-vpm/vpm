@@ -242,10 +242,10 @@
                                             <div id="div-download-delivery-file" class="col-md-3">
                                                 <a href="{{ url('public/storage/campaigns/'.$resultCAQA->campaign->campaign_id.'/quality/qa_final/'.$resultCAQA->file_name) }}"><button type="button" class="btn btn-dark btn-sm btn-square w-100"><i class="feather icon-download"></i> Delivery File</button></a>
                                             </div>
-                                            @endif
                                             <div id="div-submit-campaign" class="col-md-3">
                                                 <button type="button"  class="btn btn-danger btn-sm btn-square w-100" data-toggle="modal" data-target="#modal-submit-campaign">Submit Campaign</button>
                                             </div>
+                                            @endif
                                         @endif
                                     </div>
 
