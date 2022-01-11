@@ -31,8 +31,8 @@
                                         </div>
                                     </div>
                                     <ul class="breadcrumb">
-                                        <li class="breadcrumb-item"><a href="{{ route('team_leader.dashboard') }}"><i class="feather icon-home"></i></a></li>
-                                        <li class="breadcrumb-item"><a href="{{ route('team_leader.campaign.list') }}">My Campaigns</a></li>
+                                        <li class="breadcrumb-item"><a href="{{ route('qa_team_leader.dashboard') }}"><i class="feather icon-home"></i></a></li>
+                                        <li class="breadcrumb-item"><a href="{{ route('qa_team_leader.campaign.list') }}">My Campaigns</a></li>
                                         <li class="breadcrumb-item"><a href="javascript:void(0);">Campaign Details</a></li>
                                     </ul>
 
