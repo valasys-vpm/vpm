@@ -108,7 +108,7 @@ class CampaignController extends Controller
             $orderDirection = $order[0]['dir'];
         }
         switch ($orderColumn) {
-            default: $query->orderBy('created_at'); break;
+            default: $query->orderBy('created_at', 'DESC'); break;
         }
 
         $totalFilterRecords = $query->count();
