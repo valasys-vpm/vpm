@@ -85,10 +85,14 @@
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                         <i class="icon feather icon-settings"></i>
                     </a>
-                    <div class="dropdown-menu dropdown-menu-right profile-notification">
+                    <div class="dropdown-menu dropdown-menu-right profile-notification" style="line-height: 0.4;">
                         <div class="pro-head">
                             <img src="{{ asset('public/template/assets/images/user/avatar-2.jpg') }}" class="img-radius" alt="User-Profile-Image">
-                            <span>{{Auth::user()->full_name}}</span>
+                            <span>
+                                {{Auth::user()->full_name}}
+                                <br>
+                                <small class="text-dark" style="margin-left: 55px;">Reporting: {{Auth::user()->reporting->full_name}}</small>
+                            </span>
                             <a href="{{ route('logout') }}" class="dud-logout" title="Logout">
                                 <i class="feather icon-log-out"></i>
                             </a>
