@@ -36,6 +36,16 @@ $(function (){
         }
     }, "Please enter data");
 
+    jQuery.validator.addMethod("is_email_address", function(value, element) {
+
+        /* Define the recommended regular expression. */
+        var emailExp = new RegExp(/^\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}\b$/i);
+
+        /* Test the email given against the expression and return the result. */
+        return emailExp.test(value);
+
+    }, "Please enter valid email address");
+
     //Validator f() Target Domain
     $.validator.addMethod(
         "remote_suppression_domain",
@@ -105,6 +115,7 @@ $(function (){
                 email: true,
                 required : true,
                 non_empty_value: true,
+                is_email_address: true,
                 remote : {
                     url : URL + '/agent/lead/check-suppression-email/' + $('#ca_agent_id').val(),
                     data : {
@@ -143,7 +154,7 @@ $(function (){
             },
             'email_address' : {
                 required : "Please enter email address",
-                remote: "Client suppression! Target another prospect"
+                remote: "Client suppression or already exists! Target another prospect"
             },
             'specific_title' : { required : "Please enter title" },
             'phone_number' : { required : "Please enter phone number" },

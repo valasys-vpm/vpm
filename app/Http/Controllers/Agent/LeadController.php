@@ -162,14 +162,22 @@ class LeadController extends Controller
     public function checkSuppressionEmail($id, Request $request)
     {
         $resultCAAgent = $this->agentRepository->find(base64_decode($id));
-        $query = SuppressionEmail::query();
-        $query->whereCampaignId($resultCAAgent->campaign_id);
-        $query->whereEmail(trim($request->email_address));
-        if($query->exists()) {
-            return 'false';
+
+        $resultLeadExists = AgentLead::whereCampaignId($resultCAAgent->campaign_id)->whereEmailAddress(trim($request->email_address))->whereStatus(1)->exists();
+
+        if(!$resultLeadExists) {
+            $query = SuppressionEmail::query();
+            $query->whereCampaignId($resultCAAgent->campaign_id);
+            $query->whereEmail(trim($request->email_address));
+            if($query->exists()) {
+                return 'false';
+            } else {
+                return 'true';
+            }
         } else {
-            return 'true';
+            return 'false';
         }
+
     }
 
     public function checkSuppressionDomain($id, Request $request)
