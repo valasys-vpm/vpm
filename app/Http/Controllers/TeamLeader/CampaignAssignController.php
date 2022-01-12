@@ -194,9 +194,14 @@ class CampaignAssignController extends Controller
 
     public function getAssignedCampaigns(Request $request): \Illuminate\Http\JsonResponse
     {
+        $query = CampaignAssignRATL::query();
+        $query->whereUserId(Auth::id());
 
-        $this->data['resultAssignedCampaigns'] = $this->campaignAssignRepository->getCampaignToAgents(Auth::id());
-        //dd($this->data['resultAssignedCampaigns']->toArray());
+        $query_agent_campaigns = CampaignAssignAgent::query();
+        $query_agent_campaigns->whereIn('campaign_assign_ratl_id', $query->get()->pluck('id')->toArray());
+        $resultAgentCampaigns = $query_agent_campaigns->get();
+
+        //$this->data['resultAssignedCampaigns'] = $this->campaignAssignRepository->getCampaignToAgents(Auth::id());
 
         $filters = array_filter(json_decode($request->get('filters'), true));
         $search_data = $request->get('search');
@@ -206,9 +211,7 @@ class CampaignAssignController extends Controller
         $limit = $request->get("length"); // Rows display per page
         $offset = $request->get("start");
 
-        $query = CampaignAssignRATL::query();
-        $query->whereIn('id', $this->data['resultAssignedCampaigns']->pluck('id')->toArray());
-        $query->whereUserId(Auth::id());
+        $query->whereIn('id', $resultAgentCampaigns->pluck('id')->toArray());
 
         $query->with('campaign');
 
