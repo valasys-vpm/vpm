@@ -176,12 +176,7 @@ class CampaignAssignController extends Controller
         }
 
         switch ($orderColumn) {
-            case '0': $query->orderBy('id', $orderDirection); break;
-            case '1': $query->orderBy('id', $orderDirection); break;
-            case '2': $query->orderBy('id', $orderDirection); break;
-            case '3': $query->orderBy('id', $orderDirection); break;
-            case '4': $query->orderBy('id', $orderDirection); break;
-            default: $query->orderBy('id'); break;
+            default: $query->orderBy('created_at', 'DESC'); break;
         }
 
         $totalFilterRecords = $query->count();

@@ -39,37 +39,44 @@ $(function (){
         },
         "columns": [
             {
+                orderable: false,
                 data: 'campaign.campaign_id'
             },
             {
+                orderable: false,
                 render: function (data, type, row) {
                     return '<a href="'+URL+'/qa-team-leader/campaign-assign/view-details/'+btoa(row.id)+'" class="text-dark double-click" title="View campaign details">'+row.campaign.name+'</a>';
                 }
             },
             {
+                orderable: false,
                 render: function (data, type, row) {
                     return row.quality_analyst.user.full_name;
                 }
             },
             {
+                orderable: false,
                 render: function (data, type, row) {
                     let date = new Date(row.campaign.start_date);
                     return (date.getDate() <= 9 ? '0'+date.getDate() : date.getDate())+'/'+MONTHS[date.getMonth()]+'/'+date.getFullYear();
                 }
             },
             {
+                orderable: false,
                 render: function (data, type, row) {
                     let date = new Date(row.display_date);
                     return (date.getDate() <= 9 ? '0'+date.getDate() : date.getDate())+'/'+MONTHS[date.getMonth()]+'/'+date.getFullYear();
                 }
             },
             {
+                orderable: false,
                 render: function (data, type, row) {
                     return row.campaign.allocation
 
                 }
             },
             {
+                orderable: false,
                 render: function (data, type, row) {
                     let status_id  = row.campaign.campaign_status_id;
                     let campaign_type = '';
