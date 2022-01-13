@@ -98,6 +98,7 @@ class CampaignAssignController extends Controller
         $this->data['resultUsers'] = $this->userRepository->get(array(
             'status' => 1,
             'designation_slug' => array('ra_team_leader', 'ra_team_leader_business_delivery', 'research_analyst', 'sr_vendor_management_specialist'),
+            'order_by' => array('value' => 'first_name', 'order' => 'ASC'),
         ));
         //dd($this->data['resultCampaigns']->toArray());
         return view('manager.campaign_assign.list', $this->data);

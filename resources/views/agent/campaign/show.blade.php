@@ -281,16 +281,12 @@
                                         </div>
                                         @endif
 
-                                        @if(!empty($resultCAAgent->started_at))
-                                        <div id="div-manage-leads" class="col-md-3" @if(!empty($resultCAAgent->submitted_at)) style="display: none;" @endif>
-                                            <a href="{{ route('agent.lead.list', base64_encode($resultCAAgent->id)) }}">
-                                                <button type="button" class="btn btn-primary btn-sm btn-square w-100">Manage Leads</button>
-                                            </a>
-                                        </div>
-                                        @endif
-
-                                        @if(empty($resultCAAgent->caratl->submitted_at) && !empty($resultCAAgent->started_at))
-
+                                        @if(!empty($resultCAAgent->started_at) && empty($resultCAAgent->caratl->submitted_at))
+                                            <div id="div-manage-leads" class="col-md-3" @if(!empty($resultCAAgent->submitted_at)) style="display: none;" @endif>
+                                                <a href="{{ route('agent.lead.list', base64_encode($resultCAAgent->id)) }}">
+                                                    <button type="button" class="btn btn-primary btn-sm btn-square w-100">Manage Leads</button>
+                                                </a>
+                                            </div>
                                             @if(empty($resultCAAgent->submitted_at))
 
                                                 @if($countAgentData)
@@ -300,27 +296,25 @@
                                                         </a>
                                                     </div>
                                                 @endif
-                                            <div id="div-submit-campaign"  class="col-md-3">
-                                                <button type="button" class="btn btn-danger btn-sm btn-square w-100" onclick="submitCampaign('{{ base64_encode($resultCAAgent->id) }}');" @if($resultCAAgent->agent_lead_count < 1) disabled @endif>Submit Campaign</button>
-                                            </div>
-                                            <div id="div-raise-issue" class="col-md-3">
-                                                <button type="button" class="btn btn-warning btn-sm btn-square w-100" data-toggle="modal" data-target="#modal-raise-issue">Raise Issue</button>
-                                            </div>
-                                            @endif
 
-                                            @if(!empty($resultCAAgent->submitted_at))
-                                            <div id="div-start-again-campaign" class="col-md-3">
-                                                <button type="button" class="btn btn-success btn-sm btn-square w-100" onclick="startAgainCampaign('{{ base64_encode($resultCAAgent->id) }}');">Restart Campaign</button>
-                                            </div>
+                                                <div id="div-submit-campaign"  class="col-md-3">
+                                                    <button type="button" class="btn btn-danger btn-sm btn-square w-100" onclick="submitCampaign('{{ base64_encode($resultCAAgent->id) }}');" @if($resultCAAgent->agent_lead_count < 1) disabled @endif>Submit Campaign</button>
+                                                </div>
+                                                <div id="div-raise-issue" class="col-md-3">
+                                                    <button type="button" class="btn btn-warning btn-sm btn-square w-100" data-toggle="modal" data-target="#modal-raise-issue">Raise Issue</button>
+                                                </div>
+                                            @else
+                                                <div id="div-start-again-campaign" class="col-md-3">
+                                                    <button type="button" class="btn btn-success btn-sm btn-square w-100" onclick="startAgainCampaign('{{ base64_encode($resultCAAgent->id) }}');">Restart Campaign</button>
+                                                </div>
                                             @endif
-
                                         @endif
                                     </div>
 
                                     @if(isset($resultCampaignIssues) && $resultCampaignIssues->count())
                                     <div class="card">
                                         <div class="card-header">
-                                            <h5><i class="fas fa-info-circle m-r-5"></i> Camapign Issue(s)</h5>
+                                            <h5><i class="fas fa-info-circle m-r-5"></i> Campaign Issue(s)</h5>
                                             <div class="card-header-right">
                                                 <div class="btn-group card-option">
                                                     <button type="button" class="btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

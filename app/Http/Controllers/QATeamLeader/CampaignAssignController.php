@@ -56,6 +56,7 @@ class CampaignAssignController extends Controller
         $this->data['resultUsers'] = $this->userRepository->get(array(
             'status' => 1,
             'designation_slug' => array('quality_analyst'),
+            'order_by' => array('value' => 'first_name', 'order' => 'ASC'),
             'reporting_to' => array(Auth::id())
         ));
         //dd($this->data['resultCampaigns'][0]->campaign->toArray());

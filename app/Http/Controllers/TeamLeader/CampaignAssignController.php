@@ -114,7 +114,7 @@ class CampaignAssignController extends Controller
             'status' => 1,
             'designation_slug' => array('research_analyst', 'email_marketing_executive'),
             'order_by' => array('value' => 'first_name', 'order' => 'ASC'),
-            //'reporting_to' => array(Auth::id())
+            'reporting_to' => array(Auth::id())
         ));
 
         $this->data['resultAgentWorkTypes'] = AgentWorkTypeRepository::get(array('status' => 1));
