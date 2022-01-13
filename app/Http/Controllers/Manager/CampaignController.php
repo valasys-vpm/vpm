@@ -232,8 +232,12 @@ class CampaignController extends Controller
         $campaign = Campaign::query();
         $campaign = $campaign->where('v_mail_campaign_id',strtoupper($request->v_mail_campaign_id));
 
-        if($request->has('campaign_id')) {
-            $campaign = $campaign->where('id', '!=', base64_decode($request->campaign_id));
+        if($request->has('campaign_id') || $request->has('parent_id')) {
+            if($request->has('parent_id')) {
+                $campaign = $campaign->where('id', '!=', base64_decode($request->parent_id));
+            } else {
+                $campaign = $campaign->where('id', '!=', base64_decode($request->campaign_id));
+            }
         }
 
         if($campaign->exists()) {

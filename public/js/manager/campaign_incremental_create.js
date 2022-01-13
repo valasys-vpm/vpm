@@ -234,7 +234,12 @@ $(function (){
             'v_mail_campaign_id' : {
                 required: false,
                 remote : {
-                    url : $('meta[name="base-path"]').attr('content')+'/manager/campaign/validate-v-mail-campaign-id'
+                    url : URL + '/manager/campaign/validate-v-mail-campaign-id',
+                    data : {
+                        parent_id : function(){
+                            return $('input[name=parent_id]').val();
+                        },
+                    }
                 }
             },
             'campaign_filter_id' : { required : true },
