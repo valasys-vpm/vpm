@@ -426,14 +426,14 @@ class CampaignRepository implements CampaignInterface
 
                     foreach ($campaign_updated as $key => $value) {
                         switch ($key) {
-                            case 'campaign_filter_id':
+                            case 'campaign_type_id':
                                 $old = CampaignType::find($campaign_copy[$key]);
                                 $new = CampaignType::find($value);
 
                                 $oldData[$key] = $old->name;
                                 $newData[$key] = $new->name;
                                 break;
-                            case 'campaign_type_id':
+                            case 'campaign_filter_id':
                                 $old = CampaignFilter::find($campaign_copy[$key]);
                                 $new = CampaignFilter::find($value);
 
