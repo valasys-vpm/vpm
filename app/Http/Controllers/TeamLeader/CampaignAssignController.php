@@ -110,12 +110,21 @@ class CampaignAssignController extends Controller
     public function index()
     {
         $this->data['resultCampaigns'] = $this->campaignAssignRepository->getCampaignToAssignForTL(Auth::id());
-        $this->data['resultUsers'] = $this->userRepository->get(array(
+
+        $resultAgents = $this->userRepository->get(array(
             'status' => 1,
-            'designation_slug' => array('research_analyst', 'email_marketing_executive'),
+            'designation_slug' => array('research_analyst'),
             'order_by' => array('value' => 'first_name', 'order' => 'ASC'),
             'reporting_to' => array(Auth::id())
         ));
+
+        $resultEMEs = $this->userRepository->get(array(
+            'status' => 1,
+            'designation_slug' => array('email_marketing_executive'),
+            'order_by' => array('value' => 'first_name', 'order' => 'ASC')
+        ));
+
+        $this->data['resultUsers'] = $resultAgents->merge($resultEMEs);
 
         $this->data['resultAgentWorkTypes'] = AgentWorkTypeRepository::get(array('status' => 1));
 
