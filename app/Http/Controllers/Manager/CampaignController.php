@@ -452,4 +452,23 @@ class CampaignController extends Controller
 
         return view('manager.extra.campaign_history', $this->data);
     }
+
+
+    /**
+     * Remote Validation
+     */
+    public function checkCampaignNameAlreadyExists($id = null, Request $request)
+    {
+        $query = Campaign::query();
+        if(isset($id) && !empty($id)) {
+            $query->whereCampaignId(base64_decode($id));
+        }
+        $query->whereName(trim($request->name));
+
+        if($query->exists()) {
+            return 'false';
+        } else {
+            return 'true';
+        }
+    }
 }

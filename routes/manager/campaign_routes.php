@@ -34,4 +34,6 @@ Route::prefix('campaign')->name('campaign.')->group(function()
 
     Route::any('/get-campaign-history/{id}', [App\Http\Controllers\Manager\CampaignController::class, 'getCampaignHistory'])->name('get_campaign_history');
 
+    //Remote Validation
+    Route::any('/check-campaign-name-already-exists/{id?}', [App\Http\Controllers\Manager\CampaignController::class, 'checkCampaignNameAlreadyExists'])->name('check_campaign_name_already_exists');
 });
