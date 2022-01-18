@@ -128,7 +128,7 @@ class CampaignAssignRepository implements CampaignAssignInterface
         $resultAssignedCampaigns = array();
         //get campaigns already assigned to agents
         $result['VENDOR'] = CampaignAssignVendor::select('campaign_id')
-            ->whereIn('vendor_id', $resultVendors->pluck('id')->toArray())
+            ->whereIn('campaign_assign_vm_id', $resultVendors->pluck('id')->toArray())
             ->whereStatus(1)
             ->get();
 
@@ -189,7 +189,7 @@ class CampaignAssignRepository implements CampaignAssignInterface
         $resultAssignedCampaigns = array();
         //get campaigns already assigned to agents
         $result['VENDOR'] = CampaignAssignVendor::select('campaign_id')
-            ->whereIn('vendor_id', $resultVendors->pluck('id')->toArray())
+            ->whereIn('campaign_assign_vm_id', $resultVendors->pluck('id')->toArray())
             ->whereStatus(1)
             ->get();
 
