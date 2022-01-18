@@ -63,7 +63,7 @@ $(function () {
 
     // Logout the user.
     function IdleTimeout() {
-        //window.location = logoutUrl;
+        window.location = logoutUrl;
         //window.location = lockscreen;
     }
 
