@@ -220,7 +220,7 @@ class CampaignAssignController extends Controller
         $limit = $request->get("length"); // Rows display per page
         $offset = $request->get("start");
 
-        $query->whereIn('id', $resultAgentCampaigns->pluck('id')->toArray());
+        $query->whereIn('id', $resultAgentCampaigns->pluck('campaign_assign_ratl_id')->toArray());
 
         $query->with('campaign');
 
