@@ -124,7 +124,7 @@
                                                             <i class="far fa-file f-28 text-muted"></i>
                                                         </div>
                                                         <div class="media-body">
-                                                            <a href="{{ url('public/storage/campaigns/'.$resultCAEME->campaign->campaign_id.'/'.urlencode($specification->file_name)) }}" class="double-click" target="_blank" download data-toggle="tooltip" data-placement="top" data-original-title="{{ $specification->file_name }}"><span class="m-b-5 d-block text-primary">@if(strlen($specification->file_name) < 30) {{ $specification->file_name }} @else {{ substr($specification->file_name, 0, 27).'...' }} @endif</span></a>
+                                                            <a href="{{ url('public/storage/campaigns/'.$resultCAEME->campaign->campaign_id.'/'.rawurlencode($specification->file_name)) }}" class="double-click" target="_blank" download data-toggle="tooltip" data-placement="top" data-original-title="{{ $specification->file_name }}"><span class="m-b-5 d-block text-primary">@if(strlen($specification->file_name) < 30) {{ $specification->file_name }} @else {{ substr($specification->file_name, 0, 27).'...' }} @endif</span></a>
                                                         </div>
                                                     </li>
                                                 @empty
@@ -151,7 +151,7 @@
                                                             <i class="far fa-file f-28 text-muted"></i>
                                                         </div>
                                                         <div class="media-body">
-                                                            <a href="{{ url('public/storage/campaigns/'.$resultCAEME->campaign->campaign_id.'/quality/npf/'.urlencode($campaign_npf_file->file_name)) }}" class="double-click" target="_blank" download data-toggle="tooltip" data-placement="top" data-original-title="{{ $campaign_npf_file->file_name }}"><span class="m-b-5 d-block text-primary">@if(strlen($campaign_npf_file->file_name) < 30) {{ $campaign_npf_file->file_name }} @else {{ substr($campaign_npf_file->file_name, 0, 27).'...' }} @endif</span></a>
+                                                            <a href="{{ url('public/storage/campaigns/'.$resultCAEME->campaign->campaign_id.'/quality/npf/'.rawurlencode($campaign_npf_file->file_name)) }}" class="double-click" target="_blank" download data-toggle="tooltip" data-placement="top" data-original-title="{{ $campaign_npf_file->file_name }}"><span class="m-b-5 d-block text-primary">@if(strlen($campaign_npf_file->file_name) < 30) {{ $campaign_npf_file->file_name }} @else {{ substr($campaign_npf_file->file_name, 0, 27).'...' }} @endif</span></a>
                                                         </div>
                                                     </li>
                                                 @empty
@@ -280,7 +280,7 @@
                                     <div class="row mb-4">
                                         @if(empty($resultCAEME->submitted_at))
                                         <div id="div-upload-ebb" class="col-md-3">
-                                            <a href="{{ url('public/storage/campaigns/'.$resultCAEME->campaign->campaign_id.'/quality/npf/'.urlencode($resultCampaignNPFFiles[0]->file_name)) }}" target="_blank" download>
+                                            <a href="{{ url('public/storage/campaigns/'.$resultCAEME->campaign->campaign_id.'/quality/npf/'.rawurlencode($resultCampaignNPFFiles[0]->file_name)) }}" target="_blank" download>
                                                 <button type="button" class="btn btn-dark btn-sm btn-square w-100"><i class="feather icon-download"></i>Download NPF</button>
                                             </a>
                                         </div>

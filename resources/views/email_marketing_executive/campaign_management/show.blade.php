@@ -159,7 +159,7 @@
                                                             <i class="far fa-file f-28 text-muted"></i>
                                                         </div>
                                                         <div class="media-body">
-                                                            <a href="{{ url('public/storage/campaigns/'.$resultCampaign->campaign_id.'/'.urlencode($specification->file_name)) }}" class="double-click" target="_blank" download data-toggle="tooltip" data-placement="top" data-original-title="{{ $specification->file_name }}"><span class="m-b-5 d-block text-primary">@if(strlen($specification->file_name) < 30) {{ $specification->file_name }} @else {{ substr($specification->file_name, 0, 27).'...' }} @endif</span></a>
+                                                            <a href="{{ url('public/storage/campaigns/'.$resultCampaign->campaign_id.'/'.rawurlencode($specification->file_name)) }}" class="double-click" target="_blank" download data-toggle="tooltip" data-placement="top" data-original-title="{{ $specification->file_name }}"><span class="m-b-5 d-block text-primary">@if(strlen($specification->file_name) < 30) {{ $specification->file_name }} @else {{ substr($specification->file_name, 0, 27).'...' }} @endif</span></a>
                                                         </div>
                                                         <div class="float-right text-muted">
                                                             <a href="javascript:void(0);" onclick="removeSpecification(this, '{{base64_encode($specification->id)}}');"><i class="fas fa-times f-24 text-danger"></i></a>
@@ -196,7 +196,7 @@
                                                                 <i class="far fa-file f-28 text-muted"></i>
                                                             </div>
                                                             <div class="media-body">
-                                                                <a href="{{ url('public/storage/campaigns/'.$resultCampaign->campaign_id.'/'.urlencode($campaignFile->file_name)) }}" class="double-click" target="_blank" download data-toggle="tooltip" data-placement="top" data-original-title="{{ $campaignFile->file_name }}"><span class="m-b-5 d-block text-primary">@if(strlen($campaignFile->file_name) < 30) {{ $campaignFile->file_name }} @else {{ substr($campaignFile->file_name, 0, 27).'...' }} @endif</span></a>
+                                                                <a href="{{ url('public/storage/campaigns/'.$resultCampaign->campaign_id.'/'.rawurlencode($campaignFile->file_name)) }}" class="double-click" target="_blank" download data-toggle="tooltip" data-placement="top" data-original-title="{{ $campaignFile->file_name }}"><span class="m-b-5 d-block text-primary">@if(strlen($campaignFile->file_name) < 30) {{ $campaignFile->file_name }} @else {{ substr($campaignFile->file_name, 0, 27).'...' }} @endif</span></a>
                                                             </div>
                                                             <div class="float-right text-muted" style="display: none;">
                                                                 <a href="javascript:void(0);" onclick="removeSuppression(this, '{{base64_encode($campaignFile->id)}}');"><i class="fas fa-times f-24 text-danger"></i></a>
