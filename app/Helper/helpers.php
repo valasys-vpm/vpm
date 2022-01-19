@@ -117,9 +117,16 @@ if(!function_exists('send_mail')) {
     {
         $email_data = array();
 
-        if(array_key_exists('to', $details) && !empty($details['to'])) {
-            $email_data['to'] = $details['to'];
+        if(is_live_server()) {
+            if(array_key_exists('to', $details) && !empty($details['to'])) {
+                $email_data['to'] = $details['to'];
+            } else {
+                $email_data['to'] = ['vpm@valasys.com'];
+            }
+        } else {
+            $email_data['to'] = ['vpm@valasys.com'];
         }
+
 
         if(array_key_exists('cc', $details) && !empty($details['cc'])) {
             $email_data['cc'] = $details['cc'];
@@ -158,11 +165,15 @@ if(!function_exists('secured_url')) {
 if(!function_exists('is_live_server')) {
     function is_live_server()
     {
-        if(env('APP_URL') == 'http://localhost/vpm' || env('APP_URL') == 'https://testing.valasysmedia.com') {
+        $testing_urls = array(
+            'http://localhost/vpm',
+            'https://testing.valasysmedia.com'
+        );
+
+        if(in_array(env('APP_URL'), $testing_urls)) {
             return false;
         } else {
             return true;
         }
-
     }
 }

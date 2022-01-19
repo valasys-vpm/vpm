@@ -54,13 +54,8 @@ class GuestController extends Controller
                             'reset_link' => secured_url(route('reset_password', $token))
                         );
                         //Send reset link by email
-                        if(is_live_server()) {
-                            $email = [$resultUser->email];
-                        } else {
-                            $email = ['tejaswini@valasys.com', 'sagar@valasys.com'];
-                        }
                         $api_response = send_mail(array(
-                            'to' => $email,
+                            'to' => [$resultUser->email],
                             'subject' => 'VPM | Reset Password',
                             'body' => view('email.reset_link', $details)->render()
                         ));

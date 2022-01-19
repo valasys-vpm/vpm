@@ -77,7 +77,7 @@
 <!-- [ Pre-loader ] End -->
 
 <!-- [ navigation menu ] start -->
-<nav class="pcoded-navbar navbar-image navbar-image-1" style="background-position: center top;">
+<nav class="pcoded-navbar navbar-image navbar-image-1" style="background-position: center top;height: 100% !important;">
     <div class="navbar-wrapper">
         <div class="navbar-brand header-logo">
 
@@ -172,6 +172,8 @@
             trigger_pnofify('warning', '{{ session('warning')['title'] }}', '{{ session('warning')['message'] }}');
             @endif
         });
+
+        document.body.style.zoom="81%"
     </script>
 
 </body>

@@ -107,8 +107,7 @@ class CampaignAssignController extends Controller
                 $html_body = view('email.campaign.final_delivery', $details)->render();
 
                 $api_response = send_mail(array(
-                    'to' => ['vpm@valasys.com','tejaswini@valasys.com'],
-                    'cc' => ['tejaswi@valasys.com','sagar@valasys.com'],
+                    'to' => ['yuvraj@valasys.com','tahir@valasys.com'],
                     'subject' => 'VPM | Delivery file for - '.$details['campaign_name'],
                     'body' => $html_body
                 ));
