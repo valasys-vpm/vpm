@@ -43,7 +43,7 @@ $(function (){
             },
             {
                 render: function (data, type, row) {
-                    return '<a href="'+URL+'/vendor-manager/campaign-assign/view-details/'+btoa(row.campaign.id)+'" class="text-dark double-click" title="View campaign details">'+row.campaign.name+'</a>';
+                    return '<a href="'+URL+'/vendor-manager/campaign-assign/view-details/'+btoa(row.id)+'" class="text-dark double-click" title="View campaign details">'+row.campaign.name+'</a>';
                 }
             },
             {
@@ -65,14 +65,13 @@ $(function (){
             },
             {
                 render: function (data, type, row) {
-                    let deliver_count = 0;
                     let allocation = row.allocation;
                     let shortfall_count = 0;
 
                     if(shortfall_count) {
-                        return deliver_count + ' <span class="text-danger" title="Shortfall Count">('+ shortfall_count +')</span>'+' / '+ allocation;
+                        return '<span class="text-danger" title="Shortfall Count">('+ shortfall_count +')</span>'+' / '+ allocation;
                     } else {
-                        return deliver_count + ' / '+ allocation;
+                        return allocation;
                     }
 
                 }
@@ -100,7 +99,7 @@ $(function (){
                 render: function (data, type, row) {
                     let html = '';
 
-                    html += '<a href="'+URL+'/vendor-manager/campaign-assign/view-details/'+btoa(row.campaign.id)+'" class="btn btn-outline-info btn-rounded btn-sm" title="View Campaign Details"><i class="feather icon-eye mr-0"></i></a>';
+                    html += '<a href="'+URL+'/vendor-manager/campaign-assign/view-details/'+btoa(row.id)+'" class="btn btn-outline-info btn-rounded btn-sm" title="View Campaign Details"><i class="feather icon-eye mr-0"></i></a>';
 
                     return html;
                 }
@@ -124,7 +123,7 @@ $(function (){
             });
         },
         "createdRow": function(row, data, dataIndex){
-            switch (data.campaign.campaign_status_id) {
+            switch (parseInt(data.campaign.campaign_status_id)) {
                 case 1:
                     $(row).addClass('border-live');
                     break;

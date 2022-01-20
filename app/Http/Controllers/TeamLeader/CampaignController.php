@@ -101,12 +101,12 @@ class CampaignController extends Controller
 
         switch ($orderColumn) {
             case '0': $query->orderBy('campaign_id', $orderDirection); break;
-            case '1': $query->orderBy('name', $orderDirection); break;
+            case '1': $query->orderBy('campaign_id', $orderDirection);break;
             case '2': break;
-            case '3': $query->orderBy('start_date', $orderDirection); break;
-            case '4': $query->orderBy('end_date', $orderDirection); break;
+            case '3': break;
+            case '4': $query->orderBy('display_date', $orderDirection); break;
             case '5': $query->orderBy('allocation', $orderDirection); break;
-            case '6': $query->orderBy('campaign_status_id', $orderDirection); break;
+            case '6': break;
             default: $query->orderBy('created_at', 'DESC'); break;
         }
 

@@ -166,7 +166,7 @@
                                                         <th>Users</th>
                                                         <th>Start Date</th>
                                                         <th>End Date</th>
-                                                        <th>Deliver Count <br>/ Allocation</th>
+                                                        <th>Allocation</th>
                                                         <th>Status</th>
                                                         <th>Action</th>
                                                     </tr>

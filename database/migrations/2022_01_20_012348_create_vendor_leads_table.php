@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateAgentLeadsTable extends Migration
+class CreateVendorLeadsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,17 +13,17 @@ class CreateAgentLeadsTable extends Migration
      */
     public function up()
     {
-        Schema::create('agent_leads', function (Blueprint $table) {
+        Schema::create('vendor_leads', function (Blueprint $table) {
             $table->increments('id');
 
-            $table->unsignedInteger('ca_agent_id');
-            $table->foreign('ca_agent_id')->references('id')->on('campaign_assign_agents')->onUpdate('cascade');
+            $table->unsignedInteger('ca_vendor_id');
+            $table->foreign('ca_vendor_id')->references('id')->on('campaign_assign_vendors');
 
             $table->unsignedInteger('campaign_id');
-            $table->foreign('campaign_id')->references('id')->on('campaigns')->onUpdate('cascade');
+            $table->foreign('campaign_id')->references('id')->on('campaigns');
 
-            $table->unsignedInteger('agent_id');
-            $table->foreign('agent_id')->references('id')->on('users')->onUpdate('cascade');
+            $table->unsignedInteger('vendor_id');
+            $table->foreign('vendor_id')->references('id')->on('vendors');
 
             //Lead Details---
             $table->string('first_name', 50);
@@ -68,6 +68,6 @@ class CreateAgentLeadsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('agent_leads');
+        Schema::dropIfExists('vendor_leads');
     }
 }

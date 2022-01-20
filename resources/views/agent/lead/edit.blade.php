@@ -3,6 +3,7 @@
 @section('stylesheet')
     @parent
     <meta name="ca-agent-id" content="{{ base64_encode($resultAgentLead->ca_agent_id) }}">
+    <meta name="lead-id" content="{{ base64_encode($resultAgentLead->id) }}">
     <style>
         .btn:focus {
             border-color: #80bdff !important;

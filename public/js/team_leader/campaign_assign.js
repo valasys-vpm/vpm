@@ -42,6 +42,7 @@ $(function (){
                 data: 'campaign.campaign_id'
             },
             {
+                orderable: false,
                 render: function (data, type, row) {
                     return '<a href="'+URL+'/team-leader/campaign-assign/view-details/'+btoa(row.id)+'" class="text-dark double-click" title="View campaign details">'+row.campaign.name+'</a>';
                 }
@@ -53,6 +54,7 @@ $(function (){
                 }
             },
             {
+                orderable: false,
                 render: function (data, type, row) {
                     let date = new Date(row.campaign.start_date);
                     return (date.getDate() <= 9 ? '0'+date.getDate() : date.getDate())+'/'+MONTHS[date.getMonth()]+'/'+date.getFullYear();
@@ -79,6 +81,7 @@ $(function (){
                 }
             },
             {
+                orderable: false,
                 render: function (data, type, row) {
                     let status_id  = row.campaign.campaign_status_id;
                     let campaign_type = '';

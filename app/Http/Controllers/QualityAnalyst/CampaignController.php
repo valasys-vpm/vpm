@@ -4,11 +4,13 @@ namespace App\Http\Controllers\QualityAnalyst;
 
 use App\Exports\AgentLeadExport;
 use App\Exports\NPFExport;
+use App\Exports\VendorLeadExport;
 use App\Http\Controllers\Controller;
 use App\Models\Campaign;
 use App\Models\CampaignAssignQualityAnalyst;
 use App\Models\User;
 use App\Repository\CampaignAssignRepository\EMERepository\EMERepository as CAEMERepository;
+use App\Repository\CampaignAssignRepository\QATLRepository\QATLRepository as CAQATLRepository;
 use App\Repository\CampaignAssignRepository\QualityAnalystRepository\QualityAnalystRepository;
 use App\Repository\CampaignEBBFileRepository\CampaignEBBFileRepository;
 use App\Repository\UserRepository\UserRepository;
@@ -40,12 +42,17 @@ class CampaignController extends Controller
      * @var CampaignFileRepository
      */
     private $campaignFileRepository;
+    /**
+     * @var CAQATLRepository
+     */
+    private $CAQATLRepository;
 
     public function __construct(
         QualityAnalystRepository $qualityAnalystRepository,
         CAEMERepository $CAEMERepository,
         UserRepository $userRepository,
-        CampaignEBBFileRepository $campaignEBBFileRepository
+        CampaignEBBFileRepository $campaignEBBFileRepository,
+        CAQATLRepository $CAQATLRepository
     )
     {
         $this->data = array();
@@ -53,6 +60,7 @@ class CampaignController extends Controller
         $this->CAEMERepository = $CAEMERepository;
         $this->userRepository = $userRepository;
         $this->campaignEBBFileRepository = $campaignEBBFileRepository;
+        $this->CAQATLRepository = $CAQATLRepository;
     }
 
     public function index()
@@ -163,22 +171,38 @@ class CampaignController extends Controller
         $response = array('status' => true, 'message' => 'Something went wrong, please try again.');
         try {
             $resultCAQA = $this->qualityAnalystRepository->find(base64_decode($id));
+            $resultCAQATL = $this->CAQATLRepository->find($resultCAQA->campaign_assign_qatl_id);
             $resultCampaign = Campaign::find($resultCAQA->campaign_id);
 
             $path = 'public/campaigns/'.$resultCampaign->campaign_id.'/quality/';
             $path_to_download = '/public/storage/campaigns/'.$resultCampaign->campaign_id.'/quality/';
-            $filename = str_replace(' ', '_', trim($resultCampaign->name)) .'_'.time(). "_AGENT_DATA.xlsx";
-            if(Excel::store(new AgentLeadExport($resultCAQA->campaign_id), $path.$filename)) {
-                $response = array('status' => true, 'message' => 'Successful', 'file_name' => $path_to_download.$filename);
-            } else {
-                throw new \Exception('Something went wrong, please try again.', 1);
+
+            switch ($resultCAQATL->userAssignedBy->role->slug)
+            {
+                case 'vendor_management' :
+                    $filename = str_replace(' ', '_', trim($resultCampaign->name)) .'_'.time(). "_VENDOR_DATA.xlsx";
+                    if(Excel::store(new VendorLeadExport($resultCAQA->campaign_id), $path.$filename)) {
+                        $response = array('status' => true, 'message' => 'Successful', 'file_name' => $path_to_download.$filename);
+                    } else {
+                        throw new \Exception('Something went wrong, please try again.', 1);
+                    }
+                    break;
+                case 'team_leader':
+                default:
+                    $filename = str_replace(' ', '_', trim($resultCampaign->name)) .'_'.time(). "_AGENT_DATA.xlsx";
+                    if(Excel::store(new AgentLeadExport($resultCAQA->campaign_id), $path.$filename)) {
+                        $response = array('status' => true, 'message' => 'Successful', 'file_name' => $path_to_download.$filename);
+                    } else {
+                        throw new \Exception('Something went wrong, please try again.', 1);
+                    }
+                    break;
             }
+
         } catch (\Exception $exception) {
             $response = array('status' => false, 'message' => 'Something went wrong, please try again.');
         }
 
         return response()->json($response);
-
     }
 
     public function downloadNPF($id)

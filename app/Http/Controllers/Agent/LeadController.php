@@ -165,18 +165,23 @@ class LeadController extends Controller
 
         $resultLeadExists = AgentLead::whereCampaignId($resultCAAgent->campaign_id)->whereEmailAddress(trim($request->email_address))->whereStatus(1)->exists();
 
-        if(!$resultLeadExists) {
-            $query = SuppressionEmail::query();
-            $query->whereCampaignId($resultCAAgent->campaign_id);
-            $query->whereEmail(trim($request->email_address));
-            if($query->exists()) {
-                return 'false';
+        if(!$request->has('lead_id')) {
+            if(!$resultLeadExists) {
+                $query = SuppressionEmail::query();
+                $query->whereCampaignId($resultCAAgent->campaign_id);
+                $query->whereEmail(trim($request->email_address));
+                if($query->exists()) {
+                    return 'false';
+                } else {
+                    return 'true';
+                }
             } else {
-                return 'true';
+                return 'false';
             }
         } else {
-            return 'false';
+            return 'true';
         }
+
 
     }
 

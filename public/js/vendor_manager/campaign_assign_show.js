@@ -20,3 +20,24 @@ $(function(){
     });
 });
 
+function submitCampaign(_id) {
+    if(_id && confirm('Are you sure to submit campaign?')) {
+        $.ajax({
+            type: 'post',
+            url: URL + '/vendor-manager/campaign-assign/submit-campaign/' + _id,
+            dataType: 'json',
+            success: function (response) {
+                if(response.status === true) {
+                    $('#div-submit-campaign').css('display', 'none');
+                    $('#div-manage-leads').css('display', 'none');
+                    trigger_pnofify('success', 'Successful', response.message);
+                } else {
+                    trigger_pnofify('error', 'Something went wrong', response.message);
+                }
+            }
+        });
+    } else {
+
+    }
+}
+

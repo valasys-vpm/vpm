@@ -13,12 +13,20 @@ class VendorRepository implements VendorInterface
 
     public function get($filters = array())
     {
-        // TODO: Implement get() method.
+        $query = CampaignAssignVendorManager::query();
+
+        if(isset($filters) && !empty($filters)) {
+
+        }
+
+        return $query->get();
     }
 
     public function find($id)
     {
-        // TODO: Implement find() method.
+        $query = CampaignAssignVendorManager::query();
+
+        return $query->findOrFail($id);
     }
 
     public function store($attributes)
@@ -35,10 +43,10 @@ class VendorRepository implements VendorInterface
                     $dataVendor[] = array(
                         'campaign_id' => $campaign['campaign_id'],
                         'campaign_assign_vm_id' => $campaign['campaign_assign_vm_id'],
-                        'vendor_id' => $vendor['vendor_id'],
+                        'user_id' => $vendor['vendor_id'],
                         'display_date' => date('Y-m-d', strtotime($resultCampaignAssignVM->display_date)),
                         'allocation' => $vendor['allocation'],
-                        'assigned_by' => Auth::id()
+                        'assigned_by' => $attributes['assigned_by']
                     );
                 }
             }
@@ -54,6 +62,7 @@ class VendorRepository implements VendorInterface
 
         } catch (\Exception $exception) {
             DB::rollBack();
+            dd($exception->getMessage());
             $response = array('status' => FALSE, 'message' => 'Something went wrong, please try again.');
         }
         return $response;
