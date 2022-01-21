@@ -18,4 +18,7 @@ Route::prefix('campaign-assign')->name('campaign_assign.')->group(function()
 
     Route::any('/send-for-quality-check/{caratl_id}', [App\Http\Controllers\TeamLeader\CampaignAssignController::class, 'sendForQualityCheck'])->name('send_for_quality_check');
 
+    Route::any('/revoke-campaign/{id}', [App\Http\Controllers\TeamLeader\CampaignAssignController::class, 'revokeCampaign'])->name('revoke_campaign');
+    Route::any('/assign-campaign', [App\Http\Controllers\TeamLeader\CampaignAssignController::class, 'assignCampaign'])->name('assign_campaign');
+    Route::any('/re-assign-campaign/{id}', [App\Http\Controllers\TeamLeader\CampaignAssignController::class, 'reAssignCampaign'])->name('re_assign_campaign');
 });

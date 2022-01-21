@@ -193,7 +193,23 @@ class CampaignAssignController extends Controller
             //get count if data already assigned
             $this->data['countAgentData'] = $this->agentDataRepository->get(array('ca_ratl_ids' => [$this->data['resultCARATL']->id]))->count();
 
-            //dd($this->data['resultAgentWorkTypes']->toArray());
+            $resultAgents = $this->userRepository->get(array(
+                'status' => 1,
+                'designation_slug' => array('research_analyst'),
+                'order_by' => array('value' => 'first_name', 'order' => 'ASC'),
+                'reporting_to' => array(Auth::id())
+            ));
+
+            $resultEMEs = $this->userRepository->get(array(
+                'status' => 1,
+                'designation_slug' => array('email_marketing_executive'),
+                'order_by' => array('value' => 'first_name', 'order' => 'ASC')
+            ));
+
+            $this->data['resultUsers'] = $resultAgents->merge($resultEMEs);
+            $this->data['resultAssignedUsers'] = $this->data['resultCARATL']->agents->pluck('user_id')->toArray();
+
+            //dd($this->data['resultCARATL']->agents->toArray());
             return view('team_leader.campaign_assign.show', $this->data);
 
         } catch (\Exception $exception) {
@@ -294,6 +310,62 @@ class CampaignAssignController extends Controller
             return response()->json(array('status' => false, 'message' => 'Data not found'));
         }
     }
+
+    public function revokeCampaign($id)
+    {
+        $attributes['submitted_at'] = date('Y-m-d H:i:s');
+        $attributes['status'] = 2;
+        $response = $this->agentRepository->update(base64_decode($id), $attributes);
+        if($response['status'] == TRUE) {
+            return response()->json(array('status' => true, 'message' => 'Campaign revoked successfully'));
+        } else {
+            return response()->json(array('status' => false, 'message' => $response['message']));
+        }
+    }
+
+    public function assignCampaign(Request $request)
+    {
+        $attributes = $request->all();
+
+        $resultCARATL = CampaignAssignRATL::where('campaign_id', base64_decode($attributes['campaign_id']))->where('user_id', Auth::id())->first();
+        $resultCAAgent = CampaignAssignAgent::where('campaign_assign_ratl_id', $resultCARATL->id)->first();
+
+        $new_attributes['campaign_assign_ratl_id'] = $resultCARATL->id;
+        $new_attributes['campaign_id'] = $resultCARATL->campaign_id;
+        $new_attributes['display_date'] = $resultCARATL->display_date;
+
+        $new_attributes['agent_work_type_id'] = $resultCAAgent->agent_work_type_id;
+        $new_attributes['allocation'] = $attributes['allocation'];
+        $new_attributes['assigned_by'] = $resultCARATL->user_id;
+
+        $response['status'] = FALSE;
+
+        foreach ($attributes['user_list'] as $user) {
+            $new_attributes['user_id'] = $user;
+            $response = $this->agentRepository->store($new_attributes);
+        }
+
+        if($response['status'] == TRUE) {
+            return response()->json(array('status' => true, 'message' => 'Campaign assigned successfully'));
+        } else {
+            return response()->json(array('status' => false, 'message' => $response['message']));
+        }
+    }
+
+    public function reAssignCampaign($id, Request $request)
+    {
+        $attributes = $request->all();
+        $new_attributes['submitted_at'] = NULL;
+        $new_attributes['status'] = 1;
+        $response = $this->agentRepository->update(base64_decode($id), $new_attributes);
+
+        if($response['status'] == TRUE) {
+            return response()->json(array('status' => true, 'message' => 'Campaign re-assigned successfully'));
+        } else {
+            return response()->json(array('status' => false, 'message' => $response['message']));
+        }
+    }
+
 
     public function getData(Request $request): \Illuminate\Http\JsonResponse
     {

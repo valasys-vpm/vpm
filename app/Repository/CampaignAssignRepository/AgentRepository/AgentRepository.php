@@ -137,6 +137,7 @@ class AgentRepository implements AgentInterface
 
         } catch (\Exception $exception) {
             DB::rollBack();
+            dd($exception->getMessage());
             $response = array('status' => FALSE, 'message' => 'Something went wrong, please try again.');
         }
         return $response;
@@ -192,6 +193,7 @@ class AgentRepository implements AgentInterface
             if(isset($attributes['started_at']) && $attributes['started_at']) {
                 $campaign_assign_agent->started_at = $attributes['started_at'];
             }
+
             if(array_key_exists('submitted_at', $attributes)) {
                 $campaign_assign_agent->submitted_at = $attributes['submitted_at'];
             }
@@ -213,6 +215,7 @@ class AgentRepository implements AgentInterface
 
         } catch (\Exception $exception) {
             DB::rollBack();
+            dd($exception->getMessage());
             $response = array('status' => FALSE, 'message' => 'Something went wrong, please try again.');
         }
         return $response;
