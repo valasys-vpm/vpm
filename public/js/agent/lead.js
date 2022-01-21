@@ -13,7 +13,7 @@ $(function (){
         "processing": true,
         "serverSide": true,
         "ajax": {
-            "url": URL + '/email-marketing-executive/lead/get-leads',
+            "url": URL + '/agent/lead/get-leads',
             data: {
                 filters: function (){
                     let obj = {
@@ -30,7 +30,7 @@ $(function (){
                 orderable: false,
                 render: function (data, type, row) {
                     let html = '';
-                    html += '<a href="'+URL+'/email-marketing-executive/lead/edit/'+btoa(row.id)+'" class="btn btn-outline-secondary btn-rounded btn-sm" title="Edit lead Details" style="padding: 2px 5px;"><i class="feather icon-edit mr-0" ></i></a>';
+                    html += '<a href="'+URL+'/agent/lead/edit/'+btoa(row.id)+'" class="btn btn-outline-secondary btn-rounded btn-sm" title="Edit lead Details" style="padding: 2px 5px;"><i class="feather icon-edit mr-0" ></i></a>';
                     return html;
                 }
             },
