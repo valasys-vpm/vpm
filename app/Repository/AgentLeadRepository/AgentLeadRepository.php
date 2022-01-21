@@ -68,6 +68,9 @@ class AgentLeadRepository implements AgentLeadInterface
             $agentLead->country = $attributes['country'];
             $agentLead->industry = $attributes['industry'];
             $agentLead->employee_size = $attributes['employee_size'];
+            if(isset($attributes['employee_size_2']) && !empty(trim($attributes['employee_size_2']))) {
+                $agentLead->employee_size_2 = $attributes['employee_size_2'];
+            }
             $agentLead->revenue = $attributes['revenue'];
             $agentLead->company_domain = $attributes['company_domain'];
             if(isset($attributes['website']) && !empty(trim($attributes['website']))) {
@@ -82,6 +85,14 @@ class AgentLeadRepository implements AgentLeadInterface
 
             if(isset($attributes['comment']) && !empty(trim($attributes['comment']))) {
                 $agentLead->comment = $attributes['comment'];
+            }
+
+            if(isset($attributes['comment_2']) && !empty(trim($attributes['comment_2']))) {
+                $agentLead->comment_2 = $attributes['comment_2'];
+            }
+
+            if(isset($attributes['qc_comment']) && !empty(trim($attributes['qc_comment']))) {
+                $agentLead->qc_comment = $attributes['qc_comment'];
             }
 
             $agentLead->save();
@@ -181,6 +192,10 @@ class AgentLeadRepository implements AgentLeadInterface
                 $agentLead->employee_size = $attributes['employee_size'];
             }
 
+            if(isset($attributes['employee_size_2']) && !empty($attributes['employee_size_2'])) {
+                $agentLead->employee_size_2 = $attributes['employee_size_2'];
+            }
+
             if(isset($attributes['revenue']) && !empty($attributes['revenue'])) {
                 $agentLead->revenue = $attributes['revenue'];
             }
@@ -207,6 +222,14 @@ class AgentLeadRepository implements AgentLeadInterface
 
             if(isset($attributes['comment']) && !empty(trim($attributes['comment']))) {
                 $agentLead->comment = $attributes['comment'];
+            }
+
+            if(isset($attributes['comment_2']) && !empty(trim($attributes['comment_2']))) {
+                $agentLead->comment_2 = $attributes['comment_2'];
+            }
+
+            if(isset($attributes['qc_comment']) && !empty(trim($attributes['qc_comment']))) {
+                $agentLead->qc_comment = $attributes['qc_comment'];
             }
 
             if(array_key_exists('status', $attributes)) {
