@@ -100,6 +100,15 @@ $(function (){
                 data: 'employee_size'
             },
             {
+                render: function (data, type, row) {
+                    if(row.employee_size_2) {
+                        return row.employee_size_2;
+                    } else {
+                        return 'NA';
+                    }
+                }
+            },
+            {
                 data: 'revenue'
             },
             {
@@ -172,7 +181,7 @@ $(function (){
 function editData(_data_id) {
     $.ajax({
         type: 'get',
-        url: URL + '/email_marketing_executive/data/edit/' + _data_id,
+        url: URL + '/email-marketing-executive/data/edit/' + _data_id,
         success: function (response){
             if(response.status === true) {
                 for (var key in response.data) {

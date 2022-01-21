@@ -102,7 +102,7 @@ class DataController extends Controller
 
     }
 
-    public function getAgentData(Request $request)
+    public function getEMEData(Request $request)
     {
         $filters = array_filter(json_decode($request->get('filters'), true));
         $search_data = $request->get('search');

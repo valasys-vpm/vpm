@@ -219,9 +219,7 @@
                                                                 @empty
                                                                     <tr>
                                                                         <td colspan="3">
-                                                                            Sub allocations not updated,
-                                                                            <br>
-                                                                            <a href="javascript:;" onclick="editSubAllocations('{{ base64_encode($children->id) }}');" title="Edit Sub-Allocations">Click Here</a> to update.
+                                                                            Sub allocations not updated.
                                                                         </td>
                                                                     </tr>
                                                                 @endforelse
