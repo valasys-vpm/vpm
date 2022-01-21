@@ -48,6 +48,7 @@
                                                     <tr>
                                                         <th>Campaign ID</th>
                                                         <th>Name</th>
+                                                        <th>Assigned By</th>
                                                         <th>Completion</th>
                                                         <th>Start Date</th>
                                                         <th>End Date</th>

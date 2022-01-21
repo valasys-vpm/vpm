@@ -34,10 +34,12 @@ class NPFExport implements FromCollection, WithHeadings, WithEvents, WithColumnF
 
         $query = AgentLead::query();
         $query->whereCampaignId($this->campaignId);
+        $query->whereStatus(1);
         $resultAgentLeads = $query->get();
 
         $query = VendorLead::query();
         $query->whereCampaignId($this->campaignId);
+        $query->whereStatus(1);
         $resultVendorLeads = $query->get();
 
         $resultLeads = $resultAgentLeads->merge($resultVendorLeads);

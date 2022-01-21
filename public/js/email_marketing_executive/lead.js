@@ -83,6 +83,15 @@ $(function (){
                 data: 'employee_size'
             },
             {
+                render: function (data, type, row) {
+                    if(row.employee_size_2) {
+                        return row.employee_size_2;
+                    } else {
+                        return 'NA';
+                    }
+                }
+            },
+            {
                 data: 'revenue'
             },
             {
@@ -101,7 +110,39 @@ $(function (){
                 data: 'linkedin_profile_sn_link'
             },
             {
-                data: 'comment'
+                render: function (data, type, row) {
+                    if(row.comment) {
+                        return row.comment;
+                    } else {
+                        return 'NA';
+                    }
+                }
+            },
+            {
+                render: function (data, type, row) {
+                    if(row.comment_2) {
+                        return row.comment_2;
+                    } else {
+                        return 'NA';
+                    }
+                }
+            },
+            {
+                render: function (data, type, row) {
+                    if(row.qc_comment) {
+                        return row.qc_comment;
+                    } else {
+                        return 'NA';
+                    }
+                }
+            },
+            {
+                render: function (data, type, row) {
+                    switch (parseInt(row.status)) {
+                        case 1: return '<span class="badge badge-pill badge-success" style="padding: 5px;min-width:50px;"> OK </span>';
+                        case 0: return '<span class="badge badge-pill badge-danger" style="padding: 5px;min-width:50px;"> Rejected </span>';
+                    }
+                }
             },
             {
                 render: function (data, type, row) {

@@ -34,6 +34,9 @@ $(function (){
                 }
             },
             {
+                data: 'user_assigned_by.full_name'
+            },
+            {
                 render: function (data, type, row) {
                     let deliver_count = row.agent_lead_count;
                     let allocation = row.allocation;

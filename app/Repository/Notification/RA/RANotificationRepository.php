@@ -30,7 +30,8 @@ class RANotificationRepository implements RANotificationInterface
 
     public function find($id)
     {
-        // TODO: Implement find() method.
+        $query = RANotification::query();
+        return $query->findOrFail($id);
     }
 
     public function store($attributes)

@@ -8,6 +8,7 @@ use App\Models\CampaignAssignRATL;
 use App\Models\CampaignAssignVendorManager;
 use App\Models\CampaignDeliveryDetail;
 use App\Models\User;
+use App\Repository\Notification\EME\EMENotificationRepository;
 use App\Repository\Notification\RA\RANotificationRepository;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -18,12 +19,18 @@ class AgentRepository implements AgentInterface
      * @var RANotificationRepository
      */
     private $RANotificationRepository;
+    /**
+     * @var EMENotificationRepository
+     */
+    private $EMENotificationRepository;
 
     public function __construct(
-        RANotificationRepository $RANotificationRepository
+        RANotificationRepository $RANotificationRepository,
+        EMENotificationRepository $EMENotificationRepository
     )
     {
         $this->RANotificationRepository = $RANotificationRepository;
+        $this->EMENotificationRepository = $EMENotificationRepository;
     }
 
     public function get($filters = array())
@@ -102,12 +109,25 @@ class AgentRepository implements AgentInterface
                         break;
                 }
                 //Send Notification
-                $this->RANotificationRepository->store(array(
-                    'sender_id' => $attributes['assigned_by'],
-                    'recipient_id' => $attributes['user_id'],
-                    'message' => 'New campaign assigned - '.$resultCampaign->name,
-                    'url' => $notificationURL
-                ));
+                switch ($resultUser->designation->slug) {
+                    case 'research_analyst':
+                        $this->RANotificationRepository->store(array(
+                            'sender_id' => $attributes['assigned_by'],
+                            'recipient_id' => $attributes['user_id'],
+                            'message' => 'New campaign assigned - '.$resultCampaign->name,
+                            'url' => $notificationURL
+                        ));
+                        break;
+                    case 'email_marketing_executive':
+                        $this->EMENotificationRepository->store(array(
+                            'sender_id' => $attributes['assigned_by'],
+                            'recipient_id' => $attributes['user_id'],
+                            'message' => 'New campaign assigned - '.$resultCampaign->name,
+                            'url' => $notificationURL
+                        ));
+                        break;
+                }
+
 
                 DB::commit();
                 $response = array('status' => TRUE, 'message' => 'Campaign assigned successfully', 'details' => $ca_agent);

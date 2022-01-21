@@ -80,6 +80,7 @@ class CampaignController extends Controller
 
         $query->whereUserId(Auth::id());
         $query->with('campaign');
+        $query->with('userAssignedBy');
         $query->with('agent_work_type');
         $query->with('campaign.children');
 
