@@ -78,6 +78,7 @@
                                                         <th>Country</th>
                                                         <th>Industry</th>
                                                         <th>Employee Size</th>
+                                                        <th>Employee Size 2</th>
                                                         <th>Revenue</th>
                                                         <th>Company Domain</th>
                                                         <th>Website</th>
@@ -85,6 +86,9 @@
                                                         <th>LinkedIn Profile URL</th>
                                                         <th>LinkedIn Profile SN URL</th>
                                                         <th>Comment</th>
+                                                        <th>TL Comment</th>
+                                                        <th>QC Comment</th>
+                                                        <th>Status</th>
                                                         <th>Created At</th>
                                                     </tr>
                                                     </thead>

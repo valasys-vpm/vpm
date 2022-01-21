@@ -139,6 +139,10 @@
                                                                 <input type="text" class="form-control btn-square" id="employee_size" name="employee_size" placeholder="Enter size" @if(isset($resultData)) value="{{ $resultData->employee_size }}" @endif>
                                                             </div>
                                                             <div class="col-md-4 form-group">
+                                                                <label for="employee_size">Employee/Company Size 2 <span class="text-info"> <small>(optional)</small></span></label>
+                                                                <input type="text" class="form-control btn-square" id="employee_size_2" name="employee_size_2" placeholder="Enter size" @if(isset($resultData) && !empty($resultData->employee_size_2)) value="{{ $resultData->employee_size_2 }}" @endif>
+                                                            </div>
+                                                            <div class="col-md-4 form-group">
                                                                 <label for="revenue">Revenue<span class="text-danger">*</span></label>
                                                                 <input type="text" class="form-control btn-square" id="revenue" name="revenue" placeholder="Enter revenue" @if(isset($resultData)) value="{{ $resultData->revenue }}" @endif>
                                                             </div>
