@@ -26,6 +26,9 @@
                                 <div class="col-md-12">
                                     <div class="page-header-title">
                                         <h5 class="m-b-10">{{ $resultCARATL->campaign->name }}</h5>
+                                        <div class="card-header-right mb-1" style="float: right;">
+                                            <a href="{{ route('team_leader.campaign_assign.show', base64_encode($resultCARATL->id)) }}" class="btn btn-outline-info btn-square btn-sm pt-1 pb-1" style="font-weight: bold;"><i class="feather icon-arrow-left"></i>Back</a>
+                                        </div>
                                     </div>
                                     <ul class="breadcrumb">
                                         <li class="breadcrumb-item"><a href="{{ route('team_leader.dashboard') }}"><i class="feather icon-home"></i></a></li>

@@ -25,12 +25,15 @@
                                 <div class="col-md-12">
                                     <div class="page-header-title">
                                         <h5 class="m-b-10">{{ $resultAgentLead->campaign->name }}</h5>
+                                        <div class="card-header-right mb-1" style="float: right;">
+                                            <a href="{{ route('email_marketing_executive.lead.list', base64_encode($resultAgentLead->ca_agent_id)) }}" class="btn btn-outline-info btn-square btn-sm pt-1 pb-1" style="font-weight: bold;"><i class="feather icon-arrow-left"></i>Back</a>
+                                        </div>
                                     </div>
                                     <ul class="breadcrumb">
-                                        <li class="breadcrumb-item"><a href="{{ route('agent.dashboard') }}"><i class="feather icon-home"></i></a></li>
-                                        <li class="breadcrumb-item"><a href="{{ route('agent.campaign.list') }}">Campaign Management</a></li>
-                                        <li class="breadcrumb-item"><a href="{{ route('agent.campaign.show', base64_encode($resultAgentLead->campaign_id)) }}">Campaign Details</a></li>
-                                        <li class="breadcrumb-item"><a href="{{ route('agent.lead.list', base64_encode($resultAgentLead->ca_agent_id)) }}">Manage Leads</a></li>
+                                        <li class="breadcrumb-item"><a href="{{ route('email_marketing_executive.dashboard') }}"><i class="feather icon-home"></i></a></li>
+                                        <li class="breadcrumb-item"><a href="{{ route('email_marketing_executive.campaign.list') }}">Campaign Management</a></li>
+                                        <li class="breadcrumb-item"><a href="{{ route('email_marketing_executive.campaign.show', base64_encode($resultAgentLead->campaign_id)) }}">Campaign Details</a></li>
+                                        <li class="breadcrumb-item"><a href="{{ route('email_marketing_executive.lead.list', base64_encode($resultAgentLead->ca_agent_id)) }}">Manage Leads</a></li>
                                         <li class="breadcrumb-item"><a href="javascript:void(0);">Edit Lead Details</a></li>
                                     </ul>
                                 </div>

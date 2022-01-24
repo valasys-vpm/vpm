@@ -14,6 +14,9 @@
                                 <div class="col-md-12">
                                     <div class="page-header-title">
                                         <h5 class="m-b-10">User Management</h5>
+                                        <div class="card-header-right mb-1" style="float: right;">
+                                            <a href="{{ route('agent.dashboard', base64_encode($resultCAAgent->id)) }}" class="btn btn-outline-info btn-square btn-sm pt-1 pb-1" style="font-weight: bold;"><i class="feather icon-arrow-left"></i>Back</a>
+                                        </div>
                                     </div>
                                     <ul class="breadcrumb">
                                         <li class="breadcrumb-item"><a href="{{ route('agent.dashboard') }}"><i class="feather icon-home"></i></a></li>

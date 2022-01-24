@@ -33,12 +33,12 @@
                                     <div class="page-header-title">
                                         <h5 class="m-b-10">Campaign Management</h5>
                                         <div class="card-header-right mb-1" style="float: right;">
-                                            {{-- <a href="{{ route('campaign') }}" class="btn btn-outline-dark btn-square btn-sm" style="font-weight: bold;"><i class="feather icon-arrow-left"></i>Back</a> --}}
+                                            <a href="{{ route('vendor_manager.campaign.list') }}" class="btn btn-outline-info btn-square btn-sm pt-1 pb-1" style="font-weight: bold;"><i class="feather icon-arrow-left"></i>Back</a>
                                         </div>
                                     </div>
                                     <ul class="breadcrumb">
                                         <li class="breadcrumb-item"><a href="{{ route('vendor_manager.dashboard') }}"><i class="feather icon-home"></i></a></li>
-                                        <li class="breadcrumb-item"><a href="{{ route('vendor_manager.campaign.list') }}">Campaign Assign</a></li>
+                                        <li class="breadcrumb-item"><a href="{{ route('vendor_manager.campaign.list') }}">My Campaigns</a></li>
                                         <li class="breadcrumb-item"><a href="javascript:void(0);">Campaign Details</a></li>
                                     </ul>
 
