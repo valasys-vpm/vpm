@@ -20,4 +20,6 @@ Route::prefix('lead')->name('lead.')->group(function()
     //Validate Target List
     Route::any('/check-target-domain/{id}', [App\Http\Controllers\TeamLeader\LeadController::class, 'checkTargetDomain'])->name('check_target_domain');
 
+    //Export
+    Route::any('/export/{caratl_id}', [App\Http\Controllers\TeamLeader\LeadController::class, 'export'])->name('export');
 });

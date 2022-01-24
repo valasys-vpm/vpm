@@ -50,6 +50,9 @@
                                     <div class="card">
                                         <div class="card-header">
                                             <h5>Lead Details</h5>
+                                            <div class="float-right">
+                                                <button type="button" class="btn btn-dark btn-square btn-sm" onclick="export_file('{{ base64_encode($resultCARATL->id) }}');"><i class="feather icon-download"></i>Export</button>
+                                            </div>
                                         </div>
                                         <div class="card-block">
                                             <div class="table-responsive">

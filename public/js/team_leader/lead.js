@@ -151,3 +151,23 @@ function rejectLead(_agent_lead_id) {
         $('#modal-reject-lead').modal('show');
     }
 }
+
+function export_file(_id) {
+    if(_id && confirm('Are you sure to export leads?')) {
+        $.ajax({
+            type: 'post',
+            url: URL + '/team-leader/lead/export/' + _id,
+            dataType: 'json',
+            success: function (response) {
+                if(response.status === true) {
+                    trigger_pnofify('success', 'Successful', response.message);
+                    return window.location.href = URL + response.file_name;
+                } else {
+                    trigger_pnofify('error', 'Something went wrong', response.message);
+                }
+            }
+        });
+    } else {
+
+    }
+}

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\TeamLeader;
 
+use App\Exports\RATLLeadExport;
 use App\Http\Controllers\Controller;
 use App\Models\AgentLead;
 use App\Models\CampaignAssignAgent;
@@ -13,6 +14,7 @@ use App\Repository\AgentLeadRepository\AgentLeadRepository;
 use App\Repository\CampaignAssignRepository\AgentRepository\AgentRepository;
 use App\Repository\CampaignAssignRepository\RATLRepository\RATLRepository;
 use Illuminate\Http\Request;
+use Excel;
 
 class LeadController extends Controller
 {
@@ -74,6 +76,29 @@ class LeadController extends Controller
         } else {
             return response()->json(array('status' => false, 'message' => $response['message']));
         }
+    }
+
+    public function export($caratl_id, Request $request)
+    {
+        $response = array('status' => true, 'message' => 'Something went wrong, please try again.');
+
+        try {
+            $resultCARATL = $this->RATLRepository->find(base64_decode($caratl_id));
+
+            $path = 'public/campaigns/'.$resultCARATL->campaign->campaign_id.'/team_leader/';
+            $path_to_download = '/public/storage/campaigns/'.$resultCARATL->campaign->campaign_id.'/team_leader/';
+            $filename = str_replace(' ', '_', trim($resultCARATL->campaign->name)) .'_'.time(). "_AGENT_LEADS.xlsx";
+
+            if(Excel::store(new RATLLeadExport($resultCARATL->id), $path.$filename)) {
+                $response = array('status' => true, 'message' => 'Successful', 'file_name' => $path_to_download.$filename);
+            } else {
+                throw new \Exception('Something went wrong, please try again.', 1);
+            }
+        } catch (\Exception $exception) {
+            $response = array('status' => false, 'message' => 'Something went wrong, please try again.');
+        }
+
+        return response()->json($response);
     }
 
     public function getAgentLeads(Request $request): \Illuminate\Http\JsonResponse
