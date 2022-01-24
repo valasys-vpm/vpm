@@ -206,18 +206,32 @@
                                                     <thead>
                                                     <tr class="text-uppercase">
                                                         <th class="text-center">Work<br>Type</th>
+                                                        <th class="text-center">Status</th>
                                                         <th class="text-center">Start Date</th>
                                                         <th class="text-center">End Date</th>
                                                         <th class="text-center">Pacing</th>
                                                         <th class="text-center">Completion</th>
                                                         <th class="text-center">Deliver Count / <br>Allocation</th>
-                                                        <th class="text-center">Status</th>
+                                                        <th class="text-center">Campaign Status</th>
                                                     </tr>
                                                     </thead>
                                                     <tbody class="text-center text-muted">
                                                     <tr>
                                                         <td>
                                                             {{ $resultCAAgent->agent_work_type->name }}
+                                                        </td>
+                                                        <td>
+                                                            @switch($resultCAAgent->status)
+                                                                @case(0)
+                                                                <span class="badge badge-pill badge-warning" style="padding: 5px;min-width: 70px;">Inactive</span>
+                                                                @break
+                                                                @case(1)
+                                                                <span class="badge badge-pill badge-success" style="padding: 5px;min-width: 70px;">Active</span>
+                                                                @break
+                                                                @case(2)
+                                                                <span class="badge badge-pill badge-danger" style="padding: 5px;min-width: 70px;">Revoked</span>
+                                                                @break
+                                                            @endswitch
                                                         </td>
                                                         <td>{{ date('d-M-Y', strtotime($resultCampaign->start_date)) }}</td>
                                                         <td>{{ date('d-M-Y', strtotime($resultCAAgent->display_date)) }}</td>
