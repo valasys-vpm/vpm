@@ -118,7 +118,7 @@
                     </div>
                     <div class="modal-body">
                         <div class="">
-                            <textarea class="form-control" name="comment" id="" rows="3" placeholder="Please specify reason..."></textarea>
+                            <textarea class="form-control" name="comment_2" id="comment_2" rows="3" placeholder="Please specify reason..."></textarea>
                         </div>
                     </div>
                     <div class="modal-footer">

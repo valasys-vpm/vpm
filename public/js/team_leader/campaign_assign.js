@@ -175,6 +175,24 @@ $(function (){
         $("#form-campaign-assign").find('select').val('').trigger('change');
     });
 
+    $("#all_users").on('click', function(){
+        if($(this).is(':checked')){
+            //$("#user_list").find('option[data-designation="research_analyst"]').prop("selected", "selected");
+            $("#user_list > option").prop("selected", "selected");
+            $("#user_list").trigger("change");
+        } else {
+            $("#form-campaign-assign").find('#user_list').val('').trigger('change');
+        }
+    });
+
+    $("#user_list").on('change', function(){
+        if($(this).find('option').length === $(this).val().length) {
+            $("#all_users").prop("checked", true);
+        } else {
+            $("#all_users").prop("checked", false);
+        }
+    });
+
 });
 
 

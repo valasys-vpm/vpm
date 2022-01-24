@@ -74,9 +74,14 @@
                                                     </div>
                                                     <div class="col-md-6 form-group">
                                                         <label for="user_list">Select User(s)</label>
+                                                        <div class="form-check float-right">
+                                                            <input class="form-check-input" type="checkbox" id="all_users">
+                                                            <label class="form-check-label" for="all_users">All</label>
+                                                        </div>
+
                                                         <select class="form-control btn-square p-1 pl-2 select2-multiple" id="user_list" name="user_list[]" style="height: unset;" multiple>
                                                             @foreach($resultUsers as $user)
-                                                                <option id="user_list_{{ $user->id }}" value="{{ $user->id }}" data-name="{{ $user->first_name.' '.$user->last_name }}">{{ $user->first_name.' '.$user->last_name.' - [ '.$user->role->name.' ]' }}</option>
+                                                                <option id="user_list_{{ $user->id }}" value="{{ $user->id }}" data-name="{{ $user->first_name.' '.$user->last_name }}" data-designation="{{ $user->designation->slug }}">{{ $user->first_name.' '.$user->last_name.' - [ '.$user->role->name.' ]' }}</option>
                                                             @endforeach
                                                         </select>
                                                     </div>
