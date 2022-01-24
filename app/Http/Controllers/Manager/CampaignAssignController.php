@@ -12,6 +12,7 @@ use App\Repository\Campaign\DeliveryDetailRepository\DeliveryDetailRepository;
 use App\Repository\Campaign\IssueRepository\IssueRepository;
 use App\Repository\CampaignAssignRepository\AgentRepository\AgentRepository;
 use App\Repository\CampaignAssignRepository\CampaignAssignRepository;
+use App\Repository\CampaignAssignRepository\RATLRepository\RATLRepository as CARATLRepository;
 use App\Repository\CampaignFilterRepository\CampaignFilterRepository;
 use App\Repository\CampaignRepository\CampaignRepository;
 use App\Repository\CampaignStatusRepository\CampaignStatusRepository;
@@ -57,6 +58,10 @@ class CampaignAssignController extends Controller
      * @var IssueRepository
      */
     private $issueRepository;
+    /**
+     * @var CARATLRepository
+     */
+    private $CARATLRepository;
 
     public function __construct(
         CampaignStatusRepository $campaignStatusRepository,
@@ -69,7 +74,8 @@ class CampaignAssignController extends Controller
         CampaignAssignRepository $campaignAssignRepository,
         AgentRepository $agentRepository,
         DeliveryDetailRepository $deliveryDetailRepository,
-        IssueRepository $issueRepository
+        IssueRepository $issueRepository,
+        CARATLRepository $CARATLRepository
     )
     {
         $this->data = array();
@@ -84,6 +90,7 @@ class CampaignAssignController extends Controller
         $this->regionRepository = $regionRepository;
         $this->deliveryDetailRepository = $deliveryDetailRepository;
         $this->issueRepository = $issueRepository;
+        $this->CARATLRepository = $CARATLRepository;
     }
 
     public function index()
@@ -122,15 +129,15 @@ class CampaignAssignController extends Controller
             $this->data['resultCampaignIssues'] = $this->issueRepository->get(array('campaign_ids' => [base64_decode($id)]));
 
             $this->data['resultAssignedUsers'] = array();
-            $resultCARATLs = CampaignAssignRATL::where('campaign_id', base64_decode($id))->where('status', 1)->get();
+            $resultCARATLs = CampaignAssignRATL::where('campaign_id', base64_decode($id))->get();
             if(!empty($resultCARATLs) && $resultCARATLs->count()) {
                 $this->data['resultAssignedUsers'] = array_merge($this->data['resultAssignedUsers'], $resultCARATLs->pluck('user_id')->toArray());
             }
-            $resultCAAgents = CampaignAssignAgent::where('campaign_id', base64_decode($id))->where('status', 1)->get();
+            $resultCAAgents = CampaignAssignAgent::where('campaign_id', base64_decode($id))->get();
             if(!empty($resultCAAgents) && $resultCAAgents->count()) {
                 $this->data['resultAssignedUsers'] = array_merge($this->data['resultAssignedUsers'], $resultCAAgents->pluck('user_id')->toArray());
             }
-            $resultCAVMs = CampaignAssignVendorManager::where('campaign_id', base64_decode($id))->where('status', 1)->get();
+            $resultCAVMs = CampaignAssignVendorManager::where('campaign_id', base64_decode($id))->get();
             if(!empty($resultCAVMs) && $resultCAVMs->count()) {
                 $this->data['resultAssignedUsers'] = array_merge($this->data['resultAssignedUsers'], $resultCAVMs->pluck('user_id')->toArray());
             }
@@ -378,6 +385,20 @@ class CampaignAssignController extends Controller
         $response = $this->campaignAssignRepository->store($new_attributes);
         if($response['status'] == TRUE) {
             return response()->json(array('status' => true, 'message' => $response['message']));
+        } else {
+            return response()->json(array('status' => false, 'message' => $response['message']));
+        }
+    }
+
+    public function reAssignCampaign($id, Request $request)
+    {
+        $attributes = $request->all();
+        $new_attributes['submitted_at'] = NULL;
+        $new_attributes['status'] = 1;
+        $response = $this->CARATLRepository->update(base64_decode($id), $new_attributes);
+
+        if($response['status'] == TRUE) {
+            return response()->json(array('status' => true, 'message' => 'Campaign re-assigned successfully'));
         } else {
             return response()->json(array('status' => false, 'message' => $response['message']));
         }

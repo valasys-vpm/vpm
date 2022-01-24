@@ -148,19 +148,20 @@ function viewAssignmentDetails(id) {
                 if(response.data.length) {
                     $.each(response.data, function (key, value) {
                         let status = '-';
-                        switch(parseInt(value.status)) {
-                            case 1: status = 'Active';break;
-                            case 0: status = 'Inactive';break;
-                            case 2: status = 'Revoked';break;
-                        }
-
                         let buttons = '';
-                        if(value.submitted_at) {
-                            if(parseInt(value.status) === 2) {
+
+                        switch(parseInt(value.status)) {
+                            case 1:
+                                status = 'Active';
+                                buttons += '<a href="javascript:void(0);" onclick="revokeCampaign(\''+btoa(value.id)+'\');" class="btn btn-outline-danger btn-sm btn-rounded mb-0" title="Revoke Campaign" style="padding: 5px 8px;"><i class="feather icon-refresh-cw mr-0"></i></a>';
+                                break;
+                            case 0:
+                                status = 'Inactive';
+                                break;
+                            case 2:
+                                status = 'Revoked';
                                 buttons += '<a href="javascript:void(0);" onclick="reAssignCampaign(\''+btoa(value.id)+'\');" class="btn btn-outline-success btn-sm btn-rounded mb-0" title="Re-Assign Campaign" style="padding: 5px 8px;"><i class="feather icon-refresh-cw mr-0"></i></a>';
-                            }
-                        } else {
-                            buttons += '<a href="javascript:void(0);" onclick="revokeCampaign(\''+btoa(value.id)+'\');" class="btn btn-outline-danger btn-sm btn-rounded mb-0" title="Revoke Campaign" style="padding: 5px 8px;"><i class="feather icon-refresh-cw mr-0"></i></a>';
+                                break;
                         }
 
                         $('#button-assign-campaign').data('display-date', value.display_date);

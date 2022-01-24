@@ -116,17 +116,20 @@ function viewAssignmentDetails(id) {
                     data = response.data.resultRATLs;
                     $.each(data, function (key, value) {
                         let status = '-';
-                        switch(value.status) {
-                            case 1: status = 'Active';break;
-                            case 0: status = 'Inactive';break;
-                            case 2: status = 'Revoked';break;
-                        }
-
                         let buttons = '';
-                        if(value.submitted_at) {
 
-                        } else {
-                            buttons += '<a href="javascript:void(0);" onclick="revokeCampaign(\''+btoa(value.id)+'\');" class="btn btn-outline-danger btn-sm btn-rounded mb-0" title="Revoke Campaign" style="padding: 5px 8px;"><i class="feather icon-refresh-cw mr-0"></i></a>';
+                        switch(parseInt(value.status)) {
+                            case 1:
+                                status = 'Active';
+                                buttons += '<a href="javascript:void(0);" onclick="revokeCampaign(\''+btoa(value.id)+'\');" class="btn btn-outline-danger btn-sm btn-rounded mb-0" title="Revoke Campaign" style="padding: 5px 8px;"><i class="feather icon-refresh-cw mr-0"></i></a>';
+                                break;
+                            case 0:
+                                status = 'Inactive';
+                                break;
+                            case 2:
+                                status = 'Revoked';
+                                buttons += '<a href="javascript:void(0);" onclick="reAssignCampaign(\''+btoa(value.id)+'\');" class="btn btn-outline-success btn-sm btn-rounded mb-0" title="Re-Assign Campaign" style="padding: 5px 8px;"><i class="feather icon-refresh-cw mr-0"></i></a>';
+                                break;
                         }
 
                         $('#button-assign-campaign').data('display-date', value.display_date);
@@ -140,9 +143,7 @@ function viewAssignmentDetails(id) {
                             '   <td>'+ value.agents.length +'</td>\n' +
                             '   <td>'+ value.user_assigned_by.first_name +' '+ value.user_assigned_by.last_name +'</td>\n' +
                             '   <td>'+ status +'</td>\n' +
-                            '   <td>' +
-                            buttons +
-                            '   </td>\n' +
+                            '   <td>'+ buttons +'</td>\n' +
                             '</tr>' +
                             '<tr id="agent-details-'+value.id+'" class="agent-details" style="display: none;">' +
                             '   <td colspan="7" class="bg-light text-left">' +
@@ -272,6 +273,27 @@ function revokeCampaign(_id) {
             success: function (response) {
                 if(response.status === true) {
                     trigger_pnofify('success', 'Successful', response.message);
+                } else {
+                    trigger_pnofify('error', 'Something went wrong', response.message);
+                }
+            }
+        });
+    } else {
+
+    }
+}
+
+function reAssignCampaign(_id) {
+    if(_id && confirm('Are you sure to re-assign campaign?')) {
+        $("#modal-view-assignment-details").modal('hide');
+        $.ajax({
+            type: 'post',
+            url: URL + '/manager/campaign-assign/re-assign-campaign/' + _id,
+            dataType: 'json',
+            success: function (response) {
+                if(response.status === true) {
+                    trigger_pnofify('success', 'Successful', response.message);
+                    location.reload();
                 } else {
                     trigger_pnofify('error', 'Something went wrong', response.message);
                 }

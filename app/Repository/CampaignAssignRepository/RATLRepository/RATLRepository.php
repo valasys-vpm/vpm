@@ -127,7 +127,7 @@ class RATLRepository implements RATLInterface
                 $ca_ratl->started_at = date('Y-m-d H:i:s', strtotime($attributes['started_at']));
             }
             if(array_key_exists('submitted_at', $attributes)) {
-                $ca_ratl->submitted_at = date('Y-m-d H:i:s', strtotime($attributes['submitted_at']));
+                $ca_ratl->submitted_at = $attributes['submitted_at'];
             }
 
             if(isset($attributes['assigned_by']) && $attributes['assigned_by']) {
