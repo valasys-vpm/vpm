@@ -462,6 +462,11 @@ class CampaignRepository implements CampaignInterface
                         }
                     }
 
+                    //Delete Sub-Allocations if start date, end date or pacing updated
+                    if(array_key_exists('pacing', $newData) || array_key_exists('start_date', $newData) || array_key_exists('start_date', $newData)) {
+                        $res = PacingDetail::where('campaign_id', $campaign->id)->delete();
+                    }
+
                     if(!empty($newData)) {
                         $historyMessage = get_history_message($oldData, $newData);
                         add_campaign_history($campaign->id, $campaign->parent_id, 'Campaign details updated - '.$historyMessage, array('oldData' => $oldData, 'newData' => $newData));
