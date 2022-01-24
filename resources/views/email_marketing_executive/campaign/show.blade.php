@@ -273,7 +273,7 @@
                                             </div>
                                         </div>
                                     </div>
-
+                                    @if($resultCAAgent->status == 1)
                                     <div class="row mb-4">
                                         @if(empty($resultCAAgent->started_at))
                                         <div id="div-start-campaign" class="col-md-3">
@@ -316,6 +316,7 @@
 
                                         @endif
                                     </div>
+                                    @endif
 
                                     @if(isset($resultCampaignIssues) && $resultCampaignIssues->count())
                                     <div class="card">
