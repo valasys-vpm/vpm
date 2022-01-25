@@ -193,6 +193,6 @@
     @parent
     <!-- jquery-validation Js -->
     <script src="{{ asset('public/template/assets/plugins/jquery-validation/js/jquery.validate.min.js') }}"></script>
-    <script src="http://cdn.jsdelivr.net/jquery.validation/1.15.0/additional-methods.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/jquery.validation/1.15.0/additional-methods.min.js"></script>
     <script src="{{ asset('public/js/qa_team_leader/my_profile.js?='.time()) }}"></script>
 @append
