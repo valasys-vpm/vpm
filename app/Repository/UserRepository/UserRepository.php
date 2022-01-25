@@ -131,9 +131,21 @@ class UserRepository implements UserInterface
                 $user->reporting_user_id = $attributes['reporting_user_id'];
             }
 
+            if(isset($attributes['profile']) && !empty($attributes['profile'])) {
+                $file = $attributes['profile'];
+                $path = 'public/user/'.$user->employee_code.'/profile';
+                $extension = $file->getClientOriginalExtension();
+                $filename  = $file->getClientOriginalName();
+                if($file->storeAs($path, $filename)) {
+                    $user->profile = $filename;
+                } else {
+                    throw new \Exception('Please check file and try again.', 1);
+                }
+            }
+
             if($user->save()) {
                 DB::commit();
-                $response = array('status' => TRUE, 'message' => 'User updated successfully');
+                $response = array('status' => TRUE, 'message' => 'User details updated successfully');
             } else {
                 throw new \Exception('Something went wrong, please try again.', 1);
             }
