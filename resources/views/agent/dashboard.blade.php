@@ -65,7 +65,7 @@
                                             <h5>Campaign Processed</h5>
                                         </div>
                                         <div class="card-block text-center dial-chart" style="height: 270px;">
-                                            <input type="text" class="dial" value="75" data-width="200" data-height="200" data-fgColor="#66ca00" data-angleOffset="-125" data-angleArc="250" data-rotation="clockwise" data-displayInput="false" data-readonly="true">
+                                            <input style="display:none;" type="text" class="dial" value="75" data-width="200" data-height="200" data-fgColor="#66ca00" data-angleOffset="-125" data-angleArc="250" data-rotation="clockwise" data-displayInput="false" data-readonly="true">
                                             <input type="text" class="dial-value" value="299" style="color: #66ca00;">
                                         </div>
                                     </div>
@@ -78,7 +78,7 @@
                                             <h5>Leads Generated</h5>
                                         </div>
                                         <div class="card-block text-center dial-chart" style="height: 270px;">
-                                            <input type="text" class="dial" value="75" data-width="200" data-height="200" data-fgColor="#2a199c" data-angleOffset="-125" data-angleArc="250" data-rotation="clockwise" data-displayInput="false" data-readonly="true">
+                                            <input style="display:none;" type="text" class="dial" value="75" data-width="200" data-height="200" data-fgColor="#2a199c" data-angleOffset="-125" data-angleArc="250" data-rotation="clockwise" data-displayInput="false" data-readonly="true">
                                             <input type="text" class="dial-value" value="299" style="color: #2a199c;">
                                         </div>
                                     </div>
@@ -131,7 +131,7 @@
                                             <h5>Leads Qualified</h5>
                                         </div>
                                         <div class="card-block text-center dial-chart" style="height: 270px;">
-                                            <input type="text" class="dial" value="75" data-width="200" data-height="200" data-fgColor="#1afbcf" data-angleOffset="-125" data-angleArc="250" data-rotation="clockwise" data-displayInput="false" data-readonly="true">
+                                            <input style="display:none;" type="text" class="dial" value="75" data-width="200" data-height="200" data-fgColor="#1afbcf" data-angleOffset="-125" data-angleArc="250" data-rotation="clockwise" data-displayInput="false" data-readonly="true">
                                             <input type="text" class="dial-value" value="299" style="color: #1afbcf;">
                                         </div>
                                     </div>
@@ -143,7 +143,7 @@
                                             <h5>Leads Rejected</h5>
                                         </div>
                                         <div class="card-block text-center dial-chart" style="height: 270px;">
-                                            <input type="text" class="dial" value="75" data-width="200" data-height="200" data-fgColor="#c60a2d" data-angleOffset="-125" data-angleArc="250" data-rotation="clockwise" data-displayInput="false" data-readonly="true">
+                                            <input style="display:none;" type="text" class="dial" value="75" data-width="200" data-height="200" data-fgColor="#c60a2d" data-angleOffset="-125" data-angleArc="250" data-rotation="clockwise" data-displayInput="false" data-readonly="true">
                                             <input type="text" class="dial-value" value="299" style="color: #c60a2d;">
                                         </div>
                                     </div>
