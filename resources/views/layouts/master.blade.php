@@ -148,8 +148,12 @@
     <script src="{{ asset('public/template/assets/plugins/select2/js/select2.full.min.js') }}"></script>
     <!-- Moment Js -->
     <script src="https://momentjs.com/downloads/moment-with-locales.min.js"></script>
+    <!-- jquery-validation Js -->
+    <script src="{{ asset('public/template/assets/plugins/jquery-validation/js/jquery.validate.min.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/jquery.validation/1.15.0/additional-methods.min.js"></script>
     <!-- Custom Js -->
     <script src="{{asset('public/js/custom.js?='.time()) }}"></script>
+    <script src="{{asset('public/js/my_profile.js?='.time()) }}"></script>
     @yield('javascript')
     <script>
         $(function (){

@@ -246,6 +246,12 @@ Route::any('/notification/mark-all-as-read', [App\Http\Controllers\NotificationC
 Route::any('/notification/view-details/{id}', [App\Http\Controllers\NotificationController::class, 'update'])->name('notification.view_details');
 
 
+Route::middleware(['web', 'auth'])->group(function (){
+
+    Route::any('/user/update-profile', [App\Http\Controllers\UserController::class, 'uploadProfile'])->name('user.upload_profile');
+
+});
+
 
 
 
