@@ -39,7 +39,7 @@ $(function (){
     jQuery.validator.addMethod("is_email_address", function(value, element) {
 
         /* Define the recommended regular expression. */
-        var emailExp = new RegExp(/^\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}\b$/i);
+        var emailExp = new RegExp(/^\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,9}\b$/i);
 
         /* Test the email given against the expression and return the result. */
         return emailExp.test(value);

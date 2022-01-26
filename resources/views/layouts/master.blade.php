@@ -37,7 +37,8 @@
     <!-- select2 css -->
     <link rel="stylesheet" href="{{ asset('public/template/assets/plugins/select2/css/select2.min.css') }}">
     <!-- Bootstrap datetimepicker css -->
-    <link rel="stylesheet" href="{{ asset('public/template/assets/plugins/bootstrap-datetimepicker/css/bootstrap-datepicker3.min.css') }}">
+{{--    <link rel="stylesheet" href="{{ asset('public/template/assets/plugins/bootstrap-datetimepicker/css/bootstrap-datepicker3.min.css') }}">--}}
+    <link rel="stylesheet" href="{{ asset('public/template/assets/plugins/bootstrap-datepicker-1.9.0/css/bootstrap-datepicker.min.css') }}">
     <!-- notification css -->
     <link rel="stylesheet" href="{{ asset('public/template/assets/plugins/notification/css/notification.min.css') }}">
     <script>
@@ -143,7 +144,8 @@
     <!-- pnotify Js -->
     <script src="{{ asset('public/template/assets/plugins/pnotify/js/pnotify.custom.min.js') }}"></script>
     <!-- datepicker js -->
-    <script src="{{ asset('public/template/assets/plugins/bootstrap-datetimepicker/js/bootstrap-datepicker.min.js') }}"></script>
+{{--    <script src="{{ asset('public/template/assets/plugins/bootstrap-datetimepicker/js/bootstrap-datepicker.min.js') }}"></script>--}}
+    <script src="{{ asset('public/template/assets/plugins/bootstrap-datepicker-1.9.0/js/bootstrap-datepicker.min.js') }}"></script>
     <!-- select2 Js -->
     <script src="{{ asset('public/template/assets/plugins/select2/js/select2.full.min.js') }}"></script>
     <!-- Moment Js -->

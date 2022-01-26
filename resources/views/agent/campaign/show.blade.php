@@ -312,7 +312,7 @@
                                                 @endif
 
                                                 <div id="div-submit-campaign"  class="col-md-3">
-                                                    <button type="button" class="btn btn-danger btn-sm btn-square w-100" onclick="submitCampaign('{{ base64_encode($resultCAAgent->id) }}');" @if($resultCAAgent->agent_lead_count < 1) disabled @endif>Submit Campaign</button>
+                                                    <button type="button" class="btn btn-danger btn-sm btn-square w-100" data-toggle="modal" data-target="#modal-submit-campaign" @if($resultCAAgent->agent_lead_count < 1) disabled @endif>Submit Campaign</button>
                                                 </div>
                                                 <div id="div-raise-issue" class="col-md-3">
                                                     <button type="button" class="btn btn-warning btn-sm btn-square w-100" data-toggle="modal" data-target="#modal-raise-issue">Raise Issue</button>
@@ -452,6 +452,40 @@
                                 </div>
                             </div>
                             <button id="form-raise-issue-submit" type="submit" class="btn btn-primary btn-square float-right">Raise Issue</button>
+                            <button type="reset" class="btn btn-secondary btn-square float-right" data-dismiss="modal">Cancel</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-submit-campaign" class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Submit Campaign</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body">
+                    <div class="col-md-12">
+                        <form id="form-submit-campaign" method="post">
+                            @csrf
+                            <input type="hidden" name="ca_agent_id" value="{{ base64_encode($resultCAAgent->id) }}">
+                            <div class="row">
+                                <div class="col-md-12 form-group">
+                                    <label>Are you sure to submit campaign ?</label>
+                                </div>
+                            </div>
+                            @if($resultCAAgent->agent_work_type->slug == 'abm')
+                            <div class="row">
+                                <div class="col-md-12 form-group">
+                                    <label for="accounts_utilized">Account Utilized <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="accounts_utilized" name="accounts_utilized" placeholder="Enter accounts utilized count" required>
+                                </div>
+                            </div>
+                            @endif
+                            <button id="form-submit-campaign-submit" type="submit" class="btn btn-primary btn-square float-right">Submit</button>
                             <button type="reset" class="btn btn-secondary btn-square float-right" data-dismiss="modal">Cancel</button>
                         </form>
                     </div>

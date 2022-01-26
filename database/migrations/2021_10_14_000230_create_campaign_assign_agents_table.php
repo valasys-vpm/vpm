@@ -28,6 +28,8 @@ class CreateCampaignAssignAgentsTable extends Migration
             $table->unsignedInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade');
 
+            $table->integer('accounts_utilized')->default(0);
+
             $table->date('display_date')->nullable();
             $table->integer('allocation')->default(0);
             $table->string('reporting_file')->nullable();

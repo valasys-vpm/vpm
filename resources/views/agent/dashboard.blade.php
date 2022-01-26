@@ -27,6 +27,25 @@
                         <div class="page-wrapper">
                             <!-- [ Main Content ] start -->
                             <div class="row">
+                                <div class="col-md-12">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h5>Filter</h5>
+                                            <div class="float-right">
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        <div class="input-daterange input-group" id="datepicker_range">
+                                                            <input type="text" class="form-control text-left p-1 pl-2 select2-border" placeholder="Start date" name="start_date" id="filter_start_date" value="{{ date('d-m-Y') }}">
+                                                            <input type="text" class="form-control text-right p-1 pl-2 select2-border" placeholder="End date" name="end_date" id="filter_end_date" value="{{ date('d-m-Y') }}">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
                                 <div class="col-md-3" style="display: none;">
                                     <div class="card">
                                         <div class="card-header">
@@ -65,8 +84,8 @@
                                             <h5>Campaign Processed</h5>
                                         </div>
                                         <div class="card-block text-center dial-chart" style="height: 270px;">
-                                            <input style="display:none;" type="text" class="dial" value="75" data-width="200" data-height="200" data-fgColor="#66ca00" data-angleOffset="-125" data-angleArc="250" data-rotation="clockwise" data-displayInput="false" data-readonly="true">
-                                            <input type="text" class="dial-value" value="299" style="color: #66ca00;">
+                                            <input id="campaign_processed_percentage" style="display:none;" type="text" class="dial dashboard-count" value="0" data-width="200" data-height="200" data-fgColor="#66ca00" data-angleOffset="-125" data-angleArc="250" data-rotation="clockwise" data-displayInput="false" data-readonly="true">
+                                            <input id="campaign_processed_count"type="text" class="dial-value dashboard-count" value="0" style="color: #66ca00;">
                                         </div>
                                     </div>
                                 </div>
@@ -78,8 +97,8 @@
                                             <h5>Leads Generated</h5>
                                         </div>
                                         <div class="card-block text-center dial-chart" style="height: 270px;">
-                                            <input style="display:none;" type="text" class="dial" value="75" data-width="200" data-height="200" data-fgColor="#2a199c" data-angleOffset="-125" data-angleArc="250" data-rotation="clockwise" data-displayInput="false" data-readonly="true">
-                                            <input type="text" class="dial-value" value="299" style="color: #2a199c;">
+                                            <input id="leads_generated_percentage" style="display:none;" type="text" class="dial dashboard-count" value="0" data-width="200" data-height="200" data-fgColor="#2a199c" data-angleOffset="-125" data-angleArc="250" data-rotation="clockwise" data-displayInput="false" data-readonly="true">
+                                            <input id="leads_generated_count" type="text" class="dial-value dashboard-count" value="0" style="color: #2a199c;">
                                         </div>
                                     </div>
                                 </div>
@@ -131,8 +150,8 @@
                                             <h5>Leads Qualified</h5>
                                         </div>
                                         <div class="card-block text-center dial-chart" style="height: 270px;">
-                                            <input style="display:none;" type="text" class="dial" value="75" data-width="200" data-height="200" data-fgColor="#1afbcf" data-angleOffset="-125" data-angleArc="250" data-rotation="clockwise" data-displayInput="false" data-readonly="true">
-                                            <input type="text" class="dial-value" value="299" style="color: #1afbcf;">
+                                            <input id="leads_qualified_percentage" style="display:none;" type="text" class="dial dashboard-count" value="0" data-width="200" data-height="200" data-fgColor="#1afbcf" data-angleOffset="-125" data-angleArc="250" data-rotation="clockwise" data-displayInput="false" data-readonly="true">
+                                            <input id="leads_qualified_count" type="text" class="dial-value dashboard-count" value="0" style="color: #1afbcf;">
                                         </div>
                                     </div>
                                 </div>
@@ -143,8 +162,8 @@
                                             <h5>Leads Rejected</h5>
                                         </div>
                                         <div class="card-block text-center dial-chart" style="height: 270px;">
-                                            <input style="display:none;" type="text" class="dial" value="75" data-width="200" data-height="200" data-fgColor="#c60a2d" data-angleOffset="-125" data-angleArc="250" data-rotation="clockwise" data-displayInput="false" data-readonly="true">
-                                            <input type="text" class="dial-value" value="299" style="color: #c60a2d;">
+                                            <input id="leads_rejected_percentage" style="display:none;" type="text" class="dial dashboard-count" value="0" data-width="200" data-height="200" data-fgColor="#c60a2d" data-angleOffset="-125" data-angleArc="250" data-rotation="clockwise" data-displayInput="false" data-readonly="true">
+                                            <input id="leads_rejected_count" type="text" class="dial-value dashboard-count" value="0" style="color: #c60a2d;">
                                         </div>
                                     </div>
                                 </div>
@@ -167,6 +186,13 @@
                                     <div class="card">
                                         <div class="card-header">
                                             <h5>Leads Generated Counts (Monthly)</h5>
+                                            <div class="float-right">
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        <input type="text" class="form-control text-center p-1 pl-2 select2-border" id="filter_monthly" name="filter_monthly" value="{{ date('M-Y') }}">
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                         <div class="card-block text-center">
                                             <div id="bar-leads-generated-monthly" style="height: 500px;"></div>

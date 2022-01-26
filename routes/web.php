@@ -138,6 +138,9 @@ Route::prefix('agent')->middleware(['web', 'check.agent'])->name('agent.')->grou
     //User Routes
     include('agent/user_routes.php');
 
+    //Dashboard Routes
+    include('agent/dashboard_routes.php');
+
     //Campaign Management Routes
     include('agent/campaign_routes.php');
 

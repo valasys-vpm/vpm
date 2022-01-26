@@ -1,17 +1,123 @@
-/* ------------------------------------
-    Campaign List Custom Javascript
------------------------------------- */
+'use strict';
 
 let URL = $('meta[name="base-path"]').attr('content');
 
-'use strict';
-$(document).ready(function() {
+$(function (){
+
+    getData();
+    getGuageChartData();
+    getCountsByWorkTypeBarChartData();
+    getLeadsGeneratedCountsBarChartData();
+
+    $('#datepicker_range').datepicker({
+        format: 'dd-mm-yyyy',
+        autoclose: true,
+        todayHighlight: true,
+    });
+
+    $('#filter_monthly').datepicker({
+        format: 'M-yyyy',
+        autoclose: true,
+        startView: "months",
+        minViewMode: "months"
+    });
+});
+
+$(function (){
+
+    $('#filter_monthly').change(function() {
+        getLeadsGeneratedCountsBarChartData();
+    });
+
+});
+
+function getData() {
+    $.ajax({
+        url: URL + '/agent/dashboard/get-data',
+        dataType: 'JSON',
+        data: {
+            'start_date': $('#filter_start_date').val(),
+            'end_date': $('#filter_end_date').val()
+        },
+        beforeSend: function() {
+            $('.dashboard-count').val(0);
+        },
+        success: function(response) {
+            $('#campaign_processed_count').val(response.campaign_processed.count);
+            $('#campaign_processed_percentage').val(response.campaign_processed.percentage);
+
+            $('#leads_generated_count').val(response.leads_generated.count);
+            $('#leads_generated_percentage').val(response.leads_generated.percentage);
+
+            $('#leads_qualified_count').val(response.leads_qualified.count);
+            $('#leads_qualified_percentage').val(response.leads_qualified.percentage);
+
+            $('#leads_rejected_count').val(response.leads_rejected.count);
+            $('#leads_rejected_percentage').val(response.leads_rejected.percentage);
+
+            $("input.dial").trigger('change');
+        }
+    });
+}
+
+function getGuageChartData() {
+    $.ajax({
+        url: URL + '/agent/dashboard/get-guage-chart-data',
+        dataType: 'JSON',
+        data: {
+            'start_date': $('#filter_start_date').val(),
+            'end_date': $('#filter_end_date').val()
+        },
+        beforeSend: function() {
+
+        },
+        success: function(response) {
+            initProductivityGaugeChart(parseInt(response.guage_chart.productivity));
+            initQualityGaugeChart(parseInt(response.guage_chart.quality));
+        }
+    });
+}
+
+function getCountsByWorkTypeBarChartData() {
+    $.ajax({
+        url: URL + '/agent/dashboard/get-counts-by-work-type-bar-chart-data',
+        dataType: 'JSON',
+        data: {
+            'start_date': $('#filter_start_date').val(),
+            'end_date': $('#filter_end_date').val()
+        },
+        beforeSend: function() {
+
+        },
+        success: function(response) {
+            initCountsByWorkTypeBarChart(response.bar_chart);
+        }
+    });
+}
+
+function getLeadsGeneratedCountsBarChartData() {
+    $.ajax({
+        url: URL + '/agent/dashboard/get-leads-generated-counts-bar-chart-data',
+        dataType: 'JSON',
+        data: {
+            'month': $('#filter_monthly').val(),
+        },
+        beforeSend: function() {
+
+        },
+        success: function(response) {
+            initLeadsGeneratedCountsBarChart(response.bar_chart);
+        }
+    });
+}
+
+function initProductivityGaugeChart(_data) {
     setTimeout(function() {
         // [ Gauge-chart ] start
-        var dom = document.getElementById("chart-gauge-productivity");
-        var myChart = echarts.init(dom);
-        var app = {};
-        var option = null;
+        let dom = document.getElementById("chart-gauge-productivity");
+        let myChart = echarts.init(dom);
+        let app = {};
+        let option = null;
         option = {
             tooltip: {
                 formatter: "{a} <br/>{b} : {c}%"
@@ -33,7 +139,7 @@ $(document).ready(function() {
                     formatter: '{value}%'
                 },
                 data: [{
-                    value: 50,
+                    value: _data,
                     name: ''
                 }]
             }]
@@ -42,11 +148,16 @@ $(document).ready(function() {
             myChart.setOption(option, true);
         }
         // [ Gauge-chart ] end
+    }, 700);
+}
 
-        var dom2 = document.getElementById("chart-gauge-quality");
-        var myChart2 = echarts.init(dom2);
-        var app2 = {};
-        var option2 = null;
+function initQualityGaugeChart(_data) {
+    setTimeout(function() {
+        // [ Gauge-chart ] start
+        let dom2 = document.getElementById("chart-gauge-quality");
+        let myChart2 = echarts.init(dom2);
+        let app2 = {};
+        let option2 = null;
         option2 = {
             tooltip: {
                 formatter: "{a} <br/>{b} : {c}%"
@@ -71,7 +182,7 @@ $(document).ready(function() {
                     formatter: '{value}%'
                 },
                 data: [{
-                    value: 100,
+                    value: _data,
                     name: ''
                 }]
             }]
@@ -79,55 +190,28 @@ $(document).ready(function() {
         if (option2 && typeof option2 === "object") {
             myChart2.setOption(option2, true);
         }
+        // [ Gauge-chart ] end
+    }, 700);
+}
 
-        var dom7 = document.getElementById("bar-counts-by-work-type");
-        var myChart7 = echarts.init(dom7);
-        var app7 = {};
-
-        var option7 = null;
-
+function initCountsByWorkTypeBarChart(_data) {
+    setTimeout(function() {
+        // [ Bar-chart ] start
+        let dom7 = document.getElementById("bar-counts-by-work-type");
+        let myChart7 = echarts.init(dom7);
+        let app7 = {};
+        let option7 = null;
         option7 = {
             xAxis: {
                 type: 'category',
-                data: ['CD', 'CDQA', 'ABM', 'Lead Nurture', 'Address Fetch']
+                data: _data.xAxis
             },
             yAxis: {
                 type: 'value'
             },
             series: [
                 {
-                    data: [
-                        {
-                            value: 50,
-                            itemStyle: {
-                                color: '#ff598f'
-                            }
-                        },
-                        {
-                            value: 100,
-                            itemStyle: {
-                                color: '#fd8a5e'
-                            }
-                        },
-                        {
-                            value: 200,
-                            itemStyle: {
-                                color: '#e0e300'
-                            }
-                        },
-                        {
-                            value: 75,
-                            itemStyle: {
-                                color: '#01dddd'
-                            }
-                        },
-                        {
-                            value: 50,
-                            itemStyle: {
-                                color: '#00bfaf'
-                            }
-                        },
-                    ],
+                    data: _data.data,
                     type: 'bar'
                 }
             ]
@@ -136,14 +220,17 @@ $(document).ready(function() {
         if (option7 && typeof option7 === 'object') {
             myChart7.setOption(option7);
         }
+        // [ Bar-chart ] end
+    }, 700);
+}
 
-
-        var dom8 = document.getElementById("bar-leads-generated-monthly");
-        var myChart8 = echarts.init(dom8);
-        var app8 = {};
-
-        var option8 = null;
-
+function initLeadsGeneratedCountsBarChart(_data) {
+    setTimeout(function() {
+        // [ Bar-chart ] start
+        let dom8 = document.getElementById("bar-leads-generated-monthly");
+        let myChart8 = echarts.init(dom8);
+        let app8 = {};
+        let option8 = null;
         option8 = {
             tooltip: {
                 trigger: 'axis',
@@ -164,53 +251,20 @@ $(document).ready(function() {
             xAxis: [
                 {
                     type: 'category',
-                    data: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31]
+                    data: _data.xAxis
                 }
             ],
             yAxis: [
                 {
                     type: 'value',
-                    name: 'Budget'
+                    name: 'Leads'
                 }
             ],
             series: [
                 {
-                    name: 'Budget 2011',
+                    name: 'Leads Generated',
                     type: 'bar',
-                    data: [
-                        120,
-                        200,
-                        150,
-                        80,
-                        70,
-                        120,
-                        200,
-                        150,
-                        80,
-                        70,
-                        120,
-                        200,
-                        150,
-                        80,
-                        70,
-                        120,
-                        200,
-                        150,
-                        80,
-                        70,
-                        120,
-                        200,
-                        150,
-                        80,
-                        70,
-                        120,
-                        200,
-                        150,
-                        80,
-                        70,
-                        15
-
-                    ],
+                    data: _data.data,
                     color: '#3C66E9'
                 }
             ]
@@ -219,7 +273,6 @@ $(document).ready(function() {
         if (option8 && typeof option8 === 'object') {
             myChart8.setOption(option8);
         }
-
+        // [ Bar-chart ] end
     }, 700);
-});
-
+}

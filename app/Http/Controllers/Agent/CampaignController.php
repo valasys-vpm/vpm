@@ -151,6 +151,7 @@ class CampaignController extends Controller
 
     public function submitCampaign($id, Request $request)
     {
+        $attributes = $request->all();
         $attributes['submitted_at'] = date('Y-m-d H:i:s');
 
         $response = $this->agentRepository->update(base64_decode($id), $attributes);
