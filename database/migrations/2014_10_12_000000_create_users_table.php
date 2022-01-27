@@ -32,6 +32,7 @@ class CreateUsersTable extends Migration
 
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
+            $table->text('profile')->nullable();
             $table->string('password');
 
             $table->dateTime('logged_on')->nullable();

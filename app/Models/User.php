@@ -62,6 +62,11 @@ class User extends Authenticatable
         return $this->hasOne(Role::class, 'id', 'role_id');
     }
 
+    public function reporting(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(User::class, 'id', 'reporting_user_id');
+    }
+
     public function department(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
         return $this->hasOne(Department::class, 'id', 'department_id');

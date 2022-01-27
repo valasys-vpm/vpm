@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Agent;
 
 use App\Http\Controllers\Controller;
+use App\Models\Campaign;
 use App\Models\CampaignAssignAgent;
 use App\Repository\AgentDataRepository\AgentDataRepository;
 use App\Repository\AgentLeadRepository\AgentLeadRepository;
@@ -55,10 +56,11 @@ class CampaignController extends Controller
             $this->data['resultCAAgent'] = $this->agentRepository->find(base64_decode($id));
             $this->data['resultCampaign'] = $this->campaignRepository->find($this->data['resultCAAgent']->campaign_id);
             $this->data['resultCampaignIssues'] = $this->issueRepository->get(array('campaign_ids' => [$this->data['resultCAAgent']->campaign_id]));
-
+            //dd($this->data['resultCAAgent']->toArray());
             if(isset($this->data['resultCampaign']->parent_id) && !empty($this->data['resultCampaign']->parent_id)) {
                 $this->data['resultCampaignParent'] = $this->campaignRepository->find($this->data['resultCampaign']->parent_id);
             }
+            //dd($this->data['resultCAAgent']->toArray());
             return view('agent.campaign.show', $this->data);
         } catch (\Exception $exception) {
             return redirect()->route('agent.campaign.list')->with('error', ['title' => 'Error while processing request', 'message' => 'Campaign details not found']);
@@ -79,6 +81,7 @@ class CampaignController extends Controller
 
         $query->whereUserId(Auth::id());
         $query->with('campaign');
+        $query->with('agent_work_type');
         $query->with('campaign.children');
 
         $totalRecords = $query->count();
@@ -99,15 +102,14 @@ class CampaignController extends Controller
 
 
         //Order By
-        $orderColumn = $order[0]['column'];
-        $orderDirection = $order[0]['dir'];
+        $orderColumn = null;
+        if ($request->has('order')){
+            $order = $request->get('order');
+            $orderColumn = $order[0]['column'];
+            $orderDirection = $order[0]['dir'];
+        }
         switch ($orderColumn) {
-            case '0': $query->orderBy('id', $orderDirection); break;
-            case '1': $query->orderBy('id', $orderDirection); break;
-            case '2': $query->orderBy('id', $orderDirection); break;
-            case '3': $query->orderBy('id', $orderDirection); break;
-            case '4': $query->orderBy('id', $orderDirection); break;
-            default: $query->orderBy('id'); break;
+            default: $query->orderBy('created_at', 'DESC'); break;
         }
 
         $totalFilterRecords = $query->count();
@@ -135,7 +137,12 @@ class CampaignController extends Controller
 
         $response = $this->agentRepository->update(base64_decode($id), $attributes);
 
-        if($response['status']) {
+        if($response['status'] == TRUE) {
+            //Add Campaign History
+            $resultCampaign = Campaign::findOrFail($response['details']->campaign_id);
+            add_campaign_history($resultCampaign->id, $resultCampaign->parent_id, 'Started working on campaign');
+            add_history('Campaign Started', 'Started working on campaign');
+
             return response()->json(array('status' => true, 'message' => 'Campaign Started'));
         } else {
             return response()->json(array('status' => false, 'message' => 'Data not found'));
@@ -144,11 +151,16 @@ class CampaignController extends Controller
 
     public function submitCampaign($id, Request $request)
     {
+        $attributes = $request->all();
         $attributes['submitted_at'] = date('Y-m-d H:i:s');
 
         $response = $this->agentRepository->update(base64_decode($id), $attributes);
 
         if($response['status']) {
+            //Add Campaign History
+            $resultCampaign = Campaign::findOrFail($response['details']->campaign_id);
+            add_campaign_history($resultCampaign->id, $resultCampaign->parent_id, 'Submitted the campaign');
+            add_history('Campaign Submitted By Agent', 'Submitted the campaign');
             return response()->json(array('status' => true, 'message' => 'Campaign submitted successfully'));
         } else {
             return response()->json(array('status' => false, 'message' => 'Data not found'));

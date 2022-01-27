@@ -5,15 +5,21 @@ namespace App\Http\Controllers\TeamLeader;
 use App\Http\Controllers\Controller;
 use App\Models\Campaign;
 use App\Models\CampaignAssignAgent;
+use App\Models\CampaignAssignQATL;
 use App\Models\CampaignAssignRATL;
 use App\Models\Data;
+use App\Models\Role;
+use App\Models\User;
 use App\Repository\AgentDataRepository\AgentDataRepository;
+use App\Repository\AgentWorkType\AgentWorkTypeRepository;
 use App\Repository\Campaign\IssueRepository\IssueRepository;
 use App\Repository\CampaignAssignRepository\AgentRepository\AgentRepository;
 use App\Repository\CampaignAssignRepository\CampaignAssignRepository;
+use App\Repository\CampaignAssignRepository\QATLRepository\QATLRepository;
 use App\Repository\CampaignAssignRepository\RATLRepository\RATLRepository;
 use App\Repository\CampaignRepository\CampaignRepository;
 use App\Repository\DataRepository\DataRepository;
+use App\Repository\Notification\QATL\QATLNotificationRepository;
 use App\Repository\UserRepository\UserRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -64,6 +70,10 @@ class CampaignAssignController extends Controller
      * @var IssueRepository
      */
     private $issueRepository;
+    /**
+     * @var QATLRepository
+     */
+    private $QATLRepository;
 
     public function __construct(
         CampaignRepository $campaignRepository,
@@ -77,7 +87,8 @@ class CampaignAssignController extends Controller
         SuppressionAccountNameRepository $suppressionAccountNameRepository,
         TargetDomainRepository $targetDomainRepository,
         AgentDataRepository $agentDataRepository,
-        IssueRepository $issueRepository
+        IssueRepository $issueRepository,
+        QATLRepository $QATLRepository
     )
     {
         $this->data = array();
@@ -93,26 +104,71 @@ class CampaignAssignController extends Controller
         $this->targetDomainRepository = $targetDomainRepository;
         $this->agentDataRepository = $agentDataRepository;
         $this->issueRepository = $issueRepository;
+        $this->QATLRepository = $QATLRepository;
     }
 
     public function index()
     {
         $this->data['resultCampaigns'] = $this->campaignAssignRepository->getCampaignToAssignForTL(Auth::id());
-        $this->data['resultUsers'] = $this->userRepository->get(array(
+
+        $resultAgents = $this->userRepository->get(array(
             'status' => 1,
             'designation_slug' => array('research_analyst'),
+            'order_by' => array('value' => 'first_name', 'order' => 'ASC'),
             'reporting_to' => array(Auth::id())
         ));
-        //dd($this->data['resultCampaigns']->toArray());
+
+        $resultEMEs = $this->userRepository->get(array(
+            'status' => 1,
+            'designation_slug' => array('email_marketing_executive'),
+            'order_by' => array('value' => 'first_name', 'order' => 'ASC')
+        ));
+
+        $this->data['resultUsers'] = $resultAgents->merge($resultEMEs);
+
+        $this->data['resultAgentWorkTypes'] = AgentWorkTypeRepository::get(array('status' => 1));
+
+        //dd($this->data['resultAgentWorkTypes']->toArray());
         return view('team_leader.campaign_assign.list', $this->data);
     }
 
     public function store(Request $request): \Illuminate\Http\RedirectResponse
     {
-        $attributes = $request->all();
-        $response = $this->agentRepository->store($attributes);
+        $response = array('status' => FALSE, 'message' => 'Something went wrong, please try again.');
+        $user_names = '';
+        try {
+            $attributes = $request->all();
+            if(!$request->has('display_date')) {
+                $resultCampaignAssignRATL = CampaignAssignRATL::findOrFail($attributes['campaign_assign_ratl_id']);
+                $attributes['display_date'] = date('Y-m-d', strtotime($resultCampaignAssignRATL->display_date));
+            }
+            $attributes['assigned_by'] = Auth::id();
+            $resultCampaign = Campaign::findOrFail($attributes['campaign_id']);
+            foreach ($attributes['users'] as $user) {
+                $resultUser = User::findOrFail($user['user_id']);
+                $user_names .= $resultUser->full_name.', ';
+                $attributes['user_id'] = $user['user_id'];
+                $attributes['allocation'] = $user['allocation'];
+
+                $result = $this->agentRepository->store($attributes);
+
+                if($result['status'] == TRUE) {
+                    $response = array('status' => TRUE, 'message' => 'Campaign assigned successfully');
+                } else {
+                    throw new \Exception('Something went wrong, please try again.', 1);
+                }
+            }
+        } catch (\Exception $exception) {
+            $response = array('status' => FALSE, 'message' => 'Something went wrong, please try again.');
+        }
+
         if($response['status'] == TRUE) {
-            $res = $this->RATLRepository->update($attributes['data'][0]['campaign_assign_ratl_id'], array('started_at' => date('Y-m-d H:i:s')));
+            $res = $this->RATLRepository->update($attributes['campaign_assign_ratl_id'], array('started_at' => date('Y-m-d H:i:s')));
+
+            //Add Campaign History
+            add_campaign_history($resultCampaign->id, $resultCampaign->parent_id, 'Campaign assigned to agent(s) - '.$user_names);
+            add_history('Campaign assigned to agent(s)', 'Campaign assigned to agent(s) - '.$user_names);
+
             return redirect()->route('team_leader.campaign_assign.list')->with('success', ['title' => 'Successful', 'message' => $response['message']]);
         } else {
             return back()->withInput()->with('error', ['title' => 'Error while processing request', 'message' => $response['message']]);
@@ -137,7 +193,23 @@ class CampaignAssignController extends Controller
             //get count if data already assigned
             $this->data['countAgentData'] = $this->agentDataRepository->get(array('ca_ratl_ids' => [$this->data['resultCARATL']->id]))->count();
 
-            //dd($this->data['resultCampaignIssues']->toArray());
+            $resultAgents = $this->userRepository->get(array(
+                'status' => 1,
+                'designation_slug' => array('research_analyst'),
+                'order_by' => array('value' => 'first_name', 'order' => 'ASC'),
+                'reporting_to' => array(Auth::id())
+            ));
+
+            $resultEMEs = $this->userRepository->get(array(
+                'status' => 1,
+                'designation_slug' => array('email_marketing_executive'),
+                'order_by' => array('value' => 'first_name', 'order' => 'ASC')
+            ));
+
+            $this->data['resultUsers'] = $resultAgents->merge($resultEMEs);
+            $this->data['resultAssignedUsers'] = $this->data['resultCARATL']->agents->pluck('user_id')->toArray();
+
+            //dd($this->data['resultCARATL']->agents->toArray());
             return view('team_leader.campaign_assign.show', $this->data);
 
         } catch (\Exception $exception) {
@@ -147,9 +219,14 @@ class CampaignAssignController extends Controller
 
     public function getAssignedCampaigns(Request $request): \Illuminate\Http\JsonResponse
     {
+        $query = CampaignAssignRATL::query();
+        $query->whereUserId(Auth::id());
 
-        $this->data['resultAssignedCampaigns'] = $this->campaignAssignRepository->getCampaignToAgents(Auth::id());
-        //dd($this->data['resultAssignedCampaigns']->toArray());
+        $query_agent_campaigns = CampaignAssignAgent::query();
+        $query_agent_campaigns->whereIn('campaign_assign_ratl_id', $query->get()->pluck('id')->toArray());
+        $resultAgentCampaigns = $query_agent_campaigns->get();
+
+        //$this->data['resultAssignedCampaigns'] = $this->campaignAssignRepository->getCampaignToAgents(Auth::id());
 
         $filters = array_filter(json_decode($request->get('filters'), true));
         $search_data = $request->get('search');
@@ -159,10 +236,11 @@ class CampaignAssignController extends Controller
         $limit = $request->get("length"); // Rows display per page
         $offset = $request->get("start");
 
-        $query = CampaignAssignRATL::query();
-        $query->whereIn('id', $this->data['resultAssignedCampaigns']->pluck('id')->toArray());
-        $query->whereUserId(Auth::id());
+        $query->whereIn('id', $resultAgentCampaigns->pluck('campaign_assign_ratl_id')->toArray());
+
         $query->with('campaign');
+
+
         $query->with('campaign.children');
         $query->with('agents');
 
@@ -173,7 +251,7 @@ class CampaignAssignController extends Controller
             $query->whereHas('campaign', function ($campaign) use($searchValue) {
                 $campaign->where("campaign_id", "like", "%$searchValue%");
                 $campaign->orWhere("name", "like", "%$searchValue%");
-                $campaign->orWhere("deliver_count", "like", "%$searchValue%");
+                //$campaign->orWhere("deliver_count", "like", "%$searchValue%");
             });
             $query->orWhere("allocation", "like", "%$searchValue%");
         }
@@ -183,15 +261,23 @@ class CampaignAssignController extends Controller
         }
 
         //Order By
-        $orderColumn = $order[0]['column'];
-        $orderDirection = $order[0]['dir'];
+        $orderColumn = null;
+        if ($request->has('order')){
+            $order = $request->get('order');
+            $orderColumn = $order[0]['column'];
+            $orderDirection = $order[0]['dir'];
+        }
+
         switch ($orderColumn) {
-            case '0': $query->orderBy('id', $orderDirection); break;
-            case '1': $query->orderBy('id', $orderDirection); break;
-            case '2': $query->orderBy('id', $orderDirection); break;
-            case '3': $query->orderBy('id', $orderDirection); break;
-            case '4': $query->orderBy('id', $orderDirection); break;
-            default: $query->orderBy('id'); break;
+            case '0': $query->orderBy('campaign_id', $orderDirection); break;
+            case '1': $query->orderBy('name', $orderDirection); break;
+            case '2':
+                break;
+            case '3': $query->orderBy('start_date', $orderDirection); break;
+            case '4': $query->orderBy('end_date', $orderDirection); break;
+            case '5': $query->orderBy('allocation', $orderDirection); break;
+            case '6': $query->orderBy('campaign_status_id', $orderDirection); break;
+            default: $query->orderBy('created_at', 'DESC'); break;
         }
 
         $totalFilterRecords = $query->count();
@@ -224,6 +310,62 @@ class CampaignAssignController extends Controller
             return response()->json(array('status' => false, 'message' => 'Data not found'));
         }
     }
+
+    public function revokeCampaign($id)
+    {
+        $attributes['submitted_at'] = date('Y-m-d H:i:s');
+        $attributes['status'] = 2;
+        $response = $this->agentRepository->update(base64_decode($id), $attributes);
+        if($response['status'] == TRUE) {
+            return response()->json(array('status' => true, 'message' => 'Campaign revoked successfully'));
+        } else {
+            return response()->json(array('status' => false, 'message' => $response['message']));
+        }
+    }
+
+    public function assignCampaign(Request $request)
+    {
+        $attributes = $request->all();
+
+        $resultCARATL = CampaignAssignRATL::where('campaign_id', base64_decode($attributes['campaign_id']))->where('user_id', Auth::id())->first();
+        $resultCAAgent = CampaignAssignAgent::where('campaign_assign_ratl_id', $resultCARATL->id)->first();
+
+        $new_attributes['campaign_assign_ratl_id'] = $resultCARATL->id;
+        $new_attributes['campaign_id'] = $resultCARATL->campaign_id;
+        $new_attributes['display_date'] = $resultCARATL->display_date;
+
+        $new_attributes['agent_work_type_id'] = $resultCAAgent->agent_work_type_id;
+        $new_attributes['allocation'] = $attributes['allocation'];
+        $new_attributes['assigned_by'] = $resultCARATL->user_id;
+
+        $response['status'] = FALSE;
+
+        foreach ($attributes['user_list'] as $user) {
+            $new_attributes['user_id'] = $user;
+            $response = $this->agentRepository->store($new_attributes);
+        }
+
+        if($response['status'] == TRUE) {
+            return response()->json(array('status' => true, 'message' => 'Campaign assigned successfully'));
+        } else {
+            return response()->json(array('status' => false, 'message' => $response['message']));
+        }
+    }
+
+    public function reAssignCampaign($id, Request $request)
+    {
+        $attributes = $request->all();
+        $new_attributes['submitted_at'] = NULL;
+        $new_attributes['status'] = 1;
+        $response = $this->agentRepository->update(base64_decode($id), $new_attributes);
+
+        if($response['status'] == TRUE) {
+            return response()->json(array('status' => true, 'message' => 'Campaign re-assigned successfully'));
+        } else {
+            return response()->json(array('status' => false, 'message' => $response['message']));
+        }
+    }
+
 
     public function getData(Request $request): \Illuminate\Http\JsonResponse
     {
@@ -260,6 +402,42 @@ class CampaignAssignController extends Controller
             return response()->json(array('status' => true, 'message' => $response['message'], 'countAgentData' => $countAgentData));
         } else {
             return response()->json(array('status' => false, 'message' => 'Something went wrong, please try again.'));
+        }
+    }
+
+    public function sendForQualityCheck($ca_ratl_id)
+    {
+        $resultCARATL = $this->RATLRepository->find(base64_decode($ca_ratl_id));
+        $resultRole = Role::whereSlug('qa_team_leader')->whereStatus(1)->first();
+        $resultUser = User::whereRoleId($resultRole->id)->whereStatus(1)->first();
+        $resultCAQATL = CampaignAssignQATL::where('campaign_id', $resultCARATL->campaign_id)->where('user_id', $resultUser->id)->first();
+        if(empty($resultCAQATL->id)) {
+
+            $attributes = array(
+                'campaign_id' => $resultCARATL->campaign_id,
+                'user_id' => $resultUser->id,
+                'display_date' => $resultCARATL->display_date,
+                'assigned_by' => $resultCARATL->user_id,
+            );
+            $responseCAQATL = $this->QATLRepository->store($attributes);
+        } else {
+
+            $responseCAQATL['status'] = TRUE;
+            $responseCAQATL['message'] = 'Campaign submitted successfully';
+
+            //Send notification to qatl
+            QATLNotificationRepository::store(array(
+                'sender_id' => $resultCARATL->user_id,
+                'recipient_id' => $resultUser->id,
+                'message' => 'Campaign submitted by RATLs - '.$resultCARATL->campaign->name,
+                'url' => route('qa_team_leader.campaign.show', base64_encode($resultCAQATL->id))
+            ));
+        }
+
+        if($responseCAQATL['status']) {
+            return response()->json(array('status' => true, 'message' => $responseCAQATL['message']));
+        } else {
+            return response()->json(array('status' => false, 'message' => $responseCAQATL['message']));
         }
     }
 

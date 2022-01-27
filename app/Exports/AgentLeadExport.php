@@ -33,6 +33,7 @@ class AgentLeadExport implements FromCollection, WithHeadings, WithEvents, WithC
 
         $query = AgentLead::query();
         $query->whereCampaignId($this->campaignId);
+        $query->whereStatus(1);
         $resultAgentLeads = $query->get();
 
         //convert to final array
@@ -57,6 +58,7 @@ class AgentLeadExport implements FromCollection, WithHeadings, WithEvents, WithC
             $exportData[$key]['Country'] = $agentLead->country;
             $exportData[$key]['Industry'] = $agentLead->industry;
             $exportData[$key]['Employee Size'] = $agentLead->employee_size;
+            $exportData[$key]['Employee Size 2'] = $agentLead->employee_size_2;
             $exportData[$key]['Revenue'] = $agentLead->revenue;
             $exportData[$key]['Company Domain'] = $agentLead->company_domain;
             $exportData[$key]['Website'] = $agentLead->website;
@@ -99,6 +101,7 @@ class AgentLeadExport implements FromCollection, WithHeadings, WithEvents, WithC
             'Country',
             'Industry',
             'Employee Size',
+            'Employee Size 2',
             'Revenue',
             'Company Domain',
             'Website',

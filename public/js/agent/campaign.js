@@ -9,7 +9,7 @@ let MONTHS = ['Jan','Feb','Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'
 $(function (){
 
     CAMPAIGN_TABLE = $('#table-campaigns').DataTable({
-        "lengthMenu": [ [500,400,300,200,100,-1], [500,400,300,200,100,'All'] ],
+        "lengthMenu": [ [-1,500,250,100,50,25], ['All',500,250,100,50,25] ],
         "processing": true,
         "serverSide": true,
         "ajax": {
@@ -26,14 +26,17 @@ $(function (){
         },
         "columns": [
             {
+                orderable: false,
                 data: 'campaign.campaign_id'
             },
             {
+                orderable: false,
                 render: function (data, type, row) {
                     return '<a href="'+URL+'/agent/campaign/view-details/'+btoa(row.id)+'" class="text-dark double-click" title="View campaign details">'+row.campaign.name+'</a>';
                 }
             },
             {
+                orderable: false,
                 render: function (data, type, row) {
                     let deliver_count = row.agent_lead_count;
                     let allocation = row.allocation;
@@ -44,18 +47,21 @@ $(function (){
                 }
             },
             {
+                orderable: false,
                 render: function (data, type, row) {
                     let date = new Date(row.campaign.start_date);
                     return (date.getDate() <= 9 ? '0'+date.getDate() : date.getDate())+'/'+MONTHS[date.getMonth()]+'/'+date.getFullYear();
                 }
             },
             {
+                orderable: false,
                 render: function (data, type, row) {
                     let date = new Date(row.display_date);
                     return (date.getDate() <= 9 ? '0'+date.getDate() : date.getDate())+'/'+MONTHS[date.getMonth()]+'/'+date.getFullYear();
                 }
             },
             {
+                orderable: false,
                 render: function (data, type, row) {
                     let deliver_count = row.agent_lead_count;
                     let allocation = row.allocation;
@@ -70,6 +76,11 @@ $(function (){
                 }
             },
             {
+                orderable: false,
+                data: 'agent_work_type.name'
+            },
+            {
+                orderable: false,
                 render: function (data, type, row) {
                     let status_id  = row.campaign.campaign_status_id;
                     let campaign_type = '';
@@ -117,7 +128,7 @@ $(function (){
             if(data.campaign.children.length) {
                 status_id = data.campaign.children[0].campaign_status_id;
             }
-            switch (status_id) {
+            switch (parseInt(status_id)) {
                 case 1:
                     $(row).addClass('border-live');
                     break;
@@ -137,7 +148,8 @@ $(function (){
                     $(row).addClass('border-shortfall');
                     break;
             }
-        }
+        },
+        order:[]
     });
 
 });

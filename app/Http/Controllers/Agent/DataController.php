@@ -75,24 +75,31 @@ class DataController extends Controller
     public function takeLead(Request $request)
     {
         $attributes = $request->all();
-
         $resultData = $this->dataRepository->find(base64_decode($attributes['data_id']));
         $attributes = array_merge($attributes, $resultData->toArray());
 
-        $resultAgentData = AgentData::select('id')->where('ca_agent_id', base64_decode($attributes['ca_agent_id']))->where('data_id', base64_decode($attributes['data_id']))->first();
-
-        $response = $this->agentLeadRepository->store($attributes);
-        if($response['status'] == TRUE) {
-            //Change agentData status to taken
-            $response_agentData = $this->agentDataRepository->update($resultAgentData->id, array('status' => 2));
-            if($response_agentData['status'] == TRUE) {
-                return response()->json(array('status' => true, 'message' => $response['message']));
+        $resultAgentData = AgentData::select('id')
+            ->where('ca_agent_id', base64_decode($attributes['ca_agent_id']))
+            ->where('data_id', base64_decode($attributes['data_id']))
+            ->where('status', 1)
+            ->first();
+        if(isset($resultAgentData) && $resultAgentData->id) {
+            $response = $this->agentLeadRepository->store($attributes);
+            if($response['status'] == TRUE) {
+                //Change agentData status to taken
+                $response_agentData = $this->agentDataRepository->update($resultAgentData->id, array('status' => 2));
+                if($response_agentData['status'] == TRUE) {
+                    return response()->json(array('status' => true, 'message' => $response['message']));
+                } else {
+                    return response()->json(array('status' => false, 'message' => $response['message']));
+                }
             } else {
                 return response()->json(array('status' => false, 'message' => $response['message']));
             }
         } else {
-            return response()->json(array('status' => false, 'message' => $response['message']));
+            return response()->json(array('status' => false, 'message' => 'Lead already used, please try another lead.'));
         }
+
     }
 
     public function getAgentData(Request $request)
@@ -151,8 +158,12 @@ class DataController extends Controller
         }
 
         //Order By
-        $orderColumn = $order[0]['column'];
-        $orderDirection = $order[0]['dir'];
+        $orderColumn = null;
+        if ($request->has('order')){
+            $order = $request->get('order');
+            $orderColumn = $order[0]['column'];
+            $orderDirection = $order[0]['dir'];
+        }
         switch ($orderColumn) {
             case '0': $query->orderBy('first_name', $orderDirection); break;
             case '1': $query->orderBy('last_name', $orderDirection); break;

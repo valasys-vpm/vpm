@@ -26,11 +26,14 @@
                                 <div class="col-md-12">
                                     <div class="page-header-title">
                                         <h5 class="m-b-10">{{ $resultCARATL->campaign->name }}</h5>
+                                        <div class="card-header-right mb-1" style="float: right;">
+                                            <a href="{{ route('team_leader.campaign_assign.show', base64_encode($resultCARATL->id)) }}" class="btn btn-outline-info btn-square btn-sm pt-1 pb-1" style="font-weight: bold;"><i class="feather icon-arrow-left"></i>Back</a>
+                                        </div>
                                     </div>
                                     <ul class="breadcrumb">
                                         <li class="breadcrumb-item"><a href="{{ route('team_leader.dashboard') }}"><i class="feather icon-home"></i></a></li>
-                                        <li class="breadcrumb-item"><a href="{{ route('team_leader.campaign.list') }}">Campaign Management</a></li>
-                                        <li class="breadcrumb-item"><a href="{{ route('team_leader.campaign.show', base64_encode($resultCARATL->id)) }}">Campaign Details</a></li>
+                                        <li class="breadcrumb-item"><a href="{{ route('team_leader.campaign_assign.list') }}">Campaign Management</a></li>
+                                        <li class="breadcrumb-item"><a href="{{ route('team_leader.campaign_assign.show', base64_encode($resultCARATL->id)) }}">Campaign Details</a></li>
                                         <li class="breadcrumb-item"><a href="javascript:void(0);">Manage Leads</a></li>
                                     </ul>
                                 </div>
@@ -47,6 +50,9 @@
                                     <div class="card">
                                         <div class="card-header">
                                             <h5>Lead Details</h5>
+                                            <div class="float-right">
+                                                <button type="button" class="btn btn-dark btn-square btn-sm" onclick="export_file('{{ base64_encode($resultCARATL->id) }}');"><i class="feather icon-download"></i>Export</button>
+                                            </div>
                                         </div>
                                         <div class="card-block">
                                             <div class="table-responsive">
@@ -57,6 +63,7 @@
                                                         <th colspan="18">Lead Details</th>
                                                     </tr>
                                                     <tr>
+                                                        <th>Action</th>
                                                         <th>Agent</th>
                                                         <th>Date</th>
                                                         <th>First Name</th>
@@ -100,6 +107,31 @@
             </div>
         </div>
     </section>
+
+    <div id="modal-reject-lead" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <form id="form-reject-lead" method="post">
+                    <input type="hidden" name="agent_lead_id"  value="">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Reject agent's lead</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="">
+                            <textarea class="form-control" name="comment_2" id="comment_2" rows="3" placeholder="Please specify reason..."></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" id="form-reject-lead-submit">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @section('javascript')

@@ -9,7 +9,7 @@ let MONTHS = ['Jan','Feb','Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'
 $(function (){
 
     CAMPAIGN_TABLE = $('#table-campaigns').DataTable({
-        "lengthMenu": [ [5,500,400,300,200,100,-1], [5,500,400,300,200,100,'All'] ],
+        "lengthMenu": [ [-1,500,250,100,50,25], ['All',500,250,100,50,25] ],
         "processing": true,
         "serverSide": true,
         "ajax": {
@@ -95,10 +95,10 @@ $(function (){
             },
             {
                 render: function (data, type, row) {
-                    let allocation = row.allocation;
+                    let allocation = parseInt(row.allocation);
                     if(row.children.length) {
                         $.each(row.children, function (key, value) {
-                            allocation = allocation + value.allocation;
+                            allocation = parseInt(allocation) + parseInt(value.allocation);
                         });
                     }
                     return allocation;
@@ -241,7 +241,7 @@ $(function (){
             if(data.children.length) {
                 status_id = data.children[0].campaign_status_id;
             }
-            switch (status_id) {
+            switch (parseInt(status_id)) {
                 case 1:
                     $(row).addClass('border-live');
                     break;
@@ -438,24 +438,28 @@ $(function (){
                 return xhr;
             },
             success: function(response, status, xhr) {
-                if(xhr.status === 201) {
-                    if(response.status === true) {
-                        //$('#modal-import-campaigns').modal('hide');
-                        trigger_pnofify('success', 'Successful', response.message);
-                    } else {
-                        trigger_pnofify('error', 'Error while processing request', response.message);
-                    }
-                } else {
-                    let date = new Date();
-                    let blob = new Blob([response], {type: '' + xhr.getResponseHeader("content-type")})
-                    console.log(blob);
-                    let a = $('<a />'), url = window.URL.createObjectURL(blob);
-                    a.attr({
-                        'href': url,
-                        'download': 'Invalid_Campaigns_'+date.getTime()+'.xlsx',
-                        'text': "click"
-                    }).hide().appendTo("body")[0].click();
-                    trigger_pnofify('warning', 'Invalid Data', 'Campaigns imported with errors, please check excel file to invalid data.');
+                console.log(xhr);
+                switch (xhr.status) {
+                    case 205:
+                        trigger_pnofify('success', 'Successful', 'All Campaigns imported successfully');
+                        break;
+                    case 201:
+                        trigger_pnofify('error', 'Error while processing request', 'Something went wrong, please try again.');
+                        break;
+                    case 202:
+                        trigger_pnofify('error', 'Error while processing request', 'Please select valid file');
+                        break;
+                    default:
+                        let date = new Date();
+                        let blob = new Blob([response], {type: '' + xhr.getResponseHeader("content-type")})
+                        console.log(blob);
+                        let a = $('<a />'), url = window.URL.createObjectURL(blob);
+                        a.attr({
+                            'href': url,
+                            'download': 'Invalid_Campaigns_'+date.getTime()+'.xlsx',
+                            'text': "click"
+                        }).hide().appendTo("body")[0].click();
+                        trigger_pnofify('warning', 'Invalid Data', 'Campaigns imported with errors, please check excel file to invalid data.');
                 }
 
                 $('#modal-import-campaigns').modal('hide');

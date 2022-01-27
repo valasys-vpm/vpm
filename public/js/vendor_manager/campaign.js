@@ -9,7 +9,7 @@ let MONTHS = ['Jan','Feb','Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'
 $(function (){
 
     CAMPAIGN_TABLE = $('#table-campaigns').DataTable({
-        "lengthMenu": [ [500,400,300,200,100,-1], [500,400,300,200,100,'All'] ],
+        "lengthMenu": [ [-1,500,250,100,50,25], ['All',500,250,100,50,25] ],
         "processing": true,
         "serverSide": true,
         "ajax": {
@@ -30,17 +30,7 @@ $(function (){
             },
             {
                 render: function (data, type, row) {
-                    return '<a href="'+URL+'/vendor-manager/campaign/view-details/'+btoa(row.campaign.id)+'" class="text-dark double-click" title="View campaign details">'+row.campaign.name+'</a>';
-                }
-            },
-            {
-                render: function (data, type, row) {
-                    let deliver_count = 0;
-                    let allocation = row.allocation;
-                    let percentage = (deliver_count/allocation)*100;
-
-                    percentage = percentage.toFixed(2);
-                    return '<div class="progress" style="height: 20px;width:100px;border:1px solid lightgrey;"><div class="progress-bar '+ (parseInt(percentage) < 100 ? 'bg-warning text-dark' : 'bg-success text-light' ) +'" role="progressbar" aria-valuenow="'+percentage+'" aria-valuemin="0" aria-valuemax="100" style="width: '+percentage+'%;font-weight:bold;">&nbsp;'+percentage+'%</div></div>';
+                    return '<a href="'+URL+'/vendor-manager/campaign/view-details/'+btoa(row.id)+'" class="text-dark double-click" title="View campaign details">'+row.campaign.name+'</a>';
                 }
             },
             {
@@ -57,21 +47,20 @@ $(function (){
             },
             {
                 render: function (data, type, row) {
-                    let deliver_count = 0;
                     let allocation = row.allocation;
                     let shortfall_count = 0;
 
                     if(shortfall_count) {
-                        return deliver_count + ' <span class="text-danger" title="Shortfall Count">('+ shortfall_count +')</span>'+' / '+ allocation;
+                        return '<span class="text-danger" title="Shortfall Count">('+ shortfall_count +')</span>'+' / '+ allocation;
                     } else {
-                        return deliver_count + ' / '+ allocation;
+                        return allocation;
                     }
 
                 }
             },
             {
                 render: function (data, type, row) {
-                    let status_id  = row.campaign.campaign_status_id;
+                    let status_id  = parseInt(row.campaign.campaign_status_id);
                     let campaign_type = '';
                     if(row.campaign.parent_id) {
                         campaign_type = ' (Incremental)'
@@ -90,7 +79,7 @@ $(function (){
                 orderable: false,
                 render: function (data, type, row) {
                     let html = '';
-                    html += '<a href="'+URL+'/vendor-manager/campaign/view-details/'+btoa(row.campaign.id)+'" class="btn btn-outline-info btn-rounded btn-sm" title="View Campaign Details"><i class="feather icon-eye mr-0"></i></a>';
+                    html += '<a href="'+URL+'/vendor-manager/campaign/view-details/'+btoa(row.id)+'" class="btn btn-outline-info btn-rounded btn-sm" title="View Campaign Details"><i class="feather icon-eye mr-0"></i></a>';
                     return html;
                 }
             },
@@ -113,7 +102,7 @@ $(function (){
             });
         },
         "createdRow": function(row, data, dataIndex){
-            switch (data.campaign.campaign_status_id) {
+            switch (parseInt(data.campaign.campaign_status_id)) {
                 case 1:
                     $(row).addClass('border-live');
                     break;
@@ -133,7 +122,8 @@ $(function (){
                     $(row).addClass('border-shortfall');
                     break;
             }
-        }
+        },
+        order:[]
     });
 
 });

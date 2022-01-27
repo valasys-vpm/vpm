@@ -42,6 +42,7 @@ class CreateAgentLeadsTable extends Migration
             $table->string('country', 100);
             $table->string('industry');
             $table->string('employee_size', 50);
+            $table->string('employee_size_2', 50)->nullable();
             $table->string('revenue', 50);
             $table->string('company_domain', 100);
             $table->string('website')->nullable();
@@ -49,8 +50,11 @@ class CreateAgentLeadsTable extends Migration
             $table->text('linkedin_profile_link');
             $table->text('linkedin_profile_sn_link')->nullable();
             $table->text('comment')->nullable();
+            $table->text('comment_2')->nullable();
+            $table->text('qc_comment')->nullable();
             //---Lead Details
 
+            $table->tinyInteger('status')->default(1);
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_At')->useCurrent();
             $table->softDeletes();

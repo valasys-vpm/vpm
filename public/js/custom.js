@@ -35,8 +35,9 @@ $(function () {
 //Idle Time Functionality
     // Set timeout variables.
     let timoutWarning = 840000; // Display warning in 14 Mins.
-    let timoutNow = 900000; // Timeout in 15 mins.
+    let timoutNow = 840000; // Timeout in 15 mins.
     let logoutUrl = $('meta[name="base-path"]').attr('content') + '/logout'; // URL to logout page.
+    let lockscreen = $('meta[name="base-path"]').attr('content') + '/lockscreen'; // URL to logout page.
 
     let warningTimer;
     let timeoutTimer;
@@ -57,12 +58,13 @@ $(function () {
 
     // Show idle timeout warning dialog.
     function IdleWarning() {
-        alert('Warning: No activity detected, session will be end soon.');
+        //alert('Warning: No activity detected, session will be end soon.');
     }
 
     // Logout the user.
     function IdleTimeout() {
         window.location = logoutUrl;
+        //window.location = lockscreen;
     }
 
     $(function () {
@@ -115,6 +117,12 @@ function notificationMarkAllAsRead()
         }
     });
 }
+
+jQuery(document).bind("keyup keydown", function(e){
+    if(e.ctrlKey && e.keyCode === 76){
+        window.location = lockscreen;
+    }
+});
 
 
 

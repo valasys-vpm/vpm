@@ -17,6 +17,7 @@ class CreateCampaignStatusesTable extends Migration
             $table->increments('id');
 
             $table->string('name', 50);
+            $table->string('slug', 100);
 
             $table->tinyInteger('status')->default('1')->comment('1-Active, 0-Inactive');
             $table->timestamp('created_at')->useCurrent();

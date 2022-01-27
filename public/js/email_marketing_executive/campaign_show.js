@@ -1,8 +1,6 @@
 
 
 let URL = $('meta[name="base-path"]').attr('content');
-let MONTHS = ['Jan','Feb','Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-let DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 //Initializations
 $(function(){
@@ -26,28 +24,30 @@ $(function(){
 
 $(function(){
 
-    $('#form-upload-ebb-submit').on('click', function (e) {
-        e.preventDefault();
-        let form_data = new FormData($('#form-upload-ebb')[0]);
+});
+
+function startCampaign(_id) {
+    if(_id && confirm('Are you sure to start campaign?')) {
         $.ajax({
-            url: URL +'/email-marketing-executive/campaign/upload-ebb-file/' + $('meta[name="ca-eme-id"]').attr('content'),
-            processData: false,
-            contentType: false,
-            data: form_data,
             type: 'post',
-            success: function(response) {
+            url: URL + '/email-marketing-executive/campaign/start-campaign/' + _id,
+            dataType: 'json',
+            success: function (response) {
                 if(response.status === true) {
-                    $('#modal-upload-ebb').modal('hide');
-                    trigger_pnofify('success', 'Successful', response.message);
+                    $('#div-start-campaign').css('display', 'none');
+                    $('#div-submit-campaign').css('display', 'block');
+                    $('#div-manage-leads').css('display', 'block');
+                    trigger_pnofify('success', 'Successful', 'Campaign Started.');
+                    window.location.reload();
                 } else {
-                    $('#modal-upload-ebb').modal('hide');
-                    trigger_pnofify('error', 'Error while processing request', response.message);
+                    trigger_pnofify('error', 'Something went wrong', response.message);
                 }
             }
         });
-    });
+    } else {
 
-});
+    }
+}
 
 function submitCampaign(_id) {
     if(_id && confirm('Are you sure to submit campaign?')) {
@@ -57,9 +57,35 @@ function submitCampaign(_id) {
             dataType: 'json',
             success: function (response) {
                 if(response.status === true) {
-                    $('#div-upload-ebb').css('display', 'none');
+                    $('#div-start-campaign').css('display', 'none');
                     $('#div-submit-campaign').css('display', 'none');
-                    trigger_pnofify('success', 'Successful', response.message);
+                    $('#div-start-again-campaign').css('display', 'block');
+                    $('#div-manage-leads').css('display', 'none');
+                    $('#div-raise-issue').css('display', 'none');
+                    trigger_pnofify('success', 'Successful', 'Campaign submitted successfully.');
+                } else {
+                    trigger_pnofify('error', 'Something went wrong', response.message);
+                }
+            }
+        });
+    } else {
+
+    }
+}
+
+function startAgainCampaign(_id) {
+    if(_id && confirm('Are you sure to restart campaign?')) {
+        $.ajax({
+            type: 'post',
+            url: URL + '/email-marketing-executive/campaign/restart-campaign/' + _id,
+            dataType: 'json',
+            success: function (response) {
+                if(response.status === true) {
+                    $('#div-start-campaign').css('display', 'none');
+                    $('#div-submit-campaign').css('display', 'block');
+                    $('#div-start-again-campaign').css('display', 'none');
+                    $('#div-manage-leads').css('display', 'block');
+                    trigger_pnofify('success', 'Successful', 'Campaign started successfully.');
                 } else {
                     trigger_pnofify('error', 'Something went wrong', response.message);
                 }

@@ -45,7 +45,7 @@
                                     <div class="page-header-title">
                                         <h5 class="m-b-10">My Campaigns</h5>
                                         <div class="card-header-right mb-1" style="float: right;">
-                                            {{-- <a href="{{ route('campaign') }}" class="btn btn-outline-dark btn-square btn-sm" style="font-weight: bold;"><i class="feather icon-arrow-left"></i>Back</a> --}}
+                                            <a href="{{ route('quality_analyst.campaign.list') }}" class="btn btn-outline-info btn-square btn-sm pt-1 pb-1" style="font-weight: bold;"><i class="feather icon-arrow-left"></i>Back</a>
                                         </div>
                                     </div>
                                     <ul class="breadcrumb">
@@ -124,7 +124,7 @@
                                                             <i class="far fa-file f-28 text-muted"></i>
                                                         </div>
                                                         <div class="media-body">
-                                                            <a href="{{ url('public/storage/campaigns/'.$resultCAQA->campaign->campaign_id.'/'.$specification->file_name) }}" class="double-click" target="_blank" download data-toggle="tooltip" data-placement="top" data-original-title="{{ $specification->file_name }}"><span class="m-b-5 d-block text-primary">@if(strlen($specification->file_name) < 30) {{ $specification->file_name }} @else {{ substr($specification->file_name, 0, 27).'...' }} @endif</span></a>
+                                                            <a href="{{ url('public/storage/campaigns/'.$resultCAQA->campaign->campaign_id.'/'.rawurlencode($specification->file_name)) }}" class="double-click" target="_blank" download data-toggle="tooltip" data-placement="top" data-original-title="{{ $specification->file_name }}"><span class="m-b-5 d-block text-primary">@if(strlen($specification->file_name) < 30) {{ $specification->file_name }} @else {{ substr($specification->file_name, 0, 27).'...' }} @endif</span></a>
                                                         </div>
                                                     </li>
                                                 @empty
@@ -151,7 +151,7 @@
                                                             <i class="far fa-file f-28 text-muted"></i>
                                                         </div>
                                                         <div class="media-body">
-                                                            <a href="{{ url('public/storage/campaigns/'.$resultCAQA->campaign->campaign_id.'/quality/npf/'.$campaign_ebb_file->file_name) }}" class="double-click" target="_blank" download data-toggle="tooltip" data-placement="top" data-original-title="{{ $campaign_ebb_file->file_name }}"><span class="m-b-5 d-block text-primary">@if(strlen($campaign_ebb_file->file_name) < 30) {{ $campaign_ebb_file->file_name }} @else {{ substr($campaign_ebb_file->file_name, 0, 27).'...' }} @endif</span></a>
+                                                            <a href="{{ url('public/storage/campaigns/'.$resultCAQA->campaign->campaign_id.'/quality/npf/'.rawurlencode($campaign_ebb_file->file_name)) }}" class="double-click" target="_blank" download data-toggle="tooltip" data-placement="top" data-original-title="{{ $campaign_ebb_file->file_name }}"><span class="m-b-5 d-block text-primary">@if(strlen($campaign_ebb_file->file_name) < 30) {{ $campaign_ebb_file->file_name }} @else {{ substr($campaign_ebb_file->file_name, 0, 27).'...' }} @endif</span></a>
                                                         </div>
                                                     </li>
                                                 @empty
@@ -199,7 +199,6 @@
                                                         <th class="text-center">Pacing</th>
                                                         <th class="text-center">Allocation</th>
                                                         <th class="text-center">Status</th>
-                                                        <th class="text-center">Action</th>
                                                     </tr>
                                                     </thead>
                                                     <tbody class="text-center text-muted">
@@ -238,9 +237,6 @@
                                                                 <span class="badge badge-pill badge-secondary" style="padding: 5px;min-width: 80px;">Shortfall{{ $campaign_type }}</span>
                                                                 @break
                                                             @endswitch
-                                                        </td>
-                                                        <td>
-                                                            <a href="javascript:;" onclick="alert('Feature in progress!!!');" class="btn btn-outline-primary btn-sm btn-rounded mb-0" title="view details" style="padding: 5px 8px;"><i class="feather icon-eye mr-0"></i></a>
                                                         </td>
                                                     </tr>
                                                     <tr class="pacing-details" style="display: none;">

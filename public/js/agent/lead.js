@@ -9,7 +9,7 @@ let MONTHS = ['Jan','Feb','Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'
 $(function (){
 
     LEAD_TABLE = $('#table-leads').DataTable({
-        "lengthMenu": [ [500,400,300,200,100,-1], [500,400,300,200,100,'All'] ],
+        "lengthMenu": [ [50,500,400,300,200,100,-1], [50,500,400,300,200,100,'All'] ],
         "processing": true,
         "serverSide": true,
         "ajax": {
@@ -26,6 +26,14 @@ $(function (){
             error: function(jqXHR, textStatus, errorThrown) { checkSession(jqXHR); }
         },
         "columns": [
+            {
+                orderable: false,
+                render: function (data, type, row) {
+                    let html = '';
+                    html += '<a href="'+URL+'/agent/lead/edit/'+btoa(row.id)+'" class="btn btn-outline-secondary btn-rounded btn-sm" title="Edit lead Details" style="padding: 2px 5px;"><i class="feather icon-edit mr-0" ></i></a>';
+                    return html;
+                }
+            },
             {
                 data: 'first_name'
             },
@@ -75,6 +83,15 @@ $(function (){
                 data: 'employee_size'
             },
             {
+                render: function (data, type, row) {
+                    if(row.employee_size_2) {
+                        return row.employee_size_2;
+                    } else {
+                        return 'NA';
+                    }
+                }
+            },
+            {
                 data: 'revenue'
             },
             {
@@ -93,21 +110,45 @@ $(function (){
                 data: 'linkedin_profile_sn_link'
             },
             {
-                data: 'comment'
+                render: function (data, type, row) {
+                    if(row.comment) {
+                        return row.comment;
+                    } else {
+                        return 'NA';
+                    }
+                }
+            },
+            {
+                render: function (data, type, row) {
+                    if(row.comment_2) {
+                        return row.comment_2;
+                    } else {
+                        return 'NA';
+                    }
+                }
+            },
+            {
+                render: function (data, type, row) {
+                    if(row.qc_comment) {
+                        return row.qc_comment;
+                    } else {
+                        return 'NA';
+                    }
+                }
+            },
+            {
+                render: function (data, type, row) {
+                    switch (parseInt(row.status)) {
+                        case 1: return '<span class="badge badge-pill badge-success" style="padding: 5px;min-width:50px;"> OK </span>';
+                        case 0: return '<span class="badge badge-pill badge-danger" style="padding: 5px;min-width:50px;"> Rejected </span>';
+                    }
+                }
             },
             {
                 render: function (data, type, row) {
                     return moment(row.created_at).format('YYYY-MM-DD HH:mm:ss');
                 }
-            }/*,
-            {
-                orderable: false,
-                render: function (data, type, row) {
-                    let html = '';
-                    html += '<a href="'+URL+'/agent/lead/view-details/'+btoa(row.id)+'" class="btn btn-outline-info btn-rounded btn-sm" title="View Campaign Details"><i class="feather icon-eye mr-0"></i></a>';
-                    return html;
-                }
-            },*/
+            }
         ],
         "fnDrawCallback": function (nRow, aData, iDisplayIndex, iDisplayIndexFull) {
             $('.dark-left-toolbar').each(function() {
@@ -127,24 +168,9 @@ $(function (){
             });
         },
         "createdRow": function(row, data, dataIndex){
-            switch (data.campaign.campaign_status_id) {
-                case 1:
-                    $(row).addClass('border-live');
-                    break;
-                case 2:
-                    $(row).addClass('border-paused');
-                    break;
-                case 3:
+            switch (parseInt(data.status)) {
+                case 0:
                     $(row).addClass('border-cancelled');
-                    break;
-                case 4:
-                    $(row).addClass('border-delivered');
-                    break;
-                case 5:
-                    $(row).addClass('border-reactivated');
-                    break;
-                case 6:
-                    $(row).addClass('border-shortfall');
                     break;
             }
         }

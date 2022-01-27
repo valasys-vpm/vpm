@@ -24,7 +24,7 @@
                                         <h5 class="m-b-10">My Campaigns</h5>
                                     </div>
                                     <ul class="breadcrumb">
-                                        <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}"><i class="feather icon-home"></i></a></li>
+                                        <li class="breadcrumb-item"><a href="{{ route('qa_team_leader.dashboard') }}"><i class="feather icon-home"></i></a></li>
                                         <li class="breadcrumb-item"><a href="javascript:void(0);">My Campaigns</a></li>
                                     </ul>
                                 </div>

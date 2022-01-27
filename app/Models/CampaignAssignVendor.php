@@ -11,4 +11,9 @@ class CampaignAssignVendor extends Model
     use SoftDeletes;
     protected $guarded = array();
     public $timestamps = true;
+
+    public function user()
+    {
+        return $this->hasOne(Vendor::class, 'id', 'user_id');
+    }
 }

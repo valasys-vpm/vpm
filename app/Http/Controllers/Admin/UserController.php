@@ -9,6 +9,7 @@ use App\Repository\DesignationRepository\DesignationRepository;
 use App\Repository\RoleRepository\RoleRepository;
 use App\Repository\UserRepository\UserRepository;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
@@ -34,7 +35,7 @@ class UserController extends Controller
 
     public function index()
     {
-        $this->data['resultUsers'] = $this->userRepository->get(array('status' => 1));
+        $this->data['resultUsers'] = $this->userRepository->get(array('status' => 1, 'role_slug' => ['admin', 'manager', 'team_leader', 'qa_team_leader']));
         $this->data['resultRoles'] = $this->roleRepository->get(array('status' => 1));
         $this->data['resultDepartments'] = $this->departmentRepository->get(array('status' => 1));
         $this->data['resultDesignations'] = $this->designationRepository->get(array('status' => 1));
@@ -106,14 +107,24 @@ class UserController extends Controller
 
 
         //Order By
-        $orderColumn = $order[0]['column'];
-        $orderDirection = $order[0]['dir'];
+        $orderColumn = null;
+        if ($request->has('order')){
+            $order = $request->get('order');
+            $orderColumn = $order[0]['column'];
+            $orderDirection = $order[0]['dir'];
+        }
         switch ($orderColumn) {
-            case '0': $query->orderBy('first_name', $orderDirection); break;
-            case '1': $query->orderBy('status', $orderDirection); break;
-            case '2': $query->orderBy('created_at', $orderDirection); break;
-            case '3': $query->orderBy('updated_at', $orderDirection); break;
-            default: $query->orderBy('name'); break;
+            case '0': $query->orderBy('logged_on', $orderDirection); break;
+            case '1': $query->orderBy('employee_code', $orderDirection); break;
+            case '2': $query->orderBy('first_name', $orderDirection); break;
+            case '3': $query->orderBy('email', $orderDirection); break;
+            case '4': $query->orderBy('role', $orderDirection); break;
+            case '5': $query->orderBy('department', $orderDirection); break;
+            case '6': $query->orderBy('designation', $orderDirection); break;
+            case '7': $query->orderBy('status', $orderDirection); break;
+            case '8': $query->orderBy('created_at', $orderDirection); break;
+            case '9': $query->orderBy('updated_at', $orderDirection); break;
+            default: $query->orderBy('created_at', 'DESC'); break;
         }
 
         $totalFilterRecords = $query->count();
@@ -162,6 +173,23 @@ class UserController extends Controller
             return 'false';
         } else {
             return 'true';
+        }
+    }
+
+    public function my_profile()
+    {
+        $this->data['resultUser'] = $this->userRepository->find(Auth::id());
+        return view('admin.user.my_profile', $this->data);
+    }
+
+    public function change_password(Request $request)
+    {
+        $attributes = $request->all();
+        $response = $this->userRepository->update(Auth::id(), $attributes);
+        if($response['status'] == TRUE) {
+            return redirect()->back()->with('success', ['title' => 'Request Successful', 'message' => 'Password updated successfully']);
+        } else {
+            return back()->withInput()->with('error', ['title' => 'Error while processing request', 'message' => $response['message']]);
         }
     }
 

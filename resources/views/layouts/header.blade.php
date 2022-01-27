@@ -20,6 +20,12 @@
             </li>
         </ul>
         <ul class="navbar-nav ml-auto">
+            <li style="display: none;">
+                <a href="javascript:;">
+                    <button type="button" @class('btn btn-outline-dark btn-sm m-0')>Time-In: 23:29</button>
+                </a>
+            </li>
+
             <li>
                 <div class="dropdown">
                     <a class="dropdown-toggle" href="#" data-toggle="dropdown"><i class="icon feather icon-bell"></i> @if(!empty($notifications) && $notifications->count()) <span id="new-notification-count" class="badge badge-warning" style="position: relative;bottom: 10px;z-index: -1;">{{ $notifications->count() }}</span> @endif </a>
@@ -32,14 +38,14 @@
                                 @endif
                             </div>
                         </div>
-                        <ul class="noti-body">
+                        <ul class="noti-body" style="max-height: 400px;overflow-y: scroll;overflow-x: hidden;">
 
                             @if(!empty($notifications) && $notifications->count())
                                 <li class="n-title new-notification">
                                     <p class="m-b-0">NEW</p>
                                 </li>
                                 @foreach($notifications as $key => $notification)
-                                <li class="notification new-notification">
+                                <li class="notification new-notification border-bottom border-light" style="padding: 10px 30px 10px 15px;">
                                     <div class="media">
                                         <img class="img-radius" src="{{ asset('public/template') }}/assets/images/user/avatar-2.jpg" alt="Generic placeholder image">
                                         <div class="media-body">
@@ -79,16 +85,20 @@
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                         <i class="icon feather icon-settings"></i>
                     </a>
-                    <div class="dropdown-menu dropdown-menu-right profile-notification">
+                    <div class="dropdown-menu dropdown-menu-right profile-notification" style="line-height: 0.4;">
                         <div class="pro-head">
-                            <img src="{{ asset('public/template') }}/assets/images/user/avatar-2.jpg" class="img-radius" alt="User-Profile-Image">
-                            <span>{{Auth::user()->email}}</span>
+                            <img src="{{ asset('public/template/assets/images/user/avatar-2.jpg') }}" class="img-radius" alt="User-Profile-Image">
+                            <span>
+                                {{Auth::user()->full_name}}
+                                <br>
+                                <small class="text-dark" style="margin-left: 55px;">Reporting: {{Auth::user()->reporting->full_name}}</small>
+                            </span>
                             <a href="{{ route('logout') }}" class="dud-logout" title="Logout">
                                 <i class="feather icon-log-out"></i>
                             </a>
                         </div>
                         <ul class="pro-body">
-                            {{--<li><a href="{{ route('user.profile') }}" class="dropdown-item"><i class="feather icon-user"></i> My Profile</a></li>--}}
+                            <li><a href="@if(Request::route()->getName() != 'agent.user.my_profile') {{ route($module->slug.'.user.my_profile') }} @else javascript:; @endif" class="dropdown-item"><i class="feather icon-user"></i> My Profile</a></li>
                             <li><a href="{{ route('logout') }}" class="dropdown-item"><i class="feather icon-log-out"></i> Logout</a></li>
                         </ul>
                     </div>

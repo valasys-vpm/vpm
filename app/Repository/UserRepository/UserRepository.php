@@ -29,11 +29,21 @@ class UserRepository implements UserInterface
             });
         }
 
+        if(isset($filters['role_slug']) && !empty($filters['role_slug'])) {
+            $query->whereHas('role', function ($role) use ($filters){
+                $role->whereIn('slug', $filters['role_slug']);
+            });
+        }
+
         if(isset($filters['reporting_to']) && !empty($filters['reporting_to'])) {
             $query->whereIn('reporting_user_id', $filters['reporting_to']);
         }
 
         $query->with(['role', 'department', 'designation']);
+
+        if(isset($filters['order_by']) && !empty($filters['order_by'])) {
+            $query->orderBy($filters['order_by']['value'], $filters['order_by']['order']);
+        }
 
         return $query->get();
     }
@@ -121,9 +131,21 @@ class UserRepository implements UserInterface
                 $user->reporting_user_id = $attributes['reporting_user_id'];
             }
 
+            if(isset($attributes['profile']) && !empty($attributes['profile'])) {
+                $file = $attributes['profile'];
+                $path = 'public/user/'.$user->employee_code.'/profile';
+                $extension = $file->getClientOriginalExtension();
+                $filename  = $file->getClientOriginalName();
+                if($file->storeAs($path, $filename)) {
+                    $user->profile = $filename;
+                } else {
+                    throw new \Exception('Please check file and try again.', 1);
+                }
+            }
+
             if($user->save()) {
                 DB::commit();
-                $response = array('status' => TRUE, 'message' => 'User updated successfully');
+                $response = array('status' => TRUE, 'message' => 'User details updated successfully');
             } else {
                 throw new \Exception('Something went wrong, please try again.', 1);
             }

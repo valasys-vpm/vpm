@@ -74,9 +74,14 @@
                                                     </div>
                                                     <div class="col-md-6 form-group">
                                                         <label for="user_list">Select User(s)</label>
+                                                        <div class="form-check float-right">
+                                                            <input class="form-check-input" type="checkbox" id="all_users">
+                                                            <label class="form-check-label" for="all_users">All</label>
+                                                        </div>
+
                                                         <select class="form-control btn-square p-1 pl-2 select2-multiple" id="user_list" name="user_list[]" style="height: unset;" multiple>
                                                             @foreach($resultUsers as $user)
-                                                                <option id="user_list_{{ $user->id }}" value="{{ $user->id }}" data-name="{{ $user->first_name.' '.$user->last_name }}">{{ $user->first_name.' '.$user->last_name.' - [ '.$user->role->name.' ]' }}</option>
+                                                                <option id="user_list_{{ $user->id }}" value="{{ $user->id }}" data-name="{{ $user->first_name.' '.$user->last_name }}" data-designation="{{ $user->designation->slug }}">{{ $user->first_name.' '.$user->last_name.' - [ '.$user->role->name.' ]' }}</option>
                                                             @endforeach
                                                         </select>
                                                     </div>
@@ -138,7 +143,7 @@
             <div class="modal-content">
                 <form id="form-campaign-user-assignment" method="post" action="{{ route('team_leader.campaign_assign.store') }}" enctype="multipart/form-data">
                     @csrf
-                    <input type="hidden" id="campaign_assign_ratl_id" name="data[0][campaign_assign_ratl_id]" value="">
+                    <input type="hidden" id="campaign_assign_ratl_id" name="campaign_assign_ratl_id" value="">
                     <div class="modal-header">
                         <h5 class="modal-title">Assign campaign to agent(s)</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -154,6 +159,18 @@
                     </div>
                 </form>
             </div>
+        </div>
+    </div>
+
+    <div id="html-elements" style="display: none;">
+        <div id="div-select-agent-work-types">
+            <select name="agent_work_type_id" id="select_agent_work_type">
+                @if(isset($resultAgentWorkTypes) && !empty($resultAgentWorkTypes) && $resultAgentWorkTypes->count())
+                @foreach($resultAgentWorkTypes as $agent_work_type)
+                        <option value="{{ $agent_work_type->id }}">{{ $agent_work_type->name }}</option>
+                @endforeach
+                @endif
+            </select>
         </div>
     </div>
 @endsection

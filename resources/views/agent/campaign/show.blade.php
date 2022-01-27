@@ -33,7 +33,7 @@
                                     <div class="page-header-title">
                                         <h5 class="m-b-10">My Campaings</h5>
                                         <div class="card-header-right mb-1" style="float: right;">
-                                            {{-- <a href="{{ route('campaign') }}" class="btn btn-outline-dark btn-square btn-sm" style="font-weight: bold;"><i class="feather icon-arrow-left"></i>Back</a> --}}
+                                            <a href="{{ route('agent.campaign.list') }}" class="btn btn-outline-info btn-square btn-sm pt-1 pb-1" style="font-weight: bold;"><i class="feather icon-arrow-left"></i>Back</a>
                                         </div>
                                     </div>
                                     <ul class="breadcrumb">
@@ -119,7 +119,7 @@
                                                             <i class="far fa-file f-28 text-muted"></i>
                                                         </div>
                                                         <div class="media-body">
-                                                            <a href="{{ url('public/storage/campaigns/'.$resultCampaign->campaign_id.'/'.$specification->file_name) }}" class="double-click" target="_blank" download data-toggle="tooltip" data-placement="top" data-original-title="{{ $specification->file_name }}"><span class="m-b-5 d-block text-primary">@if(strlen($specification->file_name) < 30) {{ $specification->file_name }} @else {{ substr($specification->file_name, 0, 27).'...' }} @endif</span></a>
+                                                            <a href="{{ url('public/storage/campaigns/'.$resultCampaign->campaign_id.'/'.rawurlencode($specification->file_name)) }}" class="double-click" target="_blank" download data-toggle="tooltip" data-placement="top" data-original-title="{{ $specification->file_name }}"><span class="m-b-5 d-block text-primary">@if(strlen($specification->file_name) < 30) {{ $specification->file_name }} @else {{ substr($specification->file_name, 0, 27).'...' }} @endif</span></a>
                                                         </div>
                                                     </li>
                                                 @empty
@@ -134,7 +134,7 @@
                                                             <i class="far fa-file f-28 text-muted"></i>
                                                         </div>
                                                         <div class="media-body">
-                                                            <a href="{{ url('public/storage/campaigns/'.$resultCampaignParent->campaign_id.'/'.$specification->file_name) }}" class="double-click" target="_blank" download data-toggle="tooltip" data-placement="top" data-original-title="{{ $specification->file_name }}"><span class="m-b-5 d-block text-primary">@if(strlen($specification->file_name) < 30) {{ $specification->file_name }} @else {{ substr($specification->file_name, 0, 27).'...' }} @endif</span></a>
+                                                            <a href="{{ url('public/storage/campaigns/'.$resultCampaignParent->campaign_id.'/'.rawurlencode($specification->file_name)) }}" class="double-click" target="_blank" download data-toggle="tooltip" data-placement="top" data-original-title="{{ $specification->file_name }}"><span class="m-b-5 d-block text-primary">@if(strlen($specification->file_name) < 30) {{ $specification->file_name }} @else {{ substr($specification->file_name, 0, 27).'...' }} @endif</span></a>
                                                         </div>
                                                     </li>
                                                 @empty
@@ -205,16 +205,34 @@
                                                 <table class="table m-b-0 f-14 b-solid requid-table">
                                                     <thead>
                                                     <tr class="text-uppercase">
+                                                        <th class="text-center">Work<br>Type</th>
+                                                        <th class="text-center">Status</th>
                                                         <th class="text-center">Start Date</th>
                                                         <th class="text-center">End Date</th>
                                                         <th class="text-center">Pacing</th>
                                                         <th class="text-center">Completion</th>
                                                         <th class="text-center">Deliver Count / <br>Allocation</th>
-                                                        <th class="text-center">Status</th>
+                                                        <th class="text-center">Campaign Status</th>
                                                     </tr>
                                                     </thead>
                                                     <tbody class="text-center text-muted">
                                                     <tr>
+                                                        <td>
+                                                            {{ $resultCAAgent->agent_work_type->name }}
+                                                        </td>
+                                                        <td>
+                                                            @switch($resultCAAgent->status)
+                                                                @case(0)
+                                                                <span class="badge badge-pill badge-warning" style="padding: 5px;min-width: 70px;">Inactive</span>
+                                                                @break
+                                                                @case(1)
+                                                                <span class="badge badge-pill badge-success" style="padding: 5px;min-width: 70px;">Active</span>
+                                                                @break
+                                                                @case(2)
+                                                                <span class="badge badge-pill badge-danger" style="padding: 5px;min-width: 70px;">Revoked</span>
+                                                                @break
+                                                            @endswitch
+                                                        </td>
                                                         <td>{{ date('d-M-Y', strtotime($resultCampaign->start_date)) }}</td>
                                                         <td>{{ date('d-M-Y', strtotime($resultCAAgent->display_date)) }}</td>
                                                         <td>{{ ucfirst($resultCampaign->pacing) }}</td>
@@ -229,7 +247,7 @@
                                                                 }
                                                             @endphp
                                                             <div class="progress mb-4" style="height: 20px;border: 1px solid #e2dada;">
-                                                                <div class="progress-bar {{ $color_class }}" role="progressbar" aria-valuenow="{{$percentage}}" aria-valuemin="0" aria-valuemax="100" style="width: {{$percentage}}%; font-weight: bolder;">{{$percentage}}%</div>
+                                                                <div class="progress-bar {{ $color_class }}" role="progressbar" aria-valuenow="{{$percentage}}" aria-valuemin="0" aria-valuemax="100" style="width: {{$percentage}}%; font-weight: bolder;">&nbsp;&nbsp;{{$percentage}}%</div>
                                                             </div>
                                                         </td>
                                                         <td>
@@ -269,7 +287,7 @@
                                             </div>
                                         </div>
                                     </div>
-
+                                    @if($resultCAAgent->status == 1)
                                     <div class="row mb-4">
                                         @if(empty($resultCAAgent->started_at))
                                         <div id="div-start-campaign" class="col-md-3">
@@ -277,46 +295,41 @@
                                         </div>
                                         @endif
 
-                                        @if(!empty($resultCAAgent->started_at))
-                                        <div id="div-manage-leads" class="col-md-3" @if(!empty($resultCAAgent->submitted_at)) style="display: none;" @endif>
-                                            <a href="{{ route('agent.lead.list', base64_encode($resultCAAgent->id)) }}">
-                                                <button type="button" class="btn btn-primary btn-sm btn-square w-100">Manage Leads</button>
-                                            </a>
-                                        </div>
-                                        @endif
-
-                                        @if(empty($resultCAAgent->caratl->submitted_at) && !empty($resultCAAgent->started_at))
-
-                                            @if($countAgentData)
-                                            <div class="col-md-3">
-                                                <a href="{{ route('agent.data.list', base64_encode($resultCAAgent->id)) }}">
-                                                    <button type="button" class="btn btn-info btn-sm btn-square w-100">View Data</button>
+                                        @if(!empty($resultCAAgent->started_at) && empty($resultCAAgent->caratl->submitted_at))
+                                            <div id="div-manage-leads" class="col-md-3" @if(!empty($resultCAAgent->submitted_at)) style="display: none;" @endif>
+                                                <a href="{{ route('agent.lead.list', base64_encode($resultCAAgent->id)) }}">
+                                                    <button type="button" class="btn btn-primary btn-sm btn-square w-100">Manage Leads</button>
                                                 </a>
                                             </div>
-                                            @endif
-
                                             @if(empty($resultCAAgent->submitted_at))
-                                            <div id="div-submit-campaign"  class="col-md-3">
-                                                <button type="button" class="btn btn-danger btn-sm btn-square w-100" onclick="submitCampaign('{{ base64_encode($resultCAAgent->id) }}');">Submit Campaign</button>
-                                            </div>
-                                            <div id="div-raise-issue" class="col-md-3">
-                                                <button type="button" class="btn btn-warning btn-sm btn-square w-100" data-toggle="modal" data-target="#modal-raise-issue">Raise Issue</button>
-                                            </div>
-                                            @endif
 
-                                            @if(!empty($resultCAAgent->submitted_at))
-                                            <div id="div-start-again-campaign" class="col-md-3">
-                                                <button type="button" class="btn btn-success btn-sm btn-square w-100" onclick="startAgainCampaign('{{ base64_encode($resultCAAgent->id) }}');">Restart Campaign</button>
-                                            </div>
-                                            @endif
+                                                @if($countAgentData)
+                                                    <div class="col-md-3">
+                                                        <a href="{{ route('agent.data.list', base64_encode($resultCAAgent->id)) }}">
+                                                            <button type="button" class="btn btn-info btn-sm btn-square w-100">View Data</button>
+                                                        </a>
+                                                    </div>
+                                                @endif
 
+                                                <div id="div-submit-campaign"  class="col-md-3">
+                                                    <button type="button" class="btn btn-danger btn-sm btn-square w-100" data-toggle="modal" data-target="#modal-submit-campaign" @if($resultCAAgent->agent_lead_count < 1) disabled @endif>Submit Campaign</button>
+                                                </div>
+                                                <div id="div-raise-issue" class="col-md-3">
+                                                    <button type="button" class="btn btn-warning btn-sm btn-square w-100" data-toggle="modal" data-target="#modal-raise-issue">Raise Issue</button>
+                                                </div>
+                                            @else
+                                                <div id="div-start-again-campaign" class="col-md-3">
+                                                    <button type="button" class="btn btn-success btn-sm btn-square w-100" onclick="startAgainCampaign('{{ base64_encode($resultCAAgent->id) }}');">Restart Campaign</button>
+                                                </div>
+                                            @endif
                                         @endif
                                     </div>
+                                    @endif
 
                                     @if(isset($resultCampaignIssues) && $resultCampaignIssues->count())
                                     <div class="card">
                                         <div class="card-header">
-                                            <h5><i class="fas fa-info-circle m-r-5"></i> Camapign Issue(s)</h5>
+                                            <h5><i class="fas fa-info-circle m-r-5"></i> Campaign Issue(s)</h5>
                                             <div class="card-header-right">
                                                 <div class="btn-group card-option">
                                                     <button type="button" class="btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -439,6 +452,40 @@
                                 </div>
                             </div>
                             <button id="form-raise-issue-submit" type="submit" class="btn btn-primary btn-square float-right">Raise Issue</button>
+                            <button type="reset" class="btn btn-secondary btn-square float-right" data-dismiss="modal">Cancel</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-submit-campaign" class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Submit Campaign</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body">
+                    <div class="col-md-12">
+                        <form id="form-submit-campaign" method="post">
+                            @csrf
+                            <input type="hidden" name="ca_agent_id" value="{{ base64_encode($resultCAAgent->id) }}">
+                            <div class="row">
+                                <div class="col-md-12 form-group">
+                                    <label>Are you sure to submit campaign ?</label>
+                                </div>
+                            </div>
+                            @if($resultCAAgent->agent_work_type->slug == 'abm')
+                            <div class="row">
+                                <div class="col-md-12 form-group">
+                                    <label for="accounts_utilized">Account Utilized <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="accounts_utilized" name="accounts_utilized" placeholder="Enter accounts utilized count" required>
+                                </div>
+                            </div>
+                            @endif
+                            <button id="form-submit-campaign-submit" type="submit" class="btn btn-primary btn-square float-right">Submit</button>
                             <button type="reset" class="btn btn-secondary btn-square float-right" data-dismiss="modal">Cancel</button>
                         </form>
                     </div>

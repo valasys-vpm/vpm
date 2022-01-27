@@ -5,7 +5,7 @@ let URL = $('meta[name="base-path"]').attr('content');
 $(function (){
 
     USER_TABLE = $('#table-users').DataTable({
-        "lengthMenu": [ [10,20,50,100,'all'], [10,20,50,100,'All'] ],
+        "lengthMenu": [ [100,50,25,10,-1], [100,50,25,10,'All'] ],
         "processing": true,
         "serverSide": true,
         "ajax": {
@@ -41,16 +41,19 @@ $(function (){
             },
             {
                 data: 'role.name',
+                orderable: false
             },
             {
                 data: 'department.name',
+                orderable: false
             },
             {
                 data: 'designation.name',
+                orderable: false
             },
             {
                 render: function (data, type, row) {
-                    switch (row.status) {
+                    switch (parseInt(row.status)) {
                         case 1: return '<span class="badge badge-pill badge-success" style="padding: 5px;min-width:50px;">Active</span>';
                         case 0: return '<span class="badge badge-pill badge-danger" style="padding: 5px;min-width:50px;">Inactive</span>';
                     }
@@ -94,6 +97,7 @@ $(function (){
                 });
             });
         },
+        order: []
     });
 
     $('#modal-form-button-submit').on('click', function (e) {

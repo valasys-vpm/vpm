@@ -9,7 +9,7 @@ let MONTHS = ['Jan','Feb','Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'
 $(function (){
 
     CAMPAIGN_TABLE = $('#table-campaigns').DataTable({
-        "lengthMenu": [ [500,400,300,200,100,-1], [500,400,300,200,100,'All'] ],
+        "lengthMenu": [ [-1,500,250,100,50,25], ['All',500,250,100,50,25] ],
         "processing": true,
         "serverSide": true,
         "ajax": {
@@ -34,6 +34,19 @@ $(function (){
                 }
             },
             {
+                data: 'user_assigned_by.full_name'
+            },
+            {
+                render: function (data, type, row) {
+                    let deliver_count = row.agent_lead_count;
+                    let allocation = row.allocation;
+                    let percentage = (deliver_count/allocation)*100;
+
+                    percentage = percentage.toFixed(2);
+                    return '<div class="progress" style="height: 20px;width:100px;border:1px solid lightgrey;"><div class="progress-bar '+ (parseInt(percentage) < 100 ? 'bg-warning text-dark' : 'bg-success text-light' ) +'" role="progressbar" aria-valuenow="'+percentage+'" aria-valuemin="0" aria-valuemax="100" style="width: '+percentage+'%;font-weight:bold;">&nbsp;'+percentage+'%</div></div>';
+                }
+            },
+            {
                 render: function (data, type, row) {
                     let date = new Date(row.campaign.start_date);
                     return (date.getDate() <= 9 ? '0'+date.getDate() : date.getDate())+'/'+MONTHS[date.getMonth()]+'/'+date.getFullYear();
@@ -47,8 +60,20 @@ $(function (){
             },
             {
                 render: function (data, type, row) {
-                    return row.campaign.allocation;
+                    let deliver_count = row.agent_lead_count;
+                    let allocation = row.allocation;
+                    let shortfall_count = 0;
+
+                    if(shortfall_count) {
+                        return deliver_count + ' <span class="text-danger" title="Shortfall Count">('+ shortfall_count +')</span>'+' / '+ allocation;
+                    } else {
+                        return deliver_count + ' / '+ allocation;
+                    }
+
                 }
+            },
+            {
+                data: 'agent_work_type.name'
             },
             {
                 render: function (data, type, row) {
@@ -98,7 +123,7 @@ $(function (){
             if(data.campaign.children.length) {
                 status_id = data.campaign.children[0].campaign_status_id;
             }
-            switch (status_id) {
+            switch (parseInt(status_id)) {
                 case 1:
                     $(row).addClass('border-live');
                     break;
@@ -118,7 +143,8 @@ $(function (){
                     $(row).addClass('border-shortfall');
                     break;
             }
-        }
+        },
+        order:[]
     });
 
 });

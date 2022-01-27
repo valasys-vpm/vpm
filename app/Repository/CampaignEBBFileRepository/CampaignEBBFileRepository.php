@@ -5,6 +5,7 @@ namespace App\Repository\CampaignEBBFileRepository;
 use App\Models\Campaign;
 use App\Models\CampaignAssignEME;
 use App\Models\CampaignEBBFile;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -57,6 +58,13 @@ class CampaignEBBFileRepository implements CampaignEBBFileInterface
                 $campaign_ebb_file->extension = $extension;
                 $campaign_ebb_file->save();
                 if($campaign_ebb_file->id) {
+                    //Add Campaign History
+                    $resultCampaign = Campaign::findOrFail($campaign_ebb_file->campaign_id);
+                    $resultEME = CampaignAssignEME::findOrFail($campaign_ebb_file->ca_eme_id);
+                    $resultUser = User::findOrFail($resultEME->user_id);
+                    add_campaign_history($resultCampaign->id, $resultCampaign->parent_id, 'Email Bounce Back file uploaded by -'.$resultUser->full_name);
+                    add_history('EBB File Uploaded', 'Email Bounce Back file uploaded by -'.$resultUser->full_name);
+
                     DB::commit();
                     $response = array('status' => TRUE, 'message' => 'EBB File uploaded successfully');
                 } else {

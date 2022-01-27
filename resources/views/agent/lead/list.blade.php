@@ -4,6 +4,9 @@
     @parent
     <!-- data tables css -->
     <link rel="stylesheet" href="{{asset('public/template/assets/plugins/data-tables/css/datatables.min.css')}}">
+    <!-- custom campaign table css -->
+    <link rel="stylesheet" href="{{asset('public/css/campaign_table_custom.css')}}">
+
     <meta name="ca-agent-id" content="{{ base64_encode($resultCAAgent->id) }}">
 
     <style>
@@ -26,6 +29,9 @@
                                 <div class="col-md-12">
                                     <div class="page-header-title">
                                         <h5 class="m-b-10">{{ $resultCAAgent->campaign->name }}</h5>
+                                        <div class="card-header-right mb-1" style="float: right;">
+                                            <a href="{{ route('agent.campaign.show', base64_encode($resultCAAgent->id)) }}" class="btn btn-outline-info btn-square btn-sm pt-1 pb-1" style="font-weight: bold;"><i class="feather icon-arrow-left"></i>Back</a>
+                                        </div>
                                     </div>
                                     <ul class="breadcrumb">
                                         <li class="breadcrumb-item"><a href="{{ route('agent.dashboard') }}"><i class="feather icon-home"></i></a></li>
@@ -58,6 +64,7 @@
                                                 <table id="table-leads" class="display table nowrap table-striped table-hover">
                                                     <thead>
                                                     <tr>
+                                                        <th>Action</th>
                                                         <th>First Name</th>
                                                         <th>Last Name</th>
                                                         <th>Company Name</th>
@@ -74,6 +81,7 @@
                                                         <th>Country</th>
                                                         <th>Industry</th>
                                                         <th>Employee Size</th>
+                                                        <th>Employee Size 2</th>
                                                         <th>Revenue</th>
                                                         <th>Company Domain</th>
                                                         <th>Website</th>
@@ -81,8 +89,10 @@
                                                         <th>LinkedIn Profile URL</th>
                                                         <th>LinkedIn Profile SN URL</th>
                                                         <th>Comment</th>
+                                                        <th>TL Comment</th>
+                                                        <th>QC Comment</th>
+                                                        <th>Status</th>
                                                         <th>Created At</th>
-
                                                     </tr>
                                                     </thead>
                                                     <tbody>

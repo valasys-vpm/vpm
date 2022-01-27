@@ -60,7 +60,7 @@
                                         </div>
                                         <div class="card-block">
                                             <div class="table-responsive">
-                                                <table id="table-data" class="display table dt-responsive nowrap table-hover" style="width:100%">
+                                                <table id="table-data" class="display table nowrap table-striped table-hover">
                                                     <thead>
                                                     <tr>
                                                         <th>First Name</th>

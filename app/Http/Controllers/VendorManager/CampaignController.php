@@ -11,6 +11,7 @@ use App\Repository\CampaignStatusRepository\CampaignStatusRepository;
 use App\Repository\VendorRepository\VendorRepository;
 use App\Repository\CampaignAssignRepository\CampaignAssignRepository;
 //use App\Repository\UserRepository\UserRepository;
+use App\Repository\CampaignAssignRepository\VendorRepository\VendorRepository as CAVendorRepository;
 use Illuminate\Http\Request;
 use App\Models\Vendor;
 use Auth;
@@ -23,12 +24,14 @@ class CampaignController extends Controller
     private $campaignAssignRepository;
     private $campaignRepository;
     private $campaignStatusRepository;
+    private $CAVendorRepository;
 
     public function __construct(
         VendorRepository $vendorRepository,
         CampaignAssignRepository $campaignAssignRepository,
         CampaignRepository $campaignRepository,
-        CampaignStatusRepository $campaignStatusRepository
+        CampaignStatusRepository $campaignStatusRepository,
+        CAVendorRepository $CAVendorRepository
     )
     {
         $this->data = array();
@@ -36,16 +39,19 @@ class CampaignController extends Controller
         $this->campaignAssignRepository = $campaignAssignRepository;
         $this->campaignRepository = $campaignRepository;
         $this->campaignStatusRepository = $campaignStatusRepository;
+        $this->CAVendorRepository = $CAVendorRepository;
     }
 
     public function index()
     {
         return view('vendor_manager.campaign.list');
     }
-    public function show($id)
+
+    public function show($cavm_id)
     {
         try {
-            $this->data['resultCampaign'] = $this->campaignRepository->find(base64_decode($id));
+            $this->data['resultCAVM'] = $this->CAVendorRepository->find(base64_decode($cavm_id));
+            $this->data['resultCampaign'] = $this->campaignRepository->find($this->data['resultCAVM']->campaign->id);
             return view('vendor_manager.campaign.show', $this->data);
         } catch (\Exception $exception) {
             return redirect()->route('vendor_manager.campaign.list')->with('error', ['title' => 'Error while processing request', 'message' => 'Campaign details not found']);
@@ -84,8 +90,13 @@ class CampaignController extends Controller
 
 
         //Order By
-        $orderColumn = $order[0]['column'];
-        $orderDirection = $order[0]['dir'];
+        $orderColumn = null;
+        if ($request->has('order')){
+            $order = $request->get('order');
+            $orderColumn = $order[0]['column'];
+            $orderDirection = $order[0]['dir'];
+        }
+
         switch ($orderColumn) {
             case '0': $query->orderBy('id', $orderDirection); break;
             case '1': $query->orderBy('id', $orderDirection); break;

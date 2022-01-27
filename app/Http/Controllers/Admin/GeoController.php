@@ -14,7 +14,7 @@ class GeoController extends Controller
     private $data;
     private $regionRepository;
     private $countryRepository;
-   
+
 
     public function __construct(
         RegionRepository $regionRepository,
@@ -31,7 +31,7 @@ class GeoController extends Controller
     {
         return view('admin.geo.region.list');
     }
-    
+
     public function getRegions(Request $request): \Illuminate\Http\JsonResponse
     {
         $filters = array_filter(json_decode($request->get('filters'), true));
@@ -56,12 +56,16 @@ class GeoController extends Controller
         if(!empty($filters)) {
 
         }
-        
+
         $totalFilterRecords = $query->count();
 
         //Order By
-        $orderColumn = $order[0]['column'];
-        $orderDirection = $order[0]['dir'];
+        $orderColumn = null;
+        if ($request->has('order')){
+            $order = $request->get('order');
+            $orderColumn = $order[0]['column'];
+            $orderDirection = $order[0]['dir'];
+        }
 
         switch ($orderColumn) {
             case '0': $query->orderBy('abbreviation', $orderDirection); break;
@@ -132,10 +136,10 @@ class GeoController extends Controller
         $this->data['resultRegions'] =  $this->regionRepository->get();
         return view('admin.geo.country.list',$this->data);
     }
-    
+
     public function getCountries(Request $request): \Illuminate\Http\JsonResponse
     {
-        
+
         $filters = array_filter(json_decode($request->get('filters'), true));
         $search_data = $request->get('search');
         $searchValue = $search_data['value'];
@@ -159,7 +163,7 @@ class GeoController extends Controller
         if(!empty($filters)) {
 
         }
-        
+
         $totalFilterRecords = $query->count();
 
         //Order By

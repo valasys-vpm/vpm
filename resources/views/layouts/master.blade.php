@@ -37,7 +37,8 @@
     <!-- select2 css -->
     <link rel="stylesheet" href="{{ asset('public/template/assets/plugins/select2/css/select2.min.css') }}">
     <!-- Bootstrap datetimepicker css -->
-    <link rel="stylesheet" href="{{ asset('public/template/assets/plugins/bootstrap-datetimepicker/css/bootstrap-datepicker3.min.css') }}">
+{{--    <link rel="stylesheet" href="{{ asset('public/template/assets/plugins/bootstrap-datetimepicker/css/bootstrap-datepicker3.min.css') }}">--}}
+    <link rel="stylesheet" href="{{ asset('public/template/assets/plugins/bootstrap-datepicker-1.9.0/css/bootstrap-datepicker.min.css') }}">
     <!-- notification css -->
     <link rel="stylesheet" href="{{ asset('public/template/assets/plugins/notification/css/notification.min.css') }}">
     <script>
@@ -77,7 +78,7 @@
 <!-- [ Pre-loader ] End -->
 
 <!-- [ navigation menu ] start -->
-<nav class="pcoded-navbar">
+<nav class="pcoded-navbar navbar-image navbar-image-1" style="background-position: center top;height: 100% !important;">
     <div class="navbar-wrapper">
         <div class="navbar-brand header-logo">
 
@@ -143,13 +144,18 @@
     <!-- pnotify Js -->
     <script src="{{ asset('public/template/assets/plugins/pnotify/js/pnotify.custom.min.js') }}"></script>
     <!-- datepicker js -->
-    <script src="{{ asset('public/template/assets/plugins/bootstrap-datetimepicker/js/bootstrap-datepicker.min.js') }}"></script>
+{{--    <script src="{{ asset('public/template/assets/plugins/bootstrap-datetimepicker/js/bootstrap-datepicker.min.js') }}"></script>--}}
+    <script src="{{ asset('public/template/assets/plugins/bootstrap-datepicker-1.9.0/js/bootstrap-datepicker.min.js') }}"></script>
     <!-- select2 Js -->
     <script src="{{ asset('public/template/assets/plugins/select2/js/select2.full.min.js') }}"></script>
     <!-- Moment Js -->
     <script src="https://momentjs.com/downloads/moment-with-locales.min.js"></script>
+    <!-- jquery-validation Js -->
+    <script src="{{ asset('public/template/assets/plugins/jquery-validation/js/jquery.validate.min.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/jquery.validation/1.15.0/additional-methods.min.js"></script>
     <!-- Custom Js -->
     <script src="{{asset('public/js/custom.js?='.time()) }}"></script>
+    <script src="{{asset('public/js/my_profile.js?='.time()) }}"></script>
     @yield('javascript')
     <script>
         $(function (){
@@ -172,6 +178,8 @@
             trigger_pnofify('warning', '{{ session('warning')['title'] }}', '{{ session('warning')['message'] }}');
             @endif
         });
+
+        document.body.style.zoom="81%"
     </script>
 
 </body>

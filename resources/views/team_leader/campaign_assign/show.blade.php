@@ -21,6 +21,7 @@
 @append
 
 @section('content')
+
     <div class="pcoded-main-container">
         <div class="pcoded-wrapper">
             <div class="pcoded-content">
@@ -33,7 +34,7 @@
                                     <div class="page-header-title">
                                         <h5 class="m-b-10">Campaign Assign</h5>
                                         <div class="card-header-right mb-1" style="float: right;">
-                                            {{-- <a href="{{ route('campaign') }}" class="btn btn-outline-dark btn-square btn-sm" style="font-weight: bold;"><i class="feather icon-arrow-left"></i>Back</a> --}}
+                                            <a href="{{ route('team_leader.campaign_assign.list') }}" class="btn btn-outline-info btn-square btn-sm pt-1 pb-1" style="font-weight: bold;"><i class="feather icon-arrow-left"></i>Back</a>
                                         </div>
                                     </div>
                                     <ul class="breadcrumb">
@@ -112,7 +113,7 @@
                                                             <i class="far fa-file f-28 text-muted"></i>
                                                         </div>
                                                         <div class="media-body">
-                                                            <a href="{{ url('public/storage/campaigns/'.$resultCampaign->campaign_id.'/'.$specification->file_name) }}" class="double-click" target="_blank" download data-toggle="tooltip" data-placement="top" data-original-title="{{ $specification->file_name }}"><span class="m-b-5 d-block text-primary">@if(strlen($specification->file_name) < 30) {{ $specification->file_name }} @else {{ substr($specification->file_name, 0, 27).'...' }} @endif</span></a>
+                                                            <a href="{{ url('public/storage/campaigns/'.$resultCampaign->campaign_id.'/'.rawurlencode($specification->file_name)) }}" class="double-click" target="_blank" download data-toggle="tooltip" data-placement="top" data-original-title="{{ $specification->file_name }}"><span class="m-b-5 d-block text-primary">@if(strlen($specification->file_name) < 30) {{ $specification->file_name }} @else {{ substr($specification->file_name, 0, 27).'...' }} @endif</span></a>
                                                         </div>
                                                     </li>
                                                 @empty
@@ -172,10 +173,9 @@
                                                         <td>{{ ucfirst($resultCARATL->campaign->pacing) }}</td>
                                                         <td>
                                                             @php
-                                                                $deliverCount = 0;
-                                                                $percentage = ($deliverCount/$resultCARATL->allocation)*100;
+                                                                $percentage = ($resultCARATL->agent_lead_total_count/$resultCARATL->allocation)*100;
                                                                 $percentage = number_format($percentage,2,".", "");
-                                                                if($percentage == 100) {
+                                                                if($percentage >= 100) {
                                                                     $color_class = 'bg-success';
                                                                 } else {
                                                                     $color_class = 'bg-warning text-dark';
@@ -189,7 +189,7 @@
                                                             @if($resultCARATL->campaign->campaign_status_id === 6)
                                                                 {{ $resultCARATL->campaign->deliver_count }} <span class="text-danger" title="Shortfall Count">({{ $resultCARATL->campaign->shortfall_count }})</span> / {{ $resultCARATL->allocation }}
                                                             @else
-                                                                {{ $resultCARATL->campaign->deliver_count.' / '.$resultCARATL->allocation }}
+                                                                {{ $resultCARATL->agent_lead_total_count.' / '.$resultCARATL->allocation }}
                                                             @endif
                                                         </td>
                                                         <td>
@@ -300,7 +300,7 @@
                                                                 @php
                                                                     $percentage = ($ca_agent->agent_lead_count/$ca_agent->allocation)*100;
                                                                     $percentage = number_format($percentage,2,".", "");
-                                                                    if($percentage == 100) {
+                                                                    if($percentage >= 100) {
                                                                         $color_class = 'bg-success';
                                                                     } else {
                                                                         $color_class = 'bg-warning text-dark';
@@ -348,6 +348,9 @@
                                             </div>
                                             <div id="div-submit-campaign" class="col-md-3">
                                                 <button type="button" @if($total_submitted < $total_agents) class="btn btn-danger btn-sm btn-square w-100" disabled title="Campaign Not Submitted By All Agents!" @else class="btn btn-success btn-sm btn-square w-100" @endif onclick="submitCampaign('{{ base64_encode($resultCARATL->id) }}');">Submit Campaign</button>
+                                            </div>
+                                            <div id="div-send-for-quality" class="col-md-3">
+                                                <button type="button" class="btn btn-dark btn-sm btn-square w-100" onclick="sendForQualityCheck('{{ base64_encode($resultCARATL->id) }}');">Send For QC</button>
                                             </div>
                                             <div id="div-raise-issue" class="col-md-3">
                                                 <button type="button" class="btn btn-warning btn-sm btn-square w-100" data-toggle="modal" data-target="#modal-raise-issue">Raise Issue</button>
@@ -554,6 +557,9 @@
             <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title">Campaign Assignment Details</h5>
+                        <div class="float-right">
+                            <a id="button-assign-campaign" href="javascript:void(0);" data-campaign-id="" data-display-date="" onclick="assignCampaign();" class="btn btn-outline-dark btn-sm mb-0 float-right" title="Assign Campaign" style="padding: 5px 8px;position: absolute;right: 50px;"><i class="feather icon-user-plus mr-0"></i></a>
+                        </div>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">×</span>
                         </button>
@@ -569,6 +575,7 @@
                                     <th class="text-center">Allocation</th>
                                     <th class="text-center">Assigned By</th>
                                     <th class="text-center">Status</th>
+                                    <th class="text-center">Action</th>
                                 </tr>
                                 </thead>
                                 <tbody class="text-center text-muted">
@@ -580,6 +587,55 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-view-lead-details" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-xl" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Campaign Lead Details</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body" style="padding-top: 0px !important;">
+                    <div class="table-responsive">
+                        <table id="table-agent-lead-details" class="table m-b-0 f-14 b-solid requid-table">
+                            <thead>
+                            <tr class="text-uppercase">
+                                <th>#</th>
+                                <th>First Name</th>
+                                <th>Last Name</th>
+                                <th>Company Name</th>
+                                <th>Email Address</th>
+                                <th>Phone Number</th>
+                                <th>Address 1</th>
+                                <th>Address 2</th>
+                                <th>City</th>
+                                <th>State</th>
+                                <th>Zipcode</th>
+                                <th>Country</th>
+                                <th>Employee Size</th>
+                                <th>Revenue</th>
+                                <th>Company Domain</th>
+                                <th>Website</th>
+                                <th>Company LinkedIn URL</th>
+                                <th>LinkedIn Profile Link</th>
+                                <th>LinkedIn Profile SN Link</th>
+                                <th>Date</th>
+                            </tr>
+                            </thead>
+                            <tbody class="text-center text-muted">
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
             </div>
         </div>
     </div>
@@ -654,6 +710,42 @@
         </div>
     </div>
 
+    <div id="modal-assign-campaign" class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Assign Campaign</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body">
+                    <div class="col-md-12">
+                        <form id="form-assign-campaign">
+                            <div class="row">
+                                <input type="hidden" name="campaign_id" value="">
+                                <input type="hidden" name="display_date" value="">
+                                <div class="col-md-12 form-group">
+                                    <label for="user_list">Select User(s)</label>
+                                    <select class="form-control btn-square p-1 pl-2 select2-multiple" id="user_list" name="user_list[]" style="height: unset;" multiple>
+                                        @foreach($resultUsers as $user)
+                                            @if(!in_array($user->id, $resultAssignedUsers))
+                                                <option id="user_list_{{ $user->id }}" value="{{ $user->id }}" data-name="{{ $user->first_name.' '.$user->last_name }}">{{ $user->first_name.' '.$user->last_name.' - [ '.$user->role->name.' ]' }}</option>
+                                            @endif
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="col-md-12 form-group">
+                                    <label for="allocation">Allocation</label>
+                                    <input type="number" class="form-control" name="allocation" value="0">
+                                </div>
+                            </div>
+                            <button id="form-assign-campaign-submit" type="button" class="btn btn-primary btn-square float-right">Assign</button>
+                            <button type="reset" class="btn btn-secondary btn-square float-right" data-dismiss="modal">Cancel</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @section('javascript')

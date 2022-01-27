@@ -23,5 +23,5 @@ Route::prefix('campaign-assign')->name('campaign_assign.')->group(function()
 
     Route::any('/revoke-campaign/{id}', [App\Http\Controllers\Manager\CampaignAssignController::class, 'revokeCampaign'])->name('revoke_campaign');
     Route::any('/assign-campaign', [App\Http\Controllers\Manager\CampaignAssignController::class, 'assignCampaign'])->name('assign_campaign');
-
+    Route::any('/re-assign-campaign/{id}', [App\Http\Controllers\Manager\CampaignAssignController::class, 'reAssignCampaign'])->name('re_assign_campaign');
 });

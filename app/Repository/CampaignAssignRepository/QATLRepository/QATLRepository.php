@@ -5,6 +5,8 @@ namespace App\Repository\CampaignAssignRepository\QATLRepository;
 use App\Models\Campaign;
 use App\Models\CampaignAssignQATL;
 use App\Models\CampaignDeliveryDetail;
+use App\Models\User;
+use App\Repository\Notification\QATL\QATLNotificationRepository;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -58,7 +60,22 @@ class QATLRepository implements QATLInterface
             }
             $ca_qatl->save();
             if($ca_qatl->id) {
-                CampaignDeliveryDetail::where('campaign_id', $ca_qatl->campaign_id)->update(array('campaign_progress' => 'In QC', 'updated_by' => Auth::id()));
+                //Add Campaign History
+                $resultCampaign = Campaign::findOrFail($ca_qatl->campaign_id);
+                $resultUser = User::findOrFail($ca_qatl->user_id);
+                add_campaign_history($resultCampaign->id, $resultCampaign->parent_id, 'Campaign assigned to QATL -'.$resultUser->full_name);
+                add_history('Campaign assigned to QATL', 'Campaign assigned to QATL -'.$resultUser->full_name);
+
+                CampaignDeliveryDetail::where('campaign_id', $ca_qatl->campaign_id)->update(array('campaign_progress' => 'In Quality Check', 'updated_by' => Auth::id()));
+
+                //Send notification to QATL
+                QATLNotificationRepository::store(array(
+                    'sender_id' => $attributes['assigned_by'],
+                    'recipient_id' => $attributes['user_id'],
+                    'message' => 'New campaign assigned - '.$resultCampaign->name,
+                    'url' => route('qa_team_leader.campaign.show', base64_encode($ca_qatl->id))
+                ));
+
                 DB::commit();
                 $response = array('status' => TRUE, 'message' => 'Campaign sent to quality team, successfully');
             } else {
@@ -67,7 +84,6 @@ class QATLRepository implements QATLInterface
 
         } catch (\Exception $exception) {
             DB::rollBack();
-            //dd($exception->getMessage());
             $response = array('status' => FALSE, 'message' => 'Something went wrong, please try again.');
         }
         return $response;
@@ -105,6 +121,7 @@ class QATLRepository implements QATLInterface
             if(isset($attributes['started_at']) && $attributes['started_at']) {
                 $ca_qatl->started_at = date('Y-m-d H:i:s', strtotime($attributes['started_at']));
             }
+
             if(array_key_exists('submitted_at', $attributes)) {
                 $ca_qatl->submitted_at = date('Y-m-d H:i:s', strtotime($attributes['submitted_at']));
             }
@@ -131,8 +148,17 @@ class QATLRepository implements QATLInterface
             }
 
             if($ca_qatl->save()) {
+
+                //Send notification to QATL
+                QATLNotificationRepository::store(array(
+                    'sender_id' => $ca_qatl->assigned_by,
+                    'recipient_id' => $ca_qatl->user_id,
+                    'message' => 'Campaign/Lead details updated - '.$resultCampaign->name,
+                    'url' => route('qa_team_leader.campaign.show', base64_encode($resultCampaign->id))
+                ));
+
                 DB::commit();
-                $response = array('status' => TRUE, 'message' => 'Details updated successfully');
+                $response = array('status' => TRUE, 'message' => 'Details updated successfully', 'details' => $ca_qatl);
             } else {
                 throw new \Exception('Something went wrong, please try again.', 1);
             }

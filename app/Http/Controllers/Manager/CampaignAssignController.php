@@ -4,12 +4,15 @@ namespace App\Http\Controllers\Manager;
 
 use App\Http\Controllers\Controller;
 use App\Models\Campaign;
+use App\Models\CampaignAssignAgent;
 use App\Models\CampaignAssignRATL;
+use App\Models\CampaignAssignVendorManager;
 use App\Models\User;
 use App\Repository\Campaign\DeliveryDetailRepository\DeliveryDetailRepository;
 use App\Repository\Campaign\IssueRepository\IssueRepository;
 use App\Repository\CampaignAssignRepository\AgentRepository\AgentRepository;
 use App\Repository\CampaignAssignRepository\CampaignAssignRepository;
+use App\Repository\CampaignAssignRepository\RATLRepository\RATLRepository as CARATLRepository;
 use App\Repository\CampaignFilterRepository\CampaignFilterRepository;
 use App\Repository\CampaignRepository\CampaignRepository;
 use App\Repository\CampaignStatusRepository\CampaignStatusRepository;
@@ -55,6 +58,10 @@ class CampaignAssignController extends Controller
      * @var IssueRepository
      */
     private $issueRepository;
+    /**
+     * @var CARATLRepository
+     */
+    private $CARATLRepository;
 
     public function __construct(
         CampaignStatusRepository $campaignStatusRepository,
@@ -67,7 +74,8 @@ class CampaignAssignController extends Controller
         CampaignAssignRepository $campaignAssignRepository,
         AgentRepository $agentRepository,
         DeliveryDetailRepository $deliveryDetailRepository,
-        IssueRepository $issueRepository
+        IssueRepository $issueRepository,
+        CARATLRepository $CARATLRepository
     )
     {
         $this->data = array();
@@ -82,6 +90,7 @@ class CampaignAssignController extends Controller
         $this->regionRepository = $regionRepository;
         $this->deliveryDetailRepository = $deliveryDetailRepository;
         $this->issueRepository = $issueRepository;
+        $this->CARATLRepository = $CARATLRepository;
     }
 
     public function index()
@@ -96,6 +105,7 @@ class CampaignAssignController extends Controller
         $this->data['resultUsers'] = $this->userRepository->get(array(
             'status' => 1,
             'designation_slug' => array('ra_team_leader', 'ra_team_leader_business_delivery', 'research_analyst', 'sr_vendor_management_specialist'),
+            'order_by' => array('value' => 'first_name', 'order' => 'ASC'),
         ));
         //dd($this->data['resultCampaigns']->toArray());
         return view('manager.campaign_assign.list', $this->data);
@@ -118,12 +128,20 @@ class CampaignAssignController extends Controller
             $this->data['resultCampaign'] = $this->campaignRepository->find(base64_decode($id), array('delivery_detail'));
             $this->data['resultCampaignIssues'] = $this->issueRepository->get(array('campaign_ids' => [base64_decode($id)]));
 
-            $resultAssignedUsers = CampaignAssignRATL::where('campaign_id', base64_decode($id))->where('status', 1)->get();
-            if(!empty($resultAssignedUsers) && $resultAssignedUsers->count()) {
-                $this->data['resultAssignedUsers'] = $resultAssignedUsers->pluck('user_id')->toArray();
-            } else {
-                $this->data['resultAssignedUsers'] = array();
+            $this->data['resultAssignedUsers'] = array();
+            $resultCARATLs = CampaignAssignRATL::where('campaign_id', base64_decode($id))->get();
+            if(!empty($resultCARATLs) && $resultCARATLs->count()) {
+                $this->data['resultAssignedUsers'] = array_merge($this->data['resultAssignedUsers'], $resultCARATLs->pluck('user_id')->toArray());
             }
+            $resultCAAgents = CampaignAssignAgent::where('campaign_id', base64_decode($id))->get();
+            if(!empty($resultCAAgents) && $resultCAAgents->count()) {
+                $this->data['resultAssignedUsers'] = array_merge($this->data['resultAssignedUsers'], $resultCAAgents->pluck('user_id')->toArray());
+            }
+            $resultCAVMs = CampaignAssignVendorManager::where('campaign_id', base64_decode($id))->get();
+            if(!empty($resultCAVMs) && $resultCAVMs->count()) {
+                $this->data['resultAssignedUsers'] = array_merge($this->data['resultAssignedUsers'], $resultCAVMs->pluck('user_id')->toArray());
+            }
+
             $this->data['resultUsers'] = $this->userRepository->get(array(
                 'status' => 1,
                 'designation_slug' => array('ra_team_leader', 'ra_team_leader_business_delivery', 'research_analyst', 'sr_vendor_management_specialist'),
@@ -179,6 +197,8 @@ class CampaignAssignController extends Controller
         $offset = $request->get("start");
 
         $query = Campaign::query();
+        $query->whereNull('parent_id');
+
         $query->whereIn('id', $this->data['resultAssignedCampaigns']->pluck('id')->toArray());
         $query->with([
             'assigned_ratls',
@@ -192,11 +212,14 @@ class CampaignAssignController extends Controller
 
         //Search Data
         if(isset($searchValue) && $searchValue != "") {
-            $query->where("campaign_id", "like", "%$searchValue%");
-            $query->orWhere("name", "like", "%$searchValue%");
-            $query->orWhere("allocation", "like", "%$searchValue%");
-            $query->orWhere("deliver_count", "like", "%$searchValue%");
+            $query->where(function($query) use ($searchValue){
+                $query->where("campaign_id", "like", "%$searchValue%");
+                $query->orWhere("name", "like", "%$searchValue%");
+                $query->orWhere("allocation", "like", "%$searchValue%");
+                $query->orWhere("deliver_count", "like", "%$searchValue%");
+            });
         }
+
         //Filters
         if(!empty($filters)) {
 
@@ -275,15 +298,22 @@ class CampaignAssignController extends Controller
 
 
         //Order By
-        $orderColumn = $order[0]['column'];
-        $orderDirection = $order[0]['dir'];
+        $orderColumn = null;
+        if ($request->has('order')){
+            $order = $request->get('order');
+            $orderColumn = $order[0]['column'];
+            $orderDirection = $order[0]['dir'];
+        }
         switch ($orderColumn) {
-            case '0': $query->orderBy('name', $orderDirection); break;
+            case '0': $query->orderBy('campaign_id', $orderDirection); break;
             case '1': $query->orderBy('name', $orderDirection); break;
-            case '2': $query->orderBy('name', $orderDirection); break;
-            case '3': $query->orderBy('name', $orderDirection); break;
-            case '4': $query->orderBy('name', $orderDirection); break;
-            default: $query->orderBy('name'); break;
+            case '2':
+                break;
+            case '3': $query->orderBy('start_date', $orderDirection); break;
+            case '4': $query->orderBy('end_date', $orderDirection); break;
+            case '5': $query->orderBy('allocation', $orderDirection); break;
+            case '6': $query->orderBy('campaign_status_id', $orderDirection); break;
+            default: $query->orderBy('created_at', 'DESC'); break;
         }
 
         $totalFilterRecords = $query->count();
@@ -292,7 +322,6 @@ class CampaignAssignController extends Controller
             $query->limit($limit);
         }
         //Do not take incremental and reactivated
-        $query->whereNull('parent_id');
         $query->with('children', function($children) {
             $children->orderBy('created_at', 'DESC');
         });
@@ -353,10 +382,23 @@ class CampaignAssignController extends Controller
         foreach ($attributes['user_list'] as $user) {
             $new_attributes['users'][] = array('user_id' => $user, 'allocation' => $attributes['allocation']);
         }
-
-        $response = $this->campaignAssignRepository->store(array('data' => [$new_attributes]));
+        $response = $this->campaignAssignRepository->store($new_attributes);
         if($response['status'] == TRUE) {
             return response()->json(array('status' => true, 'message' => $response['message']));
+        } else {
+            return response()->json(array('status' => false, 'message' => $response['message']));
+        }
+    }
+
+    public function reAssignCampaign($id, Request $request)
+    {
+        $attributes = $request->all();
+        $new_attributes['submitted_at'] = NULL;
+        $new_attributes['status'] = 1;
+        $response = $this->CARATLRepository->update(base64_decode($id), $new_attributes);
+
+        if($response['status'] == TRUE) {
+            return response()->json(array('status' => true, 'message' => 'Campaign re-assigned successfully'));
         } else {
             return response()->json(array('status' => false, 'message' => $response['message']));
         }

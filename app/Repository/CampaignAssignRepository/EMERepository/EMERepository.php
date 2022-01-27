@@ -5,6 +5,7 @@ namespace App\Repository\CampaignAssignRepository\EMERepository;
 use App\Models\Campaign;
 use App\Models\CampaignAssignEME;
 use App\Models\CampaignNPFFile;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -41,7 +42,11 @@ class EMERepository implements EMEInterface
         try {
             DB::beginTransaction();
             $resultCAEME = CampaignAssignEME::where('campaign_id', $attributes['campaign_id'])->where('user_id', $attributes['user_id'])->first();
-            $campaign_assign_eme = CampaignAssignEME::findOrNew($resultCAEME->id);
+            if(!empty($resultCAEME)) {
+                $campaign_assign_eme = CampaignAssignEME::findOrFail($resultCAEME->id);
+            } else {
+                $campaign_assign_eme = new CampaignAssignEME();
+            }
             $campaign_assign_eme->campaign_id = $attributes['campaign_id'];
             $campaign_assign_eme->user_id = $attributes['user_id'];
             $campaign_assign_eme->display_date = $attributes['display_date'];
@@ -67,6 +72,12 @@ class EMERepository implements EMEInterface
                     );
                 }
                 if(count($dataCampaignNPFFiles) && CampaignNPFFile::insert($dataCampaignNPFFiles)) {
+                    //Add Campaign History
+                    $resultCampaign = Campaign::findOrFail($campaign_assign_eme->campaign_id);
+                    $resultUser = User::findOrFail($campaign_assign_eme->user_id);
+                    add_campaign_history($resultCampaign->id, $resultCampaign->parent_id, 'NPF File uploaded & Campaign sent for promotion to -'.$resultUser->full_name);
+                    add_history('Campaign sent for promotion', 'NPF File uploaded & Campaign sent for promotion to -'.$resultUser->full_name);
+
                     DB::commit();
                     $response = array('status' => TRUE, 'message' => 'NPF File(s) uploaded successfully');
                 } else {
@@ -118,7 +129,7 @@ class EMERepository implements EMEInterface
 
             if($campaign_assign_eme->save()) {
                 DB::commit();
-                $response = array('status' => TRUE, 'message' => 'EME details updated successfully');
+                $response = array('status' => TRUE, 'message' => 'EME details updated successfully', 'details' => $campaign_assign_eme);
             } else {
                 throw new \Exception('Something went wrong, please try again.', 1);
             }

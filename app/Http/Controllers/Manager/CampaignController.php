@@ -4,6 +4,9 @@ namespace App\Http\Controllers\Manager;
 
 use App\Http\Controllers\Controller;
 use App\Models\Campaign;
+use App\Models\CampaignAssignQATL;
+use App\Models\CampaignDeliveryDetail;
+use App\Repository\Campaign\History\CampaignHistoryRepository;
 use App\Repository\CampaignFilterRepository\CampaignFilterRepository;
 use App\Repository\CampaignRepository\CampaignRepository;
 use App\Repository\CampaignSpecificationRepository\CampaignSpecificationRepository;
@@ -27,6 +30,10 @@ class CampaignController extends Controller
     private $campaignRepository;
     private $campaignSpecificationRepository;
     private $pacingDetailRepository;
+    /**
+     * @var CampaignHistoryRepository
+     */
+    private $campaignHistoryRepository;
 
     public function __construct(
         CampaignStatusRepository $campaignStatusRepository,
@@ -37,7 +44,8 @@ class CampaignController extends Controller
         HolidayRepository $holidayRepository,
         CampaignRepository $campaignRepository,
         CampaignSpecificationRepository $campaignSpecificationRepository,
-        PacingDetailRepository $pacingDetailRepository
+        PacingDetailRepository $pacingDetailRepository,
+        CampaignHistoryRepository $campaignHistoryRepository
     )
     {
         $this->data = array();
@@ -50,6 +58,7 @@ class CampaignController extends Controller
         $this->campaignRepository = $campaignRepository;
         $this->campaignSpecificationRepository = $campaignSpecificationRepository;
         $this->pacingDetailRepository = $pacingDetailRepository;
+        $this->campaignHistoryRepository = $campaignHistoryRepository;
     }
 
     public function index()
@@ -71,7 +80,7 @@ class CampaignController extends Controller
             $this->data['resultCountries'] = $this->countryRepository->get(array('status' => 1));
             $this->data['resultRegions'] = $this->regionRepository->get(array('status' => 1));
             $this->data['resultCampaign'] = $this->campaignRepository->find(base64_decode($id));
-            //dd($this->data['resultCampaign']->children[0]->campaign_status_id);
+            //dd($this->data['resultCampaign']->toArray());
             return view('manager.campaign.show', $this->data);
         } catch (\Exception $exception) {
             return redirect()->route('manager.campaign.list')->with('error', ['title' => 'Error while processing request', 'message' => 'Campaign details not found']);
@@ -139,21 +148,42 @@ class CampaignController extends Controller
         $this->data['resultMonthList'] = array();
         $this->data['total_sub_allocation'] = 0;
 
-        foreach ($period as $month) {
-            $resultSubAllocations = $this->pacingDetailRepository->get(base64_decode($id), array('month' => $month->format("m"),'year' => $month->format("Y")));
+        $month = strtotime($this->data['resultCampaign']->start_date);
+        $end = strtotime(date('Y-m-t', strtotime($this->data['resultCampaign']->end_date)));
+
+        while($month < $end)
+        {
+            $resultSubAllocations = $this->pacingDetailRepository->get(base64_decode($id), array('month' => date('m', $month),'year' => date('Y', $month)));
             $this->data['resultMonthList'][] = array(
-                    'month_name' => $month->format("M-Y"),
-                    'month' => $month->format("m"),
-                    'year' => $month->format("Y"),
-                    'sub_allocations' => $resultSubAllocations,
-                    'days' => $resultSubAllocations->pluck('day')->unique()->toArray()
-                );
+                'month_name' => date('M', $month),
+                'month' => date('m', $month),
+                'year' => date('Y', $month),
+                'sub_allocations' => $resultSubAllocations,
+                'days' => $resultSubAllocations->pluck('day')->unique()->toArray()
+            );
+
+            $month = strtotime("+1 month", $month);
         }
 
         if(!empty($this->data)) {
             return response()->json(array('status' => true, 'message' => 'Data found', 'data' => $this->data));
         } else {
             return response()->json(array('status' => false, 'message' => 'Data not found'));
+        }
+    }
+
+    public function edit($campaign_id, Request $request)
+    {
+        try {
+            $this->data['resultCampaignStatuses'] = $this->campaignStatusRepository->get(array('status' => 1));
+            $this->data['resultCampaignFilters'] = $this->campaignFilterRepository->get(array('status' => 1));
+            $this->data['resultCampaignTypes'] = $this->campaignTypeRepository->get(array('status' => 1));
+            $this->data['resultCountries'] = $this->countryRepository->get(array('status' => 1));
+            $this->data['resultRegions'] = $this->regionRepository->get(array('status' => 1));
+            $this->data['resultCampaign'] = $this->campaignRepository->find(base64_decode($campaign_id));
+            return view('manager.campaign.edit', $this->data);
+        } catch (\Exception $exception) {
+            return redirect()->route('manager.campaign.list')->with('error', ['title' => 'Error while processing request', 'message' => 'Campaign details not found']);
         }
     }
 
@@ -194,9 +224,7 @@ class CampaignController extends Controller
             } else {
                 return back()->withInput()->with('error', ['title' => 'Error while processing request', 'message' => $response['message']]);
             }
-
         }
-
     }
 
     public function validateVMailCampaignId(Request $request)
@@ -204,8 +232,12 @@ class CampaignController extends Controller
         $campaign = Campaign::query();
         $campaign = $campaign->where('v_mail_campaign_id',strtoupper($request->v_mail_campaign_id));
 
-        if($request->has('campaign_id')) {
-            $campaign = $campaign->where('id', '!=', base64_decode($request->campaign_id));
+        if($request->has('campaign_id') || $request->has('parent_id')) {
+            if($request->has('parent_id')) {
+                $campaign = $campaign->where('id', '!=', base64_decode($request->parent_id));
+            } else {
+                $campaign = $campaign->where('id', '!=', base64_decode($request->campaign_id));
+            }
         }
 
         if($campaign->exists()) {
@@ -251,11 +283,12 @@ class CampaignController extends Controller
     public function import(Request $request)
     {
         $attributes = $request->all();
+        //dd($attributes);
         $response = $this->campaignRepository->import($attributes);
 
         if(isset($attributes['campaign_file']) && !empty($attributes['campaign_file'])) {
             if($response['status'] == TRUE) {
-                return response(json_encode(array('status' => true, 'message' => $response['message'])), 201);
+                return response(json_encode(array('status' => true, 'message' => $response['message'])), 205);
             } else {
                 if(!empty($response['file'])) {
                     return $response['file'];
@@ -265,7 +298,7 @@ class CampaignController extends Controller
                 }
             }
         } else {
-            return response(json_encode(array('status' => false, 'message' => 'Please upload file')),201);
+            return response(json_encode(array('status' => false, 'message' => 'Please upload file')),202);
         }
     }
 
@@ -282,15 +315,16 @@ class CampaignController extends Controller
         $query = Campaign::query();
         $query->whereNull('parent_id');
 
-        $query->with('delivery_detail');
         $totalRecords = $query->count();
 
         //Search Data
         if(isset($searchValue) && $searchValue != "") {
-            $query->where("campaign_id", "like", "%$searchValue%");
-            $query->orWhere("name", "like", "%$searchValue%");
-            $query->orWhere("allocation", "like", "%$searchValue%");
-            $query->orWhere("deliver_count", "like", "%$searchValue%");
+            $query->where(function($query) use ($searchValue){
+                $query->where("campaign_id", "like", "%$searchValue%");
+                $query->orWhere("name", "like", "%$searchValue%");
+                $query->orWhere("allocation", "like", "%$searchValue%");
+                $query->orWhere("deliver_count", "like", "%$searchValue%");
+            });
         }
         //Filters
         if(!empty($filters)) {
@@ -393,16 +427,13 @@ class CampaignController extends Controller
             $query->offset($offset);
             $query->limit($limit);
         }
-        //Do not take incremental and reactivated
-        $query->whereNull('parent_id');
+
+        $query->with('delivery_detail');
         $query->with('children', function($children) {
             $children->orderBy('created_at', 'DESC');
         });
 
-
         $result = $query->get();
-
-        //dd($result->toArray());
 
         $ajaxData = array(
             "draw" => intval($draw),
@@ -412,5 +443,36 @@ class CampaignController extends Controller
         );
 
         return response()->json($ajaxData);
+    }
+
+    public function getCampaignHistory($id, Request $request)
+    {
+        $filters = $request->all();
+        $filters['order_by']['column'] = 'created_at';
+        $filters['order_by']['dir'] = 'desc';
+        $filters['campaign_ids'] = [base64_decode($id)];
+
+        $this->data['resultCampaignHistories'] = $this->campaignHistoryRepository->get($filters);
+
+        return view('manager.extra.campaign_history', $this->data);
+    }
+
+
+    /**
+     * Remote Validation
+     */
+    public function checkCampaignNameAlreadyExists($id = null, Request $request)
+    {
+        $query = Campaign::query();
+        if(isset($id) && !empty($id)) {
+            $query->whereCampaignId(base64_decode($id));
+        }
+        $query->whereName(trim($request->name));
+
+        if($query->exists()) {
+            return 'false';
+        } else {
+            return 'true';
+        }
     }
 }

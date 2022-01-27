@@ -24,6 +24,9 @@
                                 <div class="col-md-12">
                                     <div class="page-header-title">
                                         <h5 class="m-b-10">{{ $resultCAAgent->campaign->name }}</h5>
+                                        <div class="card-header-right mb-1" style="float: right;">
+                                            <a href="{{ route('agent.lead.list', base64_encode($resultCAAgent->id)) }}" class="btn btn-outline-info btn-square btn-sm pt-1 pb-1" style="font-weight: bold;"><i class="feather icon-arrow-left"></i>Back</a>
+                                        </div>
                                     </div>
                                     <ul class="breadcrumb">
                                         <li class="breadcrumb-item"><a href="{{ route('agent.dashboard') }}"><i class="feather icon-home"></i></a></li>
@@ -76,7 +79,7 @@
                                                         <div class="row">
                                                             <div class="col-md-4 form-group">
                                                                 <label for="email_address">Email Address<span class="text-danger">*</span></label>
-                                                                <input autofocus type="text" class="form-control btn-square" id="email_address" name="email_address" placeholder="Enter email address" @if(isset($resultData)) value="{{ $resultData->email_address }}" @endif>
+                                                                <input autofocus type="email" class="form-control btn-square" id="email_address" name="email_address" placeholder="Enter email address" @if(isset($resultData)) value="{{ $resultData->email_address }}" @endif>
                                                             </div>
                                                             <div class="col-md-4 form-group">
                                                                 <label for="specific_title">Specific Title<span class="text-danger">*</span></label>
@@ -139,12 +142,23 @@
                                                                 <input type="text" class="form-control btn-square" id="employee_size" name="employee_size" placeholder="Enter size" @if(isset($resultData)) value="{{ $resultData->employee_size }}" @endif>
                                                             </div>
                                                             <div class="col-md-4 form-group">
+                                                                <label for="employee_size_2">Employee/Company Size 2 <span class="text-info"> <small>(optional)</small></span></label>
+                                                                <input type="text" class="form-control btn-square" id="employee_size_2" name="employee_size_2" placeholder="Enter size" @if(isset($resultData) && !empty($resultData->employee_size_2)) value="{{ $resultData->employee_size_2 }}" @endif>
+                                                            </div>
+                                                            <div class="col-md-4 form-group">
                                                                 <label for="revenue">Revenue<span class="text-danger">*</span></label>
                                                                 <input type="text" class="form-control btn-square" id="revenue" name="revenue" placeholder="Enter revenue" @if(isset($resultData)) value="{{ $resultData->revenue }}" @endif>
                                                             </div>
+                                                        </div>
+
+                                                        <div class="row">
                                                             <div class="col-md-4 form-group">
                                                                 <label for="company_domain">Company Domain<span class="text-danger">*</span></label>
                                                                 <input autofocus type="text" class="form-control btn-square" id="company_domain" name="company_domain" placeholder="Enter company domain" @if(isset($resultData)) value="{{ $resultData->company_domain }}" @endif>
+                                                            </div>
+                                                            <div class="col-md-8 form-group">
+                                                                <label for="comment">Comment <span class="text-info"> <small>(optional)</small></span></label>
+                                                                <input type="text" class="form-control btn-square" id="comment" name="comment" placeholder="Enter comment" @if(isset($resultData) && !empty($resultData->comment)) value="{{ $resultData->comment }}" @endif>
                                                             </div>
                                                         </div>
 

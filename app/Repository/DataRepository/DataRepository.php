@@ -114,7 +114,6 @@ class DataRepository implements DataInterface
             }
         } catch (\Exception $exception) {
             DB::rollBack();
-            //dd($exception->getMessage());
             $response = array('status' => FALSE, 'message' => 'Something went wrong, please try again.');
         }
         return $response;
@@ -176,6 +175,9 @@ class DataRepository implements DataInterface
             if(isset($attributes['employee_size']) && !empty($attributes['employee_size'])) {
                 $data->employee_size = trim($attributes['employee_size']);
             }
+            if(isset($attributes['employee_size_2']) && !empty($attributes['employee_size_2'])) {
+                $data->employee_size_2 = trim($attributes['employee_size_2']);
+            }
             if(isset($attributes['revenue']) && !empty($attributes['revenue'])) {
                 $data->revenue = trim($attributes['revenue']);
             }
@@ -213,7 +215,6 @@ class DataRepository implements DataInterface
 
         } catch (\Exception $exception) {
             DB::rollBack();
-            //dd($exception->getMessage());
             $response = array('status' => FALSE, 'message' => 'Something went wrong, please try again.');
         }
         return $response;
@@ -299,7 +300,6 @@ class DataRepository implements DataInterface
 
         } catch (\Exception $exception) {
             DB::rollBack();
-            //dd($exception->getMessage());
             $response = array('status' => FALSE, 'message' => 'Something went wrong, please try again.');
         }
         return $response;

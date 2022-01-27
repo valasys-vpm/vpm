@@ -26,7 +26,7 @@ class CreateCampaignHistoriesTable extends Migration
             $table->foreign('user_id')->references('id')->on('users');
 
             $table->text('message');
-            $table->text('data')->default('{}');
+            $table->text('data')->nullable();
 
             $table->timestamp('created_at')->useCurrent();
         });

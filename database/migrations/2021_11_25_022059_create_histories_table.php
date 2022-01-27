@@ -21,7 +21,7 @@ class CreateHistoriesTable extends Migration
 
             $table->string('action');
             $table->text('message');
-            $table->text('data')->default('{}');
+            $table->text('data')->nullable();
 
             $table->timestamp('created_at')->useCurrent();
         });

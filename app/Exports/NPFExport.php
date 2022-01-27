@@ -4,6 +4,7 @@ namespace App\Exports;
 
 use App\Models\AgentLead;
 use App\Models\Campaign;
+use App\Models\VendorLead;
 use App\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -33,27 +34,35 @@ class NPFExport implements FromCollection, WithHeadings, WithEvents, WithColumnF
 
         $query = AgentLead::query();
         $query->whereCampaignId($this->campaignId);
+        $query->whereStatus(1);
         $resultAgentLeads = $query->get();
 
+        $query = VendorLead::query();
+        $query->whereCampaignId($this->campaignId);
+        $query->whereStatus(1);
+        $resultVendorLeads = $query->get();
+
+        $resultLeads = $resultAgentLeads->merge($resultVendorLeads);
+
         //convert to final array
-        foreach($resultAgentLeads as $key => $agentLead) {
+        foreach($resultLeads as $key => $lead) {
 
             $exportData[$key]['Date'] = date('d-M-Y');
-            $exportData[$key]['First Name'] = $agentLead->first_name;
-            $exportData[$key]['Last Name'] = $agentLead->last_name;
-            $exportData[$key]['Company Name'] = $agentLead->company_name;
-            $exportData[$key]['Job Title'] = $agentLead->specific_title;
-            $exportData[$key]['Job Level'] = $agentLead->job_level;
-            $exportData[$key]['Email Address'] = $agentLead->email_address;
-            $exportData[$key]['Phone Number'] = $agentLead->phone_number;
-            $exportData[$key]['Address 1'] = $agentLead->address_1;
-            $exportData[$key]['City'] = $agentLead->city;
-            $exportData[$key]['State'] = $agentLead->state;
-            $exportData[$key]['Zipcode'] = $agentLead->zipcode;
-            $exportData[$key]['Country'] = $agentLead->country;
-            $exportData[$key]['Industry'] = $agentLead->industry;
-            $exportData[$key]['Employee Size'] = $agentLead->employee_size;
-            $exportData[$key]['Company Revenue'] = $agentLead->revenue;
+            $exportData[$key]['First Name'] = $lead->first_name;
+            $exportData[$key]['Last Name'] = $lead->last_name;
+            $exportData[$key]['Company Name'] = $lead->company_name;
+            $exportData[$key]['Job Title'] = $lead->specific_title;
+            $exportData[$key]['Job Level'] = $lead->job_level;
+            $exportData[$key]['Email Address'] = $lead->email_address;
+            $exportData[$key]['Phone Number'] = $lead->phone_number;
+            $exportData[$key]['Address 1'] = $lead->address_1;
+            $exportData[$key]['City'] = $lead->city;
+            $exportData[$key]['State'] = $lead->state;
+            $exportData[$key]['Zipcode'] = $lead->zipcode;
+            $exportData[$key]['Country'] = $lead->country;
+            $exportData[$key]['Industry'] = $lead->industry;
+            $exportData[$key]['Employee Size'] = $lead->employee_size;
+            $exportData[$key]['Company Revenue'] = $lead->revenue;
             $exportData[$key]['Asset'] = '';
         }
         //dd($exportData);

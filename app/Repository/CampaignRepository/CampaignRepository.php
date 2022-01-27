@@ -11,6 +11,7 @@ use App\Models\CampaignFilter;
 use App\Models\CampaignSpecification;
 use App\Models\CampaignStatus;
 use App\Models\CampaignType;
+use App\Models\Country;
 use App\Models\ManagerNotification;
 use App\Models\PacingDetail;
 use App\Models\User;
@@ -84,6 +85,8 @@ class CampaignRepository implements CampaignInterface
             $query->with('delivery_detail');
         }
 
+        //$query->with('children');
+
         return $query->findOrFail($id);
     }
 
@@ -95,7 +98,7 @@ class CampaignRepository implements CampaignInterface
             DB::beginTransaction();
             $campaign = new Campaign();
 
-            if(isset($attributes['parent_id'])) {
+            if(isset($attributes['parent_id']) && base64_decode($attributes['parent_id'])) {
                 $resultCampaign = $this->find(base64_decode($attributes['parent_id']));
                 $campaignId = $resultCampaign->campaign_id;
                 $campaign->type  = 'incremental';
@@ -118,7 +121,7 @@ class CampaignRepository implements CampaignInterface
             $campaign->campaign_filter_id  = $attributes['campaign_filter_id'];
             $campaign->campaign_type_id  = $attributes['campaign_type_id'];
 
-            if(isset($attributes['note']) && $attributes['note'] > 0) {
+            if(isset($attributes['note']) && !empty($attributes['note'])) {
                 $campaign->note = $attributes['note'];
             }
 
@@ -293,22 +296,30 @@ class CampaignRepository implements CampaignInterface
                             'sender_id' => Auth::id(),
                             'recipient_id' => $manager->id,
                             'message' => 'New campaign added - '.$campaign->name,
-                            'url' => implode('/', array_slice(explode('/', route('manager.campaign.show', base64_encode($campaign->id))), 4))
+                            'url' => secured_url(route('manager.campaign.show', base64_encode($campaign->id)))
                         );
                     }
                     $responseNotification = ManagerNotification::insert($dataNotification);
                 }
 
                 //Add Delivery Detail entry
-                CampaignDeliveryDetail::insert(array('campaign_id' => $campaign->id, 'updated_by' => Auth::id()));
+                if(isset($attributes['parent_id'])) {
+                    CampaignDeliveryDetail::where('campaign_id', $campaign->parent_id)->update(array('campaign_progress' => 'Campaign IN - INCR', 'updated_by' => Auth::id()));
+                } else {
+                    CampaignDeliveryDetail::insert(array('campaign_id' => $campaign->id, 'updated_by' => Auth::id()));
+                }
                 DB::commit();
+
+                //Add Campaign History
+                add_campaign_history($campaign->id, $campaign->parent_id, 'Campaign added - '.$campaign->name);
+                add_history('Campaign added', 'Campaign added - '.$campaign->name);
+
                 $response = array('status' => TRUE, 'message' => 'Campaign added successfully', 'campaign_id' => $campaign->campaign_id, 'id' => $campaign->id);
             } else {
-                throw new \Exception('Something went wrong, please try again.', 1);
+                throw new \Exception('Please check data and try again.', 1);
             }
         } catch (\Exception $exception) {
             DB::rollBack();
-            //dd($exception->getMessage());
             $response = array('status' => FALSE, 'message' => 'Something went wrong, please try again.');
         }
         return $response;
@@ -316,7 +327,6 @@ class CampaignRepository implements CampaignInterface
 
     public function update($id, $attributes): array
     {
-
         //dd($attributes);
         $response = array('status' => FALSE, 'message' => 'Something went wrong, please try again.');
         try {
@@ -327,12 +337,13 @@ class CampaignRepository implements CampaignInterface
             }
 
             $campaign = $this->find($id);
+            $campaign_copy = $campaign->toArray();
 
             if(isset($attributes['name']) && !empty($attributes['name'])) {
                 $campaign->name = $attributes['name'];
             }
 
-            if(array_key_exists('v_mail_campaign_id', $attributes)) {
+            if(isset($attributes['v_mail_campaign_id']) && !empty($attributes['v_mail_campaign_id'])) {
                 $campaign->v_mail_campaign_id = $attributes['v_mail_campaign_id'];
             }
 
@@ -381,66 +392,87 @@ class CampaignRepository implements CampaignInterface
             $campaign->save();
 
             if($campaign->id) {
+                $campaign_updated = $campaign->getChanges();
+                unset($campaign_updated['updated_at']);
 
                 //Save Campaign's Countries
+                $resultCampaignCountries = CampaignCountry::whereCampaignId($campaign->id)->get();
                 if(isset($attributes['country_id'])) {
+
                     CampaignCountry::whereCampaignId($campaign->id)->delete();
                     $insertCampaignCountries = array();
+                    $countryNames = array();
                     foreach ($attributes['country_id'] as $country) {
+                        $resultCountry = Country::find($country);
+                        $countryNames[] = $resultCountry->name;
                         array_push($insertCampaignCountries, ['campaign_id' => $campaign->id, 'country_id' => $country]);
                     }
-                    CampaignCountry::insert($insertCampaignCountries);
-                }
-
-                //Save Campaign's Specifications
-                if(isset($attributes['specifications']) && !empty($attributes['specifications'])) {
-                    $insertCampaignSpecifications = array();
-                    foreach ($attributes['specifications'] as $file) {
-                        $extension = $file->getClientOriginalExtension();
-                        //$filename  = $campaign->campaign_id.'-' . str_shuffle(time()) . '.' . $extension;
-                        $filename  = $file->getClientOriginalName();
-                        $path = 'public/campaigns/'.$campaign->campaign_id;
-                        $result  = $file->storeAs($path, $filename);
-                        $insertCampaignSpecifications[] = [
-                            'campaign_id' => $campaign->id,
-                            'file_name' => $filename,
-                            'extension' => $extension
-                        ];
+                    if(!empty($insertCampaignCountries)) {
+                        CampaignCountry::insert($insertCampaignCountries);
+                        $campaign_updated['country_id'] = implode(',', $countryNames);
                     }
-                    CampaignSpecification::insert($insertCampaignSpecifications);
-                }
-
-                //Save Pacing Details/Sub-Allocation
-                if(isset($attributes['sub-allocation'])) {
-                    PacingDetail::whereCampaignId($campaign->id)->delete();
-                    //Pacing Details
-                    $insertPacingDetails = array();
-                    foreach ($attributes['sub-allocation'] as $date => $sub_allocation) {
-                        $insertPacingDetails[] = [
-                            'campaign_id' => $campaign->id,
-                            'date' => $date,
-                            'sub_allocation' => $sub_allocation,
-                            'day' => date('w', strtotime($date))
-                        ];
-                    }
-                    PacingDetail::insert($insertPacingDetails);
-                    //--Pacing Details
-                }
-                $getChanges = $campaign->getChanges();
-                if(isset($getChanges['start_date'])) {
-                    $resultPacingDetails = PacingDetail::where('date', '<', $getChanges['start_date'])->delete();
-                }
-                if(isset($getChanges['end_date'])) {
-                    $resultPacingDetails = PacingDetail::where('date', '>', $getChanges['end_date'])->delete();
                 }
 
                 //if delivered change progress status
-                if($attributes['campaign_status_id'] == 4) {
+                if(array_key_exists('campaign_status_id', $campaign_updated) && $attributes['campaign_status_id'] == 4) {
                     CampaignDeliveryDetail::where('campaign_id', $campaign->id)->update(array('campaign_progress' => 'Delivered', 'updated_by' => Auth::id()));
                 }
 
                 DB::commit();
 
+                //Add Campaign History
+                $oldData = $newData = array();
+                if(!empty($campaign_updated)) {
+
+                    foreach ($campaign_updated as $key => $value) {
+                        switch ($key) {
+                            case 'campaign_type_id':
+                                $old = CampaignType::find($campaign_copy[$key]);
+                                $new = CampaignType::find($value);
+
+                                $oldData[$key] = $old->name;
+                                $newData[$key] = $new->name;
+                                break;
+                            case 'campaign_filter_id':
+                                $old = CampaignFilter::find($campaign_copy[$key]);
+                                $new = CampaignFilter::find($value);
+
+                                $oldData[$key] = $old->name;
+                                $newData[$key] = $new->name;
+                                break;
+                            case 'campaign_status_id': break;
+                            case 'country_id':
+                                if(!empty($resultCampaignCountries) && $resultCampaignCountries->count()) {
+                                    $oldCountries = array();
+                                    foreach ($resultCampaignCountries as $country) {
+                                        $oldCountries[] = $country->country->name;
+                                    }
+                                    $oldCountries = implode(',', $oldCountries);
+                                } else {
+                                    $oldCountries = null;
+                                }
+                                if($oldCountries != $value) {
+                                    $oldData['country'] = $oldCountries;
+                                    $newData['country'] = $value;
+                                }
+                                break;
+                            default:
+                                $oldData[$key] = $campaign_copy[$key];
+                                $newData[$key] = $value;
+                        }
+                    }
+
+                    //Delete Sub-Allocations if start date, end date or pacing updated
+                    if(array_key_exists('pacing', $newData) || array_key_exists('start_date', $newData) || array_key_exists('start_date', $newData)) {
+                        $res = PacingDetail::where('campaign_id', $campaign->id)->delete();
+                    }
+
+                    if(!empty($newData)) {
+                        $historyMessage = get_history_message($oldData, $newData);
+                        add_campaign_history($campaign->id, $campaign->parent_id, 'Campaign details updated - '.$historyMessage, array('oldData' => $oldData, 'newData' => $newData));
+                        add_history('Campaign details updated', 'Campaign updated data are - '.$historyMessage, array('oldData' => $oldData, 'newData' => $newData));
+                    }
+                }
 
                 $response = array('status' => TRUE, 'message' => 'Campaign details updated successfully');
             } else {
@@ -448,7 +480,6 @@ class CampaignRepository implements CampaignInterface
             }
         } catch (\Exception $exception) {
             DB::rollBack();
-            //dd($exception->getMessage());
             $response = array('status' => FALSE, 'message' => 'Something went wrong, please try again.');
         }
         return $response;
@@ -490,7 +521,6 @@ class CampaignRepository implements CampaignInterface
             }
         } catch (\Exception $exception) {
             DB::rollBack();
-            //dd($exception->getMessage());
             $response = array('status' => FALSE, 'message' => 'Something went wrong, please try again.');
         }
         return $response;
@@ -657,7 +687,6 @@ class CampaignRepository implements CampaignInterface
             }
         } catch (\Exception $exception) {
             DB::rollBack();
-            //dd($exception->getMessage());
             $response = array('status' => FALSE, 'message' => 'Something went wrong, please try again.');
         }
         return $response;
@@ -667,6 +696,10 @@ class CampaignRepository implements CampaignInterface
     {
         $response = array('status' => FALSE, 'message' => 'Something went wrong, please try again.');
         try {
+
+            if(isset($attributes['specification_file']) && !empty($attributes['specification_file'])) {
+                $specification_file = $attributes['specification_file'];
+            }
             ini_set('memory_limit', '-1');
             ini_set('max_execution_time', '0');
 
@@ -679,6 +712,7 @@ class CampaignRepository implements CampaignInterface
             //Validate Data
             foreach ($excelData[0] as $key => $row) {
                 $responseValidate = $this->validateCampaignData($row);
+
                 if($responseValidate['status'] == TRUE) {
                     $validatedData[] = $responseValidate['validatedData'];
                 } else {
@@ -696,16 +730,17 @@ class CampaignRepository implements CampaignInterface
 
             foreach ($validatedData as $index => $attributes) {
                 $responseStore = $this->store($attributes);
+
                 if($responseStore['status'] == TRUE) {
-                    if(isset($attributes['specification_file']) && !empty($attributes['specification_file'])) {
-                        $zip = Zip::open($request->file('specification_file'));
+                    if(isset($specification_file) && !empty($specification_file)) {
+                        $zip = Zip::open($specification_file);
                         $fileList = $zip->listFiles();
                         if(!empty($fileList)) {
-                            $campaign_path = 'public/storage/campaigns/'.$response['campaign_id'].'/';
+                            $campaign_path = 'public/storage/campaigns/'.$responseStore['campaign_id'].'/';
                             $unzips_path = 'public/storage/unzips';
                             foreach ($fileList as $filename) {
                                 $exploded = explode('/', $filename);
-                                if($attributes['name'] == $exploded[0]) {
+                                if($attributes['name'] == $exploded[0] && !empty($exploded[1])) {
                                     $zip->extract($unzips_path, $filename);
                                     if(!File::exists($campaign_path)) {
                                         File::makeDirectory($campaign_path, $mode = 0777, true, true);
@@ -713,7 +748,7 @@ class CampaignRepository implements CampaignInterface
                                     File::move($unzips_path.'/'.$exploded[0].'/'.$exploded[1], $campaign_path.$exploded[1]);
                                     File::deleteDirectory($unzips_path.'/'.$exploded[0]);
 
-                                    CampaignSpecification::insert([['campaign_id' => $response['id'], 'file_name' => explode('/', $filename)[1], 'extension' => pathinfo($exploded[1], PATHINFO_EXTENSION)]]);
+                                    CampaignSpecification::insert([['campaign_id' => $responseStore['id'], 'file_name' => explode('/', $filename)[1], 'extension' => pathinfo($exploded[1], PATHINFO_EXTENSION)]]);
                                 }
                             }
                         }
@@ -731,7 +766,6 @@ class CampaignRepository implements CampaignInterface
                 $response = array('status' => TRUE, 'message' => 'All Campaigns imported successfully');
             }
         } catch (\Exception $exception) {
-            //dd($exception->getMessage());
             $response = array('status' => FALSE, 'message' => 'Something went wrong, please try again.');
         }
         return $response;
@@ -776,7 +810,6 @@ class CampaignRepository implements CampaignInterface
                 $invalidCells[2] = 'Invalid';
             }
 
-
             //Validate Campaign Filter $data[3]
             if(!empty(trim($data[3]))) {
                 $campaignFilter = CampaignFilter::whereName(trim($data[3]))->first();
@@ -810,8 +843,13 @@ class CampaignRepository implements CampaignInterface
             $start_date = $end_date = null;
             //Validate Start Date $data[5]
             if(!empty(trim($data[5]))) {
-                $start_date = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($data[5]);
-                $start_date = date_format($start_date, 'Y-m-d');
+                if(is_numeric($data[5])) {
+                    $start_date = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($data[5]);
+                    $start_date = date_format($start_date, 'Y-m-d');
+                } else {
+                    $start_date = date('Y-m-d', strtotime($data[5]));
+                }
+
                 if($start_date != '1970-01-01') {
                     $validatedData['start_date'] = $start_date;
                 } else {
@@ -825,8 +863,13 @@ class CampaignRepository implements CampaignInterface
 
             //Validate End Date $data[6]
             if(!empty(trim($data[6]))) {
-                $end_date = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($data[6]);
-                $end_date = date_format($end_date, 'Y-m-d');
+                if(is_numeric($data[6])) {
+                    $end_date = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($data[6]);
+                    $end_date = date_format($end_date, 'Y-m-d');
+                } else {
+                    $end_date = date('Y-m-d', strtotime($data[6]));
+                }
+
                 if($end_date != '1970-01-01') {
                     $validatedData['end_date'] = $end_date;
                 } else {
@@ -902,8 +945,8 @@ class CampaignRepository implements CampaignInterface
                 throw new \Exception('Something went wrong, please try again.', 1);
             }
 
+
         } catch (\Exception $exception) {
-            //dd($exception->getMessage());
             $response = array(
                 'status' => FALSE,
                 'errorMessage' => $errorMessage,

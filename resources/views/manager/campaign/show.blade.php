@@ -2,6 +2,7 @@
 
 @section('stylesheet')
     @parent
+    <meta name="campaign-id" content="{{ base64_encode($resultCampaign->id) }}">
     <!-- footable css -->
     <link rel="stylesheet" href="{{ asset('public/template/') }}/assets/plugins/footable/css/footable.bootstrap.min.css">
     <link rel="stylesheet" href="{{ asset('public/template/') }}/assets/plugins/footable/css/footable.standalone.min.css">
@@ -33,7 +34,7 @@
                                     <div class="page-header-title">
                                         <h5 class="m-b-10">Campaign Management</h5>
                                         <div class="card-header-right mb-1" style="float: right;">
-                                            {{-- <a href="{{ route('campaign') }}" class="btn btn-outline-dark btn-square btn-sm" style="font-weight: bold;"><i class="feather icon-arrow-left"></i>Back</a> --}}
+                                             <a href="{{ route('manager.campaign.list') }}" class="btn btn-outline-info btn-square btn-sm pt-1 pb-1" style="font-weight: bold;"><i class="feather icon-arrow-left"></i>Back</a>
                                         </div>
                                     </div>
                                     <ul class="breadcrumb">
@@ -71,7 +72,7 @@
                                         <div class="card-header">
                                             <h5>Campaign Details</h5>
                                             <div class="card-header-right">
-                                                <button type="button" class="btn btn-outline-primary btn-sm btn-square" onclick="editCampaignDetails()"><i class="feather icon-edit mr-0"></i> Edit</button>
+                                                <a href="{{ route('manager.campaign.edit', base64_encode($resultCampaign->id)) }}"><button type="button" class="btn btn-outline-primary btn-sm btn-square"><i class="feather icon-edit mr-0"></i> Edit</button></a>
                                             </div>
                                         </div>
                                         <div class="card-block">
@@ -104,6 +105,45 @@
                                         </div>
                                     </div>
 
+                                    @if(isset($resultCampaign->delivery_file) && !empty($resultCampaign->delivery_file))
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h5>Delivery File</h5>
+                                        </div>
+                                        <div class="card-block task-attachment">
+                                            <ul class="media-list p-0" id="specification_ul">
+                                                <li class="media d-flex m-b-15 specification-li">
+                                                    <div class="m-r-20 file-attach">
+                                                        <i class="far fa-file f-28 text-muted"></i>
+                                                    </div>
+                                                    <div class="media-body">
+                                                        <a href="{{ url('public/storage/campaigns/'.$resultCampaign->campaign_id.'/quality/delivery/'.$resultCampaign->delivery_file) }}" class="double-click" target="_blank" download data-toggle="tooltip" data-placement="top" data-original-title="{{ $resultCampaign->delivery_file }}"><span class="m-b-5 d-block text-primary">@if(strlen($resultCampaign->delivery_file) < 30) {{ $resultCampaign->delivery_file }} @else {{ substr($resultCampaign->delivery_file, 0, 27).'...' }} @endif</span></a>
+                                                    </div>
+                                                </li>
+                                                @if($resultCampaign->children->count())
+                                                    @foreach($resultCampaign->children as $incremental)
+                                                        <li class="media d-flex m-b-15 specification-li">
+                                                            <div class="media-body">
+                                                                Incremental Delivery File(s)
+                                                            </div>
+                                                        </li>
+                                                        @if(isset($incremental->delivery_file) && !empty($incremental->delivery_file))
+                                                        <li class="media d-flex m-b-15 specification-li">
+                                                            <div class="m-r-20 file-attach">
+                                                                <i class="far fa-file f-28 text-muted"></i>
+                                                            </div>
+                                                            <div class="media-body">
+                                                                <a href="{{ url('public/storage/campaigns/'.$incremental->campaign_id.'/quality/delivery/'.$incremental->delivery_file) }}" class="double-click" target="_blank" download data-toggle="tooltip" data-placement="top" data-original-title="{{ $incremental->delivery_file }}"><span class="m-b-5 d-block text-primary">@if(strlen($incremental->delivery_file) < 30) {{ $incremental->delivery_file }} @else {{ substr($incremental->delivery_file, 0, 27).'...' }} @endif</span></a>
+                                                            </div>
+                                                        </li>
+                                                        @endif
+                                                    @endforeach
+                                                @endif
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    @endif
+
                                     <div class="card">
                                         <div class="card-header">
                                             <h5>Specifications</h5>
@@ -119,7 +159,7 @@
                                                             <i class="far fa-file f-28 text-muted"></i>
                                                         </div>
                                                         <div class="media-body">
-                                                            <a href="{{ url('public/storage/campaigns/'.$resultCampaign->campaign_id.'/'.$specification->file_name) }}" class="double-click" target="_blank" download data-toggle="tooltip" data-placement="top" data-original-title="{{ $specification->file_name }}"><span class="m-b-5 d-block text-primary">@if(strlen($specification->file_name) < 30) {{ $specification->file_name }} @else {{ substr($specification->file_name, 0, 27).'...' }} @endif</span></a>
+                                                            <a href="{{ url('public/storage/campaigns/'.$resultCampaign->campaign_id.'/'.rawurlencode($specification->file_name)) }}" class="double-click" target="_blank" download data-toggle="tooltip" data-placement="top" data-original-title="{{ $specification->file_name }}"><span class="m-b-5 d-block text-primary">@if(strlen($specification->file_name) < 30) {{ $specification->file_name }} @else {{ substr($specification->file_name, 0, 27).'...' }} @endif</span></a>
                                                         </div>
                                                         <div class="float-right text-muted">
                                                             <a href="javascript:void(0);" onclick="removeSpecification(this, '{{base64_encode($specification->id)}}');"><i class="fas fa-times f-24 text-danger"></i></a>
@@ -156,7 +196,7 @@
                                                                 <i class="far fa-file f-28 text-muted"></i>
                                                             </div>
                                                             <div class="media-body">
-                                                                <a href="{{ url('public/storage/campaigns/'.$resultCampaign->campaign_id.'/'.$campaignFile->file_name) }}" class="double-click" target="_blank" download data-toggle="tooltip" data-placement="top" data-original-title="{{ $campaignFile->file_name }}"><span class="m-b-5 d-block text-primary">@if(strlen($campaignFile->file_name) < 30) {{ $campaignFile->file_name }} @else {{ substr($campaignFile->file_name, 0, 27).'...' }} @endif</span></a>
+                                                                <a href="{{ url('public/storage/campaigns/'.$resultCampaign->campaign_id.'/'.rawurlencode($campaignFile->file_name)) }}" class="double-click" target="_blank" download data-toggle="tooltip" data-placement="top" data-original-title="{{ $campaignFile->file_name }}"><span class="m-b-5 d-block text-primary">@if(strlen($campaignFile->file_name) < 30) {{ $campaignFile->file_name }} @else {{ substr($campaignFile->file_name, 0, 27).'...' }} @endif</span></a>
                                                             </div>
                                                             <div class="float-right text-muted" style="display: none;">
                                                                 <a href="javascript:void(0);" onclick="removeSuppression(this, '{{base64_encode($campaignFile->id)}}');"><i class="fas fa-times f-24 text-danger"></i></a>
@@ -236,7 +276,7 @@
                                                         <td>{{ ucfirst($resultCampaign->pacing) }}</td>
                                                         <td>
                                                             @php
-                                                                $percentage = ($resultCampaign->deliver_count/$resultCampaign->allocation)*100;
+                                                                $percentage = ($resultCampaign->completed_count/$resultCampaign->allocation)*100;
                                                                 $percentage = number_format($percentage,2,".", "");
                                                                 if($percentage == 100) {
                                                                     $color_class = 'bg-success';
@@ -250,9 +290,9 @@
                                                         </td>
                                                         <td>
                                                             @if($resultCampaign->campaign_status === 6)
-                                                                {{ $resultCampaign->deliver_count }} <span class="text-danger" title="Shortfall Count">({{ $resultCampaign->shortfall_count }})</span> / {{ $resultCampaign->allocation }}
+                                                                {{ $resultCampaign->completed_count }} <span class="text-danger" title="Shortfall Count">({{ $resultCampaign->shortfall_count }})</span> / {{ $resultCampaign->allocation }}
                                                             @else
-                                                                {{ $resultCampaign->deliver_count.' / '.$resultCampaign->allocation }}
+                                                                {{ $resultCampaign->completed_count.' / '.$resultCampaign->allocation }}
                                                             @endif
                                                         </td>
                                                         <td>
@@ -306,7 +346,7 @@
                                                                         <td colspan="3">
                                                                             Sub allocations not updated,
                                                                             <br>
-                                                                            <a href="javascript:;" onclick="editSubAllocations('{{ base64_encode($children->id) }}');" title="Edit Sub-Allocations">Click Here</a> to update.
+                                                                            <a href="javascript:;" onclick="editSubAllocations('{{ base64_encode($resultCampaign->id) }}');" title="Edit Sub-Allocations">Click Here</a> to update.
                                                                         </td>
                                                                     </tr>
                                                                 @endforelse
@@ -322,7 +362,7 @@
                                                             <td>{{ ucfirst($children->pacing) }}</td>
                                                             <td>
                                                                 @php
-                                                                    $percentage = ($children->deliver_count/$children->allocation)*100;
+                                                                    $percentage = ($children->completed_count/$children->allocation)*100;
                                                                     $percentage = number_format($percentage,2,".", "");
                                                                     if($percentage == 100) {
                                                                         $color_class = 'bg-success';
@@ -336,9 +376,9 @@
                                                             </td>
                                                             <td>
                                                                 @if($children->campaign_status === 6)
-                                                                    {{ $children->deliver_count }} <span class="text-danger" title="Shortfall Count">({{ $children->shortfall_count }})</span> / {{ $children->allocation }}
+                                                                    {{ $children->completed_count }} <span class="text-danger" title="Shortfall Count">({{ $children->shortfall_count }})</span> / {{ $children->allocation }}
                                                                 @else
-                                                                    {{ $children->deliver_count.' / '.$children->allocation }}
+                                                                    {{ $children->completed_count.' / '.$children->allocation }}
                                                                 @endif
                                                             </td>
                                                             <td>
@@ -404,6 +444,34 @@
                                                     @endforelse
                                                     </tbody>
                                                 </table>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="card" id="card-campaign-history" style="overflow-y: auto;">
+                                        <div class="card-header">
+                                            <h5><i class="fas fa-clock m-r-5"></i> Campaign History</h5>
+                                            <div class="card-header-right">
+                                                <div class="btn-group card-option">
+                                                    <button type="button" class="btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                        <i class="feather icon-more-vertical"></i>
+                                                    </button>
+                                                    <ul class="list-unstyled card-option dropdown-menu dropdown-menu-right">
+                                                        <li class="dropdown-item full-card"><a href="#!"><span><i class="feather icon-maximize"></i> maximize</span><span style="display:none"><i class="feather icon-minimize"></i> Restore</span></a></li>
+                                                        <li class="dropdown-item minimize-card"><a href="#!"><span><i class="feather icon-minus"></i> collapse</span><span style="display:none"><i class="feather icon-plus"></i> expand</span></a></li>
+                                                        <li class="dropdown-item reload-card"><a href="#!" id="reload-campaign-history"><i class="feather icon-refresh-cw"></i> reload</a></li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="card-block">
+                                            <ul class="task-list" id="campaign-history-ul">
+
+                                            </ul>
+                                        </div>
+                                        <div class="card-footer">
+                                            <div class="text-center">
+                                                <button id="btn-get-campaign-history" type="button" class="btn btn-warning shadow-4 btn-sm text-dark btn-square pt-1 pb-1" onclick="getCampaignHistory(this);"><i class="fas fa-spinner"></i> Load More</button>
                                             </div>
                                         </div>
                                     </div>
@@ -530,19 +598,23 @@
                                 <div class="row">
                                     <div class="col-md-6 form-group">
                                         <label for="start_date">Start Date<span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control btn-square" id="start_date" name="start_date" placeholder="Select Start Date">
+                                        <input type="text" class="form-control btn-square" id="start_date" name="start_date" placeholder="Select Start Date" required>
                                     </div>
                                     <div class="col-md-6 form-group">
                                         <label for="end_date">End Date<span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control btn-square" id="end_date" name="end_date" placeholder="Select End Date">
+                                        <input type="text" class="form-control btn-square" id="end_date" name="end_date" placeholder="Select End Date" required>
                                     </div>
                                     <div class="col-md-6 form-group">
                                         <label for="allocation">Allocation<span class="text-danger">*</span></label>
-                                        <input type="number" class="form-control btn-square only-non-zero-number" id="allocation" name="allocation" placeholder="Enter allocation">
+                                        <input type="number" class="form-control btn-square only-non-zero-number" id="allocation" name="allocation" placeholder="Enter allocation" required>
                                     </div>
                                     <div class="col-md-6 form-group">
-                                        <label for="deliver_count">Deliver Count<span class="text-danger">*</span></label>
-                                        <input type="number" class="form-control btn-square only-non-zero-number" id="deliver_count" name="deliver_count" placeholder="Enter Deliver Count">
+                                        <label for="campaign_status_id">Pacing</label>
+                                        <select class="form-control btn-square" id="pacing" name="pacing">
+                                            <option value="Daily">Daily</option>
+                                            <option value="Weekly">Weekly</option>
+                                            <option value="Monthly">Monthly</option>
+                                        </select>
                                     </div>
                                     <div class="col-md-6 form-group">
                                         <label for="campaign_status_id">Status</label>
@@ -560,7 +632,7 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <div class="alert alert-warning" role="alert">
-                                            <p>Warning: If Start Date or End Date are updated then corresponding sub-allocation will be removed.</p>
+                                            <p>Warning: If Start Date, End Date OR Pacing are updated then corresponding sub-allocation will be removed.</p>
                                         </div>
                                     </div>
                                 </div>

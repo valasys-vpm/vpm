@@ -4,10 +4,13 @@ namespace App\Http\Controllers\QualityAnalyst;
 
 use App\Exports\AgentLeadExport;
 use App\Exports\NPFExport;
+use App\Exports\VendorLeadExport;
 use App\Http\Controllers\Controller;
 use App\Models\Campaign;
 use App\Models\CampaignAssignQualityAnalyst;
+use App\Models\User;
 use App\Repository\CampaignAssignRepository\EMERepository\EMERepository as CAEMERepository;
+use App\Repository\CampaignAssignRepository\QATLRepository\QATLRepository as CAQATLRepository;
 use App\Repository\CampaignAssignRepository\QualityAnalystRepository\QualityAnalystRepository;
 use App\Repository\CampaignEBBFileRepository\CampaignEBBFileRepository;
 use App\Repository\UserRepository\UserRepository;
@@ -39,12 +42,17 @@ class CampaignController extends Controller
      * @var CampaignFileRepository
      */
     private $campaignFileRepository;
+    /**
+     * @var CAQATLRepository
+     */
+    private $CAQATLRepository;
 
     public function __construct(
         QualityAnalystRepository $qualityAnalystRepository,
         CAEMERepository $CAEMERepository,
         UserRepository $userRepository,
-        CampaignEBBFileRepository $campaignEBBFileRepository
+        CampaignEBBFileRepository $campaignEBBFileRepository,
+        CAQATLRepository $CAQATLRepository
     )
     {
         $this->data = array();
@@ -52,6 +60,7 @@ class CampaignController extends Controller
         $this->CAEMERepository = $CAEMERepository;
         $this->userRepository = $userRepository;
         $this->campaignEBBFileRepository = $campaignEBBFileRepository;
+        $this->CAQATLRepository = $CAQATLRepository;
     }
 
     public function index()
@@ -75,7 +84,13 @@ class CampaignController extends Controller
             $attributes = $request->all();
             $attributes['submitted_at'] = date('Y-m-d H:i:s');
             $response = $this->qualityAnalystRepository->update(base64_decode($id), $attributes);
-            if($response['status']) {
+            if($response['status'] == TRUE) {
+                //Add Campaign History
+                $resultCampaign = Campaign::findOrFail($response['details']->campaign_id);
+                $resultUser = User::findOrFail($response['details']->user_id);
+                add_campaign_history($resultCampaign->id, $resultCampaign->parent_id, 'Campaign submitted by QA -'.$resultUser->full_name);
+                add_history('Campaign submitted by QA', 'Campaign submitted by QA -'.$resultUser->full_name);
+
                 $finalResponse = array('status' => true, 'message' => 'Campaign submitted successfully');
             } else {
                 $finalResponse = array('status' => false, 'message' => $response['message']);
@@ -121,15 +136,15 @@ class CampaignController extends Controller
 
 
         //Order By
-        $orderColumn = $order[0]['column'];
-        $orderDirection = $order[0]['dir'];
+        $orderColumn = null;
+        if ($request->has('order')){
+            $order = $request->get('order');
+            $orderColumn = $order[0]['column'];
+            $orderDirection = $order[0]['dir'];
+        }
+
         switch ($orderColumn) {
-            case '0': $query->orderBy('id', $orderDirection); break;
-            case '1': $query->orderBy('id', $orderDirection); break;
-            case '2': $query->orderBy('id', $orderDirection); break;
-            case '3': $query->orderBy('id', $orderDirection); break;
-            case '4': $query->orderBy('id', $orderDirection); break;
-            default: $query->orderBy('id'); break;
+            default: $query->orderBy('created_at', 'DESC'); break;
         }
 
         $totalFilterRecords = $query->count();
@@ -156,23 +171,38 @@ class CampaignController extends Controller
         $response = array('status' => true, 'message' => 'Something went wrong, please try again.');
         try {
             $resultCAQA = $this->qualityAnalystRepository->find(base64_decode($id));
+            $resultCAQATL = $this->CAQATLRepository->find($resultCAQA->campaign_assign_qatl_id);
             $resultCampaign = Campaign::find($resultCAQA->campaign_id);
 
             $path = 'public/campaigns/'.$resultCampaign->campaign_id.'/quality/';
             $path_to_download = '/public/storage/campaigns/'.$resultCampaign->campaign_id.'/quality/';
-            $filename = str_replace(' ', '_', trim($resultCampaign->name)) .'_'.time(). "_AGENT_DATA.xlsx";
-            if(Excel::store(new AgentLeadExport($resultCAQA->campaign_id), $path.$filename)) {
-                $response = array('status' => true, 'message' => 'Successful', 'file_name' => $path_to_download.$filename);
-            } else {
-                throw new \Exception('Something went wrong, please try again.', 1);
+
+            switch ($resultCAQATL->userAssignedBy->role->slug)
+            {
+                case 'vendor_management' :
+                    $filename = str_replace(' ', '_', trim($resultCampaign->name)) .'_'.time(). "_VENDOR_DATA.xlsx";
+                    if(Excel::store(new VendorLeadExport($resultCAQA->campaign_id), $path.$filename)) {
+                        $response = array('status' => true, 'message' => 'Successful', 'file_name' => $path_to_download.$filename);
+                    } else {
+                        throw new \Exception('Something went wrong, please try again.', 1);
+                    }
+                    break;
+                case 'team_leader':
+                default:
+                    $filename = str_replace(' ', '_', trim($resultCampaign->name)) .'_'.time(). "_AGENT_DATA.xlsx";
+                    if(Excel::store(new AgentLeadExport($resultCAQA->campaign_id), $path.$filename)) {
+                        $response = array('status' => true, 'message' => 'Successful', 'file_name' => $path_to_download.$filename);
+                    } else {
+                        throw new \Exception('Something went wrong, please try again.', 1);
+                    }
+                    break;
             }
+
         } catch (\Exception $exception) {
-            //dd($exception->getMessage());
             $response = array('status' => false, 'message' => 'Something went wrong, please try again.');
         }
 
         return response()->json($response);
-
     }
 
     public function downloadNPF($id)
@@ -191,7 +221,6 @@ class CampaignController extends Controller
                 throw new \Exception('Something went wrong, please try again.', 1);
             }
         } catch (\Exception $exception) {
-            //dd($exception->getMessage());
             $response = array('status' => false, 'message' => 'Something went wrong, please try again.');
         }
 

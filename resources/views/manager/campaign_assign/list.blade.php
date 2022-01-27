@@ -65,7 +65,7 @@
                                                 <div class="row">
                                                     <div class="col-md-6 form-group">
                                                         <label for="campaign_status">Select Campaign</label>
-                                                        <select class="form-control btn-square p-1 pl-2" id="campaign_list" name="campaign_list[]" style="height: unset;">
+                                                        <select class="form-control btn-square p-1 pl-2" id="campaign_list" name="campaign_id" style="height: unset;">
                                                             <option value=""></option>
                                                             @foreach($resultCampaigns as $campaign)
                                                                 <option id="campaign_list_{{ $campaign->id }}" value="{{ $campaign->id }}" data-name="{{ $campaign->name }}" data-end-date="{{ $campaign->end_date }}" data-allocation="{{ $campaign->allocation }}">{{ $campaign->campaign_id.' - '.$campaign->name }}</option>

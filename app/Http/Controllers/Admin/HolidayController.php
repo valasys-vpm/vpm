@@ -45,8 +45,12 @@ class HolidayController extends Controller
 
 
         //Order By
-        $orderColumn = $order[0]['column'];
-        $orderDirection = $order[0]['dir'];
+        $orderColumn = null;
+        if ($request->has('order')){
+            $order = $request->get('order');
+            $orderColumn = $order[0]['column'];
+            $orderDirection = $order[0]['dir'];
+        }
         switch ($orderColumn) {
             case '0': $query->orderBy('date', $orderDirection); break;
             case '1': $query->orderBy('status', $orderDirection); break;

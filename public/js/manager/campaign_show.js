@@ -5,6 +5,7 @@ let MONTHS = ['Jan','Feb','Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'
 let DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 let HOLIDAYS = [];
 let HOLIDAY_LIST = [];
+let CAMPAIGN_HISTORY_SKIP = 0;
 
 //Initializations
 $(function(){
@@ -27,7 +28,13 @@ $(function(){
     // classic editor
     $(window).on('load', function() {
         // classic editor
-        ClassicEditor.create(document.querySelector('.classic-editor')).catch(error => {
+        ClassicEditor
+            .create(document.querySelector('.classic-editor'))
+            .then( editor => {
+                // console.log( 'Editor was initialized', editor );
+                myEditor = editor;
+            } )
+            .catch(error => {
             console.error(error);
         });
     });
@@ -68,61 +75,6 @@ $(function(){
         }
     });
 
-    //Validate Form
-    $("#modal-form-update-campaign-details").validate({
-        focusInvalid: false,
-        rules: {
-            'name' : { required : true },
-            'v_mail_campaign_id' : {
-                required: false,
-                remote : {
-                    url : $('meta[name="base-path"]').attr('content')+'/manager/campaign/validate-v-mail-campaign-id',
-                    data: { campaign_id : $('#campaign_id').val() }
-                }
-            },
-            'campaign_filter_id' : { required : true },
-            'campaign_type_id' : { required : true },
-            'country_id[]' : { required : true },
-        },
-        messages: {
-            'name' : { required : "Please enter campaign name" },
-            'v_mail_campaign_id' : {
-                remote : "V-Mail Campaign Id already exists"
-            },
-            'campaign_filter_id' : { required : "Please select campaign filter" },
-            'campaign_type_id' : { required : "Please select campaign tye" },
-            'country_id[]' : { required : "Please select country(s)" },
-        },
-        errorPlacement: function errorPlacement(error, element) {
-            var $parent = $(element).parents('.form-group');
-
-            // Do not duplicate errors
-            if ($parent.find('.jquery-validation-error').length) {
-                return;
-            }
-
-            $parent.append(
-                error.addClass('jquery-validation-error small form-text invalid-feedback')
-            );
-        },
-        highlight: function(element) {
-            var $el = $(element);
-            var $parent = $el.parents('.form-group');
-
-            $el.addClass('is-invalid');
-
-            // Select2 and Tagsinput
-            if ($el.hasClass('select2-hidden-accessible') || $el.attr('data-role') === 'tagsinput') {
-                $el.parent().addClass('is-invalid');
-            }
-        },
-        unhighlight: function(element) {
-            if($(element).attr('aria-invalid') === 'false') {
-                $(element).parents('.form-group').find('.is-invalid').removeClass('is-invalid');
-            }
-        }
-    });
-
     //Initialize date picker for edit pacing details
     $('#start_date').bootstrapMaterialDatePicker({
         weekStart: 0,
@@ -158,33 +110,19 @@ $(function(){
             $(this).keyup();
         }
     });
+
+    $('body').on("input", ".only-non-zero-number", function (){
+        if(this.value < 1) {
+            $(this).val('');
+        } else {
+            $(this).val(parseInt(this.value));
+        }
+    });
+
 });
 
 
 $(function(){
-
-    $('#modal-form-update-campaign-details-submit').on('click', function (e) {
-        e.preventDefault();
-        if($("#modal-form-update-campaign-details").valid()) {
-            $.ajax({
-                type: 'post',
-                url: $('meta[name="base-path"]').attr('content') + '/manager/campaign/update/'+$('#campaign_id').val(),
-                data: $('#modal-form-update-campaign-details').serialize(),
-                success: function (response) {
-                    console.log(response);
-                    if(response.status === true) {
-                        $('#modal-edit-campaign-details').modal('hide');
-                        trigger_pnofify('success', 'Successful', response.message);
-                        window.location.reload();
-                    } else {
-                        trigger_pnofify('error', 'Something went wrong', response.message);
-                    }
-                }
-            });
-        } else {
-            trigger_pnofify('error', 'Invalid Data', 'Please enter valid details');
-        }
-    });
 
     $('#form-attach-specification-reset').on('click', function (e) {
         document.getElementById("modal-form-attach-specification").reset();
@@ -199,7 +137,7 @@ $(function(){
         let form_data = new FormData($('#modal-form-attach-specification')[0]);
 
         $.ajax({
-            url: $('meta[name="base-path"]').attr('content') +'/manager/campaign/attach-specification/'+$('#campaign_id').val(),
+            url: URL +'/manager/campaign/attach-specification/'+$('#campaign_id').val(),
             processData: false,
             contentType: false,
             data: form_data,
@@ -344,6 +282,12 @@ $(function(){
 
     });
 
+    $("#btn-get-campaign-history").click();
+    $("#reload-campaign-history").on('click', function (){
+        CAMPAIGN_HISTORY_SKIP = 0;
+        $("#btn-get-campaign-history").click();
+    });
+
 });
 
 function editCampaignDetails() {
@@ -372,6 +316,7 @@ function editPacingDetails(id) {
                     $('#allocation').val(response.data.allocation);
                     $('#deliver_count').val(response.data.deliver_count);
                     $('#campaign_status_id').val(response.data.campaign_status_id);
+                    $('#pacing').val(response.data.pacing);
 
                     if(response.data.campaign_status_id === 6) {
                         $("#div-shortfall-count").show();
@@ -404,7 +349,6 @@ function editSubAllocations(id) {
                 $('#v-pills-tabContent').html('');
 
                 if(response.status === true) {
-                    console.log(response.data);
                     let data = response.data;
                     $('#modal-edit-sub-allocations').find('.label-start-date').html(moment(data.resultCampaign.start_date).format('DD-MMM-YYYY'));
                     $('#campaign_start_date').val(moment(data.resultCampaign.start_date).format('DD-MMM-YYYY'));
@@ -424,7 +368,7 @@ function editSubAllocations(id) {
                                     '</div>' +
                                 '</div>' +
 
-                                '<div class="row" id="'+ value.month_name +'-dates">' +
+                                '<div class="row" id="'+ value.month_name + '-' + value.year +'-dates">' +
                                     getSubAllocations_html(value, response.data.resultCampaign.pacing) +
                                 '</div>' +
                             '</div>';
@@ -473,14 +417,19 @@ function removeSpecification(_this, specification_id) {
 
 function getDaySelection_html(pacing, value) {
     let html = '';
+    let days_temp = [];
     let days = [];
     if(Array.isArray(value.days)) {
-        days = value.days;
+        days_temp = value.days;
     } else {
         $.each(value.days, function (key, value){
-            days.push(value);
+            days_temp.push(value);
         });
     }
+
+    $.each(days_temp, function (key, value){
+        days.push(parseInt(value));
+    });
 
     switch (pacing) {
         case 'Daily':
@@ -519,7 +468,7 @@ function getSubAllocations_html(data, pacing) {
     if(data.sub_allocations.length > 0) {
         $.each(data.sub_allocations, function(key, value){
             if(value.sub_allocation > 0) {
-                total_allocation = total_allocation + value.sub_allocation;
+                total_allocation = total_allocation + parseInt(value.sub_allocation);
             }
             html += '<div class="col-md-6">\n' +
                 '       <div class="input-group mb-3">\n' +
@@ -565,7 +514,6 @@ function getHtmlPacingDates(_this) {
         $.merge(allDates, getDaysInMonthYear(parseInt(month), parseInt(year), parseInt(this)));
     });
     allDates.sort((a, b) => a.valueOf() - b.valueOf());
-
     let html = '';
 
     $('body').find('#'+MONTHS[month]+'-'+year+'-dates').html(html);
@@ -657,5 +605,22 @@ function getDatesMonthlyPacing_html(month, year) {
     }
 
     return html;
+}
+
+function getCampaignHistory(_this) {
+    $.ajax({
+        //url: '{{ route('campaign.get_campaign_history', base64_encode($resultCampaign->id)) }}',
+        url: URL + '/manager/campaign/get-campaign-history/' + $('meta[name="campaign-id"]').attr('content'),
+        data: { skip:CAMPAIGN_HISTORY_SKIP },
+        success: function(response){
+            if(CAMPAIGN_HISTORY_SKIP === 0) {
+                $("#campaign-history-ul").html('');
+            }
+            $("#campaign-history-ul").append(response);
+
+            CAMPAIGN_HISTORY_SKIP++;
+        },
+        error: function(jqXHR, textStatus, errorThrown) { checkSession(jqXHR); }
+    });
 }
 

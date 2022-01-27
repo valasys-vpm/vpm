@@ -23,7 +23,27 @@ $(function(){
 
 
 $(function(){
+    $('#form-submit-campaign-submit').on('click', function (e) {
+        e.preventDefault();
+        $.ajax({
+            type: 'post',
+            url: URL + '/agent/campaign/submit-campaign/' + $('#modal-submit-campaign').find('input[name="ca_agent_id"]').val(),
+            data: $('#form-submit-campaign').serialize(),
+            async : true,
+            success: function (response) {
+                if(response.status === true) {
+                    $("#modal-submit-campaign").modal('hide');
+                    trigger_pnofify('success', 'Successful', response.message);
+                    window.location.reload();
+                } else {
+                    trigger_pnofify('error', 'Something went wrong', response.message);
+                }
+            }
+        });
 
+        document.getElementById("modal-form-attach-specification").reset();
+
+    });
 });
 
 function startCampaign(_id) {
@@ -61,6 +81,7 @@ function submitCampaign(_id) {
                     $('#div-submit-campaign').css('display', 'none');
                     $('#div-start-again-campaign').css('display', 'block');
                     $('#div-manage-leads').css('display', 'none');
+                    $('#div-raise-issue').css('display', 'none');
                     trigger_pnofify('success', 'Successful', 'Campaign submitted successfully.');
                 } else {
                     trigger_pnofify('error', 'Something went wrong', response.message);
@@ -85,6 +106,7 @@ function startAgainCampaign(_id) {
                     $('#div-start-again-campaign').css('display', 'none');
                     $('#div-manage-leads').css('display', 'block');
                     trigger_pnofify('success', 'Successful', 'Campaign started successfully.');
+                    window.location.reload();
                 } else {
                     trigger_pnofify('error', 'Something went wrong', response.message);
                 }

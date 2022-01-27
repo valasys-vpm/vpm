@@ -9,7 +9,7 @@ let MONTHS = ['Jan','Feb','Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'
 $(function (){
 
     CAMPAIGN_TABLE = $('#table-campaigns').DataTable({
-        "lengthMenu": [ [500,400,300,200,100,-1], [500,400,300,200,100,'All'] ],
+        "lengthMenu": [ [-1,500,250,100,50,25], ['All',500,250,100,50,25] ],
         "processing": true,
         "serverSide": true,
         "ajax": {
@@ -29,21 +29,28 @@ $(function (){
                 data: 'campaign.campaign_id'
             },
             {
+                orderable: false,
                 render: function (data, type, row) {
                     return '<a href="'+URL+'/team-leader/campaign/view-details/'+btoa(row.id)+'" class="text-dark double-click" title="View campaign details">'+row.campaign.name+'</a>';
                 }
             },
             {
+                orderable: false,
                 render: function (data, type, row) {
-                    let deliver_count = row.agent_lead_total_count;
-                    let allocation = row.allocation;
-                    let percentage = (deliver_count/allocation)*100;
+                    let deliver_count = parseInt(row.agent_lead_total_count);
+                    let allocation = parseInt(row.allocation);
+                    let percentage = 0;
+
+                    if(allocation > 0) {
+                        percentage = (deliver_count/allocation)*100;
+                    }
 
                     percentage = percentage.toFixed(2);
                     return '<div class="progress" style="height: 20px;width:100px;border:1px solid lightgrey;"><div class="progress-bar '+ (parseInt(percentage) < 100 ? 'bg-warning text-dark' : 'bg-success text-light' ) +'" role="progressbar" aria-valuenow="'+percentage+'" aria-valuemin="0" aria-valuemax="100" style="width: '+percentage+'%;font-weight:bold;">&nbsp;'+percentage+'%</div></div>';
                 }
             },
             {
+                orderable: false,
                 render: function (data, type, row) {
                     let date = new Date(row.campaign.start_date);
                     return (date.getDate() <= 9 ? '0'+date.getDate() : date.getDate())+'/'+MONTHS[date.getMonth()]+'/'+date.getFullYear();
@@ -70,6 +77,7 @@ $(function (){
                 }
             },
             {
+                orderable: false,
                 render: function (data, type, row) {
                     let status_id  = row.campaign.campaign_status_id;
                     let campaign_type = '';
@@ -117,7 +125,7 @@ $(function (){
             if(data.campaign.children.length) {
                 status_id = data.campaign.children[0].campaign_status_id;
             }
-            switch (status_id) {
+            switch (parseInt(status_id)) {
                 case 1:
                     $(row).addClass('border-live');
                     break;
@@ -137,7 +145,8 @@ $(function (){
                     $(row).addClass('border-shortfall');
                     break;
             }
-        }
+        },
+        order:[]
     });
 
 });

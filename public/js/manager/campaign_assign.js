@@ -22,7 +22,7 @@ $(function (){
 $(function (){
 
     CAMPAIGN_TABLE = $('#table-campaigns').DataTable({
-        "lengthMenu": [ [500,400,300,200,100,-1], [500,400,300,200,100,'All'] ],
+        "lengthMenu": [ [-1,500,250,100,50,25], ['All',500,250,100,50,25] ],
         "processing": true,
         "serverSide": true,
         "ajax": {
@@ -95,16 +95,16 @@ $(function (){
             },
             {
                 render: function (data, type, row) {
-                    let deliver_count = row.deliver_count;
-                    let allocation = row.allocation;
-                    let shortfall_count = row.shortfall_count;
+                    let deliver_count = parseInt(row.deliver_count);
+                    let allocation = parseInt(row.allocation);
+                    let shortfall_count = parseInt(row.shortfall_count);
 
                     if(row.children.length) {
                         $.each(row.children, function (key, value) {
-                            allocation = allocation + value.allocation;
-                            deliver_count = deliver_count + value.deliver_count;
-                            if(value.campaign_status_id === 6) {
-                                shortfall_count = value.shortfall_count;
+                            allocation = allocation + parseInt(value.allocation);
+                            deliver_count = deliver_count + parseInt(value.deliver_count);
+                            if(parseInt(value.campaign_status_id) === 6) {
+                                shortfall_count = parseInt(value.shortfall_count);
                             }
                         });
                     }
@@ -168,7 +168,7 @@ $(function (){
             if(data.children.length) {
                 status_id = data.children[0].campaign_status_id;
             }
-            switch (status_id) {
+            switch (parseInt(status_id)) {
                 case 1:
                     $(row).addClass('border-live');
                     break;
@@ -188,7 +188,8 @@ $(function (){
                     $(row).addClass('border-shortfall');
                     break;
             }
-        }
+        },
+        order:[]
     });
 
     $('#button-campaign-assign').on('click', function(e) {
@@ -239,7 +240,7 @@ function getCampaignCard_html(_campaign_list, _user_list) {
         html += '' +
             '<div class="card border border-info rounded">' +
             '   <h5 class="card-header" style="padding: 10px 25px;">'+$("#campaign_list_"+value).data('name')+'</h5>' +
-            '   <input type="hidden" name="data['+key+'][campaign_id]" value="'+value+'">' +
+            '   <input type="hidden" name="campaign_id" value="'+value+'">' +
             '   <div class="card-body" style="padding: 15px 25px;">' +
             '       <div class="row">' +
             '           <div class="col-md-5">' +
@@ -253,7 +254,7 @@ function getCampaignCard_html(_campaign_list, _user_list) {
             '               </div>' +
             '               <div class="row">' +
             '                   <div class="col-md-6"><h6 class="card-title">Display Date</h6></div>' +
-            '                   <div class="col-md-6"><h6 class="card-title">: <input type="date" name="data['+key+'][display_date]" placeholder="DD/MMM/YYY" value="'+ moment(display_date). format('YYYY-MM-DD') +'"> </h6></div>' +
+            '                   <div class="col-md-6"><h6 class="card-title">: <input type="date" name="display_date" placeholder="DD/MMM/YYY" value="'+ moment(display_date). format('YYYY-MM-DD') +'"> </h6></div>' +
             '               </div>' +
             '           </div>' +
             '           <div class="col-md-7 border-left">' +
@@ -277,9 +278,9 @@ function getUserAssignCard_html(_key, _user_list, allocation, balance_allocation
 
         html += '<div class="row p-1">' +
             '   <div class="col-md-5"><h6 class="card-title">'+$("#user_list_"+value).data('name')+'</h6></div>' +
-            '   <input type="hidden" name="data['+_key+'][users]['+key+'][user_id]" value="'+value+'">' +
+            '   <input type="hidden" name="users['+key+'][user_id]" value="'+value+'">' +
             '   <div class="col-md-7">' +
-            '       <input type="text" name="data['+_key+'][users]['+key+'][allocation]" class="form-control form-control-sm" value="'+ ( (key === (_user_list.length -1)) ? Math.floor((allocation + balance_allocation)) : Math.floor(allocation) ) +'" style="height: 30px;">' +
+            '       <input type="text" name="users['+key+'][allocation]" class="form-control form-control-sm" value="'+ ( (key === (_user_list.length -1)) ? Math.floor((allocation + balance_allocation)) : Math.floor(allocation) ) +'" style="height: 30px;">' +
             '   </div>' +
             '</div>';
     });

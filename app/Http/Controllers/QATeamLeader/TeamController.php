@@ -39,7 +39,12 @@ class TeamController extends Controller
 
         //Search Data
         if(isset($searchValue) && $searchValue != "") {
-            $query->where("first_name", "like", "%$searchValue%");
+            $query->where(function($query) use ($searchValue){
+                $query->where("employee_code", "like", "%$searchValue%");
+                $query->orWhere("email", "like", "%$searchValue%");
+                $query->orWhere("first_name", "like", "%$searchValue%");
+                $query->orWhere("last_name", "like", "%$searchValue%");
+            });
         }
         //Filters
         if(!empty($filters)) { }

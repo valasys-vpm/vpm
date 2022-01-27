@@ -26,6 +26,8 @@
     <!-- vendor css -->
     <link rel="stylesheet" href="{{ asset('public/template') }}/assets/css/style.css">
 
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@200;300&display=swap" rel="stylesheet">
 </head>
 
 <body>
@@ -34,7 +36,9 @@
         <div class="d-none d-lg-flex col-lg-8 aut-bg-img align-items-center d-flex justify-content-center">
             <div class="col-md-8">
                 <small>Version 2.0</small>
-                <h1 class="text-white mb-5">Valasys Media <br> Program Management</h1>
+                <br><br>
+                <span class="text-dark bg-white" style="border-radius:4px; font-size: 20px;padding: 5px 10px 5px 10px;font-family: 'Nunito', sans-serif;font-weight: 300">Valasys Media</span>
+                <h1 class="text-white mb-5" style="font-size: 70px; font-weight: 900;font-family: 'Roboto Slab', serif;">Program<br>Management</h1>
             </div>
         </div>
         <div class="col-lg-4 align-items-stret h-100 align-items-center d-flex justify-content-center">
@@ -45,6 +49,11 @@
                 <h3 class="mb-4">Login</h3>
                 <form method="post" action="">
                     @csrf
+                    @if(session('success'))
+                        <div class="input-group mb-3">
+                            <span class="text-success">{{session('success')}}</span>
+                        </div>
+                    @endif
                     @if(session('error'))
                         <div class="input-group mb-3">
                             <span class="text-danger">{{session('error')}}</span>
@@ -63,7 +72,7 @@
                         </div>
                     </div>
                     <button class="btn btn-primary shadow-2 mb-4" type="submit">Login</button>
-                    <!--<p class="mb-2 text-muted">Forgot password? <a href="auth-reset-password-v2.html">Reset</a></p>-->
+                    <p class="mb-2 text-muted">Forgot password? <a href="{{ route('forgot_password') }}">Reset Password</a></p>
                 </form>
             </div>
         </div>

@@ -4,6 +4,7 @@ namespace App\Repository\CampaignAssignRepository\QualityAnalystRepository;
 
 use App\Models\Campaign;
 use App\Models\CampaignAssignQualityAnalyst;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -47,6 +48,12 @@ class QualityAnalystRepository implements QualityAnalystInterface
             }
             $ca_quality_analyst->save();
             if($ca_quality_analyst->id) {
+                //Add Campaign History
+                $resultCampaign = Campaign::findOrFail($ca_quality_analyst->campaign_id);
+                $resultUser = User::findOrFail($ca_quality_analyst->user_id);
+                add_campaign_history($resultCampaign->id, $resultCampaign->parent_id, 'Campaign assigned to QA -'.$resultUser->full_name);
+                add_history('Campaign assigned to QA', 'Campaign assigned to QA -'.$resultUser->full_name);
+
                 DB::commit();
                 $response = array('status' => TRUE, 'message' => 'Campaign assigned successfully');
             } else {
@@ -55,7 +62,6 @@ class QualityAnalystRepository implements QualityAnalystInterface
 
         } catch (\Exception $exception) {
             DB::rollBack();
-            //dd($exception->getMessage());
             $response = array('status' => FALSE, 'message' => 'Something went wrong, please try again.');
         }
         return $response;
@@ -117,13 +123,12 @@ class QualityAnalystRepository implements QualityAnalystInterface
 
             if($ca_quality_analyst->save()) {
                 DB::commit();
-                $response = array('status' => TRUE, 'message' => 'Details updated successfully');
+                $response = array('status' => TRUE, 'message' => 'Details updated successfully', 'details' => $ca_quality_analyst);
             } else {
                 throw new \Exception('Something went wrong, please try again.', 1);
             }
         } catch (\Exception $exception) {
             DB::rollBack();
-            dd($exception->getMessage());
             $response = array('status' => FALSE, 'message' => 'Something went wrong, please try again.');
         }
         return $response;

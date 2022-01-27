@@ -2,42 +2,46 @@
 
 namespace App\Http\Controllers\EmailMarketingExecutive;
 
-use App\Exports\NPFExport;
 use App\Http\Controllers\Controller;
 use App\Models\Campaign;
-use App\Models\CampaignAssignEME;
-use App\Repository\CampaignAssignRepository\EMERepository\EMERepository as CAEMERepository;
-use App\Repository\CampaignEBBFileRepository\CampaignEBBFileRepository;
-use App\Repository\CampaignNPFFileRepository\CampaignNPFFileRepository;
+use App\Models\CampaignAssignAgent;
+use App\Repository\AgentDataRepository\AgentDataRepository;
+use App\Repository\AgentLeadRepository\AgentLeadRepository;
+use App\Repository\Campaign\IssueRepository\IssueRepository;
+use App\Repository\CampaignAssignRepository\AgentRepository\AgentRepository;
+use App\Repository\CampaignRepository\CampaignRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class CampaignController extends Controller
 {
     private $data;
+    private $campaignRepository;
+    private $agentRepository;
+    private $agentLeadRepository;
     /**
-     * @var CAEMERepository
+     * @var AgentDataRepository
      */
-    private $CAEMERepository;
+    private $agentDataRepository;
     /**
-     * @var CampaignNPFFileRepository
+     * @var IssueRepository
      */
-    private $campaignNPFFileRepository;
-    /**
-     * @var CampaignEBBFileRepository
-     */
-    private $campaignEBBFileRepository;
+    private $issueRepository;
 
     public function __construct(
-        CAEMERepository $CAEMERepository,
-        CampaignNPFFileRepository $campaignNPFFileRepository,
-        CampaignEBBFileRepository $campaignEBBFileRepository
+        CampaignRepository $campaignRepository,
+        AgentRepository $agentRepository,
+        AgentLeadRepository $agentLeadRepository,
+        AgentDataRepository $agentDataRepository,
+        IssueRepository $issueRepository
     )
     {
         $this->data = array();
-        $this->CAEMERepository = $CAEMERepository;
-        $this->campaignNPFFileRepository = $campaignNPFFileRepository;
-        $this->campaignEBBFileRepository = $campaignEBBFileRepository;
+        $this->campaignRepository = $campaignRepository;
+        $this->agentRepository = $agentRepository;
+        $this->agentLeadRepository = $agentLeadRepository;
+        $this->agentDataRepository = $agentDataRepository;
+        $this->issueRepository = $issueRepository;
     }
 
     public function index()
@@ -47,40 +51,18 @@ class CampaignController extends Controller
 
     public function show($id)
     {
-        $this->data['resultCAEME'] = $this->CAEMERepository->find(base64_decode($id));
-        $this->data['resultCampaignNPFFiles'] = $this->campaignNPFFileRepository->get(array('ca_eme_ids' => [base64_decode($id)]));
-        //dd($this->data['resultCampaignNPFFiles']->toArray());
-        return view('email_marketing_executive.campaign.show', $this->data);
-    }
-
-    public function uploadEBBFile($id, Request $request)
-    {
-        $response = array('status' => false, 'message' => 'Something went wrong, please try again.');
-        if($request->hasFile('ebb_file')) {
-            $attributes = $request->all();
-            $resultCAEME = $this->CAEMERepository->find(base64_decode($id));
-            $attributes['ca_eme_id'] = base64_decode($id);
-            $attributes['campaign_id'] = $resultCAEME->campaign_id;
-            $response = $this->campaignEBBFileRepository->store($attributes);
-            if($response['status'] == TRUE) {
-                $response = array('status' => true, 'message' => $response['message']);
-            } else {
-                $response = array('status' => false, 'message' => $response['message']);
+        try {
+            $this->data['countAgentData'] = $this->agentDataRepository->get(array('ca_agent_ids' => [base64_decode($id)]))->count();
+            $this->data['resultCAAgent'] = $this->agentRepository->find(base64_decode($id));
+            $this->data['resultCampaign'] = $this->campaignRepository->find($this->data['resultCAAgent']->campaign_id);
+            $this->data['resultCampaignIssues'] = $this->issueRepository->get(array('campaign_ids' => [$this->data['resultCAAgent']->campaign_id]));
+            //dd($this->data['resultCAAgent']->toArray());
+            if(isset($this->data['resultCampaign']->parent_id) && !empty($this->data['resultCampaign']->parent_id)) {
+                $this->data['resultCampaignParent'] = $this->campaignRepository->find($this->data['resultCampaign']->parent_id);
             }
-        } else {
-            $response = array('status' => false, 'message' => 'Please upload file');
-        }
-        return response()->json($response);
-    }
-
-    public function submitCampaign($id, Request $request): \Illuminate\Http\JsonResponse
-    {
-        $attributes['submitted_at'] = date('Y-m-d H:i:s');
-        $response = $this->CAEMERepository->update(base64_decode($id), $attributes);
-        if($response['status']) {
-            return response()->json(array('status' => true, 'message' => 'Campaign submitted successfully'));
-        } else {
-            return response()->json(array('status' => false, 'message' => $response['message']));
+            return view('email_marketing_executive.campaign.show', $this->data);
+        } catch (\Exception $exception) {
+            return redirect()->route('email_marketing_executive.campaign.list')->with('error', ['title' => 'Error while processing request', 'message' => 'Campaign details not found']);
         }
     }
 
@@ -94,10 +76,12 @@ class CampaignController extends Controller
         $limit = $request->get("length"); // Rows display per page
         $offset = $request->get("start");
 
-        $query = CampaignAssignEME::query();
+        $query = CampaignAssignAgent::query();
 
         $query->whereUserId(Auth::id());
-
+        $query->with('campaign');
+        $query->with('userAssignedBy');
+        $query->with('agent_work_type');
         $query->with('campaign.children');
 
         $totalRecords = $query->count();
@@ -118,15 +102,14 @@ class CampaignController extends Controller
 
 
         //Order By
-        $orderColumn = $order[0]['column'];
-        $orderDirection = $order[0]['dir'];
+        $orderColumn = null;
+        if ($request->has('order')){
+            $order = $request->get('order');
+            $orderColumn = $order[0]['column'];
+            $orderDirection = $order[0]['dir'];
+        }
         switch ($orderColumn) {
-            case '0': $query->orderBy('id', $orderDirection); break;
-            case '1': $query->orderBy('id', $orderDirection); break;
-            case '2': $query->orderBy('id', $orderDirection); break;
-            case '3': $query->orderBy('id', $orderDirection); break;
-            case '4': $query->orderBy('id', $orderDirection); break;
-            default: $query->orderBy('id'); break;
+            default: $query->orderBy('created_at', 'DESC'); break;
         }
 
         $totalFilterRecords = $query->count();
@@ -148,4 +131,51 @@ class CampaignController extends Controller
         return response()->json($ajaxData);
     }
 
+    public function startCampaign($id, Request $request)
+    {
+        $attributes['started_at'] = date('Y-m-d H:i:s');
+
+        $response = $this->agentRepository->update(base64_decode($id), $attributes);
+
+        if($response['status'] == TRUE) {
+            //Add Campaign History
+            $resultCampaign = Campaign::findOrFail($response['details']->campaign_id);
+            add_campaign_history($resultCampaign->id, $resultCampaign->parent_id, 'Started working on campaign');
+            add_history('Campaign Started', 'Started working on campaign');
+
+            return response()->json(array('status' => true, 'message' => 'Campaign Started'));
+        } else {
+            return response()->json(array('status' => false, 'message' => 'Data not found'));
+        }
+    }
+
+    public function submitCampaign($id, Request $request)
+    {
+        $attributes['submitted_at'] = date('Y-m-d H:i:s');
+
+        $response = $this->agentRepository->update(base64_decode($id), $attributes);
+
+        if($response['status']) {
+            //Add Campaign History
+            $resultCampaign = Campaign::findOrFail($response['details']->campaign_id);
+            add_campaign_history($resultCampaign->id, $resultCampaign->parent_id, 'Submitted the campaign');
+            add_history('Campaign Submitted By Agent', 'Submitted the campaign');
+            return response()->json(array('status' => true, 'message' => 'Campaign submitted successfully'));
+        } else {
+            return response()->json(array('status' => false, 'message' => 'Data not found'));
+        }
+    }
+
+    public function restartCampaign($id, Request $request)
+    {
+        $attributes['submitted_at'] = NULL;
+
+        $response = $this->agentRepository->update(base64_decode($id), $attributes);
+
+        if($response['status']) {
+            return response()->json(array('status' => true, 'message' => 'Campaign started successfully'));
+        } else {
+            return response()->json(array('status' => false, 'message' => 'Data not found'));
+        }
+    }
 }
