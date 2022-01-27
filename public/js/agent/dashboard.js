@@ -29,6 +29,12 @@ $(function (){
         getLeadsGeneratedCountsBarChartData();
     });
 
+    $('#filter_start_date, #filter_end_date').change(function() {
+        getData();
+        getGuageChartData();
+        getCountsByWorkTypeBarChartData();
+    });
+
 });
 
 function getData() {
@@ -86,9 +92,6 @@ function getCountsByWorkTypeBarChartData() {
             'start_date': $('#filter_start_date').val(),
             'end_date': $('#filter_end_date').val()
         },
-        beforeSend: function() {
-
-        },
         success: function(response) {
             initCountsByWorkTypeBarChart(response.bar_chart);
         }
@@ -102,10 +105,8 @@ function getLeadsGeneratedCountsBarChartData() {
         data: {
             'month': $('#filter_monthly').val(),
         },
-        beforeSend: function() {
-
-        },
         success: function(response) {
+            console.log(response.bar_chart);
             initLeadsGeneratedCountsBarChart(response.bar_chart);
         }
     });
@@ -241,7 +242,20 @@ function initLeadsGeneratedCountsBarChart(_data) {
                     }
                 }
             },
+            toolbox: {
+                show: true,
+                feature: {
+                    mark: { show: true },
+                    dataView: { show: true, readOnly: false },
+                    magicType: { show: true, type: ['line', 'bar'] },
+                    saveAsImage: { show: true }
+                }
+            },
             calculable: true,
+            legend: {
+                data: ['Month', 'Budget 2011'],
+                itemGap: 5
+            },
             grid: {
                 top: '12%',
                 left: '1%',
@@ -251,7 +265,7 @@ function initLeadsGeneratedCountsBarChart(_data) {
             xAxis: [
                 {
                     type: 'category',
-                    data: _data.xAxis
+                    data: _data.xAxis,
                 }
             ],
             yAxis: [
@@ -262,10 +276,93 @@ function initLeadsGeneratedCountsBarChart(_data) {
             ],
             series: [
                 {
-                    name: 'Leads Generated',
+                    name: $('#filter_monthly').val(),
                     type: 'bar',
                     data: _data.data,
-                    color: '#3C66E9'
+                    //color: '#3C66E9',
+                    itemStyle: {
+                        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                            { offset: 0, color: '#83bff6' },
+                            { offset: 0.5, color: '#188df0' },
+                            { offset: 1, color: '#188df0' }
+                        ])
+                    },
+                    emphasis: {
+                        itemStyle: {
+                            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                { offset: 0, color: '#2378f7' },
+                                { offset: 0.7, color: '#2378f7' },
+                                { offset: 1, color: '#83bff6' }
+                            ])
+                        }
+                    },
+                }
+            ]
+        };
+
+        option8 = {
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'shadow',
+                    label: {
+                        show: true
+                    }
+                }
+            },
+            toolbox: {
+                show: true,
+                feature: {
+                    mark: { show: true },
+                    dataView: { show: true, readOnly: false },
+                    magicType: { show: true, type: ['line', 'bar'] },
+                    saveAsImage: { show: true }
+                }
+            },
+            calculable: true,
+            legend: {
+                data: ['Month', $('#filter_monthly').val()],
+                itemGap: 5
+            },
+            grid: {
+                top: '12%',
+                left: '1%',
+                right: '10%',
+                containLabel: true
+            },
+            xAxis: [
+                {
+                    type: 'category',
+                    data: _data.xAxis,
+                }
+            ],
+            yAxis: [
+                {
+                    type: 'value',
+                    name: 'Leads',
+                }
+            ],
+            series: [
+                {
+                    name: $('#filter_monthly').val(),
+                    type: 'bar',
+                    data: _data.data,
+                    itemStyle: {
+                        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                            { offset: 0, color: '#83bff6' },
+                            { offset: 0.5, color: '#188df0' },
+                            { offset: 1, color: '#188df0' }
+                        ])
+                    },
+                    emphasis: {
+                        itemStyle: {
+                            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                { offset: 0, color: '#2378f7' },
+                                { offset: 0.7, color: '#2378f7' },
+                                { offset: 1, color: '#83bff6' }
+                            ])
+                        }
+                    },
                 }
             ]
         };

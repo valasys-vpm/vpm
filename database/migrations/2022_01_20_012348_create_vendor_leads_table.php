@@ -25,6 +25,8 @@ class CreateVendorLeadsTable extends Migration
             $table->unsignedInteger('vendor_id');
             $table->foreign('vendor_id')->references('id')->on('vendors');
 
+            $table->integer('transaction_time');
+
             //Lead Details---
             $table->string('first_name', 50);
             $table->string('last_name', 50);

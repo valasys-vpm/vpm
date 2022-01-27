@@ -8,17 +8,17 @@
 }
 
 .dial-value {
-    width: 104px;
-    height: 66px;
+    width: 79px;
+    height: 50px;
     position: absolute;
     vertical-align: middle;
-    margin-top: 66px;
-    margin-left: -152px;
-    border: 0;
+    margin-top: 50px;
+    margin-left: -114px;
+    border: 0px;
     background: none;
-    font: bold 40px Arial;
+    font: bold 30px Arial;
     text-align: center;
-    color: rgb(29, 233, 182);
-    padding: 0;
+    color: rgb(102, 202, 0);
+    padding: 0px;
     appearance: none;
 }

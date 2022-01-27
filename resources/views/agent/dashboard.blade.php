@@ -1,5 +1,16 @@
 @extends('layouts.master')
 
+@section('style')
+    @parent
+    <style>
+        .form-control-small {
+            line-height: 1;
+            padding: 1px 20px;
+            font-size: 12px;
+        }
+    </style>
+@append
+
 @section('content')
     <div class="pcoded-main-container">
         <div class="pcoded-wrapper">
@@ -33,10 +44,11 @@
                                             <h5>Filter</h5>
                                             <div class="float-right">
                                                 <div class="row">
-                                                    <div class="col-md-12">
+                                                    <div class="col-md-4"></div>
+                                                    <div class="col-md-8">
                                                         <div class="input-daterange input-group" id="datepicker_range">
-                                                            <input type="text" class="form-control text-left p-1 pl-2 select2-border" placeholder="Start date" name="start_date" id="filter_start_date" value="{{ date('d-m-Y') }}">
-                                                            <input type="text" class="form-control text-right p-1 pl-2 select2-border" placeholder="End date" name="end_date" id="filter_end_date" value="{{ date('d-m-Y') }}">
+                                                            <input type="text" class="form-control text-left form-control-small" placeholder="Start date" name="start_date" id="filter_start_date" value="{{ date('d-m-Y') }}" title="Start Date">
+                                                            <input type="text" class="form-control text-right form-control-small" placeholder="End date" name="end_date" id="filter_end_date" value="{{ date('d-m-Y') }}" title="End Date">
                                                         </div>
                                                     </div>
                                                 </div>
@@ -45,60 +57,25 @@
                                     </div>
                                 </div>
                             </div>
+
                             <div class="row">
-                                <div class="col-md-3" style="display: none;">
-                                    <div class="card">
-                                        <div class="card-header">
-                                            <h5>Productivity</h5>
-                                        </div>
-                                        <div class="card-block text-center dial-chart" style="height: 270px;">
-                                            <input type="text" class="dial" value="99" data-width="200" data-height="200" data-fgColor="#1de9b6" data-skin="tron" data-thickness=".1" data-angleOffset="180" data-displayInput="false" data-readonly="true">
-                                            <input type="text" class="dial-value" value="99%">
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
+                                <div class="col-md-6">
                                     <div class="card">
                                         <div class="card-header">
                                             <h5>Productivity</h5>
                                         </div>
                                         <div class="card-block text-center" style="height: 270px;">
-                                            <div id="chart-gauge-productivity" style="width: 120%; height: 400px;left: -20px;top: -80px;"></div>
+                                            <div id="chart-gauge-productivity" style="height: 300px;top: -40px;"></div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-md-3">
+                                <div class="col-md-6">
                                     <div class="card">
                                         <div class="card-header">
                                             <h5>Quality</h5>
                                         </div>
                                         <div class="card-block text-center" style="height: 270px;">
-                                            <div id="chart-gauge-quality" style="width: 120%; height: 400px;left: -20px;top: -80px;"></div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-3">
-                                    <div class="card">
-                                        <div class="card-header">
-                                            <h5>Campaign Processed</h5>
-                                        </div>
-                                        <div class="card-block text-center dial-chart" style="height: 270px;">
-                                            <input id="campaign_processed_percentage" style="display:none;" type="text" class="dial dashboard-count" value="0" data-width="200" data-height="200" data-fgColor="#66ca00" data-angleOffset="-125" data-angleArc="250" data-rotation="clockwise" data-displayInput="false" data-readonly="true">
-                                            <input id="campaign_processed_count"type="text" class="dial-value dashboard-count" value="0" style="color: #66ca00;">
-                                        </div>
-                                    </div>
-                                </div>
-
-
-                                <div class="col-md-3">
-                                    <div class="card">
-                                        <div class="card-header">
-                                            <h5>Leads Generated</h5>
-                                        </div>
-                                        <div class="card-block text-center dial-chart" style="height: 270px;">
-                                            <input id="leads_generated_percentage" style="display:none;" type="text" class="dial dashboard-count" value="0" data-width="200" data-height="200" data-fgColor="#2a199c" data-angleOffset="-125" data-angleArc="250" data-rotation="clockwise" data-displayInput="false" data-readonly="true">
-                                            <input id="leads_generated_count" type="text" class="dial-value dashboard-count" value="0" style="color: #2a199c;">
+                                            <div id="chart-gauge-quality" style="height: 300px;top: -40px;"></div>
                                         </div>
                                     </div>
                                 </div>
@@ -106,96 +83,105 @@
                             </div>
 
                             <div class="row">
-                                <div class="col-md-3">
+                                <div class="col-md-12">
+                                    <div class="card">
+                                        <div class="card-block  text-center dial-chart pb-1">
+                                            <div class="row">
+                                                <div class="col-md-3">
+                                                    <h5 class="mb-4" style="color: #66ca00;">Campaign Processed</h5>
+                                                    <input id="campaign_processed_percentage" style="display: none;" data-fgColor="#66ca00" type="text" class="dial" value="0" data-width="150" data-height="150" data-angleOffset="-125" data-angleArc="250" data-rotation="clockwise" data-readonly="true" data-displayInput="false">
+                                                    <input id="campaign_processed_count" style="color:#66ca00;" type="text" class="dial-value" value="0" readonly>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <h5 class="mb-4" style="color: #2a199c;">Leads Generated</h5>
+                                                    <input id="leads_generated_percentage" style="display: none;" data-fgColor="#2a199c" type="text" class="dial" value="0" data-width="150" data-height="150" data-angleOffset="-125" data-angleArc="250" data-rotation="clockwise" data-readonly="true" data-displayInput="false">
+                                                    <input id="leads_generated_count" style="color:#2a199c;" type="text" class="dial-value" value="0" readonly>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <h5 class="mb-4" style="color: #1afbcf;">Leads Qualified</h5>
+                                                    <input id="leads_qualified_percentage" style="display: none;" data-fgColor="#1afbcf" type="text" class="dial" value="0" data-width="150" data-height="150" data-angleOffset="-125" data-angleArc="250" data-rotation="clockwise" data-readonly="true" data-displayInput="false">
+                                                    <input id="leads_qualified_count" style="color:#1afbcf;" type="text" class="dial-value" value="0" readonly>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <h5 class="mb-4" style="color: #c60a2d;">Leads Rejected</h5>
+                                                    <input id="leads_rejected_percentage" style="display: none;" data-fgColor="#c60a2d" type="text" class="dial" value="0" data-width="150" data-height="150" data-angleOffset="-125" data-angleArc="250" data-rotation="clockwise" data-readonly="true" data-displayInput="false">
+                                                    <input id="leads_rejected_count" style="color:#c60a2d;" type="text" class="dial-value" value="0" readonly>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
                                     <div class="card">
                                         <div class="card-header">
                                             <h5>Top Productivity</h5>
                                         </div>
-                                        <div class="card-block text-center" style="height: 270px;padding-top: 80px;">
+                                        <div class="card-block text-center">
                                             <div data-label="50%" class="radial-bar radial-bar-50 radial-bar-lg radial-bar-success">
                                                 <img src="{{ asset('public/template') }}/assets/images/user/avatar-2.jpg" alt="User-Image">
                                             </div>
-                                            <div data-label="40%" class="radial-bar radial-bar-40 radial-bar-sm radial-bar-warning">
+                                            <div data-label="50%" class="radial-bar radial-bar-50 radial-bar-md radial-bar-warning">
                                                 <img src="{{ asset('public/template') }}/assets/images/user/avatar-2.jpg" alt="User-Image">
                                             </div>
-                                            <div data-label="30%" class="radial-bar radial-bar-30 radial-bar-xs radial-bar-danger">
+                                            <div data-label="40%" class="radial-bar radial-bar-40 radial-bar-sm radial-bar-danger">
                                                 <img src="{{ asset('public/template') }}/assets/images/user/avatar-2.jpg" alt="User-Image">
                                             </div>
                                         </div>
                                     </div>
                                 </div>
 
-                                <div class="col-md-3">
+                                <div class="col-md-6">
                                     <div class="card">
                                         <div class="card-header">
                                             <h5>Top Quality</h5>
                                         </div>
-                                        <div class="card-block text-center" style="height: 270px;padding-top: 80px;">
+                                        <div class="card-block text-center">
                                             <div data-label="50%" class="radial-bar radial-bar-50 radial-bar-lg radial-bar-success">
                                                 <img src="{{ asset('public/template') }}/assets/images/user/avatar-2.jpg" alt="User-Image">
                                             </div>
-                                            <div data-label="40%" class="radial-bar radial-bar-40 radial-bar-sm radial-bar-warning">
+                                            <div data-label="50%" class="radial-bar radial-bar-50 radial-bar-md radial-bar-warning">
                                                 <img src="{{ asset('public/template') }}/assets/images/user/avatar-2.jpg" alt="User-Image">
                                             </div>
-                                            <div data-label="30%" class="radial-bar radial-bar-30 radial-bar-xs radial-bar-danger">
+                                            <div data-label="40%" class="radial-bar radial-bar-40 radial-bar-sm radial-bar-danger">
                                                 <img src="{{ asset('public/template') }}/assets/images/user/avatar-2.jpg" alt="User-Image">
                                             </div>
                                         </div>
                                     </div>
                                 </div>
 
-                                <div class="col-md-3">
-                                    <div class="card">
-                                        <div class="card-header">
-                                            <h5>Leads Qualified</h5>
-                                        </div>
-                                        <div class="card-block text-center dial-chart" style="height: 270px;">
-                                            <input id="leads_qualified_percentage" style="display:none;" type="text" class="dial dashboard-count" value="0" data-width="200" data-height="200" data-fgColor="#1afbcf" data-angleOffset="-125" data-angleArc="250" data-rotation="clockwise" data-displayInput="false" data-readonly="true">
-                                            <input id="leads_qualified_count" type="text" class="dial-value dashboard-count" value="0" style="color: #1afbcf;">
-                                        </div>
-                                    </div>
-                                </div>
 
-                                <div class="col-md-3">
-                                    <div class="card">
-                                        <div class="card-header">
-                                            <h5>Leads Rejected</h5>
-                                        </div>
-                                        <div class="card-block text-center dial-chart" style="height: 270px;">
-                                            <input id="leads_rejected_percentage" style="display:none;" type="text" class="dial dashboard-count" value="0" data-width="200" data-height="200" data-fgColor="#c60a2d" data-angleOffset="-125" data-angleArc="250" data-rotation="clockwise" data-displayInput="false" data-readonly="true">
-                                            <input id="leads_rejected_count" type="text" class="dial-value dashboard-count" value="0" style="color: #c60a2d;">
-                                        </div>
-                                    </div>
-                                </div>
 
                             </div>
 
                             <div class="row">
-                                <div class="col-md-6">
+                                <div class="col-md-12">
                                     <div class="card">
                                         <div class="card-header">
                                             <h5>Counts by Work Type</h5>
                                         </div>
-                                        <div class="card-block text-center">
-                                            <div id="bar-counts-by-work-type" style="height: 500px;"></div>
+                                        <div class="card-block text-center pb-1 pt-1">
+                                            <div id="bar-counts-by-work-type" style="width: 80%; height: 450px;margin: 0 auto;"></div>
                                         </div>
                                     </div>
                                 </div>
 
-                                <div class="col-md-6">
+                                <div class="col-md-12">
                                     <div class="card">
                                         <div class="card-header">
                                             <h5>Leads Generated Counts (Monthly)</h5>
                                             <div class="float-right">
                                                 <div class="row">
                                                     <div class="col-md-12">
-                                                        <input type="text" class="form-control text-center p-1 pl-2 select2-border" id="filter_monthly" name="filter_monthly" value="{{ date('M-Y') }}">
+                                                        <input type="text" class="form-control text-center select2-border form-control-small" id="filter_monthly" name="filter_monthly" value="{{ date('M-Y') }}" style="width: 100px;">
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="card-block text-center">
-                                            <div id="bar-leads-generated-monthly" style="height: 500px;"></div>
+                                            <div id="bar-leads-generated-monthly" style="width: 100%; height: 300px;"></div>
                                         </div>
                                     </div>
                                 </div>
@@ -217,7 +203,10 @@
     <script src="{{ asset('public/template/assets/plugins/chart-knob/js/jquery.knob-custom.min.js') }}"></script>
 
     <!--echarts chart -->
-    <script src="http://echarts.baidu.com/echarts2/doc/example/timelineOption.js"></script>
     <script src="{{ asset('public/template/assets/plugins/chart-echarts/js/echarts-en.min.js') }}"></script>
+
+    <!--echarts chart -->
+    <script src="http://echarts.baidu.com/echarts2/doc/example/timelineOption.js"></script>
+    <script src="{{ asset('public/template') }}/assets/plugins/chart-echarts/js/echarts-en.min.js"></script>
     <script src="{{ asset('public/js/agent/dashboard.js?='.time()) }}"></script>
 @append

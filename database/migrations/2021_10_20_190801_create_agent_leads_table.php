@@ -25,6 +25,9 @@ class CreateAgentLeadsTable extends Migration
             $table->unsignedInteger('agent_id');
             $table->foreign('agent_id')->references('id')->on('users')->onUpdate('cascade');
 
+            $table->unsignedInteger('transaction_time_id');
+            $table->foreign('transaction_time_id')->references('id')->on('transaction_times');
+
             //Lead Details---
             $table->string('first_name', 50);
             $table->string('last_name', 50);

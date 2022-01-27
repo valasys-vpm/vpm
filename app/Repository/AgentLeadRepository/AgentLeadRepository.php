@@ -4,6 +4,7 @@ namespace App\Repository\AgentLeadRepository;
 
 use App\Models\AgentLead;
 use App\Models\CampaignAssignAgent;
+use App\Models\TransactionTime;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -43,9 +44,13 @@ class AgentLeadRepository implements AgentLeadInterface
             DB::beginTransaction();
             $agentLead = new AgentLead();
             $resultCAAgent = CampaignAssignAgent::findOrFail(base64_decode($attributes['ca_agent_id']));
+            $work_type = $resultCAAgent->agent_work_type->slug;
+            $resultTransactionTime = TransactionTime::where('status', 1)->orderBy('created_at', 'DESC')->first();
+
             $agentLead->ca_agent_id = $resultCAAgent->id;
             $agentLead->campaign_id = $resultCAAgent->campaign_id;
             $agentLead->agent_id = Auth::id();
+            $agentLead->transaction_time = $resultTransactionTime->$work_type;
             $agentLead->first_name = $attributes['first_name'];
             $agentLead->last_name = $attributes['last_name'];
             $agentLead->company_name = $attributes['company_name'];
@@ -104,6 +109,7 @@ class AgentLeadRepository implements AgentLeadInterface
             }
         } catch (\Exception $exception) {
             DB::rollBack();
+            dd($exception->getMessage());
             $response = array('status' => FALSE, 'message' => 'Something went wrong, please try again.');
         }
         return $response;
@@ -148,11 +154,11 @@ class AgentLeadRepository implements AgentLeadInterface
                 $agentLead->specific_title = $attributes['specific_title'];
             }
 
-            if(isset($attributes['job_level']) && !empty(trim($attributes['job_level']))) {
+            if(array_key_exists('job_level', $attributes)) {
                 $agentLead->job_level = $attributes['job_level'];
             }
 
-            if(isset($attributes['job_role']) && !empty(trim($attributes['job_role']))) {
+            if(array_key_exists('job_role', $attributes)) {
                 $agentLead->job_role = $attributes['job_role'];
             }
 
@@ -164,7 +170,7 @@ class AgentLeadRepository implements AgentLeadInterface
                 $agentLead->address_1 = $attributes['address_1'];
             }
 
-            if(isset($attributes['address_2']) && !empty(trim($attributes['address_2']))) {
+            if(array_key_exists('address_2', $attributes)) {
                 $agentLead->address_2 = $attributes['address_2'];
             }
 
@@ -192,7 +198,7 @@ class AgentLeadRepository implements AgentLeadInterface
                 $agentLead->employee_size = $attributes['employee_size'];
             }
 
-            if(isset($attributes['employee_size_2']) && !empty($attributes['employee_size_2'])) {
+            if(array_key_exists('employee_size_2', $attributes)) {
                 $agentLead->employee_size_2 = $attributes['employee_size_2'];
             }
 
@@ -204,7 +210,7 @@ class AgentLeadRepository implements AgentLeadInterface
                 $agentLead->company_domain = $attributes['company_domain'];
             }
 
-            if(isset($attributes['website']) && !empty(trim($attributes['website']))) {
+            if(array_key_exists('website', $attributes)) {
                 $agentLead->website = $attributes['website'];
             }
 
@@ -216,19 +222,19 @@ class AgentLeadRepository implements AgentLeadInterface
                 $agentLead->linkedin_profile_link = $attributes['linkedin_profile_link'];
             }
 
-            if(isset($attributes['linkedin_profile_sn_link']) && !empty(trim($attributes['linkedin_profile_sn_link']))) {
+            if(array_key_exists('linkedin_profile_sn_link', $attributes)) {
                 $agentLead->linkedin_profile_sn_link = $attributes['linkedin_profile_sn_link'];
             }
 
-            if(isset($attributes['comment']) && !empty(trim($attributes['comment']))) {
+            if(array_key_exists('comment', $attributes)) {
                 $agentLead->comment = $attributes['comment'];
             }
 
-            if(isset($attributes['comment_2']) && !empty(trim($attributes['comment_2']))) {
+            if(array_key_exists('comment_2', $attributes)) {
                 $agentLead->comment_2 = $attributes['comment_2'];
             }
 
-            if(isset($attributes['qc_comment']) && !empty(trim($attributes['qc_comment']))) {
+            if(array_key_exists('qc_comment', $attributes)) {
                 $agentLead->qc_comment = $attributes['qc_comment'];
             }
 
