@@ -29,5 +29,12 @@
         </a>
     </li>
 
+    <li class="nav-item @if(Request::route()->getName() == 'tutorial.list') active @endif">
+        <a href="{{ route('tutorial.list') }}" class="nav-link">
+            <span class="pcoded-micon"><i class="feather icon-help-circle"></i></span>
+            <span class="pcoded-mtext">Tutorials</span>
+        </a>
+    </li>
+
 </ul>
 

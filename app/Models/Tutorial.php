@@ -11,4 +11,9 @@ class Tutorial extends Model
     use SoftDeletes;
     protected $guarded = array();
     public $timestamps = true;
+
+    public function role(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(Role::class, 'id', 'role_id');
+    }
 }

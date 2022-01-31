@@ -104,11 +104,21 @@ class DashboardController extends Controller
         $query->where('agent_id', Auth::id());
         $query->whereBetween('created_at', [$start_date, $end_date]);
 
+        $begin = new \DateTime($start_date);
+        $end = new \DateTime($end_date);
+        $end->modify('first day of next month');
+        $interval = \DateInterval::createFromDateString('1 day');
+        $period = new \DatePeriod($begin, $interval, $end);
+
+        foreach ($period as $dt) {
+        }
+
         $resultCAAgents = $query->get()->pluck('ca_agent_id')->toArray();
         $total_accounts_utilized = CampaignAssignAgent::whereIn('id', $resultCAAgents)->sum('accounts_utilized');
 
         $query2 = $query;
         $total_lead_generated = $query->count();
+
         $total_lead_qualified = $query2->where('status', 1)->count();
 
         if(!empty($resultAgentWorkTypes) && $resultAgentWorkTypes->count()) {
@@ -120,7 +130,6 @@ class DashboardController extends Controller
 
                 $data[$agentWorkType->slug]['lead_count'] = $query->count();
                 $data[$agentWorkType->slug]['transaction_time'] = (integer) $query->sum('transaction_time');
-
             }
         }
 

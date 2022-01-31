@@ -69,6 +69,7 @@ Route::prefix('admin')->middleware(['web', 'check.admin'])->name('admin.')->grou
 
     //Site Setting Routes
     include('admin/site_setting_routes.php');
+    include('admin/tutorial_routes.php');
 
     //Holiday Management Routes
     include('admin/holiday_routes.php');
@@ -252,6 +253,13 @@ Route::any('/notification/view-details/{id}', [App\Http\Controllers\Notification
 Route::middleware(['web', 'auth'])->group(function (){
 
     Route::any('/user/update-profile', [App\Http\Controllers\UserController::class, 'uploadProfile'])->name('user.upload_profile');
+
+    //Tutorial Links Routes
+    Route::prefix('tutorial')->name('tutorial.')->group(function()
+    {
+        Route::get('/list', [App\Http\Controllers\TutorialController::class, 'index'])->name('list');
+        Route::any('/get-tutorials', [App\Http\Controllers\TutorialController::class, 'getTutorials'])->name('get_tutorials');
+    });
 
 });
 

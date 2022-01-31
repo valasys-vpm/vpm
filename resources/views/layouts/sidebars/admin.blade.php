@@ -59,6 +59,13 @@
         </a>
     </li>
 
+    <li class="nav-item @if(Request::route()->getName() == 'admin.tutorial.list') active @endif">
+        <a href="{{ route('admin.tutorial.list') }}" class="nav-link">
+            <span class="pcoded-micon"><i class="feather icon-help-circle"></i></span>
+            <span class="pcoded-mtext">Tutorial Management</span>
+        </a>
+    </li>
+
     <li class="nav-item pcoded-menu-caption">
         <label>Users Menu</label>
     </li>
