@@ -108,15 +108,12 @@ function getTopProductivityData() {
                 switch ((key+1)) {
                     case 1:
                         $('#top_productivity_1').attr('class', 'radial-bar radial-bar-lg radial-bar-success '+'radial-bar-'+value.round_productivity);
-                        $('#top_productivity_1').data('label', value.round_productivity+'%');
                         break;
                     case 2:
                         $('#top_productivity_2').attr('class', 'radial-bar radial-bar-md radial-bar-warning '+'radial-bar-'+value.round_productivity);
-                        $('#top_productivity_2').data('label', value.round_productivity+'%');
                         break;
                     case 3:
                         $('#top_productivity_3').attr('class', 'radial-bar radial-bar-sm radial-bar-danger '+'radial-bar-'+value.round_productivity);
-                        $('#top_productivity_3').data('label', value.round_productivity+'%');
                         break;
                 }
 
@@ -126,6 +123,7 @@ function getTopProductivityData() {
                     $('#top_productivity_' + (key+1)).find('img').attr('src', user_default_image_path);
                 }
 
+                $('#top_productivity_' + (key+1)).attr('data-label', value.round_productivity+'%');
                 $('#top_productivity_' + (key+1)).attr('data-original-title', value.user.full_name + ' - ' + value.productivity + '%');
             });
 
@@ -135,15 +133,12 @@ function getTopProductivityData() {
                 switch ((key+1)) {
                     case 1:
                         $('#top_quality_1').attr('class', 'radial-bar radial-bar-lg radial-bar-success '+'radial-bar-'+value.round_quality);
-                        $('#top_quality_1').data('label', value.round_quality+'%');
                         break;
                     case 2:
                         $('#top_quality_2').attr('class', 'radial-bar radial-bar-md radial-bar-warning '+'radial-bar-'+value.round_quality);
-                        $('#top_quality_2').data('label', value.round_quality+'%');
                         break;
                     case 3:
                         $('#top_quality_3').attr('class', 'radial-bar radial-bar-sm radial-bar-danger '+'radial-bar-'+value.round_quality);
-                        $('#top_quality_3').data('label', value.round_quality+'%');
                         break;
                 }
 
@@ -153,6 +148,7 @@ function getTopProductivityData() {
                     $('#top_quality_' + (key+1)).find('img').attr('src', user_default_image_path);
                 }
 
+                $('#top_quality_' + (key+1)).attr('data-label', value.round_quality+'%');
                 $('#top_quality_' + (key+1)).attr('data-original-title', value.user.full_name + ' - ' + value.quality + '%');
             });
         }
