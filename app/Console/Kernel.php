@@ -2,6 +2,7 @@
 
 namespace App\Console;
 
+use App\Console\Commands\DailyReportLogCron;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -13,7 +14,7 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        //
+        DailyReportLogCron::class,
     ];
 
     /**
@@ -25,6 +26,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         // $schedule->command('inspire')->hourly();
+         $schedule->command('dailyreportlog:cron')->dailyAt('22:00');
     }
 
     /**

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\DailyReportLog;
+use App\Repository\DailyReportLog\DailyReportLogRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -32,6 +34,12 @@ class HomeController extends Controller
         $user = Auth::user();
         $user->logged_on = null;
         $user->save();
+
+        $resultDailyReportLog = DailyReportLog::where('user_id', $user->id)->first();
+        DailyReportLogRepository::update($resultDailyReportLog->id, array(
+            'sign_out' => date('Y-m-d H:i:s')
+        ));
+
         Auth::logout();
         return redirect()->route('login');
     }

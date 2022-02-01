@@ -177,3 +177,9 @@ if(!function_exists('is_live_server')) {
         }
     }
 }
+
+if(!function_exists('round_up_to_any_nearest')) {
+    function round_up_to_any_nearest($n,$x=5) {
+        return round(($n+$x/2)/$x)*$x;
+    }
+}

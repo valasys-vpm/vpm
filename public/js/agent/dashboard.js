@@ -8,6 +8,7 @@ $(function (){
     getGuageChartData();
     getCountsByWorkTypeBarChartData();
     getLeadsGeneratedCountsBarChartData();
+    getTopProductivityData();
 
     $('#datepicker_range').datepicker({
         format: 'dd-mm-yyyy',
@@ -33,6 +34,7 @@ $(function (){
         getData();
         getGuageChartData();
         getCountsByWorkTypeBarChartData();
+        getTopProductivityData();
     });
 
 });
@@ -84,6 +86,79 @@ function getGuageChartData() {
     });
 }
 
+function getTopProductivityData() {
+    $.ajax({
+        url: URL + '/agent/dashboard/get-top-productivity-data',
+        dataType: 'JSON',
+        data: {
+            'start_date': $('#filter_start_date').val(),
+            'end_date': $('#filter_end_date').val()
+        },
+        beforeSend: function() {
+
+        },
+        success: function(response) {
+
+            let user_image_path = $('meta[name="user-image-path"]').attr('content');
+            let user_default_image_path = $('meta[name="user-default-image-path"]').attr('content');
+
+            $.each(response.top_productivity, function (key, value) {
+                $('#top_productivity_'+(key+1)).removeAttr('class');
+
+                switch ((key+1)) {
+                    case 1:
+                        $('#top_productivity_1').attr('class', 'radial-bar radial-bar-lg radial-bar-success '+'radial-bar-'+value.round_productivity);
+                        $('#top_productivity_1').data('label', value.round_productivity+'%');
+                        break;
+                    case 2:
+                        $('#top_productivity_2').attr('class', 'radial-bar radial-bar-md radial-bar-warning '+'radial-bar-'+value.round_productivity);
+                        $('#top_productivity_2').data('label', value.round_productivity+'%');
+                        break;
+                    case 3:
+                        $('#top_productivity_3').attr('class', 'radial-bar radial-bar-sm radial-bar-danger '+'radial-bar-'+value.round_productivity);
+                        $('#top_productivity_3').data('label', value.round_productivity+'%');
+                        break;
+                }
+
+                if(value.user.profile != null) {
+                    $('#top_productivity_' + (key+1)).find('img').attr('src', user_image_path + '/' + value.user.employee_code + '/profile/' + value.user.profile);
+                } else {
+                    $('#top_productivity_' + (key+1)).find('img').attr('src', user_default_image_path);
+                }
+
+                $('#top_productivity_' + (key+1)).attr('data-original-title', value.user.full_name + ' - ' + value.productivity + '%');
+            });
+
+            $.each(response.top_quality, function (key, value) {
+                $('#top_quality_'+(key+1)).removeAttr('class');
+
+                switch ((key+1)) {
+                    case 1:
+                        $('#top_quality_1').attr('class', 'radial-bar radial-bar-lg radial-bar-success '+'radial-bar-'+value.round_quality);
+                        $('#top_quality_1').data('label', value.round_quality+'%');
+                        break;
+                    case 2:
+                        $('#top_quality_2').attr('class', 'radial-bar radial-bar-md radial-bar-warning '+'radial-bar-'+value.round_quality);
+                        $('#top_quality_2').data('label', value.round_quality+'%');
+                        break;
+                    case 3:
+                        $('#top_quality_3').attr('class', 'radial-bar radial-bar-sm radial-bar-danger '+'radial-bar-'+value.round_quality);
+                        $('#top_quality_3').data('label', value.round_quality+'%');
+                        break;
+                }
+
+                if(value.user.profile) {
+                    $('#top_quality_' + (key+1)).find('img').attr('src', user_image_path + '/' + value.user.employee_code + '/profile/' + value.user.profile);
+                } else {
+                    $('#top_quality_' + (key+1)).find('img').attr('src', user_default_image_path);
+                }
+
+                $('#top_quality_' + (key+1)).attr('data-original-title', value.user.full_name + ' - ' + value.quality + '%');
+            });
+        }
+    });
+}
+
 function getCountsByWorkTypeBarChartData() {
     $.ajax({
         url: URL + '/agent/dashboard/get-counts-by-work-type-bar-chart-data',
@@ -106,7 +181,6 @@ function getLeadsGeneratedCountsBarChartData() {
             'month': $('#filter_monthly').val(),
         },
         success: function(response) {
-            console.log(response.bar_chart);
             initLeadsGeneratedCountsBarChart(response.bar_chart);
         }
     });

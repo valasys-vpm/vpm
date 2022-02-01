@@ -67,21 +67,13 @@
     </li>
 
     <li class="nav-item pcoded-menu-caption">
-        <label>Users Menu</label>
+        <label>Admin Menu</label>
     </li>
 
-    <li class="nav-item pcoded-hasmenu @if(Request::route()->getName() == '') active pcoded-trigger @endif">
-        <a href="javascript:void(0);" class="nav-link"><span class="pcoded-micon"><i class="feather icon-list"></i></span><span class="pcoded-mtext">Campaign Management</span></a>
-        <ul class="pcoded-submenu">
-            <li class="@if(Request::route()->getName() == '') active @endif"><a href="javascript:void(0);" class="">Campaign List</a></li>
-            <li class="@if(Request::route()->getName() == '') active @endif"><a href="javascript:void(0);" class="">Campaign Assign</a></li>
-        </ul>
-    </li>
-
-    <li class="nav-item @if(Request::route()->getName() == '') active @endif">
-        <a href="{{ route('admin.dashboard') }}" class="nav-link">
-            <span class="pcoded-micon"><i class="feather icon-align-justify"></i></span>
-            <span class="pcoded-mtext">History</span>
+    <li class="nav-item @if(Request::route()->getName() == 'admin.cron_trigger.list') active @endif">
+        <a href="{{ route('admin.cron_trigger.list') }}" class="nav-link">
+            <span class="pcoded-micon"><i class="feather icon-sliders"></i></span>
+            <span class="pcoded-mtext">Cron Triggers</span>
         </a>
     </li>
 

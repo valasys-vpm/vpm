@@ -2,6 +2,8 @@
 
 @section('style')
     @parent
+    <meta name="user-image-path" content="{{asset('public/storage/user')}}">
+    <meta name="user-default-image-path" content="{{ asset('public/template/assets/images/user/avatar-2.jpg') }}">
     <style>
         .form-control-small {
             line-height: 1;
@@ -120,13 +122,13 @@
                                             <h5>Top Productivity</h5>
                                         </div>
                                         <div class="card-block text-center">
-                                            <div data-label="50%" class="radial-bar radial-bar-50 radial-bar-lg radial-bar-success">
+                                            <div id="top_productivity_1" data-label="100%" class="radial-bar radial-bar-100 radial-bar-lg radial-bar-success" title="" data-toggle="tooltip" data-original-title="">
                                                 <img src="{{ asset('public/template') }}/assets/images/user/avatar-2.jpg" alt="User-Image">
                                             </div>
-                                            <div data-label="50%" class="radial-bar radial-bar-50 radial-bar-md radial-bar-warning">
+                                            <div id="top_productivity_2" data-label="100%" class="radial-bar radial-bar-100 radial-bar-md radial-bar-warning" title="" data-toggle="tooltip" data-original-title="">
                                                 <img src="{{ asset('public/template') }}/assets/images/user/avatar-2.jpg" alt="User-Image">
                                             </div>
-                                            <div data-label="40%" class="radial-bar radial-bar-40 radial-bar-sm radial-bar-danger">
+                                            <div id="top_productivity_3" data-label="100%" class="radial-bar radial-bar-100 radial-bar-sm radial-bar-danger" title="" data-toggle="tooltip" data-original-title="">
                                                 <img src="{{ asset('public/template') }}/assets/images/user/avatar-2.jpg" alt="User-Image">
                                             </div>
                                         </div>
@@ -139,13 +141,13 @@
                                             <h5>Top Quality</h5>
                                         </div>
                                         <div class="card-block text-center">
-                                            <div data-label="50%" class="radial-bar radial-bar-50 radial-bar-lg radial-bar-success">
+                                            <div id="top_quality_1" data-label="100%" class="radial-bar radial-bar-100 radial-bar-lg radial-bar-success" title="" data-toggle="tooltip" data-original-title="">
                                                 <img src="{{ asset('public/template') }}/assets/images/user/avatar-2.jpg" alt="User-Image">
                                             </div>
-                                            <div data-label="50%" class="radial-bar radial-bar-50 radial-bar-md radial-bar-warning">
+                                            <div id="top_quality_2" data-label="100%" class="radial-bar radial-bar-100 radial-bar-md radial-bar-warning" title="" data-toggle="tooltip" data-original-title="">
                                                 <img src="{{ asset('public/template') }}/assets/images/user/avatar-2.jpg" alt="User-Image">
                                             </div>
-                                            <div data-label="40%" class="radial-bar radial-bar-40 radial-bar-sm radial-bar-danger">
+                                            <div id="top_quality_3" data-label="100%" class="radial-bar radial-bar-100 radial-bar-sm radial-bar-danger" title="" data-toggle="tooltip" data-original-title="">
                                                 <img src="{{ asset('public/template') }}/assets/images/user/avatar-2.jpg" alt="User-Image">
                                             </div>
                                         </div>

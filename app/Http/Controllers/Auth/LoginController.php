@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\DailyReportLog;
 use App\Models\Module;
 use App\Models\User;
 use App\Providers\RouteServiceProvider;
 
+use App\Repository\DailyReportLog\DailyReportLogRepository;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -64,6 +66,47 @@ class LoginController extends Controller
 
                 $module = Module::whereRoleId($user->role_id)->whereStatus('1')->first();
                 if(!empty($module)) {
+
+                    //Add Sign In entry in daily report log
+                    $resultDailyReportLog = DailyReportLog::where('user_id', $user->id)->orderBy('created_at', 'desc')->first();
+
+                    if(!empty($resultDailyReportLog)) {
+                        //get start date using sign in date
+                        $sign_in = $resultDailyReportLog->sign_in;
+                        $time = date('H', strtotime($sign_in));
+                        if($time >= 12 && $time <= 23) {
+                            $shift_start = date('Y-m-d 12:00:00', strtotime($sign_in));
+                            $shift_end = date('Y-m-d 11:59:59',strtotime ( '+1 day', strtotime($sign_in)));
+                        } else {
+                            $shift_start = date('Y-m-d 12:00:00',strtotime ( '-1 day', strtotime($sign_in)));
+                            $shift_end = date('Y-m-d 11:59:59',strtotime($sign_in));
+                        }
+
+                        $date = date('Y-m-d H:i:s');
+                        if($date >= $shift_start && $date <= $shift_end) {
+
+                        } else {
+                            DailyReportLogRepository::store(array(
+                                'user_id' => $user->id,
+                                'sign_in' => date('Y-m-d H:i:s')
+                            ));
+
+                            //Update Sign Out if missing
+                            if(empty($resultDailyReportLog->sign_out)) {
+                                DailyReportLogRepository::update($resultDailyReportLog->id, array(
+                                    'sign_out' => $shift_end
+                                ));
+                            }
+                        }
+
+
+                    } else{
+                        DailyReportLogRepository::store(array(
+                            'user_id' => $user->id,
+                            'sign_in' => date('Y-m-d H:i:s')
+                        ));
+                    }
+
                     return redirect()->route($module->route_name);
                 } else {
                     return redirect()->route('logout');
