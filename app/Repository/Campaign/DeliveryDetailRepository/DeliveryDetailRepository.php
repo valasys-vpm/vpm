@@ -62,17 +62,13 @@ class DeliveryDetailRepository implements DeliveryDetailInterface
                 $delivery_detail->lead_approved = $attributes['lead_approved'];
             }
 
-            if(isset($attributes['lead_rejected']) && !empty($attributes['lead_rejected'])) {
-                $delivery_detail->lead_rejected = $delivery_detail->lead_sent - $delivery_detail->lead_approved;
-            }
+            $delivery_detail->lead_rejected = $delivery_detail->lead_sent - $delivery_detail->lead_approved;
 
             if(isset($attributes['lead_available']) && !empty($attributes['lead_available'])) {
                 $delivery_detail->lead_available = $attributes['lead_available'];
             }
 
-            if(isset($attributes['lead_pending']) && !empty($attributes['lead_pending'])) {
-                $delivery_detail->lead_pending = $resultCampaign->allocation - $delivery_detail->lead_approved;
-            }
+            $delivery_detail->lead_pending = $resultCampaign->allocation - $delivery_detail->lead_approved;
 
             if(isset($attributes['campaign_progress']) && !empty($attributes['campaign_progress'])) {
                 $delivery_detail->campaign_progress = $attributes['campaign_progress'];
