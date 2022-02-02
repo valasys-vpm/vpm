@@ -173,7 +173,7 @@
                                                         <td>{{ ucfirst($resultCampaign->pacing) }}</td>
                                                         <td>
                                                             @php
-                                                                $percentage = ($resultCampaign->deliver_count/$resultCampaign->allocation)*100;
+                                                                $percentage = ($resultCampaign->completed_count/$resultCampaign->allocation)*100;
                                                                 $percentage = number_format($percentage,2,".", "");
                                                                 if($percentage == 100) {
                                                                     $color_class = 'bg-success';
@@ -187,9 +187,9 @@
                                                         </td>
                                                         <td>
                                                             @if($resultCampaign->campaign_status === 6)
-                                                                {{ $resultCampaign->deliver_count }} <span class="text-danger" title="Shortfall Count">({{ $resultCampaign->shortfall_count }})</span> / {{ $resultCampaign->allocation }}
+                                                                {{ $resultCampaign->completed_count }} <span class="text-danger" title="Shortfall Count">({{ $resultCampaign->shortfall_count }})</span> / {{ $resultCampaign->allocation }}
                                                             @else
-                                                                {{ $resultCampaign->deliver_count.' / '.$resultCampaign->allocation }}
+                                                                {{ $resultCampaign->completed_count.' / '.$resultCampaign->allocation }}
                                                             @endif
                                                         </td>
                                                         <td>
@@ -259,7 +259,7 @@
                                                             <td>{{ ucfirst($children->pacing) }}</td>
                                                             <td>
                                                                 @php
-                                                                    $percentage = ($children->deliver_count/$children->allocation)*100;
+                                                                    $percentage = ($children->completed_count/$children->allocation)*100;
                                                                     $percentage = number_format($percentage,2,".", "");
                                                                     if($percentage == 100) {
                                                                         $color_class = 'bg-success';
@@ -273,9 +273,9 @@
                                                             </td>
                                                             <td>
                                                                 @if($children->campaign_status === 6)
-                                                                    {{ $children->deliver_count }} <span class="text-danger" title="Shortfall Count">({{ $children->shortfall_count }})</span> / {{ $children->allocation }}
+                                                                    {{ $children->completed_count }} <span class="text-danger" title="Shortfall Count">({{ $children->shortfall_count }})</span> / {{ $children->allocation }}
                                                                 @else
-                                                                    {{ $children->deliver_count.' / '.$children->allocation }}
+                                                                    {{ $children->completed_count.' / '.$children->allocation }}
                                                                 @endif
                                                             </td>
                                                             <td>
