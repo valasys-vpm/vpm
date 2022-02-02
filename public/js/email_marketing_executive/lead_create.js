@@ -36,6 +36,17 @@ $(function (){
         }
     }, "Please enter data");
 
+    //Validator Function check valid email address
+    jQuery.validator.addMethod("is_email_address", function(value, element) {
+
+        /* Define the recommended regular expression. */
+        var emailExp = new RegExp(/^\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,15}\b$/i);
+
+        /* Test the email given against the expression and return the result. */
+        return emailExp.test(value);
+
+    }, "Please enter valid email address");
+
     //Validator f() Target Domain
     $.validator.addMethod(
         "remote_suppression_domain",
@@ -84,6 +95,9 @@ $(function (){
 
     //Validate Form
     $("#form-lead-create").validate({
+        onfocusout: false,
+        onkeyup: false,
+        onclick: false,
         ignore: [],
         focusInvalid: false,
         rules: {

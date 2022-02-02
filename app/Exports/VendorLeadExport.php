@@ -30,6 +30,8 @@ class VendorLeadExport implements FromCollection, WithHeadings, WithEvents, With
         $query = VendorLead::query();
         $query->whereCampaignId($this->campaignId);
         $query->whereStatus(1);
+        $query->whereNotNull('send_date');
+        $query->whereNull('qc_download_date');
         $resultLeads = $query->get();
 
         //convert to final array

@@ -10,6 +10,15 @@
         .table td{
             padding: 5px 10px !important;
         }
+        .form-control-small {
+            line-height: 1;
+            padding: 1px 20px;
+            font-size: 12px;
+        }
+        .form-control-small-select {
+            height: 2.1rem !important;
+            padding: 5px 10px !important;
+        }
     </style>
 @append
 
@@ -51,7 +60,15 @@
                                         <div class="card-header">
                                             <h5>Lead Details</h5>
                                             <div class="float-right">
-                                                <button type="button" class="btn btn-dark btn-square btn-sm" onclick="export_file('{{ base64_encode($resultCARATL->id) }}');"><i class="feather icon-download"></i>Export</button>
+                                                <div class="btn-group">
+                                                    <button type="button" class="btn btn-dark btn-square btn-sm" onclick="export_file('{{ base64_encode($resultCARATL->id) }}', 'all');"><i class="feather icon-download"></i>Export</button>
+                                                    <button type="button" class="btn btn-dark btn-square btn-sm dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="sr-only">Toggle Dropdown</span></button>
+                                                    <div class="dropdown-menu">
+                                                        <a class="dropdown-item" href="javascript:void(0);" onclick="export_file('{{ base64_encode($resultCARATL->id) }}', 'all');">All</a>
+                                                        <a class="dropdown-item" href="javascript:void(0);" onclick="export_file('{{ base64_encode($resultCARATL->id) }}', 'sent');">Sent Leads</a>
+                                                        <a class="dropdown-item" href="javascript:void(0);" onclick="export_file('{{ base64_encode($resultCARATL->id) }}', 'un_send');">Un-Send Leads</a>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                         <div class="card-block">
@@ -82,6 +99,7 @@
                                                         <th>Country</th>
                                                         <th>Industry</th>
                                                         <th>Employee Size</th>
+                                                        <th>Employee Size 2</th>
                                                         <th>Revenue</th>
                                                         <th>Company Domain</th>
                                                         <th>Website</th>
@@ -89,6 +107,10 @@
                                                         <th>LinkedIn Profile URL</th>
                                                         <th>LinkedIn Profile SN URL</th>
                                                         <th>Comment</th>
+                                                        <th>TL Comment</th>
+                                                        <th>QC Comment</th>
+                                                        <th>Status</th>
+                                                        <th>Send For QC<br>Date</th>
                                                     </tr>
                                                     </thead>
                                                     <tbody>

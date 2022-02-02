@@ -34,6 +34,8 @@ class AgentLeadExport implements FromCollection, WithHeadings, WithEvents, WithC
         $query = AgentLead::query();
         $query->whereCampaignId($this->campaignId);
         $query->whereStatus(1);
+        $query->whereNotNull('send_date');
+        $query->whereNull('qc_download_date');
         $resultAgentLeads = $query->get();
 
         //convert to final array

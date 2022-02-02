@@ -6,9 +6,11 @@ use App\Exports\AgentLeadExport;
 use App\Exports\NPFExport;
 use App\Exports\VendorLeadExport;
 use App\Http\Controllers\Controller;
+use App\Models\AgentLead;
 use App\Models\Campaign;
 use App\Models\CampaignAssignQualityAnalyst;
 use App\Models\User;
+use App\Models\VendorLead;
 use App\Repository\CampaignAssignRepository\EMERepository\EMERepository as CAEMERepository;
 use App\Repository\CampaignAssignRepository\QATLRepository\QATLRepository as CAQATLRepository;
 use App\Repository\CampaignAssignRepository\QualityAnalystRepository\QualityAnalystRepository;
@@ -182,6 +184,11 @@ class CampaignController extends Controller
                 case 'vendor_management' :
                     $filename = str_replace(' ', '_', trim($resultCampaign->name)) .'_'.time(). "_VENDOR_DATA.xlsx";
                     if(Excel::store(new VendorLeadExport($resultCAQA->campaign_id), $path.$filename)) {
+                        VendorLead::whereCampaignId($resultCAQA->campaign_id)
+                            ->whereStatus(1)
+                            ->whereNotNull('send_date')
+                            ->whereNull('qc_download_date')
+                            ->update(array('qc_download_date' => date('Y-m-d H:i:s')));
                         $response = array('status' => true, 'message' => 'Successful', 'file_name' => $path_to_download.$filename);
                     } else {
                         throw new \Exception('Something went wrong, please try again.', 1);
@@ -191,6 +198,13 @@ class CampaignController extends Controller
                 default:
                     $filename = str_replace(' ', '_', trim($resultCampaign->name)) .'_'.time(). "_AGENT_DATA.xlsx";
                     if(Excel::store(new AgentLeadExport($resultCAQA->campaign_id), $path.$filename)) {
+
+                        AgentLead::whereCampaignId($resultCAQA->campaign_id)
+                            ->whereStatus(1)
+                            ->whereNotNull('send_date')
+                            ->whereNull('qc_download_date')
+                            ->update(array('qc_download_date' => date('Y-m-d H:i:s')));
+
                         $response = array('status' => true, 'message' => 'Successful', 'file_name' => $path_to_download.$filename);
                     } else {
                         throw new \Exception('Something went wrong, please try again.', 1);

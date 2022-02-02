@@ -81,7 +81,7 @@ class LeadController extends Controller
     public function export($caratl_id, Request $request)
     {
         $response = array('status' => true, 'message' => 'Something went wrong, please try again.');
-
+        $filters = array();
         try {
             $resultCARATL = $this->RATLRepository->find(base64_decode($caratl_id));
 
@@ -89,7 +89,19 @@ class LeadController extends Controller
             $path_to_download = '/public/storage/campaigns/'.$resultCARATL->campaign->campaign_id.'/team_leader/';
             $filename = str_replace(' ', '_', trim($resultCARATL->campaign->name)) .'_'.time(). "_AGENT_LEADS.xlsx";
 
-            if(Excel::store(new RATLLeadExport($resultCARATL->id), $path.$filename)) {
+            if($request->has('export_filter')) {
+                switch ($request->export_filter) {
+                    case 'sent':
+                        $filters = array('send_date' => 'NOT_NULL');
+                        break;
+                    case 'un_send':
+                        $filters = array('send_date' => 'NULL');
+                        break;
+                    case 'all':
+                    default: $filters = array(); break;
+                }
+            }
+            if(Excel::store(new RATLLeadExport($resultCARATL->id, $filters), $path.$filename)) {
                 $response = array('status' => true, 'message' => 'Successful', 'file_name' => $path_to_download.$filename);
             } else {
                 throw new \Exception('Something went wrong, please try again.', 1);
@@ -142,12 +154,38 @@ class LeadController extends Controller
             $orderDirection = $order[0]['dir'];
         }
         switch ($orderColumn) {
-            case '0': $query->orderBy('first_name', $orderDirection); break;
-            case '1': $query->orderBy('first_name', $orderDirection); break;
-            case '2': $query->orderBy('first_name', $orderDirection); break;
+            case '0': break;
+            case '1': $query->orderBy('agent_id', $orderDirection); break;
+            case '2': $query->orderBy('created_at', $orderDirection); break;
             case '3': $query->orderBy('first_name', $orderDirection); break;
-            case '4': $query->orderBy('first_name', $orderDirection); break;
-            default: $query->orderBy('first_name'); break;
+            case '4': $query->orderBy('last_name', $orderDirection); break;
+            case '5': $query->orderBy('company_name', $orderDirection); break;
+            case '6': $query->orderBy('email_address', $orderDirection); break;
+            case '7': $query->orderBy('specific_title', $orderDirection); break;
+            case '8': $query->orderBy('job_level', $orderDirection); break;
+            case '9': $query->orderBy('job_role', $orderDirection); break;
+            case '10': $query->orderBy('phone_number', $orderDirection); break;
+            case '11': $query->orderBy('address_1', $orderDirection); break;
+            case '12': $query->orderBy('address_2', $orderDirection); break;
+            case '13': $query->orderBy('city', $orderDirection); break;
+            case '14': $query->orderBy('state', $orderDirection); break;
+            case '15': $query->orderBy('zipcode', $orderDirection); break;
+            case '16': $query->orderBy('country', $orderDirection); break;
+            case '17': $query->orderBy('industry', $orderDirection); break;
+            case '18': $query->orderBy('employee_size', $orderDirection); break;
+            case '19': $query->orderBy('employee_size_2', $orderDirection); break;
+            case '20': $query->orderBy('revenue', $orderDirection); break;
+            case '21': $query->orderBy('company_domain', $orderDirection); break;
+            case '22': $query->orderBy('website', $orderDirection); break;
+            case '23': $query->orderBy('company_linkedin_url', $orderDirection); break;
+            case '24': $query->orderBy('linkedin_profile_link', $orderDirection); break;
+            case '25': $query->orderBy('linkedin_profile_sn_link', $orderDirection); break;
+            case '26': $query->orderBy('comment', $orderDirection); break;
+            case '27': $query->orderBy('comment_2', $orderDirection); break;
+            case '28': $query->orderBy('qc_comment', $orderDirection); break;
+            case '29': $query->orderBy('status', $orderDirection); break;
+            case '30': $query->orderBy('send_date', $orderDirection); break;
+            default: $query->orderBy('created_at', 'DESC'); break;
         }
 
         $totalFilterRecords = $query->count();

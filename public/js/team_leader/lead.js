@@ -94,6 +94,15 @@ $(function (){
                 data: 'employee_size'
             },
             {
+                render: function (data, type, row) {
+                    if(row.employee_size_2) {
+                        return row.employee_size_2;
+                    } else {
+                        return 'NA';
+                    }
+                }
+            },
+            {
                 data: 'revenue'
             },
             {
@@ -112,7 +121,48 @@ $(function (){
                 data: 'linkedin_profile_sn_link'
             },
             {
-                data: 'comment'
+                render: function (data, type, row) {
+                    if(row.comment) {
+                        return row.comment;
+                    } else {
+                        return 'NA';
+                    }
+                }
+            },
+            {
+                render: function (data, type, row) {
+                    if(row.comment_2) {
+                        return row.comment_2;
+                    } else {
+                        return 'NA';
+                    }
+                }
+            },
+            {
+                render: function (data, type, row) {
+                    if(row.qc_comment) {
+                        return row.qc_comment;
+                    } else {
+                        return 'NA';
+                    }
+                }
+            },
+            {
+                render: function (data, type, row) {
+                    switch (parseInt(row.status)) {
+                        case 1: return '<span class="badge badge-pill badge-success" style="padding: 5px;min-width:50px;"> OK </span>';
+                        case 0: return '<span class="badge badge-pill badge-danger" style="padding: 5px;min-width:50px;"> Rejected </span>';
+                    }
+                }
+            },
+            {
+                render: function (data, type, row) {
+                    if(row.send_date) {
+                        return moment(row.send_date).format('DD-MMM-YYYY');
+                    } else {
+                        return 'Not Sent';
+                    }
+                }
             }
         ],
         "createdRow": function(row, data, dataIndex){
@@ -121,7 +171,8 @@ $(function (){
                     $(row).addClass('border-cancelled');
                     break;
             }
-        }
+        },
+        order:[]
     });
 
     $('#form-reject-lead-submit').on('click', function (e) {
@@ -152,12 +203,15 @@ function rejectLead(_agent_lead_id) {
     }
 }
 
-function export_file(_id) {
+function export_file(_id, _export_filter) {
     if(_id && confirm('Are you sure to export leads?')) {
         $.ajax({
             type: 'post',
             url: URL + '/team-leader/lead/export/' + _id,
             dataType: 'json',
+            data: {
+                export_filter: _export_filter
+            },
             success: function (response) {
                 if(response.status === true) {
                     trigger_pnofify('success', 'Successful', response.message);

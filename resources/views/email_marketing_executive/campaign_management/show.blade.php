@@ -609,6 +609,14 @@
                                         <input type="number" class="form-control btn-square only-non-zero-number" id="allocation" name="allocation" placeholder="Enter allocation" required>
                                     </div>
                                     <div class="col-md-6 form-group">
+                                        <label for="campaign_status_id">Pacing</label>
+                                        <select class="form-control btn-square" id="pacing" name="pacing">
+                                            <option value="Daily">Daily</option>
+                                            <option value="Weekly">Weekly</option>
+                                            <option value="Monthly">Monthly</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 form-group">
                                         <label for="campaign_status_id">Status</label>
                                         <select class="form-control btn-square" id="campaign_status_id" name="campaign_status_id">
                                             @foreach($resultCampaignStatuses as $campaign_status)

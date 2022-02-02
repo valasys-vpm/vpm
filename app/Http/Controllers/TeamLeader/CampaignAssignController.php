@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\TeamLeader;
 
 use App\Http\Controllers\Controller;
+use App\Models\AgentLead;
 use App\Models\Campaign;
 use App\Models\CampaignAssignAgent;
 use App\Models\CampaignAssignQATL;
@@ -366,7 +367,6 @@ class CampaignAssignController extends Controller
         }
     }
 
-
     public function getData(Request $request): \Illuminate\Http\JsonResponse
     {
         $filters = $request->all();
@@ -405,9 +405,17 @@ class CampaignAssignController extends Controller
         }
     }
 
-    public function sendForQualityCheck($ca_ratl_id)
+    public function sendForQualityCheck($ca_ratl_id): \Illuminate\Http\JsonResponse
     {
         $resultCARATL = $this->RATLRepository->find(base64_decode($ca_ratl_id));
+
+        //Update status of leads to sent
+        $resultCAAgents = CampaignAssignAgent::where('campaign_assign_ratl_id', $resultCARATL->id)->get();
+
+        AgentLead::whereIn('ca_agent_id', $resultCAAgents->pluck('id')->toArray())
+            ->whereNull('send_date')
+            ->update(array('send_date' => date('Y-m-d H:i:s')));
+
         $resultRole = Role::whereSlug('qa_team_leader')->whereStatus(1)->first();
         $resultUser = User::whereRoleId($resultRole->id)->whereStatus(1)->first();
         $resultCAQATL = CampaignAssignQATL::where('campaign_id', $resultCARATL->campaign_id)->where('user_id', $resultUser->id)->first();
@@ -435,10 +443,12 @@ class CampaignAssignController extends Controller
         }
 
         if($responseCAQATL['status']) {
-            return response()->json(array('status' => true, 'message' => $responseCAQATL['message']));
+            return response()->json(array('status' => true, 'message' => 'Campaign sent to quality check successfully.'));
         } else {
             return response()->json(array('status' => false, 'message' => $responseCAQATL['message']));
         }
     }
+
+    //public function sendForQualityCheck(); //This functionality is in campaign controller
 
 }

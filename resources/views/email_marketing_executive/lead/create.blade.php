@@ -25,7 +25,7 @@
                                     <div class="page-header-title">
                                         <h5 class="m-b-10">{{ $resultCAAgent->campaign->name }}</h5>
                                         <div class="card-header-right mb-1" style="float: right;">
-                                            <a href="{{ route('email_marketing_executive.lead.list', base64_encode($resultAgentLead->ca_agent_id)) }}" class="btn btn-outline-info btn-square btn-sm pt-1 pb-1" style="font-weight: bold;"><i class="feather icon-arrow-left"></i>Back</a>
+                                            <a href="{{ route('email_marketing_executive.lead.list', base64_encode($resultCAAgent->id)) }}" class="btn btn-outline-info btn-square btn-sm pt-1 pb-1" style="font-weight: bold;"><i class="feather icon-arrow-left"></i>Back</a>
                                         </div>
                                     </div>
                                     <ul class="breadcrumb">

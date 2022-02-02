@@ -173,7 +173,8 @@ $(function (){
                     $(row).addClass('border-cancelled');
                     break;
             }
-        }
+        },
+        order:[]
     });
 
 });

@@ -316,6 +316,7 @@ function editPacingDetails(id) {
                     $('#allocation').val(response.data.allocation);
                     $('#deliver_count').val(response.data.deliver_count);
                     $('#campaign_status_id').val(response.data.campaign_status_id);
+                    $('#pacing').val(response.data.pacing);
 
                     if(response.data.campaign_status_id === 6) {
                         $("#div-shortfall-count").show();

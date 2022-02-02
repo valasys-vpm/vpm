@@ -94,6 +94,9 @@ $(function (){
 
     //Validate Form
     $("#form-lead-create").validate({
+        onfocusout: false,
+        onkeyup: false,
+        onclick: false,
         ignore: [],
         focusInvalid: false,
         rules: {

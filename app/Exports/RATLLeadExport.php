@@ -19,10 +19,12 @@ use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 class RATLLeadExport implements FromCollection, WithHeadings, WithEvents, WithColumnFormatting
 {
     private $caratl_id;
+    private $filters;
 
-    public function __construct($caratl_id = null)
+    public function __construct($caratl_id = null, $filters = array())
     {
         $this->caratl_id = $caratl_id;
+        $this->filters = $filters;
     }
 
     public function collection()
@@ -37,6 +39,21 @@ class RATLLeadExport implements FromCollection, WithHeadings, WithEvents, WithCo
                 //convert to final array
                 if($agent->agentLeads->count()) {
                     foreach($agent->agentLeads as $agentLead) {
+                        if(array_key_exists('send_date', $this->filters)) {
+                            switch ($this->filters['send_date']) {
+                                case 'NULL':
+                                    if($agentLead->send_date != NULL) {
+                                        continue;
+                                    }
+                                    break;
+                                case 'NOT_NULL':
+                                    if($agentLead->send_date == NULL) {
+                                        continue;
+                                    }
+                                    break;
+                            }
+                        }
+
                         $key++;
                         $exportData[$key]['RA'] = $agent->user->full_name;
                         $exportData[$key]['Date'] = date('d-M-Y', strtotime($agentLead->created_at));
@@ -68,6 +85,7 @@ class RATLLeadExport implements FromCollection, WithHeadings, WithEvents, WithCo
                         $exportData[$key]['RATL Comment'] = $agentLead->comment_2;
                         $exportData[$key]['QC Comment'] = $agentLead->qc_comment;
                         $exportData[$key]['Status'] = $agentLead->status ? 'Ok' : 'Rejected';
+
                     }
                 }
             }

@@ -22,36 +22,7 @@ class DashboardController extends Controller
 
     public function index()
     {
-        $user_id = Auth::id();
-
-        $queryCAAgent = CampaignAssignAgent::query()->where('user_id', $user_id);
-        $queryAgentLead = AgentLead::query()->where('agent_id', $user_id);
-
-        $this->data['total_campaigns'] = $total_campaigns = $queryCAAgent->count();
-        $this->data['leads_allocated'] = $leads_allocated = $queryCAAgent->sum('allocation');
-
-        //Campaign Processed
-        $this->data['campaign_processed']['count'] = $queryCAAgent->whereNotNull('submitted_at')->count();
-        $campaign_processed_percentage = $total_campaigns > 0 ? ($this->data['campaign_processed']['count'] / $total_campaigns) * 100 : 0;
-        $this->data['campaign_processed']['percentage'] = number_format((float)$campaign_processed_percentage, 2, '.', '');
-
-        //Leads Generated
-        $this->data['leads_generated']['count'] = $queryAgentLead->count();
-        $leads_generated_percentage = $leads_allocated > 0 ? ($this->data['leads_generated']['count'] / $leads_allocated) * 100 : 0;
-        $this->data['leads_generated']['percentage'] = number_format((float)$leads_generated_percentage, 2, '.', '');
-
-        //Leads Qualified
-        $this->data['leads_qualified']['count'] = $queryAgentLead->where('status', 1)->count();
-        $leads_qualified_percentage = $this->data['leads_generated']['count'] > 0 ? ($this->data['leads_qualified']['count'] / $this->data['leads_generated']['count']) * 100 : 0;
-        $this->data['leads_qualified']['percentage'] = number_format((float)$leads_qualified_percentage, 2, '.', '');
-
-        //Leads Rejected
-        $this->data['leads_rejected']['count'] = $queryAgentLead->where('status', 0)->count();
-        $leads_rejected_percentage = $this->data['leads_generated']['count'] > 0 ? ($this->data['leads_rejected']['count'] / $this->data['leads_generated']['count']) * 100 : 0;
-        $this->data['leads_rejected']['percentage'] = number_format((float)$leads_rejected_percentage, 2, '.', '');
-
-        return view('agent.dashboard', $this->data);
-        //number_format((float)$foo, 2, '.', '');
+        return view('agent.dashboard');
     }
 
     public function getData(Request $request)
@@ -59,8 +30,8 @@ class DashboardController extends Controller
         $user_id = Auth::id();
         $response = array();
         $attributes = $request->all();
-        $start_date = date('Y-m-d', strtotime($attributes['start_date']));
-        $end_date = date('Y-m-d', strtotime($attributes['end_date']));
+        $start_date = date('Y-m-d 12:00:00', strtotime($attributes['start_date']));
+        $end_date = date('Y-m-d 11:59:59', strtotime('+1 day', strtotime($attributes['end_date'])));
 
         $queryCAAgent = CampaignAssignAgent::query()->where('user_id', $user_id);
         $queryAgentLead = AgentLead::query()->where('agent_id', $user_id);
@@ -96,12 +67,12 @@ class DashboardController extends Controller
     {
         $response = array();
         $attributes = $request->all();
-        $start_date = date('Y-m-d', strtotime($attributes['start_date']));
-        $end_date = date('Y-m-d', strtotime($attributes['end_date']));
+        $start_date = date('Y-m-d 12:00:00', strtotime($attributes['start_date']));
+        $end_date = date('Y-m-d 11:59:59', strtotime('+1 day', strtotime($attributes['end_date'])));
 
         $query = DailyReportLog::query();
         $query->where('user_id', Auth::id());
-        $query->whereBetween('created_at', [$start_date, $end_date]);
+        $query->whereBetween('sign_in', [$start_date, $end_date]);
         $resultDailyReportLogs = $query->get();
 
         $total_productivity = $resultDailyReportLogs->sum('productivity');
@@ -121,8 +92,8 @@ class DashboardController extends Controller
     {
         $response = array();
         $attributes = $request->all();
-        $start_date = date('Y-m-d', strtotime($attributes['start_date']));
-        $end_date = date('Y-m-d', strtotime($attributes['end_date']));
+        $start_date = date('Y-m-d 12:00:00', strtotime($attributes['start_date']));
+        $end_date = date('Y-m-d 11:59:59', strtotime('+1 day', strtotime($attributes['end_date'])));
 
         $query_user = User::query();
         $query_user->whereHas('role', function ($query_role) {
@@ -137,7 +108,7 @@ class DashboardController extends Controller
         foreach ($resultAgents as $user) {
             $query = DailyReportLog::query();
             $query->where('user_id', $user->id);
-            $query->whereBetween('created_at', [$start_date, $end_date]);
+            $query->whereBetween('sign_in', [$start_date, $end_date]);
             $resultDailyReportLogs = $query->get();
 
             if($resultDailyReportLogs->count()) {
