@@ -95,14 +95,14 @@ $(function (){
             },
             {
                 render: function (data, type, row) {
-                    let deliver_count = parseInt(row.deliver_count);
+                    let completed_count = parseInt(row.completed_count);
                     let allocation = parseInt(row.allocation);
                     let shortfall_count = parseInt(row.shortfall_count);
 
                     if(row.children.length) {
                         $.each(row.children, function (key, value) {
                             allocation = allocation + parseInt(value.allocation);
-                            deliver_count = deliver_count + parseInt(value.deliver_count);
+                            completed_count = completed_count + parseInt(value.completed_count);
                             if(parseInt(value.campaign_status_id) === 6) {
                                 shortfall_count = parseInt(value.shortfall_count);
                             }
@@ -110,9 +110,9 @@ $(function (){
                     }
 
                     if(shortfall_count) {
-                        return deliver_count + ' <span class="text-danger" title="Shortfall Count">('+ shortfall_count +')</span>'+' / '+ allocation;
+                        return completed_count + ' <span class="text-danger" title="Shortfall Count">('+ shortfall_count +')</span>'+' / '+ allocation;
                     } else {
-                        return deliver_count + ' / '+ allocation;
+                        return completed_count + ' / '+ allocation;
                     }
 
                 }

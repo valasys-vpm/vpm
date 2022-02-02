@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\TeamLeader;
 
 use App\Http\Controllers\Controller;
+use App\Models\AgentLead;
 use App\Models\Campaign;
+use App\Models\CampaignAssignAgent;
 use App\Models\CampaignAssignQATL;
 use App\Models\CampaignAssignRATL;
 use App\Models\Role;
@@ -145,6 +147,12 @@ class CampaignController extends Controller
         $attributes['submitted_at'] = date('Y-m-d H:i:s');
         $response = $this->RATLRepository->update(base64_decode($id), $attributes);
         if($response['status'] == TRUE) {
+
+            $resultCAAgents = CampaignAssignAgent::where('campaign_assign_ratl_id', base64_decode($id))->get();
+            AgentLead::whereIn('ca_agent_id', $resultCAAgents->pluck('id')->toArray())
+                ->whereNull('send_date')
+                ->update(array('send_date' => date('Y-m-d H:i:s')));
+
             //Add Campaign History
             $resultCampaign = Campaign::findOrFail($response['details']->campaign_id);
             add_campaign_history($resultCampaign->id, $resultCampaign->parent_id, 'Submitted the campaign');
