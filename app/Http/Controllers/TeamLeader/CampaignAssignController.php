@@ -327,29 +327,38 @@ class CampaignAssignController extends Controller
     public function assignCampaign(Request $request)
     {
         $attributes = $request->all();
+        try {
+            if($attributes['allocation'] > 0) {
+                $resultCARATL = CampaignAssignRATL::where('campaign_id', base64_decode($attributes['campaign_id']))->where('user_id', Auth::id())->first();
+                $resultCAAgent = CampaignAssignAgent::where('campaign_assign_ratl_id', $resultCARATL->id)->first();
 
-        $resultCARATL = CampaignAssignRATL::where('campaign_id', base64_decode($attributes['campaign_id']))->where('user_id', Auth::id())->first();
-        $resultCAAgent = CampaignAssignAgent::where('campaign_assign_ratl_id', $resultCARATL->id)->first();
+                $new_attributes['campaign_assign_ratl_id'] = $resultCARATL->id;
+                $new_attributes['campaign_id'] = $resultCARATL->campaign_id;
+                $new_attributes['display_date'] = $resultCARATL->display_date;
 
-        $new_attributes['campaign_assign_ratl_id'] = $resultCARATL->id;
-        $new_attributes['campaign_id'] = $resultCARATL->campaign_id;
-        $new_attributes['display_date'] = $resultCARATL->display_date;
+                $new_attributes['agent_work_type_id'] = $resultCAAgent->agent_work_type_id;
+                $new_attributes['allocation'] = $attributes['allocation'];
+                $new_attributes['assigned_by'] = $resultCARATL->user_id;
 
-        $new_attributes['agent_work_type_id'] = $resultCAAgent->agent_work_type_id;
-        $new_attributes['allocation'] = $attributes['allocation'];
-        $new_attributes['assigned_by'] = $resultCARATL->user_id;
+                $response['status'] = FALSE;
 
-        $response['status'] = FALSE;
+                foreach ($attributes['user_list'] as $user) {
+                    $new_attributes['user_id'] = $user;
+                    $response = $this->agentRepository->store($new_attributes);
+                }
 
-        foreach ($attributes['user_list'] as $user) {
-            $new_attributes['user_id'] = $user;
-            $response = $this->agentRepository->store($new_attributes);
-        }
+                if($response['status'] == TRUE) {
+                    return response()->json(array('status' => true, 'message' => 'Campaign assigned successfully'));
+                } else {
+                    return response()->json(array('status' => false, 'message' => $response['message']));
+                }
 
-        if($response['status'] == TRUE) {
-            return response()->json(array('status' => true, 'message' => 'Campaign assigned successfully'));
-        } else {
-            return response()->json(array('status' => false, 'message' => $response['message']));
+            } else{
+                return response()->json(array('status' => false, 'message' => 'Enter valid allocation, please try again.'));
+            }
+
+        } catch (\Exception $exception) {
+            return response()->json(array('status' => false, 'message' => 'Something went wrong, please try again.'));
         }
     }
 
