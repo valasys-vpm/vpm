@@ -108,9 +108,6 @@ class DailyReportLogCron extends Command
                     $quality = (int) number_format((float)($quality + 0.4), 0, '.', '');
 
                     //Save to database
-                    if($user->user->id == 56) {
-                        dd($total_leads,$productivity,$quality);
-                    }
                     $user->lead_count = $total_leads;
                     $user->productivity = $productivity;
                     $user->quality = $quality;
