@@ -101,10 +101,7 @@ class DashboardController extends Controller
         });
         $resultAgents = $query_user->where('status', 1)->get();
 
-        $resultProductivity = array();
-        $resultQuality = array();
         $resultData = array();
-
         foreach ($resultAgents as $user) {
             $query = DailyReportLog::query();
             $query->where('user_id', $user->id);
@@ -129,17 +126,34 @@ class DashboardController extends Controller
 
             $resultData[$user->id]['round_productivity'] = $resultData[$user->id]['productivity'] > 0 ? round_up_to_any_nearest($resultData[$user->id]['productivity'], 5): 0;
             $resultData[$user->id]['round_quality'] = $resultData[$user->id]['quality'] >= 100 ? 100 : ($resultData[$user->id]['quality'] > 0 ? round_up_to_any_nearest($resultData[$user->id]['quality'], 5) : 0);
-           
-            $resultProductivity[$user->id] = (int) number_format((float)($productivity), 0, '.', '');
-            $resultQuality[$user->id] = (int) number_format((float)($quality), 0, '.', '');
+
+            //$resultProductivity[$user->id] = (int) number_format((float)($productivity), 0, '.', '');
+            //$resultQuality[$user->id] = (int) number_format((float)($quality), 0, '.', '');
         }
 
-        $arrayProductivity = $arrayQuality = $resultData;
-        array_multisort($resultProductivity, SORT_DESC, $arrayProductivity);
-        $response['top_productivity'] = array_slice($arrayProductivity, 0, 3, true);
+        /*
+         * Sort By Top Productivity
+         */
+        $resultProductivity = $resultData;
+        $arProductivity = array();
+        foreach ($resultData as $user_id => $row)
+        {
+            $arProductivity[$user_id] = $row['productivity'];
+        }
+        array_multisort($arProductivity, SORT_DESC, $resultProductivity);
+        $response['top_productivity'] = array_slice($resultProductivity, 0, 3, true);
 
-        array_multisort($resultQuality, SORT_DESC, $arrayQuality);
-        $response['top_quality'] = array_slice($arrayQuality, 0, 3, true);
+        /*
+         * Sort By Top Productivity then quality
+         */
+        $resultQuality = $resultProductivity;
+        $arQuality = array();
+        foreach ($resultQuality as $user_id => $row)
+        {
+            $arQuality[$user_id] = $row['quality'];
+        }
+        array_multisort($arQuality, SORT_DESC, $resultQuality);
+        $response['top_quality'] = array_slice($resultQuality, 0, 3, true);
 
         return response()->json($response);
     }
