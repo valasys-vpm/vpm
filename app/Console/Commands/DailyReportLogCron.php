@@ -53,8 +53,17 @@ class DailyReportLogCron extends Command
             $query->whereHas('user', function ($sub_query) use($role_ids) {
                 $sub_query->whereIn('role_id', $role_ids->pluck('id')->toArray());
             });
-            $from = date('Y-m-d 12:00:00', strtotime('-1 day'));
-            $to = date('Y-m-d 11:59:59');
+
+            $time = date('H');
+
+            if($time >= 12 && $time <= 23) {
+                $from = date('Y-m-d 12:00:00', strtotime('-1 day'));
+                $to = date('Y-m-d 11:59:59');
+            } else {
+                $from = date('Y-m-d 12:00:00', strtotime('-2 day'));
+                $to = date('Y-m-d 11:59:59', strtotime('-1 day'));
+            }
+
             $query->whereBetween('sign_in', [$from, $to]);
             $resultUsers = $query->get();
 
