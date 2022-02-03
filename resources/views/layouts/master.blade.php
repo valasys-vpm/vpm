@@ -57,6 +57,15 @@
         ol.linenums {
             margin: 0 0 0 -8px;
         }
+
+        .watermarked {
+            position: fixed;
+            right: 35px;
+            bottom: 10px;
+            z-index: 996;
+            transition: all 0.4s;
+            opacity: 0.3;
+        }
     </style>
     <!-- vendor css -->
     @yield('stylesheet')
@@ -133,6 +142,10 @@
                 </div>
             </div>
         </div>
+    </div>
+
+    <div class="watermarked">
+        <img src="{{ asset('public/valasys-media-dark-logo.png') }}" width="180">
     </div>
 
     <script> var BASE_PATH = "{{ url('/') }}"; </script>
