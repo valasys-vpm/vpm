@@ -134,9 +134,9 @@ class DashboardController extends Controller
          */
         $resultProductivity = $resultData;
         $arProductivity = array();
-        foreach ($resultData as $user_id => $row)
+        foreach ($resultData as $key => $row)
         {
-            $arProductivity[$user_id] = $row['productivity'];
+            $arProductivity[$key] = $row['productivity'];
         }
         array_multisort($arProductivity, SORT_DESC, $resultProductivity);
         $response['top_productivity'] = array_slice($resultProductivity, 0, 3, true);
@@ -146,11 +146,11 @@ class DashboardController extends Controller
          */
         $resultQuality = $resultProductivity;
         $arQuality = array();
-        foreach ($resultQuality as $user_id => $row)
+        foreach ($resultQuality as $key => $row)
         {
-            $arQuality[$user_id] = $row['quality'];
+            $arQuality[$key] = $row['quality'];
         }
-        array_multisort($arQuality, SORT_DESC, $resultQuality);
+        array_multisort($arQuality, SORT_DESC, $arProductivity, SORT_DESC, $resultQuality);
         $response['top_quality'] = array_slice($resultQuality, 0, 3, true);
 
         return response()->json($response);
