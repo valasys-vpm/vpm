@@ -49,8 +49,12 @@
                                                     <div class="col-md-4"></div>
                                                     <div class="col-md-8">
                                                         <div class="input-daterange input-group" id="datepicker_range">
-                                                            <input type="text" class="form-control text-left form-control-small" placeholder="Start date" name="start_date" id="filter_start_date" value="{{ date('d-m-Y', strtotime('-1 day')) }}" title="Start Date">
-                                                            <input type="text" class="form-control text-right form-control-small" placeholder="End date" name="end_date" id="filter_end_date" value="{{ date('d-m-Y', strtotime('-1 day')) }}" title="End Date">
+                                                            @php
+                                                            if(date('H') >= 12 && date('H') <=23) { $today_shift_date = date('d-m-Y', strtotime('-1 day')); }
+                                                            else { $today_shift_date = date('d-m-Y', strtotime('-2 day')); }
+                                                            @endphp
+                                                            <input type="text" class="form-control text-left form-control-small" placeholder="Start date" name="start_date" id="filter_start_date" value="{{ $today_shift_date }}" title="Start Date">
+                                                            <input type="text" class="form-control text-right form-control-small" placeholder="End date" name="end_date" id="filter_end_date" value="{{ $today_shift_date }}" title="End Date">
                                                         </div>
                                                     </div>
                                                 </div>
