@@ -58,8 +58,6 @@ class DailyReportLogCron extends Command
             $query->whereBetween('sign_in', [$from, $to]);
             $resultUsers = $query->get();
 
-            $resultAgentLeads = AgentLead::where('agent_id', 56)->whereBetween('created_at', [$from, $to])->get();
-            dd($resultAgentLeads->toArray());
             if(!empty($resultUsers) && $resultUsers->count()) {
                 foreach($resultUsers as $key => $user) {
 
@@ -110,6 +108,9 @@ class DailyReportLogCron extends Command
                     $quality = (int) number_format((float)($quality + 0.4), 0, '.', '');
 
                     //Save to database
+                    if($user->user->id == 56) {
+                        dd($total_leads);
+                    }
                     $user->lead_count = $total_leads;
                     $user->productivity = $productivity;
                     $user->quality = $quality;
