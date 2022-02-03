@@ -109,7 +109,7 @@ class DailyReportLogCron extends Command
 
                     //Save to database
                     if($user->user->id == 56) {
-                        dd($total_leads);
+                        dd($total_leads,$productivity,$quality);
                     }
                     $user->lead_count = $total_leads;
                     $user->productivity = $productivity;
