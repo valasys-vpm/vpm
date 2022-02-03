@@ -64,7 +64,7 @@
             bottom: 10px;
             z-index: 996;
             transition: all 0.4s;
-            opacity: 0.3;
+            opacity: 0.5;
         }
     </style>
     <!-- vendor css -->
