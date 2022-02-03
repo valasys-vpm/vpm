@@ -233,6 +233,21 @@ Route::prefix('vendor-manager')->middleware(['web', 'check.vendor_manager'])->na
     //Campaign Management Routes
     include('vendor_manager/lead_routes.php');
 
+    Route::prefix('ra')->name('ra.')->group(function()
+    {
+        //Campaign Management Routes
+        include('vendor_manager/ra/campaign_routes.php');
+
+        //Campaign Management Routes
+        include('vendor_manager/ra/lead_routes.php');
+
+        //Data Routes
+        include('vendor_manager/ra/data_routes.php');
+
+        //Campaign Issue Routes
+        include('vendor_manager/ra/campaign_issue_routes.php');
+    });
+
 });
 
 

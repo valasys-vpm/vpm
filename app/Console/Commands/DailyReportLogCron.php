@@ -104,7 +104,7 @@ class DailyReportLogCron extends Command
                     //Round up to nearest number
                     $productivity = (int) number_format((float)($productivity + 0.4), 0, '.', '');
 
-                    $quality = ($total_qualified_leads / $total_leads) * 100;
+                    $quality = $total_leads > 0 ? (($total_qualified_leads / $total_leads) * 100) : 0;
                     $quality = (int) number_format((float)($quality + 0.4), 0, '.', '');
 
                     //Save to database

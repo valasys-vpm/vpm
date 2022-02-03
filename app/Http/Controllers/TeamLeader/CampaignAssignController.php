@@ -125,7 +125,17 @@ class CampaignAssignController extends Controller
             'order_by' => array('value' => 'first_name', 'order' => 'ASC')
         ));
 
-        $this->data['resultUsers'] = $resultAgents->merge($resultEMEs);
+        $resultVMs = $this->userRepository->get(array(
+            'status' => 1,
+            'designation_slug' => array('sr_vendor_management_specialist'),
+            'order_by' => array('value' => 'first_name', 'order' => 'ASC')
+        ));
+
+        $this->data['resultUsers'] = $allItems = new \Illuminate\Database\Eloquent\Collection;;
+        $this->data['resultUsers'] = $this->data['resultUsers']->merge($resultAgents);
+        $this->data['resultUsers'] = $this->data['resultUsers']->merge($resultEMEs);
+        $this->data['resultUsers'] = $this->data['resultUsers']->merge($resultVMs);
+        //$this->data['resultUsers'] = $resultAgents->merge($resultEMEs);
 
         $this->data['resultAgentWorkTypes'] = AgentWorkTypeRepository::get(array('status' => 1));
 
@@ -207,7 +217,17 @@ class CampaignAssignController extends Controller
                 'order_by' => array('value' => 'first_name', 'order' => 'ASC')
             ));
 
-            $this->data['resultUsers'] = $resultAgents->merge($resultEMEs);
+            $resultVMs = $this->userRepository->get(array(
+                'status' => 1,
+                'designation_slug' => array('sr_vendor_management_specialist'),
+                'order_by' => array('value' => 'first_name', 'order' => 'ASC')
+            ));
+
+            $this->data['resultUsers'] = $allItems = new \Illuminate\Database\Eloquent\Collection;;
+            $this->data['resultUsers'] = $this->data['resultUsers']->merge($resultAgents);
+            $this->data['resultUsers'] = $this->data['resultUsers']->merge($resultEMEs);
+            $this->data['resultUsers'] = $this->data['resultUsers']->merge($resultVMs);
+            //$this->data['resultUsers'] = $resultAgents->merge($resultEMEs);
             $this->data['resultAssignedUsers'] = $this->data['resultCARATL']->agents->pluck('user_id')->toArray();
 
             //dd($this->data['resultCARATL']->agents->toArray());
