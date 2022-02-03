@@ -129,7 +129,6 @@ class DailyReportLogCron extends Command
                     }
 
                 } //end:user's foreach
-
             } else {
                 throw new \Exception('Daily report logs already updated for yesterday OR new users not found to update.');
             }

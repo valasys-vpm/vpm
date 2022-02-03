@@ -49,8 +49,8 @@
                                                     <div class="col-md-4"></div>
                                                     <div class="col-md-8">
                                                         <div class="input-daterange input-group" id="datepicker_range">
-                                                            <input type="text" class="form-control text-left form-control-small" placeholder="Start date" name="start_date" id="filter_start_date" value="{{ date('d-m-Y') }}" title="Start Date">
-                                                            <input type="text" class="form-control text-right form-control-small" placeholder="End date" name="end_date" id="filter_end_date" value="{{ date('d-m-Y') }}" title="End Date">
+                                                            <input type="text" class="form-control text-left form-control-small" placeholder="Start date" name="start_date" id="filter_start_date" value="{{ date('d-m-Y', strtotime('-1 day')) }}" title="Start Date">
+                                                            <input type="text" class="form-control text-right form-control-small" placeholder="End date" name="end_date" id="filter_end_date" value="{{ date('d-m-Y', strtotime('-1 day')) }}" title="End Date">
                                                         </div>
                                                     </div>
                                                 </div>

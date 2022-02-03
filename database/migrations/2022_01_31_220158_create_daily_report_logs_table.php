@@ -25,6 +25,8 @@ class CreateDailyReportLogsTable extends Migration
             $table->integer('productivity')->default(0);
             $table->integer('quality')->default(0);
 
+            $table->tinyInteger('cron_status')->default(0);
+
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent();
             $table->softDeletes();
