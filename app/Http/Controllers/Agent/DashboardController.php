@@ -33,30 +33,30 @@ class DashboardController extends Controller
         $start_date = date('Y-m-d 12:00:00', strtotime($attributes['start_date']));
         $end_date = date('Y-m-d 11:59:59', strtotime('+1 day', strtotime($attributes['end_date'])));
 
-        $queryCAAgent = CampaignAssignAgent::query()->where('user_id', $user_id);
-        $queryAgentLead = AgentLead::query()->where('agent_id', $user_id);
-        $queryAgentLead->whereBetween('created_at', [$start_date, $end_date]);
+        //$queryCAAgent = CampaignAssignAgent::query()->where('user_id', $user_id);
+        //$queryAgentLead = AgentLead::query()->where('agent_id', $user_id);
+        //$queryAgentLead->whereBetween('created_at', [$start_date, $end_date]);
 
-        $response['total_campaigns'] = $total_campaigns = $queryCAAgent->count();
-        $response['leads_allocated'] = $leads_allocated = $queryCAAgent->sum('allocation');
+        $response['total_campaigns'] = $total_campaigns = CampaignAssignAgent::where('user_id', $user_id)->count();
+        $response['leads_allocated'] = $leads_allocated = CampaignAssignAgent::sum('allocation');
 
         //Campaign Processed
-        $response['campaign_processed']['count'] = $queryCAAgent->whereNotNull('submitted_at')->count();
+        $response['campaign_processed']['count'] = CampaignAssignAgent::whereNotNull('submitted_at')->count();
         $campaign_processed_percentage = $total_campaigns > 0 ? ($response['campaign_processed']['count'] / $total_campaigns) * 100 : 0;
         $response['campaign_processed']['percentage'] = number_format((float)$campaign_processed_percentage, 2, '.', '');
 
         //Leads Generated
-        $response['leads_generated']['count'] = $queryAgentLead->count();
+        $response['leads_generated']['count'] = AgentLead::where('agent_id', $user_id)->whereBetween('created_at', [$start_date, $end_date])->count();
         $leads_generated_percentage = $leads_allocated > 0 ? ($response['leads_generated']['count'] / $leads_allocated) * 100 : 0;
         $response['leads_generated']['percentage'] = number_format((float)$leads_generated_percentage, 2, '.', '');
 
         //Leads Qualified
-        $response['leads_qualified']['count'] = $queryAgentLead->where('status', 1)->count();
+        $response['leads_qualified']['count'] = AgentLead::where('agent_id', $user_id)->whereBetween('created_at', [$start_date, $end_date])->where('status', 1)->count();
         $leads_qualified_percentage = $response['leads_generated']['count'] > 0 ? ($response['leads_qualified']['count'] / $response['leads_generated']['count']) * 100 : 0;
         $response['leads_qualified']['percentage'] = number_format((float)$leads_qualified_percentage, 2, '.', '');
 
         //Leads Rejected
-        $response['leads_rejected']['count'] = $queryAgentLead->where('status', 0)->count();
+        $response['leads_rejected']['count'] = AgentLead::where('agent_id', $user_id)->whereBetween('created_at', [$start_date, $end_date])->where('status', 0)->count();
         $leads_rejected_percentage = $response['leads_generated']['count'] > 0 ? ($response['leads_rejected']['count'] / $response['leads_generated']['count']) * 100 : 0;
         $response['leads_rejected']['percentage'] = number_format((float)$leads_rejected_percentage, 2, '.', '');
 
