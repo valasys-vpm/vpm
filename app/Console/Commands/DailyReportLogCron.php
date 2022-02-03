@@ -58,6 +58,8 @@ class DailyReportLogCron extends Command
             $query->whereBetween('sign_in', [$from, $to]);
             $resultUsers = $query->get();
 
+            ddd($resultUsers->toArray());
+
             if(!empty($resultUsers) && $resultUsers->count()) {
                 foreach($resultUsers as $key => $user) {
 
