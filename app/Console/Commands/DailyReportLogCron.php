@@ -49,7 +49,8 @@ class DailyReportLogCron extends Command
              * get user list whose yesterday's daily report is not updated
              */
             $query = DailyReportLog::query();
-            $query->where('productivity', 0)->where('quality', 0);
+            //$query->where('productivity', 0)->where('quality', 0);
+            $query->where('cron_status', 0);
             $query->whereHas('user', function ($sub_query) use($role_ids) {
                 $sub_query->whereIn('role_id', $role_ids->pluck('id')->toArray());
             });
@@ -120,6 +121,7 @@ class DailyReportLogCron extends Command
                     $user->lead_count = $total_leads;
                     $user->productivity = $productivity;
                     $user->quality = $quality;
+                    $user->cron_status = 1;
 
                     if($user->save()) {
                         //$response = 'Cron completed successfully - Daily Report Logs.!';
