@@ -44,13 +44,13 @@ class DailyReportLogCron extends Command
         $response = 'Something went wrong.!!!';
         try {
 
+            $role_ids = Role::whereIn('slug', array('research_analyst', 'email_marketing_executive', 'vendor_management'))->where('status', 1)->get();
             /*
              * get user list whose yesterday's daily report is not updated
              */
             $query = DailyReportLog::query();
             $query->where('productivity', 0)->where('quality', 0);
-            $query->whereHas('user', function ($sub_query) {
-                $role_ids = Role::whereIn('slug', array('research_analyst', 'email_marketing_executive', 'vendor_management'))->where('status', 1)->get();
+            $query->whereHas('user', function ($sub_query) use($role_ids) {
                 $sub_query->whereIn('role_id', $role_ids->pluck('id')->toArray());
             });
             $from = date('Y-m-d 12:00:00', strtotime('-1 day'));
