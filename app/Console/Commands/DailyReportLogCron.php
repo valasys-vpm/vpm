@@ -99,7 +99,7 @@ class DailyReportLogCron extends Command
 
                     $production_time = ($total_production_time / 60); //convert production time: seconds to minutes
 
-                    $productivity = $production_time / 465;
+                    $productivity = ($production_time / 465) * 100;
 
                     //Round up to nearest number
                     $productivity = (int) number_format((float)($productivity + 0.4), 0, '.', '');
