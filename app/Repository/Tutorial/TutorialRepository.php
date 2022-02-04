@@ -27,6 +27,10 @@ class TutorialRepository implements TutorialInterface
             $query->whereStatus($filters['status']);
         }
 
+        if(isset($filters['role_id']) && !empty($filters['role_id'])) {
+            $query->where('role_id', $filters['role_id']);
+        }
+
         return $query->get();
     }
 

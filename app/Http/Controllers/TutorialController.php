@@ -24,7 +24,7 @@ class TutorialController extends Controller
 
     public function index()
     {
-        $this->data['resultTutorials'] = $this->tutorialRepository->get(array('role_id', Auth::user()->role_id));
+        $this->data['resultTutorials'] = $this->tutorialRepository->get(array('role_id' => Auth::user()->role_id));
         return view('pages.tutorial.list', $this->data);
     }
 

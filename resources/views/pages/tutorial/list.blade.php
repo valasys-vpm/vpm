@@ -52,6 +52,11 @@
                                                     </div>
                                                 </div>
                                             @empty
+                                                <div class="col-md-12">
+                                                    <div class="alert alert-warning" role="alert">
+                                                        Tutorial video not found!
+                                                    </div>
+                                                </div>
                                             @endforelse
                                         </div>
                                     </div>
