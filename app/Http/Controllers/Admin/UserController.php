@@ -187,7 +187,8 @@ class UserController extends Controller
         $attributes = $request->all();
         $response = $this->userRepository->update(Auth::id(), $attributes);
         if($response['status'] == TRUE) {
-            return redirect()->back()->with('success', ['title' => 'Request Successful', 'message' => 'Password updated successfully']);
+            return redirect()->route('logout')->with('success', ['title' => 'Request Successful', 'message' => 'Password updated successfully']);
+            //return redirect()->back()->with('success', ['title' => 'Request Successful', 'message' => 'Password updated successfully']);
         } else {
             return back()->withInput()->with('error', ['title' => 'Error while processing request', 'message' => $response['message']]);
         }
