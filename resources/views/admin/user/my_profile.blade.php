@@ -92,7 +92,7 @@
                                         <div class="card-block">
                                             <div class="row">
                                                 <div class="col-md-8 offset-2">
-                                                    <form id="form-change-password" method="post" action="{{ route('manager.user.change_password') }}">
+                                                    <form id="form-change-password" method="post" action="{{ route('admin.user.change_password') }}">
                                                         @csrf
                                                         <div class="row">
                                                             <div class="col-md-12 form-group">
