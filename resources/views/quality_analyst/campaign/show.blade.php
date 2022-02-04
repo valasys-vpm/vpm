@@ -287,6 +287,9 @@
                                         <div id="div-submit-campaign" class="col-md-3">
                                             <button type="button"  class="btn btn-danger btn-sm btn-square w-100" data-toggle="modal" data-target="#modal-submit-campaign">Submit Campaign</button>
                                         </div>
+                                       <div id="div-manager-leads" class="col-md-3">
+                                            <button type="button" class="btn btn-primary btn-sm btn-square w-100" onclick="window.location.href='{{ route('quality_analyst.lead.list', base64_encode($resultCAQA->id)) }}';">Manage Leads</button>
+                                        </div>
                                         @endif
                                     </div>
 

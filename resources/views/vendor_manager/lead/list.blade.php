@@ -4,6 +4,9 @@
     @parent
     <!-- data tables css -->
     <link rel="stylesheet" href="{{asset('public/template/assets/plugins/data-tables/css/datatables.min.css')}}">
+    <!-- custom campaign table css -->
+    <link rel="stylesheet" href="{{asset('public/css/campaign_table_custom.css')}}">
+
     <meta name="cavm-id" content="{{ base64_encode($resultCAVM->id) }}">
 
     <style>

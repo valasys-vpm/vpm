@@ -185,6 +185,9 @@ Route::prefix('quality-analyst')->middleware(['web', 'check.quality_analyst'])->
     //Campaign Management Routes
     include('quality_analyst/campaign_routes.php');
 
+    //Campaign Management Routes
+    include('quality_analyst/lead_routes.php');
+
 });
 
 Route::prefix('email-marketing-executive')->middleware(['web', 'check.email_marketing_executive'])->name('email_marketing_executive.')->group(function (){
