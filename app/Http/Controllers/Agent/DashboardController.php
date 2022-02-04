@@ -124,7 +124,7 @@ class DashboardController extends Controller
             $resultData[$user->id]['productivity'] = (int) number_format((float)($productivity), 0, '.', '');
             $resultData[$user->id]['quality'] = (int) number_format((float)($quality), 0, '.', '');
 
-            $resultData[$user->id]['round_productivity'] = $resultData[$user->id]['productivity'] > 0 ? round_up_to_any_nearest($resultData[$user->id]['productivity'], 5): 0;
+            $resultData[$user->id]['round_productivity'] = $resultData[$user->id]['productivity'] >= 100 ? 100 : ($resultData[$user->id]['productivity'] > 0 ? round_up_to_any_nearest($resultData[$user->id]['productivity'], 5): 0);
             $resultData[$user->id]['round_quality'] = $resultData[$user->id]['quality'] >= 100 ? 100 : ($resultData[$user->id]['quality'] > 0 ? round_up_to_any_nearest($resultData[$user->id]['quality'], 5) : 0);
 
         }
