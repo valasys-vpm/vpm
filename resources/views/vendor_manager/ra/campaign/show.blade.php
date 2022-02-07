@@ -37,7 +37,7 @@
                                         </div>
                                     </div>
                                     <ul class="breadcrumb">
-                                        <li class="breadcrumb-item"><a href="{{ route('vendor_manager.ra.dashboard') }}"><i class="feather icon-home"></i></a></li>
+                                        <li class="breadcrumb-item"><a href="{{ route('vendor_manager.dashboard') }}"><i class="feather icon-home"></i></a></li>
                                         <li class="breadcrumb-item"><a href="{{ route('vendor_manager.ra.campaign.list') }}">My Campaings</a></li>
                                         <li class="breadcrumb-item"><a href="javascript:void(0);">Campaign Details</a></li>
                                     </ul>
@@ -53,44 +53,34 @@
                             <div class="row">
                                 <!-- [ task-detail ] start -->
                                 <div class="col-xl-4 col-md-4 task-detail-right">
-                                    <div class="card loction-user">
-                                        <div class="card-block p-0">
-                                            <div class="row align-items-center justify-content-center">
-                                                <div class="col">
-                                                    <h5><span class="text-muted">ID: </span><span id="campaign_campaign_id">{{ $resultCampaign->campaign_id }}</span></h5>
-                                                    <h6><span><span class="text-muted">Name: </span>{{ $resultCampaign->name }}</span></h6>
-                                                    @if($resultCampaign->v_mail_campaign_id)
-                                                        <h6><span><span class="text-muted">V-Mail Campaign ID: </span>{{ $resultCampaign->v_mail_campaign_id }}</span></h6>
-                                                    @endif
-                                                </div>
-                                            </div>
+                                    <div class="card" style="word-break: break-all;">
+                                        <div class="card-block pb-3">
+                                            <h6 class="font-weight-bolder">ID: <span class="float-right font-weight-bolder">{{ $resultCampaign->campaign_id }}</span></h6>
+                                            <div style="border-bottom: 1px solid #e2dada;font-size: 4px;margin-bottom: 10px;">&nbsp;</div>
+                                            <h6 class="text-muted f-w-400">Name: <span class="float-right">{{ $resultCampaign->name }}</span></h6>
                                         </div>
-                                    </div>
-                                    <div class="card">
-                                        <div class="card-header">
+                                        <div class="card-header pb-3">
                                             <h5>Campaign Details</h5>
-                                            <div class="card-header-right">
-
-                                            </div>
+                                            <div class="card-header-right"></div>
                                         </div>
-                                        <div class="card-block">
-                                            <h6 class="text-muted f-w-300">Campaign Type: <span class="float-right">{{ $resultCampaign->campaignType->name }}</span></h6>
-                                            <div style="border-bottom: 1px solid #e2dada;">&nbsp;</div>
-                                            <h6 class="text-muted f-w-300 mt-4">Campaign Filter: <span class="float-right">{{ $resultCampaign->campaignFilter->name }}</span></h6>
-                                            <div style="border-bottom: 1px solid #e2dada;">&nbsp;</div>
-                                            <h6 class="text-muted f-w-300 mt-4">Country(s): <br><br><span class="float-right">
+                                        <div class="card-block pt-3">
+                                            <h6 class="text-muted f-w-400">Campaign Type: <span class="float-right">{{ $resultCampaign->campaignType->name }}</span></h6>
+                                            <div style="border-bottom: 1px solid #e2dada;font-size: 4px;margin-bottom: 10px;">&nbsp;</div>
+                                            <h6 class="text-muted f-w-400">Campaign Filter: <span class="float-right">{{ $resultCampaign->campaignFilter->name }}</span></h6>
+                                            <div style="border-bottom: 1px solid #e2dada;font-size: 4px;margin-bottom: 10px;">&nbsp;</div>
+                                            <h6 class="text-muted f-w-400">Country(s): <span class="float-right">
                                                     @foreach($resultCampaign->countries->pluck('country.name')->toArray() as $country)
                                                         <span class="badge badge-info m-1" style="padding: 5px 15px;">{{$country}}</span>
                                                     @endforeach
                                                 </span></h6>
-                                            <div style="border-bottom: 1px solid #e2dada;">&nbsp;</div>
-                                            <h6 class="text-muted f-w-300 mt-4">Region(s): <br><br><span class="float-right">
+                                            <div style="border-bottom: 1px solid #e2dada;font-size: 4px;margin-bottom: 10px;">&nbsp;</div>
+                                            <h6 class="text-muted f-w-400">Region(s): <span class="float-right">
                                                     @foreach($resultCampaign->countries->pluck('country.region.name')->unique()->toArray() as $region)
                                                         <span class="badge badge-dark m-1" style="padding: 5px 15px;">{{$region}}</span>
                                                     @endforeach
                                                 </span></h6>
-                                            <div style="border-bottom: 1px solid #e2dada;">&nbsp;</div>
-                                            <h6 class="text-muted f-w-300 mt-4">
+                                            <div style="border-bottom: 1px solid #e2dada;font-size: 4px;margin-bottom: 10px;">&nbsp;</div>
+                                            <h6 class="text-muted f-w-300">
                                                 Note: <br><br>
                                                 <span class="float-right">
                                                     @if(strlen($resultCampaign->note) > 200)
@@ -447,7 +437,7 @@
                                     <select class="form-control btn-square" id="priority" name="priority">
                                         <option value="low">Low</option>
                                         <option value="normal">Normal</option>
-                                        <option value="high">high</option>
+                                        <option value="high">High</option>
                                     </select>
                                 </div>
                             </div>

@@ -61,7 +61,7 @@ class LeadController extends Controller
         $attributes = $request->all();
         $response = $this->agentLeadRepository->store($attributes);
         if($response['status'] == TRUE) {
-            return redirect()->route('agent.lead.list', $attributes['ca_agent_id'])->with('success', ['title' => 'Successful', 'message' => $response['message']]);
+            return redirect()->route('vendor_manager.ra.lead.list', $attributes['ca_agent_id'])->with('success', ['title' => 'Successful', 'message' => $response['message']]);
         } else {
             return back()->withInput()->with('error', ['title' => 'Error while processing request', 'message' => $response['message']]);
         }
@@ -186,6 +186,25 @@ class LeadController extends Controller
     public function checkSuppressionEmail($id, Request $request)
     {
         $resultCAAgent = $this->agentRepository->find(base64_decode($id));
+
+        if($request->has('lead_id')) {
+            $resultLeadExists = AgentLead::whereCampaignId($resultCAAgent->campaign_id)->whereEmailAddress(trim($request->email_address))->whereStatus(1)->where('id', '!=', base64_decode($request->lead_id))->exists();
+        } else {
+            $resultLeadExists = AgentLead::whereCampaignId($resultCAAgent->campaign_id)->whereEmailAddress(trim($request->email_address))->whereStatus(1)->exists();
+        }
+
+        if(!$resultLeadExists) {
+            $query = SuppressionEmail::query();
+            $query->whereCampaignId($resultCAAgent->campaign_id);
+            $query->whereEmail(trim($request->email_address));
+            if($query->exists()) {
+                return 'false';
+            } else {
+                return 'true';
+            }
+        } else {
+            return 'false';
+        }
 
         $resultLeadExists = AgentLead::whereCampaignId($resultCAAgent->campaign_id)->whereEmailAddress(trim($request->email_address))->whereStatus(1)->exists();
 

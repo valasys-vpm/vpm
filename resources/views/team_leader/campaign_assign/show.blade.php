@@ -618,12 +618,16 @@
                                 <th>Zipcode</th>
                                 <th>Country</th>
                                 <th>Employee Size</th>
+                                <th>Employee Size 2</th>
                                 <th>Revenue</th>
                                 <th>Company Domain</th>
                                 <th>Website</th>
                                 <th>Company LinkedIn URL</th>
                                 <th>LinkedIn Profile Link</th>
                                 <th>LinkedIn Profile SN Link</th>
+                                <th>Comment</th>
+                                <th>TL Comment</th>
+                                <th>QC Comment</th>
                                 <th>Date</th>
                             </tr>
                             </thead>

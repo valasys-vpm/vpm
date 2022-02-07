@@ -207,6 +207,12 @@ function viewAgentLeadDetails(_ca_agent_id) {
 
                 if(response.data.length) {
                     $.each(response.data, function (key, value) {
+                        let status = '-';
+
+                        switch (parseInt(value.status)) {
+                            case 0: status = 'Rejected'; break;
+                            case 1: status = 'OK'; break;
+                        }
                         html += '' +
                             '<tr>\n' +
                             '   <td>' + (key + 1) + '</td>\n' +
@@ -222,12 +228,17 @@ function viewAgentLeadDetails(_ca_agent_id) {
                             '   <td>' + value.zipcode + '</td>\n' +
                             '   <td>' + value.country + '</td>\n' +
                             '   <td>' + value.employee_size + '</td>\n' +
+                            '   <td>' + value.employee_size_2 + '</td>\n' +
                             '   <td>' + value.revenue + '</td>\n' +
                             '   <td>' + value.company_domain + '</td>\n' +
                             '   <td>' + value.website + '</td>\n' +
                             '   <td>' + value.company_linkedin_url + '</td>\n' +
                             '   <td>' + value.linkedin_profile_link + '</td>\n' +
                             '   <td>' + value.linkedin_profile_sn_link + '</td>\n' +
+                            '   <td>' + ((value.comment) ? value.comment : '-') + '</td>\n' +
+                            '   <td>' + ((value.comment_2) ? value.comment_2 : '-') + '</td>\n' +
+                            '   <td>' + ((value.qc_comment) ? value.qc_comment : '-') + '</td>\n' +
+                            '   <td>' + status + '</td>\n' +
                             '   <td>' + moment(value.created_at).format('DD-MMM-YYYY') + '</td>\n' +
                             '</tr>';
                         '';

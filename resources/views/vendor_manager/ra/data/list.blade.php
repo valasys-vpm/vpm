@@ -44,7 +44,7 @@
                                         <h5 class="m-b-10">Manage Data</h5>
                                     </div>
                                     <ul class="breadcrumb">
-                                        <li class="breadcrumb-item"><a href="{{ route('vendor_manager.ra.dashboard') }}"><i class="feather icon-home"></i></a></li>
+                                        <li class="breadcrumb-item"><a href="{{ route('vendor_manager.dashboard') }}"><i class="feather icon-home"></i></a></li>
                                         <li class="breadcrumb-item"><a href="{{ route('vendor_manager.ra.campaign.list') }}">My Campaigns</a></li>
                                         <li class="breadcrumb-item"><a href="{{ route('vendor_manager.ra.campaign.show', base64_encode($resultCAAgent->id)) }}">Campaign Details</a></li>
                                         <li class="breadcrumb-item"><a href="javascript:void(0);">View Data</a></li>

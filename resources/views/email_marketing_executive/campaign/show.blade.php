@@ -453,7 +453,7 @@
                                     <select class="form-control btn-square" id="priority" name="priority">
                                         <option value="low">Low</option>
                                         <option value="normal">Normal</option>
-                                        <option value="high">high</option>
+                                        <option value="high">High</option>
                                     </select>
                                 </div>
                             </div>

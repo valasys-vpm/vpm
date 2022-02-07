@@ -188,26 +188,24 @@ class LeadController extends Controller
     {
         $resultCAAgent = $this->agentRepository->find(base64_decode($id));
 
-        $resultLeadExists = AgentLead::whereCampaignId($resultCAAgent->campaign_id)->whereEmailAddress(trim($request->email_address))->whereStatus(1)->exists();
-
-        if(!$request->has('lead_id')) {
-            if(!$resultLeadExists) {
-                $query = SuppressionEmail::query();
-                $query->whereCampaignId($resultCAAgent->campaign_id);
-                $query->whereEmail(trim($request->email_address));
-                if($query->exists()) {
-                    return 'false';
-                } else {
-                    return 'true';
-                }
-            } else {
-                return 'false';
-            }
+        if($request->has('lead_id')) {
+            $resultLeadExists = AgentLead::whereCampaignId($resultCAAgent->campaign_id)->whereEmailAddress(trim($request->email_address))->whereStatus(1)->where('id', '!=', base64_decode($request->lead_id))->exists();
         } else {
-            return 'true';
+            $resultLeadExists = AgentLead::whereCampaignId($resultCAAgent->campaign_id)->whereEmailAddress(trim($request->email_address))->whereStatus(1)->exists();
         }
 
-
+        if(!$resultLeadExists) {
+            $query = SuppressionEmail::query();
+            $query->whereCampaignId($resultCAAgent->campaign_id);
+            $query->whereEmail(trim($request->email_address));
+            if($query->exists()) {
+                return 'false';
+            } else {
+                return 'true';
+            }
+        } else {
+            return 'false';
+        }
     }
 
     public function checkSuppressionDomain($id, Request $request)

@@ -84,6 +84,9 @@ $(function (){
 
     //Validate Form
     $("#form-lead-edit").validate({
+        onfocusout: false,
+        onkeyup: false,
+        onclick: false,
         ignore: [],
         focusInvalid: false,
         rules: {
