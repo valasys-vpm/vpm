@@ -68,7 +68,14 @@ class CampaignAssignController extends Controller
         $this->data['resultCAQATL'] = $this->QATLRepository->find(base64_decode($id));
         $this->data['resultCAQA'] = CampaignAssignQualityAnalyst::where('campaign_assign_qatl_id', $this->data['resultCAQATL']->id)->where('campaign_id', $this->data['resultCAQATL']->campaign_id)->where('status', 1)->first();
         $this->data['resultCampaign'] = $this->campaignRepository->find($this->data['resultCAQATL']->campaign_id);
-        //dd($this->data['resultCAQA']->toArray());
+        $resultAssignedUsers = CampaignAssignQualityAnalyst::where('campaign_assign_qatl_id', base64_decode($id))->get()->pluck('user_id')->toArray();
+        $this->data['resultUsers'] = User::where('status', 1)
+            ->whereHas('role', function ($role_query){
+                $role_query->whereIn('slug', array('quality_analyst'));
+            })
+            ->whereNotIn('id', $resultAssignedUsers)
+            ->get();
+        //dd($this->data['resultCAQATL']->quality_analysts->toArray());
         return view('qa_team_leader.campaign_assign.show', $this->data);
     }
 
@@ -129,6 +136,77 @@ class CampaignAssignController extends Controller
         return response()->json($finalResponse);
     }
 
+    public function viewAssignmentDetails($id, Request $request): \Illuminate\Http\JsonResponse
+    {
+        $result = $this->qualityAnalystRepository->get(array('ca_qatl_id' => base64_decode($id)));
+        if(!empty($result)) {
+            return response()->json(array('status' => true, 'data' => $result));
+        } else {
+            return response()->json(array('status' => false, 'message' => 'Data not found'));
+        }
+    }
+
+    public function revokeCampaign($id)
+    {
+        $attributes['submitted_at'] = date('Y-m-d H:i:s');
+        $attributes['status'] = 2;
+        $response = $this->qualityAnalystRepository->update(base64_decode($id), $attributes);
+        if($response['status'] == TRUE) {
+            return response()->json(array('status' => true, 'message' => 'Campaign revoked successfully'));
+        } else {
+            return response()->json(array('status' => false, 'message' => $response['message']));
+        }
+    }
+
+    public function reAssignCampaign($id, Request $request)
+    {
+        $attributes = $request->all();
+        $new_attributes['submitted_at'] = NULL;
+        $new_attributes['status'] = 1;
+        $response = $this->qualityAnalystRepository->update(base64_decode($id), $new_attributes);
+
+        if($response['status'] == TRUE) {
+            return response()->json(array('status' => true, 'message' => 'Campaign re-assigned successfully'));
+        } else {
+            return response()->json(array('status' => false, 'message' => $response['message']));
+        }
+    }
+
+    public function assignCampaign(Request $request)
+    {
+        try {
+            $resultCAQATL = $this->QATLRepository->find(base64_decode($request->ca_qatl_id));
+
+            $resultCAQA = CampaignAssignQualityAnalyst::where('campaign_assign_qatl_id', $resultCAQATL->id)->where('user_id', $request->user_id)->first();
+
+            $response['status'] = FALSE;
+
+            if(empty($resultCAQA->id)) {
+                $new_attributes['ca_qatl_id'] = $resultCAQATL->id;
+                $new_attributes['campaign_id'] = $resultCAQATL->campaign_id;
+                $new_attributes['user_id'] = $request->user_id;
+                $new_attributes['display_date'] = $resultCAQATL->display_date;
+                $new_attributes['started_at'] = date('Y-m-d H:i:s');
+                $new_attributes['assigned_by'] = Auth::id();
+                $new_attributes['status'] = 1;
+                $response = $this->qualityAnalystRepository->store($new_attributes);
+            } else {
+                $new_attributes['submitted_at'] = NULL;
+                $new_attributes['status'] = 1;
+                $response = $this->qualityAnalystRepository->update($resultCAQA->id, $new_attributes);
+            }
+
+            if($response['status'] == TRUE) {
+                return response()->json(array('status' => true, 'message' => 'Campaign assigned successfully'));
+            } else {
+                return response()->json(array('status' => false, 'message' => $response['message']));
+            }
+
+        } catch (\Exception $exception) {
+            return response()->json(array('status' => false, 'message' => 'Something went wrong, please try again.'));
+        }
+    }
+
     public function getAssignedCampaigns(Request $request): \Illuminate\Http\JsonResponse
     {
 
@@ -146,7 +224,7 @@ class CampaignAssignController extends Controller
 
         $query->with('campaign');
         $query->with('campaign.children');
-
+        $query->with('quality_analysts.user');
         $query->with('quality_analyst.user');
 
         $query->whereNotNull('started_at');

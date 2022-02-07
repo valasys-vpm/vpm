@@ -13,7 +13,15 @@ class QualityAnalystRepository implements QualityAnalystInterface
 
     public function get($filters = array())
     {
-        // TODO: Implement get() method.
+        $query = CampaignAssignQualityAnalyst::query();
+
+        if(isset($filters['ca_qatl_id']) && !empty($filters['ca_qatl_id'])) {
+            $query->where('campaign_assign_qatl_id', $filters['ca_qatl_id']);
+        }
+
+        $query->with('user');
+
+        return $query->get();
     }
 
     public function find($id)
@@ -35,17 +43,24 @@ class QualityAnalystRepository implements QualityAnalystInterface
             $ca_quality_analyst->campaign_id = $attributes['campaign_id'];
             $ca_quality_analyst->user_id = $attributes['user_id'];
             $ca_quality_analyst->display_date = $attributes['display_date'];
+
             if(isset($attributes['started_at']) && !empty($attributes['started_at'])) {
                 $ca_quality_analyst->started_at = date('Y-m-d', strtotime($attributes['started_at']));
             }
             if(isset($attributes['submitted_at']) && !empty($attributes['submitted_at'])) {
                 $ca_quality_analyst->submitted_at = date('Y-m-d', strtotime($attributes['submitted_at']));
             }
-            $ca_quality_analyst->assigned_by = Auth::id();
+
+            if(isset($attributes['assigned_by']) && !empty($attributes['assigned_by'])) {
+                $ca_quality_analyst->assigned_by = $attributes['assigned_by'];
+            } else {
+                $ca_quality_analyst->assigned_by = Auth::id();
+            }
 
             if(isset($attributes['status']) && !empty($attributes['status'])) {
                 $ca_quality_analyst->status = $attributes['status'];
             }
+
             $ca_quality_analyst->save();
             if($ca_quality_analyst->id) {
                 //Add Campaign History
@@ -96,7 +111,7 @@ class QualityAnalystRepository implements QualityAnalystInterface
                 $ca_quality_analyst->started_at = $attributes['started_at'];
             }
 
-            if(isset($attributes['submitted_at']) && !empty($attributes['submitted_at'])) {
+            if(array_key_exists('submitted_at', $attributes)) {
                 $ca_quality_analyst->submitted_at = $attributes['submitted_at'];
             }
 

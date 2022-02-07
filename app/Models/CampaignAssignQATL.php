@@ -35,7 +35,12 @@ class CampaignAssignQATL extends Model
 
     public function quality_analyst()
     {
-        return $this->hasOne(CampaignAssignQualityAnalyst::class, 'campaign_assign_qatl_id', 'id');
+        return $this->hasOne(CampaignAssignQualityAnalyst::class, 'campaign_assign_qatl_id', 'id')->where('status', 1);
+    }
+
+    public function quality_analysts()
+    {
+        return $this->hasMany(CampaignAssignQualityAnalyst::class, 'campaign_assign_qatl_id', 'id');
     }
 
     public function getAgentLeadTotalCountAttribute()

@@ -276,10 +276,10 @@
                                     <div class="row mb-4">
                                         @if(empty($resultCAQA->submitted_at))
                                         <div id="div-download-file" class="col-md-3">
-                                            <button type="button" class="btn btn-success btn-sm btn-square w-100" onclick="downloadFile('{{ base64_encode($resultCAQA->id) }}');"><i class="feather icon-download"></i>Download File</button>
+                                            <button type="button" class="btn btn-dark btn-sm btn-square w-100" onclick="downloadFile('{{ base64_encode($resultCAQA->id) }}');"><i class="feather icon-download"></i>Download File</button>
                                         </div>
                                         <div id="div-download-npf-file" class="col-md-3">
-                                            <button type="button" class="btn btn-primary btn-sm btn-square w-100" onclick="downloadNPF('{{ base64_encode($resultCAQA->id) }}');"><i class="feather icon-download"></i>Download NPF</button>
+                                            <button type="button" class="btn btn-secondary btn-sm btn-square w-100" onclick="downloadNPF('{{ base64_encode($resultCAQA->id) }}');"><i class="feather icon-download"></i>Download NPF</button>
                                         </div>
                                         <div id="div-upload-NPF" class="col-md-3">
                                             <button type="button" class="btn btn-warning btn-sm btn-square w-100" data-toggle="modal" data-target="#modal-upload-npf"><i class="feather icon-upload"></i>Upload NPF</button>
@@ -287,7 +287,7 @@
                                         <div id="div-submit-campaign" class="col-md-3">
                                             <button type="button"  class="btn btn-danger btn-sm btn-square w-100" data-toggle="modal" data-target="#modal-submit-campaign">Submit Campaign</button>
                                         </div>
-                                       <div id="div-manager-leads" class="col-md-3">
+                                       <div id="div-manager-leads" class="col-md-3 mt-2">
                                             <button type="button" class="btn btn-primary btn-sm btn-square w-100" onclick="window.location.href='{{ route('quality_analyst.lead.list', base64_encode($resultCAQA->id)) }}';">Manage Leads</button>
                                         </div>
                                         @endif

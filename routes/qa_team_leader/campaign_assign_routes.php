@@ -13,4 +13,9 @@ Route::prefix('campaign-assign')->name('campaign_assign.')->group(function()
 
     Route::any('/submit-campaign/{id}', [App\Http\Controllers\QATeamLeader\CampaignAssignController::class, 'submitCampaign'])->name('submit_campaign');
 
+    Route::any('/view-assignment-details/{id}', [App\Http\Controllers\QATeamLeader\CampaignAssignController::class, 'viewAssignmentDetails'])->name('view_assignment_details');
+
+    Route::any('/revoke-campaign/{id}', [App\Http\Controllers\QATeamLeader\CampaignAssignController::class, 'revokeCampaign'])->name('revoke_campaign');
+    Route::any('/assign-campaign', [App\Http\Controllers\QATeamLeader\CampaignAssignController::class, 'assignCampaign'])->name('assign_campaign');
+    Route::any('/re-assign-campaign/{id}', [App\Http\Controllers\QATeamLeader\CampaignAssignController::class, 'reAssignCampaign'])->name('re_assign_campaign');
 });

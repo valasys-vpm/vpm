@@ -51,7 +51,13 @@ $(function (){
             {
                 orderable: false,
                 render: function (data, type, row) {
-                    return row.quality_analyst.user.full_name;
+                    let user_names = [];
+                    $.each(row.quality_analysts, function (key, value) {
+                        user_names[key] = value.user.full_name;
+                    });
+
+                    return user_names.join(', <br>');
+
                 }
             },
             {

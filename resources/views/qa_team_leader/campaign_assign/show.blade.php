@@ -3,6 +3,7 @@
 @section('stylesheet')
     @parent
     <meta name="ca-qatl-id" content="{{ base64_encode($resultCAQATL->id) }}">
+    <meta name="ca-qa-id" content="{{ $resultCAQA ? base64_encode($resultCAQA->id) : NULL }}">
 
     <!-- footable css -->
     <link rel="stylesheet" href="{{ asset('public/template/') }}/assets/plugins/footable/css/footable.bootstrap.min.css">
@@ -162,6 +163,7 @@
                                                         <th class="text-center">Pacing</th>
                                                         <th class="text-center">Allocation</th>
                                                         <th class="text-center">Status</th>
+                                                        <th class="text-center">Action</th>
                                                     </tr>
                                                     </thead>
                                                     <tbody class="text-center text-muted">
@@ -201,6 +203,9 @@
                                                                 @break
                                                             @endswitch
                                                         </td>
+                                                        <td>
+                                                            <a href="javascript:;" onclick="viewAssignmentDetails('{{ base64_encode($resultCAQATL->id) }}');" class="btn btn-outline-primary btn-sm btn-rounded mb-0" title="view assignment details" style="padding: 5px 8px;"><i class="feather icon-eye mr-0"></i></a>
+                                                        </td>
                                                     </tr>
                                                     <tr class="pacing-details" style="display: none;">
                                                         <td colspan="7" class="bg-light text-left">
@@ -237,18 +242,23 @@
                                     </div>
 
                                     <div class="row mb-4">
-                                        @if(empty($resultCAQATL->submitted_at))
-                                            @if(!empty($resultCAQA->submitted_at))
-                                            <div id="div-download-delivery-file" class="col-md-3">
-                                                <a href="{{ url('public/storage/campaigns/'.$resultCAQA->campaign->campaign_id.'/quality/qa_final/'.rawurlencode($resultCAQA->file_name)) }}"><button type="button" class="btn btn-dark btn-sm btn-square w-100"><i class="feather icon-download"></i> Delivery File</button></a>
-                                            </div>
+                                        @if(empty($resultCAQATL->submitted_at) && !empty($resultCAQATL->quality_analysts->count()))
+                                            @foreach($resultCAQATL->quality_analysts as $ca_quality_analyst)
+                                                @if(!empty($ca_quality_analyst->submitted_at) &&  !empty($ca_quality_analyst->file_name) && $submitFlag = 1)
+                                                <div id="div-download-delivery-file" class="col-md-3">
+                                                    <a href="{{ url('public/storage/campaigns/'.$resultCAQATL->campaign->campaign_id.'/quality/qa_final/'.rawurlencode($ca_quality_analyst->file_name)) }}">
+                                                        <button type="button" class="btn btn-dark btn-sm btn-square w-100"><i class="feather icon-download"></i> Delivery File ({{$ca_quality_analyst->user->full_name}})</button>
+                                                    </a>
+                                                </div>
+                                                @endif
+                                            @endforeach
+                                        @endif
+                                        @if(isset($submitFlag) && $submitFlag)
                                             <div id="div-submit-campaign" class="col-md-3">
                                                 <button type="button"  class="btn btn-danger btn-sm btn-square w-100" data-toggle="modal" data-target="#modal-submit-campaign">Submit Campaign</button>
                                             </div>
-                                            @endif
                                         @endif
                                     </div>
-
                                 </div>
                                 <!-- [ task-detail ] end -->
                             </div>
@@ -265,6 +275,11 @@
             <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title">Campaign Assignment Details</h5>
+                        @if(!isset($resultCAQA) || empty($resultCAQA->id))
+                        <div class="float-right">
+                            <a id="button-assign-campaign" href="javascript:void(0);" onclick="assignCampaign();" class="btn btn-outline-dark btn-sm mb-0 float-right" title="Assign Campaign" style="padding: 5px 8px;position: absolute;right: 50px;"><i class="feather icon-user-plus mr-0"></i></a>
+                        </div>
+                        @endif
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">×</span>
                         </button>
@@ -276,10 +291,10 @@
                                 <tr class="text-uppercase">
                                     <th class="text-center">#</th>
                                     <th class="text-center">Name</th>
-                                    <th class="text-center">End Date</th>
-                                    <th class="text-center">Allocation</th>
-                                    <th class="text-center">Assigned By</th>
+                                    <th class="text-center">Assigned On</th>
+                                    <th class="text-center">Progress Status</th>
                                     <th class="text-center">Status</th>
+                                    <th class="text-center">Action</th>
                                 </tr>
                                 </thead>
                                 <tbody class="text-center text-muted">
@@ -313,6 +328,37 @@
                             </div>
                             <button type="reset" class="btn btn-secondary btn-square float-right">Clear</button>
                             <button id="form-submit-campaign-submit" type="button" class="btn btn-primary btn-square float-right">Upload</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-assign-campaign" class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Assign Campaign</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body">
+                    <div class="col-md-12">
+                        <form id="form-assign-campaign">
+                            <div class="row">
+                                <input type="hidden" name="ca_qatl_id" value="{{ base64_encode($resultCAQATL->id) }}">
+                                <div class="col-md-12 form-group">
+                                    <label for="user_list">Select User</label>
+                                    <select class="form-control btn-square p-1 pl-2" id="user_list" name="user_id" style="height: unset;">
+                                        <option value=""></option>
+                                        @foreach($resultUsers as $user)
+                                        <option id="user_list_{{ $user->id }}" value="{{ $user->id }}" data-name="{{ $user->full_name }}">{{ $user->full_name.' - [ '.$user->role->name.' ]' }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            <button id="form-assign-campaign-submit" type="button" class="btn btn-primary btn-square float-right">Assign</button>
+                            <button type="reset" class="btn btn-secondary btn-square float-right" data-dismiss="modal">Cancel</button>
                         </form>
                     </div>
                 </div>
