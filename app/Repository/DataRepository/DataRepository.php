@@ -142,10 +142,10 @@ class DataRepository implements DataInterface
             if(isset($attributes['specific_title']) && !empty($attributes['specific_title'])) {
                 $data->specific_title = trim($attributes['specific_title']);
             }
-            if(isset($attributes['job_level']) && !empty($attributes['job_level'])) {
+            if(array_key_exists('job_level', $attributes)) {
                 $data->job_level = trim($attributes['job_level']);
             }
-            if(isset($attributes['job_role']) && !empty($attributes['job_role'])) {
+            if(array_key_exists('job_role', $attributes)) {
                 $data->job_role = trim($attributes['job_role']);
             }
             if(isset($attributes['phone_number']) && !empty($attributes['phone_number'])) {
@@ -154,7 +154,7 @@ class DataRepository implements DataInterface
             if(isset($attributes['address_1']) && !empty($attributes['address_1'])) {
                 $data->address_1 = trim($attributes['address_1']);
             }
-            if(isset($attributes['address_2']) && !empty($attributes['address_2'])) {
+            if(array_key_exists('address_2', $attributes)) {
                 $data->address_2 = trim($attributes['address_2']);
             }
             if(isset($attributes['city']) && !empty($attributes['city'])) {
@@ -184,7 +184,7 @@ class DataRepository implements DataInterface
             if(isset($attributes['company_domain']) && !empty($attributes['company_domain'])) {
                 $data->company_domain = trim($attributes['company_domain']);
             }
-            if(isset($attributes['website']) && !empty($attributes['website'])) {
+            if(array_key_exists('website', $attributes)) {
                 $data->website = trim($attributes['website']);
             }
             if(isset($attributes['company_linkedin_url']) && !empty($attributes['company_linkedin_url'])) {
@@ -193,7 +193,7 @@ class DataRepository implements DataInterface
             if(isset($attributes['linkedin_profile_link']) && !empty($attributes['linkedin_profile_link'])) {
                 $data->linkedin_profile_link = trim($attributes['linkedin_profile_link']);
             }
-            if(isset($attributes['linkedin_profile_sn_link']) && !empty($attributes['linkedin_profile_sn_link'])) {
+            if(array_key_exists('linkedin_profile_sn_link', $attributes)) {
                 $data->linkedin_profile_sn_link = trim($attributes['linkedin_profile_sn_link']);
             }
             if(isset($attributes['comment']) && !empty(trim($attributes['comment']))) {
