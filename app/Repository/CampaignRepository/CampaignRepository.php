@@ -98,6 +98,8 @@ class CampaignRepository implements CampaignInterface
         $response = array('status' => FALSE, 'message' => 'Something went wrong, please try again.');
         try {
             DB::beginTransaction();
+            $resultCampaign = Campaign::where('name', $attributes['name'])->first();
+
             $campaign = new Campaign();
 
             if(isset($attributes['parent_id']) && base64_decode($attributes['parent_id'])) {
@@ -115,6 +117,10 @@ class CampaignRepository implements CampaignInterface
                 $resultCampaignType = $this->campaignTypeRepository->find($attributes['campaign_type_id']);
                 $campaignAbbreviation = SiteSetting::where('key', 'Campaign Abbreviation')->first()->value;
                 $campaignId = $campaignAbbreviation.$resultCampaignType->name.'-'.$lastId;
+            }
+
+            if(!isset($attributes['parent_id']) && !empty($resultCampaign->id)) {
+                throw new \Exception('Campaign already exists.');
             }
 
             $campaign->name = $attributes['name'];
@@ -322,7 +328,7 @@ class CampaignRepository implements CampaignInterface
             }
         } catch (\Exception $exception) {
             DB::rollBack();
-            $response = array('status' => FALSE, 'message' => 'Something went wrong, please try again.');
+            $response = array('status' => FALSE, 'message' => $exception->getMessage());
         }
         return $response;
     }
