@@ -162,7 +162,9 @@
                                                         <th class="text-center">Completion</th>
                                                         <th class="text-center">Deliver Count / <br>Allocation</th>
                                                         <th class="text-center">Status</th>
+                                                        @if(empty($resultCARATL->submitted_at))
                                                         <th class="text-center">Action</th>
+                                                        @endif
                                                     </tr>
                                                     </thead>
                                                     <tbody class="text-center text-muted">
@@ -220,9 +222,11 @@
                                                                 @break
                                                             @endswitch
                                                         </td>
+                                                        @if(empty($resultCARATL->submitted_at))
                                                         <td>
                                                             <a href="javascript:;" onclick="viewAssignmentDetails('{{ base64_encode($resultCARATL->id) }}');" class="btn btn-outline-primary btn-sm btn-rounded mb-0" title="view assignment details" style="padding: 5px 8px;"><i class="feather icon-eye mr-0"></i></a>
                                                         </td>
+                                                        @endif
                                                     </tr>
                                                     <tr class="pacing-details" style="display: none;">
                                                         <td colspan="7" class="bg-light text-left">
@@ -314,14 +318,18 @@
                                                                 {{ $ca_agent->agent_lead_count.' / '.$ca_agent->allocation }}
                                                             </td>
                                                             <td>
-                                                                @if(empty($ca_agent->started_at) && empty($ca_agent->submitted_at))
-                                                                    <span class="badge badge-pill badge-danger" style="padding: 5px;min-width: 70px;">Campaign Assigned</span>
+                                                                @if($ca_agent->status == 2)
+                                                                    <span class="badge badge-pill badge-danger" style="padding: 5px;min-width: 70px;">Campaign Revoked</span>
                                                                 @else
-                                                                    @if(!empty($ca_agent->started_at) && empty($ca_agent->submitted_at))
-                                                                        <span class="badge badge-pill badge-warning" style="padding: 5px;min-width: 70px;">Campaign In Progress</span>
+                                                                    @if(empty($ca_agent->started_at) && empty($ca_agent->submitted_at))
+                                                                        <span class="badge badge-pill badge-danger" style="padding: 5px;min-width: 70px;">Campaign Assigned</span>
                                                                     @else
-                                                                        @php $total_submitted++; @endphp
-                                                                        <span class="badge badge-pill badge-success" style="padding: 5px;min-width: 70px;">Campaign Submit</span>
+                                                                        @if(!empty($ca_agent->started_at) && empty($ca_agent->submitted_at))
+                                                                            <span class="badge badge-pill badge-warning" style="padding: 5px;min-width: 70px;">Campaign In Progress</span>
+                                                                        @else
+                                                                            @php $total_submitted++; @endphp
+                                                                            <span class="badge badge-pill badge-success" style="padding: 5px;min-width: 70px;">Campaign Submit</span>
+                                                                        @endif
                                                                     @endif
                                                                 @endif
                                                             </td>
@@ -340,7 +348,7 @@
                                     </div>
 
                                     <div class="row mb-4">
-                                        @if(empty($resultCARATL->submitted_at))
+                                        @if(empty($resultCARATL->submitted_at) && empty($resultCAQATL->submitted_at))
                                             <div id="div-manage-leads" class="col-md-3">
                                                 <a href="{{ route('team_leader.lead.list', base64_encode($resultCARATL->id)) }}">
                                                     <button type="button" class="btn btn-primary btn-sm btn-square w-100">Manage Leads</button>
@@ -429,6 +437,7 @@
                                     </div>
                                     @endif
 
+                                    @if(empty($resultCARATL->submitted_at))
                                     <div id="div-get-data" class="card">
                                         <div class="card-header">
                                             <h5><i class="fas fa-chart-pie m-r-5"></i> Get Data</h5>
@@ -540,7 +549,7 @@
                                             </div>
                                         </div>
                                     </div>
-
+                                    @endif
                                 </div>
                                 <!-- [ task-detail ] end -->
                             </div>

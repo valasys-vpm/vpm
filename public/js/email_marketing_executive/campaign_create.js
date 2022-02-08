@@ -209,7 +209,7 @@ $(function (){
     });
 
     //Update total sub-allocation count
-    $('body').on('keyup', ".sub-allocation",function () {
+    $('body').on('keyup change', ".sub-allocation",function () {
         let total = 0;
 
         $('body').find('.sub-allocation').each(function(){

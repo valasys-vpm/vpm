@@ -138,7 +138,31 @@ class LeadController extends Controller
 
         //Search Data
         if(isset($searchValue) && $searchValue != "") {
-            $query->where("name", "like", "%$searchValue%");
+            $query->where(function ($query) use($searchValue) {
+                $query->where("first_name", "like", "%$searchValue%");
+                $query->orWhere("last_name", "like", "%$searchValue%");
+                $query->orWhere("company_name", "like", "%$searchValue%");
+                $query->orWhere("email_address", "like", "%$searchValue%");
+                $query->orWhere("specific_title", "like", "%$searchValue%");
+                $query->orWhere("job_level", "like", "%$searchValue%");
+                $query->orWhere("job_role", "like", "%$searchValue%");
+                $query->orWhere("phone_number", "like", "%$searchValue%");
+                $query->orWhere("address_1", "like", "%$searchValue%");
+                $query->orWhere("address_2", "like", "%$searchValue%");
+                $query->orWhere("city", "like", "%$searchValue%");
+                $query->orWhere("state", "like", "%$searchValue%");
+                $query->orWhere("zipcode", "like", "%$searchValue%");
+                $query->orWhere("employee_size", "like", "%$searchValue%");
+                $query->orWhere("employee_size_2", "like", "%$searchValue%");
+                $query->orWhere("revenue", "like", "%$searchValue%");
+                $query->orWhere("country", "like", "%$searchValue%");
+                $query->orWhere("company_domain", "like", "%$searchValue%");
+                $query->orWhere("website", "like", "%$searchValue%");
+                $query->orWhere("company_linkedin_url", "like", "%$searchValue%");
+                $query->orWhere("linkedin_profile_link", "like", "%$searchValue%");
+                $query->orWhere("linkedin_profile_sn_link", "like", "%$searchValue%");
+                $query->orWhere("comment", "like", "%$searchValue%");
+            });
         }
         //Filters
         if(!empty($filters)) {

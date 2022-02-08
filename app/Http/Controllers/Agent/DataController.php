@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Agent;
 
 use App\Http\Controllers\Controller;
 use App\Models\AgentData;
+use App\Models\AgentLead;
+use App\Models\CampaignAssignAgent;
 use App\Models\Data;
 use App\Repository\AgentDataRepository\AgentDataRepository;
 use App\Repository\AgentLeadRepository\AgentLeadRepository;
@@ -78,12 +80,17 @@ class DataController extends Controller
         $resultData = $this->dataRepository->find(base64_decode($attributes['data_id']));
         $attributes = array_merge($attributes, $resultData->toArray());
 
+        $resultCAAgent = CampaignAssignAgent::find(base64_decode($attributes['ca_agent_id']));
+
         $resultAgentData = AgentData::select('id')
-            ->where('ca_agent_id', base64_decode($attributes['ca_agent_id']))
+            ->where('ca_agent_id', $resultCAAgent->id)
             ->where('data_id', base64_decode($attributes['data_id']))
             ->where('status', 1)
             ->first();
-        if(isset($resultAgentData) && $resultAgentData->id) {
+
+
+        $resultAgentLead = AgentLead::where('campaign_id', $resultCAAgent->campaign_id)->where('email_address', $attributes['email_address'])->first();
+        if(isset($resultAgentData) && $resultAgentData->id && empty($resultAgentLead->id)) {
             $response = $this->agentLeadRepository->store($attributes);
             if($response['status'] == TRUE) {
                 //Change agentData status to taken
@@ -143,6 +150,7 @@ class DataController extends Controller
                 $query->orWhere("state", "like", "%$searchValue%");
                 $query->orWhere("zipcode", "like", "%$searchValue%");
                 $query->orWhere("employee_size", "like", "%$searchValue%");
+                $query->orWhere("employee_size_2", "like", "%$searchValue%");
                 $query->orWhere("revenue", "like", "%$searchValue%");
                 $query->orWhere("country", "like", "%$searchValue%");
                 $query->orWhere("company_domain", "like", "%$searchValue%");
@@ -150,6 +158,7 @@ class DataController extends Controller
                 $query->orWhere("company_linkedin_url", "like", "%$searchValue%");
                 $query->orWhere("linkedin_profile_link", "like", "%$searchValue%");
                 $query->orWhere("linkedin_profile_sn_link", "like", "%$searchValue%");
+                $query->orWhere("comment", "like", "%$searchValue%");
             });
         }
         //Filters

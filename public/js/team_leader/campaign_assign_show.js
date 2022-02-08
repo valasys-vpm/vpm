@@ -146,6 +146,7 @@ function viewAssignmentDetails(id) {
                 let data = null;
                 let html = '';
                 if(response.data.length) {
+                    console.log(response.data)
                     $.each(response.data, function (key, value) {
                         let status = '-';
                         let buttons = '';
@@ -169,7 +170,8 @@ function viewAssignmentDetails(id) {
 
                         html += '' +
                             '<tr>\n' +
-                            '   <td><i class="feather icon-plus-square toggle-pacing-details" style="cursor: pointer;font-size: 17px;"></i></td>\n' +
+                            //'   <td><i class="feather icon-plus-square toggle-pacing-details" style="cursor: pointer;font-size: 17px;"></i></td>\n' +
+                            '   <td> ' + (key+1) + ' </td>\n' +
                             '   <td>'+ value.user.first_name +' '+ value.user.last_name +'</td>\n' +
                             '   <td>'+ value.display_date +'</td>\n' +
                             '   <td>'+ value.allocation +'</td>\n' +

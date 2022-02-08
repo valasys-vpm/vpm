@@ -230,7 +230,11 @@ function rejectLead(_agent_lead_id) {
 function approveLead(_agent_lead_id, _qc_comment) {
     if(confirm('Are you sure to approve this lead?')) {
         $('#form-approve-lead').find('input[name="agent_lead_id"]').val(_agent_lead_id)
-        $('#form-approve-lead').find('textarea[name="qc_comment"]').val(_qc_comment)
+        if(_qc_comment === 'null') {
+            $('#form-approve-lead').find('textarea[name="qc_comment"]').val('');
+        } else {
+            $('#form-approve-lead').find('textarea[name="qc_comment"]').val(_qc_comment);
+        }
         $('#modal-approve-lead').modal('show');
     }
 }

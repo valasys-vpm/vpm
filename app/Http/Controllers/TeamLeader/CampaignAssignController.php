@@ -200,7 +200,7 @@ class CampaignAssignController extends Controller
             $this->data['resultCARATL'] = $this->RATLRepository->find(base64_decode($id));
             $this->data['resultCampaign'] = $this->campaignRepository->find($this->data['resultCARATL']->campaign->id);
             $this->data['resultCampaignIssues'] = $this->issueRepository->get(array('campaign_ids' => [$this->data['resultCARATL']->campaign->id]));
-
+            $this->data['resultCAQATL'] = CampaignAssignQATL::where('campaign_id', $this->data['resultCARATL']->campaign_id)->first();
             //get count if data already assigned
             $this->data['countAgentData'] = $this->agentDataRepository->get(array('ca_ratl_ids' => [$this->data['resultCARATL']->id]))->count();
 

@@ -204,6 +204,9 @@ function getCampaignCard_html(_campaign_id, _user_list) {
 
     let end_date = new Date($("#campaign_list_"+_campaign_id).data('end-date'));
 
+    allocation = allocation < 1 ? 1 : allocation;
+    balance_allocation = balance_allocation < 1 ? 1 : balance_allocation;
+
     html += '' +
         '<div class="card border border-info rounded">' +
         '   <h5 class="card-header" style="padding: 10px 25px;">'+$("#campaign_list_"+_campaign_id).data('name')+'</h5>' +

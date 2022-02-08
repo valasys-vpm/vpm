@@ -143,6 +143,7 @@ class DataController extends Controller
                 $query->orWhere("state", "like", "%$searchValue%");
                 $query->orWhere("zipcode", "like", "%$searchValue%");
                 $query->orWhere("employee_size", "like", "%$searchValue%");
+                $query->orWhere("employee_size_2", "like", "%$searchValue%");
                 $query->orWhere("revenue", "like", "%$searchValue%");
                 $query->orWhere("country", "like", "%$searchValue%");
                 $query->orWhere("company_domain", "like", "%$searchValue%");
@@ -150,6 +151,7 @@ class DataController extends Controller
                 $query->orWhere("company_linkedin_url", "like", "%$searchValue%");
                 $query->orWhere("linkedin_profile_link", "like", "%$searchValue%");
                 $query->orWhere("linkedin_profile_sn_link", "like", "%$searchValue%");
+                $query->orWhere("comment", "like", "%$searchValue%");
             });
         }
         //Filters
