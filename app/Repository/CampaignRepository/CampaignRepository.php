@@ -4,6 +4,8 @@ namespace App\Repository\CampaignRepository;
 
 use App\Exports\ArrayToExcel;
 use App\Models\Campaign;
+use App\Models\CampaignAssignAgent;
+use App\Models\CampaignAssignRATL;
 use App\Models\CampaignCountry;
 use App\Models\CampaignDeliveryDetail;
 use App\Models\CampaignFile;
@@ -394,6 +396,12 @@ class CampaignRepository implements CampaignInterface
             if($campaign->id) {
                 $campaign_updated = $campaign->getChanges();
                 unset($campaign_updated['updated_at']);
+
+                //if end date updated the update CARATL and CAAgent display date
+                if(array_key_exists('end_date', $campaign_updated)) {
+                    $resultQuery1 = CampaignAssignRATL::where('campaign_id', $campaign->id)->update(array('display_date' => date('Y-m-d', strtotime('-2 day' , strtotime($campaign->end_date)))));
+                    $resultQuery2 = CampaignAssignAgent::where('campaign_id', $campaign->id)->update(array('display_date' => date('Y-m-d', strtotime('-2 day' , strtotime($campaign->end_date)))));
+                }
 
                 //Save Campaign's Countries
                 $resultCampaignCountries = CampaignCountry::whereCampaignId($campaign->id)->get();
