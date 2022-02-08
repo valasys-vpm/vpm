@@ -87,7 +87,7 @@
                     </a>
                     <div class="dropdown-menu dropdown-menu-right profile-notification" style="line-height: 0.4;">
                         <div class="pro-head">
-                            <img src="{{ asset('public/template/assets/images/user/avatar-2.jpg') }}" class="img-radius" alt="User-Profile-Image">
+                            <img src="@if(!empty(Auth::user()->profile)){{asset('public/storage/user/'.Auth::user()->employee_code.'/profile/'.Auth::user()->profile)}}@else{{asset('public/template/assets/images/user/avatar-2.jpg')}}@endif" class="img-radius" alt="User-Profile-Image">
                             <span>
                                 {{Auth::user()->full_name}}
                                 <br>
