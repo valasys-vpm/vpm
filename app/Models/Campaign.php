@@ -12,7 +12,7 @@ class Campaign extends Model
     protected $guarded = array();
     public $timestamps = true;
 
-    protected $appends = ['completed_count', 'delivery_file'];
+    protected $appends = ['completed_count', 'delivery_file', 'total_allocation'];
 
     public function campaignType(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
@@ -126,6 +126,19 @@ class Campaign extends Model
             return $resultCAQATL->file_name;
         } else {
             return null;
+        }
+    }
+
+    public function getTotalAllocationAttribute()
+    {
+        if(!empty($this->children) && $this->children->count()) {
+            $allocation = $this->allocation;
+            foreach ($this->children as $children_campaign) {
+                $allocation = $allocation + $children_campaign->allocation;
+            }
+            return $allocation;
+        } else{
+            return $this->allocation;
         }
     }
 

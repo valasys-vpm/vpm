@@ -64,7 +64,7 @@ class DeliveryDetailRepository implements DeliveryDetailInterface
                 $delivery_detail->lead_available = $attributes['lead_available'];
             }
 
-            $delivery_detail->lead_pending = $resultCampaign->allocation - $delivery_detail->lead_approved;
+            $delivery_detail->lead_pending = $resultCampaign->total_allocation - $delivery_detail->lead_approved;
 
             if(isset($attributes['campaign_progress']) && !empty($attributes['campaign_progress'])) {
                 $delivery_detail->campaign_progress = $attributes['campaign_progress'];
@@ -120,7 +120,7 @@ class DeliveryDetailRepository implements DeliveryDetailInterface
                 $delivery_detail->lead_available = $attributes['lead_available'];
             }
 
-            $delivery_detail->lead_pending = $resultCampaign->allocation - $delivery_detail->lead_approved;
+            $delivery_detail->lead_pending = $resultCampaign->total_allocation - $delivery_detail->lead_approved;
 
             if(isset($attributes['campaign_progress']) && !empty($attributes['campaign_progress'])) {
                 $delivery_detail->campaign_progress = $attributes['campaign_progress'];

@@ -180,7 +180,7 @@ $(function (){
                             lead_approved = row.delivery_detail.lead_approved;
                         }
                     }
-                    return row.allocation - lead_approved;
+                    return row.total_allocation - lead_approved;
                 }
             },
             {
