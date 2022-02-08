@@ -302,7 +302,8 @@
                                                             <td>{{ $ca_agent->user->full_name }}</td>
                                                             <td>
                                                                 @php
-                                                                    $percentage = ($ca_agent->agent_lead_count/$ca_agent->allocation)*100;
+                                                                    $allocation = $ca_agent->allocation < 1 ? 1 : $ca_agent->allocation;
+                                                                    $percentage = ($ca_agent->agent_lead_count/$allocation)*100;
                                                                     $percentage = number_format($percentage,2,".", "");
                                                                     if($percentage >= 100) {
                                                                         $color_class = 'bg-success';
