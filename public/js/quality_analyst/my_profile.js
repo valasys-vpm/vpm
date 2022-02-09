@@ -108,20 +108,22 @@ $(function (){
 
     $('#form-profile-edit-submit').on('click', function (e) {
         e.preventDefault();
-        $.ajax({
-            type: 'post',
-            url: URL + '/quality-analyst/user/update',
-            data: $('#form-profile-edit').serialize(),
-            async : true,
-            success: function (response) {
-                if(response.status === true) {
-                    trigger_pnofify('success', 'Successful', response.message);
-                    window.location.reload();
-                } else {
-                    trigger_pnofify('error', 'Something went wrong', response.message);
+        if($("#form-profile-edit").valid()) {
+            $.ajax({
+                type: 'post',
+                url: URL + '/quality-analyst/user/update',
+                data: $('#form-profile-edit').serialize(),
+                async: true,
+                success: function (response) {
+                    if (response.status === true) {
+                        trigger_pnofify('success', 'Successful', response.message);
+                        window.location.reload();
+                    } else {
+                        trigger_pnofify('error', 'Something went wrong', response.message);
+                    }
                 }
-            }
-        });
+            });
+        }
     });
 
 });

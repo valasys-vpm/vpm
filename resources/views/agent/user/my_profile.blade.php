@@ -99,13 +99,13 @@
                                                         <div class="row">
                                                             <div class="col-md-12 form-group">
                                                                 <label for="first_name">First Name<span class="text-danger">*</span></label>
-                                                                <input type="text" class="form-control btn-square" id="first_name" name="first_name" value="{{ $resultUser->first_name }}" placeholder="Enter first name">
+                                                                <input type="text" class="form-control btn-square" id="first_name" name="first_name" value="{{ $resultUser->first_name }}" placeholder="Enter first name" required>
                                                             </div>
                                                         </div>
                                                         <div class="row">
                                                             <div class="col-md-12 form-group">
                                                                 <label for="last_name">Last Name<span class="text-danger">*</span></label>
-                                                                <input type="text" class="form-control btn-square" id="last_name" name="last_name" value="{{ $resultUser->last_name }}" placeholder="Enter last name">
+                                                                <input type="text" class="form-control btn-square" id="last_name" name="last_name" value="{{ $resultUser->last_name }}" placeholder="Enter last name" required>
                                                             </div>
                                                         </div>
                                                         <button id="form-profile-edit-submit" type="button" class="btn btn-primary btn-square float-right">Update</button>
