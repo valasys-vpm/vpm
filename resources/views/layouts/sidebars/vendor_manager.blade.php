@@ -6,7 +6,7 @@
             <span class="pcoded-mtext">Dashboard</span>
         </a>
     </li>
-    {{-- }}
+
     <li class="nav-item pcoded-menu-caption">
         <label>RA Menu</label>
     </li>
@@ -17,7 +17,7 @@
             <span class="pcoded-mtext">My Campaigns</span>
         </a>
     </li>
-    {{  --}}
+    
     <li class="nav-item pcoded-menu-caption">
         <label>VM Menu</label>
     </li>
