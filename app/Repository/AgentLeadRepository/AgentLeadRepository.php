@@ -434,7 +434,7 @@ class AgentLeadRepository implements AgentLeadInterface
                     $validatedLead['company_name'] = trim($leadData['company_name']);
                 } else {
                     $errorMessage['company_name'] = 'Account Name Suppression';
-                    $invalidCells[1] = 'Invalid';
+                    $invalidCells[2] = 'Invalid';
                 }
             } else {
                 $errorMessage['company_name'] = 'Enter company_name';
@@ -450,11 +450,11 @@ class AgentLeadRepository implements AgentLeadInterface
                         $validatedLead['email_address'] = trim($leadData['email_address']);
                     } else {
                         $errorMessage['email_address'] = 'Email Suppression';
-                        $invalidCells[1] = 'Invalid';
+                        $invalidCells[3] = 'Invalid';
                     }
                 } else {
                     $errorMessage['email_address'] = 'Email address already exists';
-                    $invalidCells[1] = 'Invalid';
+                    $invalidCells[3] = 'Invalid';
                 }
             } else {
                 $errorMessage['email_address'] = 'Enter email_addresss';
@@ -563,14 +563,14 @@ class AgentLeadRepository implements AgentLeadInterface
                             $validatedLead['company_domain'] = trim($leadData['company_domain']);
                         } else {
                             $errorMessage['company_domain'] = 'Target Domain Mismatch';
-                            $invalidCells[1] = 'Invalid';
+                            $invalidCells[18] = 'Invalid';
                         }
                     } else {
                         $validatedLead['company_domain'] = trim($leadData['company_domain']);
                     }
                 } else {
                     $errorMessage['company_domain'] = 'Domain Suppression';
-                    $invalidCells[1] = 'Invalid';
+                    $invalidCells[18] = 'Invalid';
                 }
             } else {
                 $errorMessage['company_domain'] = 'Enter company_domain';
