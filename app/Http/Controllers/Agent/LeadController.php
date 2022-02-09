@@ -106,6 +106,12 @@ class LeadController extends Controller
         }
     }
 
+    public function formImportLeads($ca_agent_id)
+    {
+        $this->data['resultCAAgent'] = $this->agentRepository->find(base64_decode($ca_agent_id));
+        return view('agent.lead.import', $this->data);
+    }
+
     public function getLeads(Request $request): \Illuminate\Http\JsonResponse
     {
         //dd($request->all());

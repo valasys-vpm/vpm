@@ -17,7 +17,7 @@
             <span class="pcoded-mtext">My Campaigns</span>
         </a>
     </li>
-    
+
     <li class="nav-item pcoded-menu-caption">
         <label>VM Menu</label>
     </li>

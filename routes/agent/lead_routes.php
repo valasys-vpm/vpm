@@ -25,6 +25,7 @@ Route::prefix('lead')->name('lead.')->group(function()
     //Validate Target List
     Route::any('/check-target-domain/{id}', [App\Http\Controllers\Agent\LeadController::class, 'checkTargetDomain'])->name('check_target_domain');
 
+    Route::any('{ca_agent_id}/import', [App\Http\Controllers\Agent\LeadController::class, 'formImportLeads'])->name('form_import_leads');
     Route::any('/import-leads', [App\Http\Controllers\Agent\LeadController::class, 'importLeads'])->name('import_leads');
 
 });
