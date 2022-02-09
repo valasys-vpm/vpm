@@ -241,7 +241,7 @@ $(function (){
 
                     if(response.status === true) {
                         let _type = 'success';
-                        if(typeof response.data.failed_data_file !== 'undefined') {
+                        if(typeof response.data !== 'undefined' && typeof response.data.failed_data_file !== 'undefined') {
 
                             _message = response.message + '\n' + response.data.success_count + ' row inserted' + '\n' + response.data.failed_count + ' row not inserted';
                             _type = 'warning';
@@ -261,7 +261,7 @@ $(function (){
                         }
 
                     } else {
-                        if(typeof response.data.failed_data_file !== 'undefined') {
+                        if(typeof response.data !== 'undefined' && typeof response.data.failed_data_file !== 'undefined') {
                             trigger_pnofify('error', 'Error while processing request', response.message);
                             $('#modal-loader').modal('hide');
                             LEAD_TABLE.ajax.reload();
