@@ -89,6 +89,23 @@ class LeadController extends Controller
         }
     }
 
+    public function importLeads(Request $request)
+    {
+        $attributes = $request->all();
+        $ca_agent_id = base64_decode($attributes['ca_agent_id']);
+
+        $response = $this->agentLeadRepository->import($ca_agent_id, $attributes['leads_file']);
+        if($response['status'] == TRUE) {
+            return response()->json(array('status' => true, 'message' => $response['message'], 'data' => $response['data']));
+        } else {
+            if(!empty($response['data'])) {
+                return response()->json(array('status' => false, 'message' => $response['message'], 'data' => $response['data']));
+            } else{
+                return response()->json(array('status' => false, 'message' => $response['message']));
+            }
+        }
+    }
+
     public function getLeads(Request $request): \Illuminate\Http\JsonResponse
     {
         //dd($request->all());
