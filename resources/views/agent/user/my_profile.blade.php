@@ -49,42 +49,40 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="card">
+
+                                    <div class="card" style="word-break: break-all;">
                                         <div class="card-header">
                                             <h5>User Details</h5>
                                         </div>
-                                        <div class="card-block task-details">
-                                            <table class="table">
-                                                <tbody>
-                                                <tr>
-                                                    <td>Email:</td>
-                                                    <td class="text-right"><span class="float-right">{{ $resultUser->email }}</span></td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Employee Code:</td>
-                                                    <td class="text-right"><span class="float-right">{{ $resultUser->employee_code }}</span></td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Department:</td>
-                                                    <td class="text-right">{{ $resultUser->department->name }}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Designation:</td>
-                                                    <td class="text-right">{{ $resultUser->designation->name }}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Status:</td>
-                                                    <td class="text-right">
-                                                        @switch($resultUser->status)
-                                                            @case(1) <span @class('text-success')>Active</span> @break
-                                                            @case(0) <span @class('text-danger')>Inactive</span> @break
-                                                        @endswitch
-                                                    </td>
-                                                </tr>
-                                                </tbody>
-                                            </table>
+                                        <div class="card-block pt-3">
+                                            <div class="row col-md-12 m-0 p-0 border-bottom">
+                                                <div class="col-md-5 text-left" style="color: #292c2f;padding: 10px 0 !important;">Email: </div>
+                                                <div class="col-md-7 text-right" style="color: #6c757d;padding: 10px 0 !important;">{{ $resultUser->email }}</div>
+                                            </div>
+                                            <div class="row col-md-12 m-0 p-0 border-bottom">
+                                                <div class="col-md-5 text-left" style="color: #292c2f;padding: 10px 0 !important;">Employee Code: </div>
+                                                <div class="col-md-7 text-right" style="color: #6c757d;padding: 10px 0 !important;">{{ $resultUser->employee_code }}</div>
+                                            </div>
+                                            <div class="row col-md-12 m-0 p-0 border-bottom">
+                                                <div class="col-md-5 text-left" style="color: #292c2f;padding: 10px 0 !important;">Department: </div>
+                                                <div class="col-md-7 text-right" style="color: #6c757d;padding: 10px 0 !important;">{{ $resultUser->department->name }}</div>
+                                            </div>
+                                            <div class="row col-md-12 m-0 p-0 border-bottom">
+                                                <div class="col-md-5 text-left" style="color: #292c2f;padding: 10px 0 !important;">Designation: </div>
+                                                <div class="col-md-7 text-right" style="color: #6c757d;padding: 10px 0 !important;">{{ $resultUser->designation->name }}</div>
+                                            </div>
+                                            <div class="row col-md-12 m-0 p-0">
+                                                <div class="col-md-5 text-left" style="color: #292c2f;padding: 10px 0 !important;">Status: </div>
+                                                <div class="col-md-7 text-right" style="color: #6c757d;padding: 10px 0 !important;">
+                                                    @switch($resultUser->status)
+                                                        @case(1) <span @class('text-success')>Active</span> @break
+                                                        @case(0) <span @class('text-danger')>Inactive</span> @break
+                                                    @endswitch
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
+
                                 </div>
 
                                 <div class="col-xl-8 col-lg-12">
