@@ -212,7 +212,7 @@ class DashboardController extends Controller
             $response['bar_chart']['xAxis'][] = (integer) $dt->format('d');
             $count = 0;
             foreach($resultAgentLeads as $key => $agentLead){
-                if(date('Y-m-d', strtotime($agentLead->created_at)) == $dt->format("Y-m-d")) {
+                if(date('Y-m-d H:i:s', strtotime($agentLead->created_at)) >= $dt->format("Y-m-d 12:00:00") && date('Y-m-d H:i:s', strtotime($agentLead->created_at)) <= date('Y-m-d 11:59:59', strtotime('+1 day', strtotime($dt->format("Y-m-d"))))) {
                     $count++;
                 }
             }
