@@ -56,7 +56,10 @@ class CampaignAssignController extends Controller
 
     public function index()
     {
-        $this->data['resultCampaigns'] = $this->campaignAssignRepository->getCampaignToAssignForVM(Auth::id());
+        //Deprecated By CRocker => $this->data['resultCampaigns'] = $this->campaignAssignRepository->getCampaignToAssignForVM(Auth::id());
+
+        $resultCAVendors = CampaignAssignVendor::where('assigned_by', Auth::id())->get();
+        $this->data['resultCampaigns'] = CampaignAssignVendorManager::whereNotIn('campaign_id', $resultCAVendors->pluck('campaign_id')->toArray())->where('status', 1)->with('campaign')->whereUserId(Auth::id())->get();
         $this->data['resultVendors'] = $this->vendorRepository->get(array('status' => 1));
         //dd($this->data['resultCampaigns']->toArray());
         return view('vendor_manager.campaign_assign.list', $this->data);
