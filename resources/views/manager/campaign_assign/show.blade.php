@@ -443,7 +443,7 @@
                             <span aria-hidden="true">×</span>
                         </button>
                     </div>
-                    <div class="modal-body">
+                    <div class="modal-body pt-0">
                         <div class="table-responsive">
                             <table class="table m-b-0 f-14 b-solid requid-table">
                                 <thead>
@@ -452,7 +452,7 @@
                                     <th class="text-center">Name</th>
                                     <th class="text-center">End Date</th>
                                     <th class="text-center">Allocation</th>
-                                    <th class="text-center">Total Agents</th>
+                                    <th class="text-center">Total Agents / <br>Vendors</th>
                                     <th class="text-center">Assigned By</th>
                                     <th class="text-center">Status</th>
                                     <th class="text-center">Action</th>

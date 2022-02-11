@@ -13,18 +13,23 @@ class VendorRepository implements VendorInterface
 
     public function get($filters = array())
     {
-        $query = CampaignAssignVendorManager::query();
+        $query = CampaignAssignVendor::query();
 
         if(isset($filters) && !empty($filters)) {
-
+            if(isset($filters['cavm_id']) && !empty($filters['cavm_id'])) {
+                $query->where('campaign_assign_vm_id',$filters['cavm_id']);
+            }
         }
+
+        $query->with('user');
+        $query->with('userAssignedBy');
 
         return $query->get();
     }
 
     public function find($id)
     {
-        $query = CampaignAssignVendorManager::query();
+        $query = CampaignAssignVendor::query();
 
         return $query->findOrFail($id);
     }

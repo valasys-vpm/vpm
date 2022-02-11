@@ -16,4 +16,9 @@ class CampaignAssignVendor extends Model
     {
         return $this->hasOne(Vendor::class, 'id', 'user_id');
     }
+
+    public function userAssignedBy()
+    {
+        return $this->hasOne(User::class, 'id', 'assigned_by');
+    }
 }

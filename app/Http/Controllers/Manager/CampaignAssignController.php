@@ -13,6 +13,7 @@ use App\Repository\Campaign\IssueRepository\IssueRepository;
 use App\Repository\CampaignAssignRepository\AgentRepository\AgentRepository;
 use App\Repository\CampaignAssignRepository\CampaignAssignRepository;
 use App\Repository\CampaignAssignRepository\RATLRepository\RATLRepository as CARATLRepository;
+use App\Repository\CampaignAssignRepository\VendorRepository\VendorRepository as CAVendorRepository ;
 use App\Repository\CampaignFilterRepository\CampaignFilterRepository;
 use App\Repository\CampaignRepository\CampaignRepository;
 use App\Repository\CampaignStatusRepository\CampaignStatusRepository;
@@ -20,6 +21,7 @@ use App\Repository\CampaignTypeRepository\CampaignTypeRepository;
 use App\Repository\CountryRepository\CountryRepository;
 use App\Repository\RegionRepository\RegionRepository;
 use App\Repository\UserRepository\UserRepository;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -62,6 +64,10 @@ class CampaignAssignController extends Controller
      * @var CARATLRepository
      */
     private $CARATLRepository;
+    /**
+     * @var CAVendorRepository
+     */
+    private $CAVendorRepository;
 
     public function __construct(
         CampaignStatusRepository $campaignStatusRepository,
@@ -75,7 +81,8 @@ class CampaignAssignController extends Controller
         AgentRepository $agentRepository,
         DeliveryDetailRepository $deliveryDetailRepository,
         IssueRepository $issueRepository,
-        CARATLRepository $CARATLRepository
+        CARATLRepository $CARATLRepository,
+        CAVendorRepository $CAVendorRepository
     )
     {
         $this->data = array();
@@ -91,6 +98,7 @@ class CampaignAssignController extends Controller
         $this->deliveryDetailRepository = $deliveryDetailRepository;
         $this->issueRepository = $issueRepository;
         $this->CARATLRepository = $CARATLRepository;
+        $this->CAVendorRepository = $CAVendorRepository;
     }
 
     public function index()
@@ -343,10 +351,16 @@ class CampaignAssignController extends Controller
 
     public function viewAssignmentDetails($id, Request $request): \Illuminate\Http\JsonResponse
     {
-        $result['resultRATLs'] = $this->campaignAssignRepository->getAssignedRATL(base64_decode($id));
-        $result['resultVMs'] = [];
+        $campaign_id = base64_decode($id);
+        $result['resultRATLs'] = $this->campaignAssignRepository->getAssignedRATL($campaign_id);
 
-        //$result['resultAgents'] = $this->campaignAssignRepository->getAssignedAgents(base64_decode($id));
+        $result['resultVMs'] = $resultCAVMs = CampaignAssignVendorManager::where('campaign_id', $campaign_id)->with('vendors')->with('user')->with('userAssignedBy')->get();
+        //$resultRATLs = CampaignAssignRATL::where('campaign_id', $campaign_id)->get();
+
+        //$result['resultUsers'] = $resultRATLs->merge($resultCAVMs);
+
+        //dd($result['resultUsers']->toArray());
+
         if(!empty($result)) {
             return response()->json(array('status' => true, 'data' => $result));
         } else {
@@ -357,6 +371,16 @@ class CampaignAssignController extends Controller
     public function viewAssignedAgents($id, Request $request)
     {
         $result = $this->agentRepository->get(array('caratl_id' => base64_decode($id)));
+        if(!empty($result)) {
+            return response()->json(array('status' => true, 'data' => $result));
+        } else {
+            return response()->json(array('status' => false, 'message' => 'Data not found'));
+        }
+    }
+
+    public function viewAssignmentVendors($id, Request $request)
+    {
+        $result = $this->CAVendorRepository->get(array('caratl_id' => base64_decode($id)));
         if(!empty($result)) {
             return response()->json(array('status' => true, 'data' => $result));
         } else {
