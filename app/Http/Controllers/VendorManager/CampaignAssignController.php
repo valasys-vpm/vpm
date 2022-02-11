@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Campaign;
 use App\Models\CampaignAssignQATL;
 use App\Models\CampaignAssignRATL;
+use App\Models\CampaignAssignVendor;
 use App\Models\CampaignAssignVendorManager;
 use App\Models\Role;
 use App\Models\User;
@@ -139,8 +140,9 @@ class CampaignAssignController extends Controller
     public function getAssignedCampaigns(Request $request): \Illuminate\Http\JsonResponse
     {
 
-        $this->data['resultAssignedCampaigns'] = $this->campaignAssignRepository->getAssignedCampaignToVendors(Auth::id());
-        //dd($this->data['resultAssignedCampaigns']->toArray());
+        //$this->data['resultAssignedCampaigns'] = $this->campaignAssignRepository->getAssignedCampaignToVendors(Auth::id());
+        $resultCAVendors = CampaignAssignVendor::where('assigned_by', Auth::id())->get();
+
 
         $filters = array_filter(json_decode($request->get('filters'), true));
         $search_data = $request->get('search');
@@ -151,8 +153,11 @@ class CampaignAssignController extends Controller
         $offset = $request->get("start");
 
         $query = CampaignAssignVendorManager::query();
-        $query->whereIn('id', $this->data['resultAssignedCampaigns']->pluck('id')->toArray());
+
+        $query->whereIn('id', $resultCAVendors->pluck('campaign_assign_vm_id')->toArray());
+
         $query->whereUserId(Auth::id());
+
         $query->with('campaign');
         $query->with('vendors');
 
@@ -177,11 +182,11 @@ class CampaignAssignController extends Controller
 
         switch ($orderColumn) {
             case '0': $query->orderBy('id', $orderDirection); break;
-            case '1': $query->orderBy('id', $orderDirection); break;
-            case '2': $query->orderBy('id', $orderDirection); break;
-            case '3': $query->orderBy('id', $orderDirection); break;
-            case '4': $query->orderBy('id', $orderDirection); break;
-            default: $query->orderBy('id'); break;
+            case '1':  break;
+            case '2':  break;
+            case '3':  break;
+            case '4':  break;
+            default: $query->orderBy('created_at', 'DESC'); break;
         }
 
         $totalFilterRecords = $query->count();
