@@ -380,7 +380,7 @@ class CampaignAssignController extends Controller
 
     public function viewAssignmentVendors($id, Request $request)
     {
-        $result = $this->CAVendorRepository->get(array('caratl_id' => base64_decode($id)));
+        $result = $this->CAVendorRepository->get(array('cavm_id' => base64_decode($id)));
         if(!empty($result)) {
             return response()->json(array('status' => true, 'data' => $result));
         } else {
