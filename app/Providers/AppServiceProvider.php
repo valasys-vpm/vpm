@@ -58,7 +58,7 @@ class AppServiceProvider extends ServiceProvider
                     case 'email_marketing_executive':
                         $notifications = EMENotification::where('recipient_id', Auth::id())->where('read_status', 0)->orderBy('created_at', 'DESC')->get();
                         break;
-                    case 'vendor_management':
+                    case 'vendor_manager':
                         $notifications = VMNotification::where('recipient_id', Auth::id())->where('read_status', 0)->orderBy('created_at', 'DESC')->get();
                         break;
                 }
