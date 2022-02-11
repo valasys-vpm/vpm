@@ -23,7 +23,7 @@ class CreateCampaignAssignVendorsTable extends Migration
             $table->foreign('campaign_id')->references('id')->on('campaigns')->onUpdate('cascade');
 
             $table->unsignedInteger('user_id');
-            $table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade');
+            $table->foreign('user_id')->references('id')->on('vendors')->onUpdate('cascade');
 
             $table->date('display_date')->nullable();
             $table->integer('allocation')->default(0);

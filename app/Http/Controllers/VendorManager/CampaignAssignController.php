@@ -78,14 +78,45 @@ class CampaignAssignController extends Controller
 
     public function store(Request $request): \Illuminate\Http\RedirectResponse
     {
-        $attributes = $request->all();
-        $attributes['assigned_by'] = Auth::id();
-        $response = $this->CAVendorRepository->store($attributes);
-        if($response['status'] == TRUE) {
-            return redirect()->route('vendor_manager.campaign_assign.list')->with('success', ['title' => 'Successful', 'message' => $response['message']]);
+        $successCount = $failedCount = 0;
+        $resultCAVM = CampaignAssignVendorManager::findOrFail($request->campaign_assign_vm_id);
+
+        if(empty($resultCAVM->started_at)) {
+
+            foreach ($request->vendors as $key => $vendor) {
+
+                $attributes = array(
+                    'campaign_id' => $request->campaign_id,
+                    'campaign_assign_vm_id' => $request->campaign_assign_vm_id,
+                    'vendor_id' => $vendor['vendor_id'],
+                    'display_date' => date('Y-m-d', strtotime($resultCAVM->display_date)),
+                    'started_at' => date('Y-m-d'),
+                    'allocation' => $vendor['allocation'],
+                    'assigned_by' => Auth::id()
+                );
+
+                $response = $this->CAVendorRepository->store($attributes);
+
+                if($response['status'] == TRUE) {
+                    $successCount++;
+                } else {
+                    $failedCount++;
+                }
+
+            }
+
+            if($successCount) {
+                $resultCAVM->started_at = date('Y-m-d');
+                $resultCAVM->save();
+                return redirect()->route('vendor_manager.campaign_assign.list')->with('success', ['title' => 'Successful', 'message' => 'Campaign assigned successfully']);
+            } else {
+                return back()->withInput()->with('error', ['title' => 'Error while processing request', 'message' => 'Something went wrong, please try again.']);
+            }
+
         } else {
-            return back()->withInput()->with('error', ['title' => 'Error while processing request', 'message' => $response['message']]);
+            return back()->withInput()->with('error', ['title' => 'Error while processing request', 'message' => 'Campaign already assigned, please check and try again.']);
         }
+
     }
 
     public function submitCampaign($id, Request $request)

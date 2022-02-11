@@ -34,36 +34,33 @@ class VendorRepository implements VendorInterface
         $response = array('status' => FALSE, 'message' => 'Something went wrong, please try again.');
         try {
             DB::beginTransaction();
-            $dataVendor = array();
-            foreach ($attributes['data'] as $key => $campaign) {
 
-                $resultCampaignAssignVM = CampaignAssignVendorManager::findOrFail($campaign['campaign_assign_vm_id']);
+            $ca_vendor = new CampaignAssignVendor();
 
-                foreach ($campaign['vendors'] as $vendor) {
-                    $dataVendor[] = array(
-                        'campaign_id' => $campaign['campaign_id'],
-                        'campaign_assign_vm_id' => $campaign['campaign_assign_vm_id'],
-                        'user_id' => $vendor['vendor_id'],
-                        'display_date' => date('Y-m-d', strtotime($resultCampaignAssignVM->display_date)),
-                        'allocation' => $vendor['allocation'],
-                        'assigned_by' => $attributes['assigned_by']
-                    );
-                }
+            $ca_vendor->campaign_id = $attributes['campaign_id'];
+            $ca_vendor->campaign_assign_vm_id = $attributes['campaign_assign_vm_id'];
+            $ca_vendor->user_id = $attributes['vendor_id'];
+            $ca_vendor->display_date = date('Y-m-d', strtotime($attributes['display_date']));
+            $ca_vendor->allocation = $attributes['allocation'];
+
+            if(isset($attributes['started_at']) && !empty($attributes['started_at'])) {
+                $ca_vendor->started_at = date('Y-m-d', strtotime($attributes['started_at']));
+            } else {
+                $ca_vendor->started_at = date('Y-m-d');
             }
+            $ca_vendor->assigned_by = $attributes['assigned_by'];
 
-            if(!empty($dataVendor)) {
-                if(CampaignAssignVendor::insert($dataVendor)) {
-                    DB::commit();
-                    $response = array('status' => TRUE, 'message' => 'Campaign assigned successfully');
-                } else {
-                    throw new \Exception('Something went wrong, please try again.', 1);
-                }
+            $ca_vendor->save();
+            if($ca_vendor->id) {
+                DB::commit();
+                $response = array('status' => TRUE, 'message' => 'Campaign assigned successfully');
+            } else {
+                throw new \Exception('Something went wrong, please try again.', 1);
             }
 
         } catch (\Exception $exception) {
             DB::rollBack();
-            dd($exception->getMessage());
-            $response = array('status' => FALSE, 'message' => 'Something went wrong, please try again.');
+            $response = array('status' => FALSE, 'message' => $exception->getMessage());
         }
         return $response;
     }

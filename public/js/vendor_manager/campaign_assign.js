@@ -184,7 +184,7 @@ function getCampaignCard_html(_campaign_id, _vendor_list) {
     html += '' +
         '<div class="card border border-info rounded">' +
         '   <h5 class="card-header" style="padding: 10px 25px;">'+$("#campaign_list_"+_campaign_id).data('name')+'</h5>' +
-        '   <input type="hidden" name="data[0][campaign_id]" value="'+_campaign_id+'">' +
+        '   <input type="hidden" name="campaign_id" value="'+_campaign_id+'">' +
         '   <div class="card-body" style="padding: 15px 25px;">' +
         '       <div class="row">' +
         '           <div class="col-md-6">' +
@@ -196,10 +196,6 @@ function getCampaignCard_html(_campaign_id, _vendor_list) {
         '                   <div class="col-md-5"><h6 class="card-title">End Date</h6></div>' +
         '                   <div class="col-md-7"><h6 class="card-title">: '+$("#campaign_list_"+_campaign_id).data('end-date')+'</h6></div>' +
         '               </div>' +
-        // '               <div class="row">' +
-        // '                   <div class="col-md-5"><h6 class="card-title">Select Reporting Format File</h6></div>' +
-        // '                   <div class="col-md-7"><h6 class="card-title">: <input type="file" name="data[0][reporting_file]"></h6></div>' +
-        // '               </div>' +
         '           </div>' +
         '           <div class="col-md-6 border-left">' +
         '               <h5 class="card-title mb-2">Vendor(s) to Assign</h5>' +
@@ -220,9 +216,9 @@ function getUserAssignCard_html(_key, _vendor_list, allocation, balance_allocati
 
         html += '<div class="row p-1">' +
             '   <div class="col-md-5"><h6 class="card-title">'+$("#vendor_list_"+value).data('name')+'</h6></div>' +
-            '   <input type="hidden" name="data['+_key+'][vendors]['+key+'][vendor_id]" value="'+value+'">' +
+            '   <input type="hidden" name="vendors['+key+'][vendor_id]" value="'+value+'">' +
             '   <div class="col-md-7">' +
-            '       <input type="text" name="data['+_key+'][vendors]['+key+'][allocation]" class="form-control form-control-sm" value="'+ ( (key === (_vendor_list.length -1)) ? Math.floor((allocation + balance_allocation)) : Math.floor(allocation) ) +'" style="height: 30px;">' +
+            '       <input type="text" name="vendors['+key+'][allocation]" class="form-control form-control-sm" value="'+ ( (key === (_vendor_list.length -1)) ? Math.floor((allocation + balance_allocation)) : Math.floor(allocation) ) +'" style="height: 30px;">' +
             '   </div>' +
             '</div>';
     });
