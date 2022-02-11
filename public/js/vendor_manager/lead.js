@@ -143,30 +143,73 @@ $(function (){
         });
     });
 
+    $("#form-upload-leads").validate({
+        ignore: [],
+        focusInvalid: false,
+        rules: {
+            'lead_file' : {
+                required : true,
+                extension: "xlsx"
+            },
+        },
+        messages: {
+            'lead_file' : {
+                required : "Please upload file",
+                extension: "Please upload valid file [xlsx]."
+            },
+        },
+        errorPlacement: function errorPlacement(error, element) {
+            var $parent = $(element).parents('.form-group');
+
+            // Do not duplicate errors
+            if ($parent.find('.jquery-validation-error').length) {
+                return;
+            }
+
+            $parent.append(
+                error.addClass('jquery-validation-error small form-text invalid-feedback')
+            );
+        },
+        highlight: function(element) {
+            var $el = $(element);
+            var $parent = $el.parents('.form-group');
+
+            $el.addClass('is-invalid');
+
+            // Select2 and Tagsinput
+            if ($el.hasClass('select2-hidden-accessible') || $el.attr('data-role') === 'tagsinput') {
+                $el.parent().addClass('is-invalid');
+            }
+        },
+        unhighlight: function(element) {
+            $(element).parents('.form-group').find('.is-invalid').removeClass('is-invalid');
+        }
+    });
+
     $('#form-upload-leads-submit').on('click', function (e) {
         e.preventDefault();
-        let form_data = new FormData($('#form-upload-leads')[0]);
-        let url = '';
-        $.ajax({
-            url: URL +'/vendor-manager/lead/upload-leads',
-            processData: false,
-            contentType: false,
-            data: form_data,
-            type: 'post',
-            success: function(response) {
-                if(response.status === true) {
-                    $('#modal-upload-leads').modal('hide');
-                    trigger_pnofify('success', 'Successful', response.message);
-                } else {
-                    $('#modal-upload-leads').modal('hide');
-                    trigger_pnofify('error', 'Error while processing request', response.message);
+        if($("#form-upload-leads").valid()) {
+            let form_data = new FormData($('#form-upload-leads')[0]);
+            let url = '';
+            $.ajax({
+                url: URL +'/vendor-manager/lead/upload-leads',
+                processData: false,
+                contentType: false,
+                data: form_data,
+                type: 'post',
+                success: function(response) {
+                    if(response.status === true) {
+                        $('#modal-upload-leads').modal('hide');
+                        trigger_pnofify('success', 'Successful', response.message);
+                    } else {
+                        $('#modal-upload-leads').modal('hide');
+                        trigger_pnofify('error', 'Error while processing request', response.message);
+                    }
+                    LEAD_TABLE.ajax.reload();
                 }
-                LEAD_TABLE.ajax.reload();
-            }
-        });
-        document.getElementById("form-upload-leads").reset();
-
-
+            });
+            document.getElementById("form-upload-leads").reset();
+        }
     });
 
 });

@@ -122,7 +122,7 @@
 
                     <div class="modal-body">
                         <div class="row">
-                            <div class="col-md-12">
+                            <div class="col-md-12 form-group">
                                 <label>Select Vendor</label>
                                 <div class="float-right">
                                     <button type="button" class="btn btn-outline-dark btn-square btn-sm p-1 pl-2 pr-2" style="font-size: 11px" onclick="downloadSampleFile('vm-lead-upload.xlsx');" download><i class="feather icon-download"></i>Download Sample</button>
@@ -136,7 +136,7 @@
                             </div>
                         </div>
                         <div class="row mt-3">
-                            <div class="col-md-12">
+                            <div class="col-md-12 form-group">
                                 <label>Select lead file <span class="text-danger">*</span></label>
                                 <input type="file" class="form-control" id="lead_file" name="lead_file" required>
                             </div>
