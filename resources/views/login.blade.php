@@ -13,9 +13,11 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="description" content="Valasys Media"/>
-    <meta name="keywords" content="Valasys Media"/>
+    <meta name="description" content="Valasys Media Program Management Tool | CRM"/>
+    <meta name="keywords" content="valasys media, program management, valasys crm, program management tool"/>
     <meta name="author" content="Valasys Media" />
+
+    <meta http-equiv="refresh" content="{{ config('session.lifetime') * 60 }}">
 
     <!-- Favicon icon -->
     <link rel="icon" href="{{ asset('public/template') }}/assets/images/favicon.png" type="image/x-icon">

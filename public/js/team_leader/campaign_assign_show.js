@@ -270,6 +270,7 @@ function submitCampaign(_id) {
                 if(response.status === true) {
                     $('#div-submit-campaign').css('display', 'none');
                     $('#div-manage-leads').css('display', 'none');
+                    $('#div-send-for-quality').css('display', 'none');
                     $('#div-raise-issue').css('display', 'none');
                     trigger_pnofify('success', 'Successful', response.message);
                 } else {

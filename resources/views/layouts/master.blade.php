@@ -21,6 +21,8 @@
     <meta name="keywords" content="valasys, marketing, lead, generation, b2b">
     <meta name="author" content="Valasys Media" />
 
+    <meta http-equiv="refresh" content="{{ config('session.lifetime') * 60 }}">
+
     <meta name="csrf-token" content="{{ csrf_token() }}" />
     <meta name="base-path" content="{{ url('/') }}" />
 

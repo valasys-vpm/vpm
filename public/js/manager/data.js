@@ -97,41 +97,90 @@ $(function (){
         ],
     });
 
+    $("#modal-form-import-data").validate({
+        ignore: [],
+        focusInvalid: false,
+        rules: {
+            'data_file' : {
+                required : true,
+                extension: "xlsx",
+                //filesize: 500000
+            },
+        },
+        messages: {
+            'data_file' : {
+                required : "Please upload file",
+                extension: "Please upload valid file, [xlsx]",
+                //filesize: "File size should be less than 500 kb"
+            },
+        },
+        errorPlacement: function errorPlacement(error, element) {
+            var $parent = $(element).parents('.form-group');
+
+            // Do not duplicate errors
+            if ($parent.find('.jquery-validation-error').length) {
+                return;
+            }
+
+            $parent.append(
+                error.addClass('jquery-validation-error small form-text invalid-feedback')
+            );
+        },
+        highlight: function(element) {
+            var $el = $(element);
+            var $parent = $el.parents('.form-group');
+
+            $el.addClass('is-invalid');
+
+            // Select2 and Tagsinput
+            if ($el.hasClass('select2-hidden-accessible') || $el.attr('data-role') === 'tagsinput') {
+                $el.parent().addClass('is-invalid');
+            }
+        },
+        unhighlight: function(element) {
+            $(element).parents('.form-group').find('.is-invalid').removeClass('is-invalid');
+        }
+    });
+
     $('#modal-form-import-data-submit').on('click', function (e) {
         e.preventDefault();
-        let form_data = new FormData($('#modal-form-import-data')[0]);
 
-        $('#modal-loader').modal('show');
+        if($("#modal-form-import-data").valid()) {
+            let form_data = new FormData($('#modal-form-import-data')[0]);
 
-        $.ajax({
-            url: URL +'/manager/data/import-data',
-            processData: false,
-            contentType: false,
-            data: form_data,
-            type: 'post',
-            success: function(response) {
-                console.log(response);
-                let message = response.message;
-                if(response.status === true) {
-                    let type = 'success';
-                    if(typeof response.data.failed_data !== 'undefined') {
-                        message = response.message + '\n' + response.data.failed_data.length + ' row not inserted.';
-                        type = 'warning';
+            $('#modal-loader').modal('show');
+
+            $.ajax({
+                url: URL +'/manager/data/import-data',
+                processData: false,
+                contentType: false,
+                data: form_data,
+                type: 'post',
+                success: function(response) {
+                    console.log(response);
+                    let message = response.message;
+                    if(response.status === true) {
+                        let type = 'success';
+                        if(typeof response.data.failed_data !== 'undefined') {
+                            message = response.message + '\n' + response.data.failed_data.length + ' row not inserted.';
+                            type = 'warning';
+                        }
+                        $('#modal-import-data').modal('hide');
+                        trigger_pnofify(type, 'Successful', message);
+                    } else {
+                        if(typeof response.data.failed_data !== 'undefined') {
+                            message = response.message + '\n' + response.data.failed_data.length + ' row not inserted.';
+                        }
+                        trigger_pnofify('error', 'Error while processing request', response.message);
                     }
-                    $('#modal-import-data').modal('hide');
-                    trigger_pnofify(type, 'Successful', message);
-                } else {
-                    if(typeof response.data.failed_data !== 'undefined') {
-                        message = response.message + '\n' + response.data.failed_data.length + ' row not inserted.';
-                    }
-                    trigger_pnofify('error', 'Error while processing request', response.message);
+
+                    $('#modal-loader').modal('hide');
+                    DATA_TABLE.ajax.reload();
+
                 }
+            });
 
-                $('#modal-loader').modal('hide');
-                DATA_TABLE.ajax.reload();
-
-            }
-        });
+        }
 
     });
 

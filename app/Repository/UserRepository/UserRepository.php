@@ -71,7 +71,7 @@ class UserRepository implements UserInterface
             if(isset($attributes['password']) && !empty($attributes['password'])) {
                 $user->password = $attributes['password'];
             } else {
-                $user->password = Hash::make('Valasys@#2021');
+                $user->password = Hash::make('Valasys@#'.date('Y'));
             }
             $user->status = $attributes['status'];
             $user->reporting_user_id = $attributes['reporting_user_id'];
