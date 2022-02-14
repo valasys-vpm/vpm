@@ -548,6 +548,7 @@ class CampaignRepository implements CampaignInterface
             $campaign = $this->find($id);
             $responseFlag = 1;
             $lastInserted = array();
+            $historyMessage = array();
             //Save Suppression Email
             if(isset($attributes['suppression_email']) && !empty($attributes['suppression_email'])) {
                 $file = $attributes['suppression_email'];
@@ -574,6 +575,7 @@ class CampaignRepository implements CampaignInterface
                         ->whereFileName($attributesCampaignFile['file_name'])
                         ->with('campaign')
                         ->first();
+                    $historyMessage[] = 'Email suppression updated';
                 }
             }
 
@@ -603,6 +605,7 @@ class CampaignRepository implements CampaignInterface
                         ->whereFileName($attributesCampaignFile['file_name'])
                         ->with('campaign')
                         ->first();
+                    $historyMessage[] = 'Domain suppression updated';
                 }
             }
 
@@ -632,6 +635,7 @@ class CampaignRepository implements CampaignInterface
                         ->whereFileName($attributesCampaignFile['file_name'])
                         ->with('campaign')
                         ->first();
+                    $historyMessage[] = 'Account name suppression updated';
                 }
             }
 
@@ -661,6 +665,8 @@ class CampaignRepository implements CampaignInterface
                         ->whereFileName($attributesCampaignFile['file_name'])
                         ->with('campaign')
                         ->first();
+
+                    $historyMessage[] = 'Target domain updated';
                 }
             }
 
@@ -690,11 +696,18 @@ class CampaignRepository implements CampaignInterface
                         ->whereFileName($attributesCampaignFile['file_name'])
                         ->with('campaign')
                         ->first();
+
+                    $historyMessage[] = 'Target account name updated';
                 }
             }
 
             if($responseFlag) {
-                $response = array('status' => TRUE, 'message' => 'Campaign file(s) added successfully', 'data' => $lastInserted);
+
+                $historyMessage = implode(',', $historyMessage);
+                add_campaign_history($campaign->id, $campaign->parent_id, 'Campaign details updated - '.$historyMessage);
+                add_history('Campaign details updated', 'Campaign updated data are - '.$historyMessage);
+
+                $response = array('status' => TRUE, 'message' => 'Campaign file(s) added successfully', 'data' => $lastInserted, 'message2' => $historyMessage);
                 DB::commit();
             } else {
                 throw new \Exception('Something went wrong, please try again.', 1);

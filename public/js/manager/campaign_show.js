@@ -269,6 +269,7 @@ $(function(){
                     }
 
                     $('#campaign-file-ul').append(html);
+                    $("#reload-campaign-history").click();
                     $('#modal-attach-campaign-file').modal('hide');
                     trigger_pnofify('success', 'Successful', response.message);
                 } else {
