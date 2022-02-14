@@ -31,7 +31,7 @@ class CreateCampaignAssignAgentsTable extends Migration
             $table->integer('accounts_utilized')->default(0);
 
             $table->date('display_date')->nullable();
-            $table->integer('allocation')->default(0);
+            $table->integer('allocation')->default(1);
             $table->string('reporting_file')->nullable();
 
             $table->dateTime('started_at')->nullable();
