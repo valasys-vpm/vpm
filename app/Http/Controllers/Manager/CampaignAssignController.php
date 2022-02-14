@@ -8,6 +8,7 @@ use App\Models\CampaignAssignAgent;
 use App\Models\CampaignAssignRATL;
 use App\Models\CampaignAssignVendorManager;
 use App\Models\User;
+use App\Repository\AgentWorkType\AgentWorkTypeRepository;
 use App\Repository\Campaign\DeliveryDetailRepository\DeliveryDetailRepository;
 use App\Repository\Campaign\IssueRepository\IssueRepository;
 use App\Repository\CampaignAssignRepository\AgentRepository\AgentRepository;
@@ -115,7 +116,9 @@ class CampaignAssignController extends Controller
             'designation_slug' => array('ra_team_leader', 'ra_team_leader_business_delivery', 'research_analyst', 'sr_vendor_management_specialist'),
             'order_by' => array('value' => 'first_name', 'order' => 'ASC'),
         ));
-        //dd($this->data['resultCampaigns']->toArray());
+
+        $this->data['resultAgentWorkTypes'] = AgentWorkTypeRepository::get(array('status' => 1));
+
         return view('manager.campaign_assign.list', $this->data);
     }
 

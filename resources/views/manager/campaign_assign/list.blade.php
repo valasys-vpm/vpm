@@ -28,7 +28,7 @@
                                         <h5 class="m-b-10">Campaign Assign</h5>
                                     </div>
                                     <ul class="breadcrumb">
-                                        <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}"><i class="feather icon-home"></i></a></li>
+                                        <li class="breadcrumb-item"><a href="{{ route('manager.dashboard') }}"><i class="feather icon-home"></i></a></li>
                                         <li class="breadcrumb-item"><a href="javascript:void(0);">Campaign Management</a></li>
                                         <li class="breadcrumb-item"><a href="javascript:void(0);">Campaign Assign</a></li>
                                     </ul>
@@ -76,7 +76,7 @@
                                                         <label for="user_list">Select User(s)</label>
                                                         <select class="form-control btn-square p-1 pl-2 select2-multiple" id="user_list" name="user_list[]" style="height: unset;" multiple>
                                                             @foreach($resultUsers as $user)
-                                                                <option id="user_list_{{ $user->id }}" value="{{ $user->id }}" data-name="{{ $user->first_name.' '.$user->last_name }}">{{ $user->first_name.' '.$user->last_name.' - [ '.$user->role->name.' ]' }}</option>
+                                                                <option id="user_list_{{ $user->id }}" value="{{ $user->id }}" data-name="{{ $user->first_name.' '.$user->last_name }}" data-designation="{{ $user->designation->slug }}">{{ $user->first_name.' '.$user->last_name.' - [ '.$user->role->name.' ]' }}</option>
                                                             @endforeach
                                                         </select>
                                                     </div>
@@ -156,6 +156,18 @@
                     </div>
                 </form>
             </div>
+        </div>
+    </div>
+
+    <div id="html-elements" style="display: none;">
+        <div id="div-select-agent-work-types">
+            <select name="agent_work_type_id" id="select_agent_work_type">
+                @if(isset($resultAgentWorkTypes) && !empty($resultAgentWorkTypes) && $resultAgentWorkTypes->count())
+                    @foreach($resultAgentWorkTypes as $agent_work_type)
+                        <option value="{{ $agent_work_type->id }}">{{ $agent_work_type->name }}</option>
+                    @endforeach
+                @endif
+            </select>
         </div>
     </div>
 @endsection

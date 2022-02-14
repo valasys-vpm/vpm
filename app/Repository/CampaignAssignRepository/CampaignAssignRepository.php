@@ -329,6 +329,7 @@ class CampaignAssignRepository implements CampaignAssignInterface
                             } else {
                                 $result = $this->agentRepository->store(array(
                                     'campaign_id' => $attributes['campaign_id'],
+                                    'agent_work_type_id' => $attributes['agent_work_type_id'],
                                     'campaign_assign_ratl_id' => $ca_ratl_id,
                                     'user_id' => $user['user_id'],
                                     'display_date' => date('Y-m-d', strtotime($attributes['display_date'])),
@@ -387,6 +388,7 @@ class CampaignAssignRepository implements CampaignAssignInterface
             }
         } catch (\Exception $exception) {
             DB::rollBack();
+            dd($exception->getMessage());
             $response = array('status' => FALSE, 'message' => 'Something went wrong, please try again. [EC-M-CAC-CAR-S-100]');
         }
         return $response;

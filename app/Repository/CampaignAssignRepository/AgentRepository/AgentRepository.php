@@ -71,7 +71,9 @@ class AgentRepository implements AgentInterface
 
                 $ca_agent->campaign_assign_ratl_id = $attributes['campaign_assign_ratl_id'];
                 $ca_agent->campaign_id = $attributes['campaign_id'];
+
                 $ca_agent->agent_work_type_id = $attributes['agent_work_type_id'];
+
                 $ca_agent->user_id = $attributes['user_id'];
                 $ca_agent->accounts_utilized = 0;
                 $ca_agent->display_date = $attributes['display_date'];

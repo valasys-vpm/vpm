@@ -273,6 +273,7 @@ function getCampaignCard_html(_campaign_list, _user_list) {
 
 function getUserAssignCard_html(_key, _user_list, allocation, balance_allocation) {
     let html = '';
+    let is_research_analyst = 0;
 
     $.each(_user_list, function (key, value){
 
@@ -283,7 +284,20 @@ function getUserAssignCard_html(_key, _user_list, allocation, balance_allocation
             '       <input type="text" name="users['+key+'][allocation]" class="form-control form-control-sm" value="'+ ( (key === (_user_list.length -1)) ? Math.floor((allocation + balance_allocation)) : Math.floor(allocation) ) +'" style="height: 30px;">' +
             '   </div>' +
             '</div>';
+
+        if($("#user_list_"+value).data('designation') === 'research_analyst') {
+            is_research_analyst = 1;
+        }
     });
+
+    if(is_research_analyst) {
+        html += '<div class="row p-1">' +
+            '   <div class="col-md-5"><h6 class="card-title">Select Work Type: </h6></div>' +
+            '   <div class="col-md-7">' +
+                    $('#div-select-agent-work-types').html() +
+            '   </div>' +
+            '</div>';
+    }
 
     return html;
 }
