@@ -160,8 +160,8 @@ class DashboardController extends Controller
     {
         $response = array();
         $attributes = $request->all();
-        $start_date = date('Y-m-d', strtotime($attributes['start_date']));
-        $end_date = date('Y-m-01 11:59:59', strtotime('+1 month', strtotime($start_date)));
+        $start_date = date('Y-m-d 12:00:00', strtotime($attributes['start_date']));
+        $end_date = date('Y-m-d 11:59:59', strtotime('+1 day', strtotime($attributes['end_date'])));
 
         $response['bar_chart']['xAxis'] = array();
         $response['bar_chart']['data'] = array();
@@ -186,6 +186,7 @@ class DashboardController extends Controller
                 $response['bar_chart']['xAxis'][] = $agentWorkType->name;
             }
         }
+
         return response()->json($response);
     }
 
