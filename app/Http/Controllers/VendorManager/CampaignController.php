@@ -5,6 +5,7 @@ namespace App\Http\Controllers\VendorManager;
 use App\Http\Controllers\Controller;
 use App\Models\CampaignAssignRATL;
 use App\Models\CampaignAssignVendorManager;
+use App\Repository\CampaignAssignRepository\VendorManagerRepository\VendorManagerRepository as CAVendorManagerRepository;
 use App\Repository\CampaignRepository\CampaignRepository;
 use App\Repository\CampaignSpecificationRepository\CampaignSpecificationRepository;
 use App\Repository\CampaignStatusRepository\CampaignStatusRepository;
@@ -25,13 +26,16 @@ class CampaignController extends Controller
     private $campaignRepository;
     private $campaignStatusRepository;
     private $CAVendorRepository;
+    private $CAVendorManagerRepository;
 
     public function __construct(
         VendorRepository $vendorRepository,
         CampaignAssignRepository $campaignAssignRepository,
         CampaignRepository $campaignRepository,
         CampaignStatusRepository $campaignStatusRepository,
-        CAVendorRepository $CAVendorRepository
+        CAVendorRepository $CAVendorRepository,
+        CAVendorManagerRepository $CAVendorManagerRepository
+
     )
     {
         $this->data = array();
@@ -40,6 +44,7 @@ class CampaignController extends Controller
         $this->campaignRepository = $campaignRepository;
         $this->campaignStatusRepository = $campaignStatusRepository;
         $this->CAVendorRepository = $CAVendorRepository;
+        $this->CAVendorManagerRepository = $CAVendorManagerRepository;
     }
 
     public function index()
@@ -50,8 +55,8 @@ class CampaignController extends Controller
     public function show($cavm_id)
     {
         try {
-            $this->data['resultCAVM'] = $this->CAVendorRepository->find(base64_decode($cavm_id));
-            $this->data['resultCampaign'] = $this->campaignRepository->find($this->data['resultCAVM']->campaign->id);
+            $this->data['resultCAVM'] = $this->CAVendorManagerRepository->find(base64_decode($cavm_id));
+            $this->data['resultCampaign'] = $this->campaignRepository->find($this->data['resultCAVM']->campaign_id);
             return view('vendor_manager.campaign.show', $this->data);
         } catch (\Exception $exception) {
             return redirect()->route('vendor_manager.campaign.list')->with('error', ['title' => 'Error while processing request', 'message' => 'Campaign details not found']);

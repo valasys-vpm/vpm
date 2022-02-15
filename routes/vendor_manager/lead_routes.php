@@ -7,7 +7,7 @@ Route::prefix('lead')->name('lead.')->group(function()
     Route::get('edit/{id}', [App\Http\Controllers\VendorManager\LeadController::class, 'edit'])->name('edit');
     Route::post('update/{id}', [App\Http\Controllers\VendorManager\LeadController::class, 'update'])->name('update');
     Route::any('reject/{id}', [App\Http\Controllers\VendorManager\LeadController::class, 'reject'])->name('reject');
-    Route::any('/upload-leads', [App\Http\Controllers\VendorManager\LeadController::class, 'uploadLeads'])->name('upload_leads');
+    Route::any('/import-leads', [App\Http\Controllers\VendorManager\LeadController::class, 'importLeads'])->name('import_leads');
 
     Route::any('/get-vendor-leads', [App\Http\Controllers\VendorManager\LeadController::class, 'getVendorLeads'])->name('get_vendor_leads');
 

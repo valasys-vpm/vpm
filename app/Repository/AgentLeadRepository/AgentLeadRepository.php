@@ -443,21 +443,27 @@ class AgentLeadRepository implements AgentLeadInterface
 
             //Validate $leadData['email_address']
             if(!empty(trim($leadData['email_address']))) {
-                $agentLeadExists = AgentLead::where('campaign_id', $campaign_id)->where('email_address', trim($leadData['email_address']))->count();
-                if(!$agentLeadExists) {
-                    $resultSuppressionEmail = SuppressionEmail::whereCampaignId($campaign_id)->whereEmail(trim($leadData['email_address']))->exists();
-                    if(!$resultSuppressionEmail) {
-                        $validatedLead['email_address'] = trim($leadData['email_address']);
+                if(filter_var(trim($leadData['email_address']), FILTER_VALIDATE_EMAIL)) {
+                    $leadExists = AgentLead::where('campaign_id', $campaign_id)->where('email_address', trim($leadData['email_address']))->count();
+                    if(!$leadExists) {
+                        $resultSuppressionEmail = SuppressionEmail::whereCampaignId($campaign_id)->whereEmail(trim($leadData['email_address']))->exists();
+                        if(!$resultSuppressionEmail) {
+                            $validatedLead['email_address'] = trim($leadData['email_address']);
+                        } else {
+                            $errorMessage['email_address'] = 'Email Suppression';
+                            $invalidCells[3] = 'Invalid';
+                        }
                     } else {
-                        $errorMessage['email_address'] = 'Email Suppression';
+                        $errorMessage['email_address'] = 'Email address already exists';
                         $invalidCells[3] = 'Invalid';
                     }
                 } else {
-                    $errorMessage['email_address'] = 'Email address already exists';
+                    $errorMessage['email_address'] = 'Email valid email address';
                     $invalidCells[3] = 'Invalid';
                 }
+
             } else {
-                $errorMessage['email_address'] = 'Enter email_addresss';
+                $errorMessage['email_address'] = 'Enter email address';
                 $invalidCells[3] = 'Invalid';
             }
 

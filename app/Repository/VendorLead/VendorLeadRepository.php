@@ -2,8 +2,13 @@
 
 namespace App\Repository\VendorLead;
 
+use App\Exports\ImportLeadsFailedDataExport;
 use App\Models\CampaignAssignVendor;
 use App\Models\CampaignAssignVendorManager;
+use App\Models\SuppressionAccountName;
+use App\Models\SuppressionDomain;
+use App\Models\SuppressionEmail;
+use App\Models\TargetDomain;
 use App\Models\VendorLead;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -286,71 +291,359 @@ class VendorLeadRepository implements VendorLeadInterface
         // TODO: Implement destroy() method.
     }
 
-    public function uploadLeads($attributes)
+    public function import($ca_vendor_id, $file)
     {
         $response = array('status' => FALSE, 'message' => 'Something went wrong, please try again.');
         try {
-            $resultCAVendor = CampaignAssignVendor::find($attributes['vendor_id']);
-
-            if(isset($attributes['lead_file']) && !empty($attributes['lead_file'])) {
-                $lead_file = $attributes['lead_file'];
-            }
             ini_set('memory_limit', '-1');
             ini_set('max_execution_time', '0');
 
-            $excelData = Excel::toArray('', $attributes['lead_file']);
-            array_shift($excelData[0]);
+            $excelData = Excel::toArray('', $file);
+            $inputExcelFormat = implode(',', $excelData[0][0]);
+            $excelFormat = "first_name,last_name,company_name,email_address,specific_title,job_level,job_role,phone_number,address_1,address_2,city,state,zipcode,country,industry,employee_size,employee_size_2,revenue,company_domain,website,company_linkedin_url,linkedin_profile_link,linkedin_profile_sn_link,comment";
 
-            $successCount = 0;
+            if($inputExcelFormat == $excelFormat) {
+                array_shift($excelData[0]);
+                $totalDataCount = count($excelData[0]);
 
-            foreach ($excelData[0] as $key => $row) {
-                $data['ca_vendor_id'] = $resultCAVendor->id;
-                $data['campaign_id'] = $resultCAVendor->campaign_id;
-                $data['vendor_id'] = $resultCAVendor->user_id;
-                $data['first_name'] = $row[0];
-                $data['last_name'] = $row[1];
-                $data['company_name'] = $row[2];
-                $data['email_address'] = $row[3];
-                $data['specific_title'] = $row[4];
-                $data['job_level'] = $row[5];
-                $data['job_role'] = $row[6];
-                $data['phone_number'] = $row[7];
-                $data['address_1'] = $row[8];
-                $data['address_2'] = $row[9];
-                $data['city'] = $row[10];
-                $data['state'] = $row[11];
-                $data['zipcode'] = $row[12];
-                $data['country'] = $row[13];
-                $data['industry'] = $row[14];
-                $data['employee_size'] = $row[15];
-                $data['employee_size_2'] = $row[16];
-                $data['revenue'] = $row[17];
-                $data['company_domain'] = $row[18];
-                $data['website'] = $row[19];
-                $data['company_linkedin_url'] = $row[20];
-                $data['linkedin_profile_link'] = $row[21];
-                $data['linkedin_profile_sn_link'] = $row[22];
-                $data['comment'] = $row[23];
-                /*
-                $data['comment_2'] = $row;
-                $data['qc_comment'] = $row;
-                $data['status'] = $row;
-                */
+                if($totalDataCount > 0) {
+                    if($totalDataCount < 1000) {
+                        $resultCAVendor = CampaignAssignVendor::find($ca_vendor_id);
 
-                $responseStore = $this->store($data);
+                        $failedLeads = array();
+                        $invalidData = array();
+                        $successCount = 0;
+                        $error_file_path = 'false';
 
-                if($responseStore['status'] == TRUE) {
-                    $successCount++;
+                        foreach ($excelData[0] as $key => $row) {
+                            $leadData = array(
+                                'first_name' => trim($row[0]),
+                                'last_name' => trim($row[1]),
+                                'company_name' => trim($row[2]),
+                                'email_address' => trim($row[3]),
+                                'specific_title' => trim($row[4]),
+                                'job_level' => trim($row[5]),
+                                'job_role' => trim($row[6]),
+                                'phone_number' => trim($row[7]),
+                                'address_1' => trim($row[8]),
+                                'address_2' => trim($row[9]),
+                                'city' => trim($row[10]),
+                                'state' => trim($row[11]),
+                                'zipcode' => trim($row[12]),
+                                'country' => trim($row[13]),
+                                'industry' => trim($row[14]),
+                                'employee_size' => trim($row[15]),
+                                'employee_size_2' => trim($row[16]),
+                                'revenue' => trim($row[17]),
+                                'company_domain' => trim($row[18]),
+                                'website' => trim($row[19]),
+                                'company_linkedin_url' => trim($row[20]),
+                                'linkedin_profile_link' => trim($row[21]),
+                                'linkedin_profile_sn_link' => trim($row[22]),
+                                'comment' => trim($row[23])
+                            );
+
+                            $resultValidate = $this->validateLeadData($leadData, $resultCAVendor->campaign_id);
+
+                            if($resultValidate['status'] == TRUE) {
+                                $validLead = $resultValidate['validatedLead'];
+                                $validLead['status'] = 1;
+                                $validLead['ca_vendor_id'] = $resultCAVendor->id;
+                                $validLead['campaign_id'] = $resultCAVendor->campaign_id;
+                                $validLead['vendor_id'] = $resultCAVendor->user_id;
+
+                                //store
+                                DB::beginTransaction();
+                                $responseInsert = $this->store($validLead);
+
+                                if($responseInsert['status'] == TRUE) {
+                                    $successCount++;
+                                    DB::commit();
+                                } else {
+                                    DB::rollBack();
+                                    $failedLeads[] = $validLead;
+                                    $invalidData[] = array(
+                                        'data' => $validLead,
+                                        'invalidCells' => $resultValidate['invalidCells'][0] = 'Invalid',
+                                        'errorMessage' => $responseInsert['message']
+                                    );
+                                }
+
+                            } else {
+                                $failedLeads[] = $leadData;
+                                $invalidData[] = array(
+                                    'data' => $leadData,
+                                    'invalidCells' => $resultValidate['invalidCells'],
+                                    'errorMessage' => implode(',', $resultValidate['errorMessage'])
+                                );
+                            }
+                        }
+
+                        if(count($invalidData)) {
+                            $error_file_path = $this->generateExcelFailedLeads($invalidData);
+                        }
+
+                        if($successCount) {
+                            if(count($invalidData)) {
+                                $response = array('status' => TRUE, 'message' => 'Leads imported successfully', 'data' => ['success_count' => $successCount, 'failed_count' => count($failedLeads), 'failed_data_file' => $error_file_path]);
+                            } else {
+                                $response = array('status' => TRUE, 'message' => 'Leads imported successfully', 'data' => ['success_count' => $successCount]);
+                            }
+                        } else {
+                            $response = array('status' => FALSE, 'message' => 'Please check leads and try again.', 'data' => ['failed_data_file' => $error_file_path]);
+                        }
+
+                    } else {
+                        throw new \Exception('Max row limit 1000, please check lead data.', 1);
+                    }
+                } else {
+                    throw new \Exception('No leads found, please check lead data.', 1);
                 }
 
-            }
 
-            $response = array('status' => TRUE, 'message' => $successCount.' leads uploaded successfully');
+            } else {
+                throw new \Exception('Invalid lead file, please upload valid file.', 1);
+            }
 
         } catch (\Exception $exception) {
             DB::rollBack();
-            $response = array('status' => FALSE, 'message' => 'Something went wrong, please try again.');
+            $response = array('status' => FALSE, 'message' => $exception->getMessage());
         }
+        return $response;
+    }
+
+    public function generateExcelFailedLeads($invalidData)
+    {
+        $path = 'public/failed_data/agent/';
+        $path_to_download = '/public/storage/failed_data/agent/';
+
+        $filename = 'Import-Leads-Failed-Data-'.time().'.xlsx';
+
+        if(Excel::store(new ImportLeadsFailedDataExport($invalidData), $path.$filename)) {
+            return $path_to_download.$filename;
+        } else {
+            return 'false';
+        }
+    }
+
+    public function validateLeadData($leadData, $campaign_id)
+    {
+        $response = array('status' => FALSE, 'message' => 'Something went wrong, please try again.');
+
+        $validatedLead = array();
+        $errorMessage = array();
+        $invalidCells = array();
+
+        try {
+            //dd($leadData, $campaign_id);
+
+            //Validate $leadData['first_name']
+            if(!empty(trim($leadData['first_name']))) {
+                $validatedLead['first_name'] = trim($leadData['first_name']);
+            } else {
+                $errorMessage['first_name'] = 'Enter first_name';
+                $invalidCells[0] = 'Invalid';
+            }
+
+            //Validate $leadData['last_name']
+            if(!empty(trim($leadData['last_name']))) {
+                $validatedLead['last_name'] = trim($leadData['last_name']);
+            } else {
+                $errorMessage['last_name'] = 'Enter last_name';
+                $invalidCells[1] = 'Invalid';
+            }
+
+            //Validate $leadData['company_name']
+            if(!empty(trim($leadData['company_name']))) {
+                $resultSuppressionAccountName = SuppressionAccountName::whereCampaignId($campaign_id)->whereAccountName(trim($leadData['company_name']))->exists();
+                if(!$resultSuppressionAccountName) {
+                    $validatedLead['company_name'] = trim($leadData['company_name']);
+                } else {
+                    $errorMessage['company_name'] = 'Account Name Suppression';
+                    $invalidCells[2] = 'Invalid';
+                }
+            } else {
+                $errorMessage['company_name'] = 'Enter company_name';
+                $invalidCells[2] = 'Invalid';
+            }
+
+            //Validate $leadData['email_address']
+            if(!empty(trim($leadData['email_address']))) {
+                if(filter_var(trim($leadData['email_address']), FILTER_VALIDATE_EMAIL)) {
+                    $leadExists = VendorLead::where('campaign_id', $campaign_id)->where('email_address', trim($leadData['email_address']))->count();
+                    if(!$leadExists) {
+                        $resultSuppressionEmail = SuppressionEmail::whereCampaignId($campaign_id)->whereEmail(trim($leadData['email_address']))->exists();
+                        if(!$resultSuppressionEmail) {
+                            $validatedLead['email_address'] = trim($leadData['email_address']);
+                        } else {
+                            $errorMessage['email_address'] = 'Email Suppression';
+                            $invalidCells[3] = 'Invalid';
+                        }
+                    } else {
+                        $errorMessage['email_address'] = 'Email address already exists';
+                        $invalidCells[3] = 'Invalid';
+                    }
+                } else {
+                    $errorMessage['email_address'] = 'Enter email valid address';
+                    $invalidCells[3] = 'Invalid';
+                }
+            } else {
+                $errorMessage['email_address'] = 'Enter email address';
+                $invalidCells[3] = 'Invalid';
+            }
+
+            //Validate $leadData['specific_title']
+            if(!empty(trim($leadData['specific_title']))) {
+                $validatedLead['specific_title'] = trim($leadData['specific_title']);
+            } else {
+                $errorMessage['specific_title'] = 'Enter specific_title';
+                $invalidCells[4] = 'Invalid';
+            }
+
+            //Validate $leadData['job_level'] $invalidCells[5] = 'Invalid';
+            $validatedLead['job_level'] = trim($leadData['job_level']);
+
+            //Validate $leadData['job_role'] $invalidCells[6] = 'Invalid';
+            $validatedLead['job_role'] = trim($leadData['job_role']);
+
+            //Validate $leadData['phone_number']
+            if(!empty(trim($leadData['phone_number']))) {
+                $validatedLead['phone_number'] = trim($leadData['phone_number']);
+            } else {
+                $errorMessage['phone_number'] = 'Enter phone_number';
+                $invalidCells[7] = 'Invalid';
+            }
+
+            //Validate $leadData['address_1']
+            if(!empty(trim($leadData['address_1']))) {
+                $validatedLead['address_1'] = trim($leadData['address_1']);
+            } else {
+                $errorMessage['address_1'] = 'Enter address_1';
+                $invalidCells[8] = 'Invalid';
+            }
+
+            //Validate $leadData['address_2'] $invalidCells[9] = 'Invalid';
+            $validatedLead['address_2'] = trim($leadData['address_2']);
+
+            //Validate $leadData['city']
+            if(!empty(trim($leadData['city']))) {
+                $validatedLead['city'] = trim($leadData['city']);
+            } else {
+                $errorMessage['city'] = 'Enter city';
+                $invalidCells[10] = 'Invalid';
+            }
+
+            //Validate $leadData['state']
+            if(!empty(trim($leadData['state']))) {
+                $validatedLead['state'] = trim($leadData['state']);
+            } else {
+                $errorMessage['state'] = 'Enter state';
+                $invalidCells[11] = 'Invalid';
+            }
+
+            //Validate $leadData['zipcode']
+            if(!empty(trim($leadData['zipcode']))) {
+                $validatedLead['zipcode'] = trim($leadData['zipcode']);
+            } else {
+                $errorMessage['zipcode'] = 'Enter zipcode';
+                $invalidCells[12] = 'Invalid';
+            }
+
+            //Validate $leadData['country']
+            if(!empty(trim($leadData['country']))) {
+                $validatedLead['country'] = trim($leadData['country']);
+            } else {
+                $errorMessage['country'] = 'Enter country';
+                $invalidCells[13] = 'Invalid';
+            }
+
+            //Validate $leadData['industry']
+            if(!empty(trim($leadData['industry']))) {
+                $validatedLead['industry'] = trim($leadData['industry']);
+            } else {
+                $errorMessage['industry'] = 'Enter industry';
+                $invalidCells[14] = 'Invalid';
+            }
+
+            //Validate $leadData['employee_size']
+            if(!empty(trim($leadData['employee_size']))) {
+                $validatedLead['employee_size'] = trim($leadData['employee_size']);
+            } else {
+                $errorMessage['employee_size'] = 'Enter employee_size';
+                $invalidCells[15] = 'Invalid';
+            }
+
+            //Validate $leadData['employee_size_2'] $invalidCells[16] = 'Invalid';
+            $validatedLead['employee_size_2'] = trim($leadData['employee_size_2']);
+
+            //Validate $leadData['revenue']
+            if(!empty(trim($leadData['revenue']))) {
+                $validatedLead['revenue'] = trim($leadData['revenue']);
+            } else {
+                $errorMessage['revenue'] = 'Enter revenue';
+                $invalidCells[17] = 'Invalid';
+            }
+
+            //Validate $leadData['company_domain']
+            if(!empty(trim($leadData['company_domain']))) {
+                $resultSuppressionDomain = SuppressionDomain::whereCampaignId($campaign_id)->whereDomain(trim($leadData['company_domain']))->exists();
+                if(!$resultSuppressionDomain) {
+                    if(TargetDomain::whereCampaignId($campaign_id)->exists()) {
+                        $resultTargetDomain = TargetDomain::whereCampaignId($campaign_id)->whereDomain(trim($leadData['company_domain']))->exists();
+                        if($resultTargetDomain) {
+                            $validatedLead['company_domain'] = trim($leadData['company_domain']);
+                        } else {
+                            $errorMessage['company_domain'] = 'Target Domain Mismatch';
+                            $invalidCells[18] = 'Invalid';
+                        }
+                    } else {
+                        $validatedLead['company_domain'] = trim($leadData['company_domain']);
+                    }
+                } else {
+                    $errorMessage['company_domain'] = 'Domain Suppression';
+                    $invalidCells[18] = 'Invalid';
+                }
+            } else {
+                $errorMessage['company_domain'] = 'Enter company_domain';
+                $invalidCells[18] = 'Invalid';
+            }
+
+            //Validate $leadData['website'] $invalidCells[19] = 'Invalid';
+            $validatedLead['website'] = trim($leadData['website']);
+
+            //Validate $leadData['company_linkedin_url'] $invalidCells[20] = 'Invalid';
+            $validatedLead['company_linkedin_url'] = trim($leadData['company_linkedin_url']);
+
+            //Validate $leadData['linkedin_profile_link']
+            if(!empty(trim($leadData['linkedin_profile_link']))) {
+                $validatedLead['linkedin_profile_link'] = trim($leadData['linkedin_profile_link']);
+            } else {
+                $errorMessage['linkedin_profile_link'] = 'Enter linkedin_profile_link';
+                $invalidCells[21] = 'Invalid';
+            }
+
+            //Validate $leadData['linkedin_profile_sn_link'] $invalidCells[22] = 'Invalid';
+            $validatedLead['linkedin_profile_sn_link'] = trim($leadData['linkedin_profile_sn_link']);
+
+            //Validate $leadData['comment'] $invalidCells[23] = 'Invalid';
+            $validatedLead['comment'] = trim($leadData['comment']);
+
+            if(empty($errorMessage)) {
+                //dd($validatedLead);
+                $response = array('status' => TRUE, 'validatedLead' => $validatedLead);
+            } else {
+                throw new \Exception('Something went wrong, please try again.', 1);
+            }
+
+        } catch (\Exception $exception) {
+            //dd($errorMessage, $invalidCells);
+            $response = array(
+                'status' => FALSE,
+                'errorMessage' => $errorMessage,
+                'invalidCells' => $invalidCells
+            );
+        }
+
         return $response;
     }
 }

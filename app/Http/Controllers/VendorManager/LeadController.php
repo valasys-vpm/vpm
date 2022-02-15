@@ -45,18 +45,20 @@ class LeadController extends Controller
         return view('vendor_manager.lead.list', $this->data);
     }
 
-    public function uploadLeads(Request $request)
+    public function importLeads(Request $request)
     {
         $attributes = $request->all();
-        if(isset($attributes['lead_file']) && !empty($attributes['lead_file'])) {
-            $response = $this->vendorLeadRepository->uploadLeads($attributes);
-            if($response['status'] == TRUE) {
-                return response()->json(array('status' => true, 'message' => $response['message']));
-            } else {
+        $ca_vendor_id = $attributes['vendor_id'];
+
+        $response = $this->vendorLeadRepository->import($ca_vendor_id, $attributes['lead_file']);
+        if($response['status'] == TRUE) {
+            return response()->json(array('status' => true, 'message' => $response['message'], 'data' => $response['data']));
+        } else {
+            if(!empty($response['data'])) {
+                return response()->json(array('status' => false, 'message' => $response['message'], 'data' => $response['data']));
+            } else{
                 return response()->json(array('status' => false, 'message' => $response['message']));
             }
-        } else {
-            return response()->json(array('status' => false, 'message' => 'Please upload file'));
         }
     }
 
@@ -73,8 +75,8 @@ class LeadController extends Controller
         $query = VendorLead::query();
         $query->where('status', 1);
 
-        if($request->has('cavm_id')) {
-            $resultCAVendors = CampaignAssignVendor::where('campaign_assign_vm_id', base64_decode($request->get('cavm_id')))->get();
+        if($request->has('ca_vm_id')) {
+            $resultCAVendors = CampaignAssignVendor::where('campaign_assign_vm_id', base64_decode($request->get('ca_vm_id')))->get();
             $query->whereIn('ca_vendor_id', $resultCAVendors->pluck('id')->toArray());
         }
 

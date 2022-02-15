@@ -67,7 +67,7 @@ class CampaignAssignController extends Controller
     public function show($cavm_id)
     {
         try {
-            $this->data['resultCAVM'] = $this->CAVendorRepository->find(base64_decode($cavm_id));
+            $this->data['resultCAVM'] = $this->CAVendorManagerRepository->find(base64_decode($cavm_id));
             $this->data['resultCampaign'] = $this->campaignRepository->find($this->data['resultCAVM']->campaign->id);
             //dd($this->data['resultCAVM']->toArray());
             return view('vendor_manager.campaign_assign.show', $this->data);

@@ -7,7 +7,7 @@
     <!-- custom campaign table css -->
     <link rel="stylesheet" href="{{asset('public/css/campaign_table_custom.css')}}">
 
-    <meta name="cavm-id" content="{{ base64_encode($resultCAVM->id) }}">
+    <meta name="ca-vm-id" content="{{ base64_encode($resultCAVM->id) }}">
 
     <style>
         .table td{
@@ -51,7 +51,7 @@
                                         <div class="card-header">
                                             <h5>Lead Details</h5>
                                             <div class="float-right">
-                                                <button autofocus type="button" class="btn btn-primary btn-square btn-sm" data-toggle="modal" data-target="#modal-upload-leads"><i class="feather icon-upload"></i>Upload Leads</button>
+                                                <button autofocus type="button" class="btn btn-primary btn-square btn-sm" data-toggle="modal" data-target="#modal-import-leads"><i class="feather icon-upload"></i>Upload Leads</button>
                                             </div>
                                         </div>
                                         <div class="card-block">
@@ -108,11 +108,11 @@
         </div>
     </section>
 
-    <div id="modal-upload-leads" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+    <div id="modal-import-leads" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <form id="form-upload-leads" method="post" action="" enctype="multipart/form-data">
-                    <input type="hidden" name="cavm_id" value="{{ $resultCAVM->id }}">
+
                     <div class="modal-header">
                         <h5 class="modal-title">Upload Leads</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">

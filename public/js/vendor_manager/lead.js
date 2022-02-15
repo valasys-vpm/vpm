@@ -1,10 +1,6 @@
-/* ------------------------------------
-    Campaign List Custom Javascript
------------------------------------- */
 
 let LEAD_TABLE;
 let URL = $('meta[name="base-path"]').attr('content');
-let MONTHS = ['Jan','Feb','Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
 $(function (){
 
@@ -21,7 +17,7 @@ $(function (){
                     localStorage.setItem("filters", JSON.stringify(obj));
                     return JSON.stringify(obj);
                 },
-                cavm_id: $('meta[name="ca-vm-id"]').attr('content')
+                ca_vm_id: $('meta[name="ca-vm-id"]').attr('content')
             },
             error: function(jqXHR, textStatus, errorThrown) { checkSession(jqXHR); }
         },
@@ -192,20 +188,48 @@ $(function (){
             let form_data = new FormData($('#form-upload-leads')[0]);
             let url = '';
             $.ajax({
-                url: URL +'/vendor-manager/lead/upload-leads',
+                url: URL +'/vendor-manager/lead/import-leads',
                 processData: false,
                 contentType: false,
                 data: form_data,
                 type: 'post',
                 success: function(response) {
+
+                    let _message = response.message;
+
                     if(response.status === true) {
-                        $('#modal-upload-leads').modal('hide');
-                        trigger_pnofify('success', 'Successful', response.message);
+                        let _type = 'success';
+                        if(typeof response.data !== 'undefined' && typeof response.data.failed_data_file !== 'undefined') {
+
+                            _message = response.message + '\n' + response.data.success_count + ' row inserted' + '\n' + response.data.failed_count + ' row not inserted';
+                            _type = 'warning';
+                            trigger_pnofify(_type, 'Request processed', _message);
+                            $('#modal-import-leads').modal('hide');
+                            LEAD_TABLE.ajax.reload();
+                            return window.location.href = URL + response.data.failed_data_file;
+
+                        } else {
+
+                            _message = response.message + '\n' + response.data.success_count + ' row inserted';
+                            _type = 'success';
+                            trigger_pnofify(_type, 'Request processed successfully', _message);
+                            $('#modal-import-leads').modal('hide');
+                            LEAD_TABLE.ajax.reload();
+
+                        }
+
                     } else {
-                        $('#modal-upload-leads').modal('hide');
-                        trigger_pnofify('error', 'Error while processing request', response.message);
+                        if(typeof response.data !== 'undefined' && typeof response.data.failed_data_file !== 'undefined') {
+                            trigger_pnofify('error', 'Error while processing request', response.message);
+                            $('#modal-loader').modal('hide');
+                            LEAD_TABLE.ajax.reload();
+                            return window.location.href = URL + response.data.failed_data_file;
+                        } else {
+                            trigger_pnofify('error', 'Error while processing request', response.message);
+                            $('#modal-loader').modal('hide');
+                            LEAD_TABLE.ajax.reload();
+                        }
                     }
-                    LEAD_TABLE.ajax.reload();
                 }
             });
             document.getElementById("form-upload-leads").reset();
