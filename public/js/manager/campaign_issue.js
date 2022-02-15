@@ -27,6 +27,14 @@ $(function (){
         },
         "columns": [
             {
+                orderable: false,
+                render: function (data, type, row) {
+                    let html = '';
+                    html += '<a href="javascript:void(0);" onclick="closeCampaignIssue(\''+btoa(row.id)+'\');" class="btn btn-outline-info btn-rounded btn-sm" title="Close Issue"><i class="feather icon-edit mr-0"></i></a>';
+                    return html;
+                }
+            },
+            {
                 render: function (data, type, row) {
                     return '<a href="'+URL+'/manager/campaign/view-details/'+btoa(row.campaign.id)+'" class="text-dark double-click" title="' + row.campaign.name + '">'+row.campaign.campaign_id+'</a>';
                 }
@@ -49,10 +57,24 @@ $(function (){
                 }
             },
             {
-                data: 'title'
+                render: function (data, type, row) {
+                    return '<div style="white-space:normal;width:200px;">' + row.title + '</div>';
+                }
             },
             {
-                data: 'description'
+                render: function (data, type, row) {
+                    return '<div style="white-space:normal;width:200px;">' + row.description + '</div>';
+                }
+            },
+            {
+                render: function (data, type, row) {
+                    if(row.response) {
+                        return '<div style="white-space:normal;width:200px;">' + row.response + '</div>';
+                    } else {
+                        return '-';
+                    }
+
+                }
             },
             {
                 data: 'user.full_name'
@@ -82,14 +104,7 @@ $(function (){
                     }
                 }
             },
-            {
-                orderable: false,
-                render: function (data, type, row) {
-                    let html = '';
-                    html += '<a href="javascript:void(0);" onclick="closeCampaignIssue(\''+btoa(row.id)+'\');" class="btn btn-outline-info btn-rounded btn-sm" title="Close Issue"><i class="feather icon-edit mr-0"></i></a>';
-                    return html;
-                }
-            },
+
         ],
         "fnDrawCallback": function (nRow, aData, iDisplayIndex, iDisplayIndexFull) {
             $('.dark-left-toolbar').each(function() {
@@ -209,55 +224,24 @@ $(function (){
 
 });
 
-function editCampaign(id)
-{
-    $.ajax({
-        type: 'post',
-        url: URL + '/manager/campaign/edit/'+btoa(id),
-        dataType: 'json',
-        success: function (response) {
-            resetModalForm();
-            if(response.status === true) {
-                $('#modal-heading').text('Edit campaign');
-                $('#modal-form-button-submit').text('Update');
-
-                $('#campaign_id').val(btoa(response.data.id));
-
-                $('#designation_id').val(response.data.designation_id);
-
-                $('#status').val(response.data.status);
-
-                $('#modalCampaign').modal('show');
-            } else {
-                trigger_pnofify('error', 'Something went wrong', response.message);
-            }
-        }
-    });
-}
-
-function deleteCampaign(id)
-{
+function closeCampaignIssue(_issue_id) {
     if(confirm('Are you sure to delete this campaign?')) {
         $.ajax({
             type: 'post',
-            url: URL + '/manager/campaign/destroy/'+btoa(id),
+            url: URL + '/manager/campaign-issue/edit/'+_issue_id,
             dataType: 'json',
             success: function (response) {
                 if(response.status === true) {
-                    trigger_pnofify('success', 'Successful', response.message);
+                    $('#modal-close-issue').find('input[name="id"]').val(_issue_id);
+                    $('#modal-close-issue').find('textarea[name="response"]').val(response.data.response);
+                    $('#modal-close-issue').modal('show');
                 } else {
                     trigger_pnofify('error', 'Something went wrong', response.message);
                 }
-                CAMPAIGN_ISSUE_TABLE.ajax.reload();
             }
         });
     } else {
         return true;
     }
 
-}
-
-function closeCampaignIssue(_issue_id) {
-    $('#modal-close-issue').find('input[name="id"]').val(_issue_id);
-    $('#modal-close-issue').modal('show');
 }

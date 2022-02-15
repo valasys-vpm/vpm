@@ -42,7 +42,9 @@ class IssueRepository implements IssueInterface
 
     public function find($id)
     {
-        // TODO: Implement find() method.
+        $query = CampaignIssue::query();
+
+        return $query->find($id);
     }
 
     public function store($attributes)

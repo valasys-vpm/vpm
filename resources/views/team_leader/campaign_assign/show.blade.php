@@ -127,6 +127,35 @@
                                             </ul>
                                         </div>
                                     </div>
+
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h5>Campaign Files</h5>
+                                            <br><small>Suppression/Target List</small>
+                                        </div>
+                                        <div class="card-block task-attachment">
+                                            <ul class="media-list p-0" id="campaign-file-ul">
+                                                @if($resultCampaign->campaignFiles->count())
+                                                    @foreach($resultCampaign->campaignFiles as $campaignFile)
+                                                        <li class="media d-flex m-b-15 campaign-file-li">
+                                                            <div class="m-r-20 file-attach">
+                                                                <i class="far fa-file f-28 text-muted"></i>
+                                                            </div>
+                                                            <div class="media-body">
+                                                                <a href="{{ url('public/storage/campaigns/'.$resultCampaign->campaign_id.'/'.rawurlencode($campaignFile->file_name)) }}" class="double-click" target="_blank" download data-toggle="tooltip" data-placement="top" data-original-title="{{ $campaignFile->file_name }}"><span class="m-b-5 d-block text-primary">@if(strlen($campaignFile->file_name) < 30) {{ $campaignFile->file_name }} @else {{ substr($campaignFile->file_name, 0, 27).'...' }} @endif</span></a>
+                                                            </div>
+                                                        </li>
+                                                    @endforeach
+                                                @else
+                                                    <li class="media d-flex m-b-15">
+                                                        <div class="media-body">
+                                                            <a href="javascript:void(0);" class="m-b-5 d-block text-warning">No File Attached</a>
+                                                        </div>
+                                                    </li>
+                                                @endif
+                                            </ul>
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <div class="col-xl-8 col-md-8">

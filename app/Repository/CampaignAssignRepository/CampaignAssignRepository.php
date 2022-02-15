@@ -310,9 +310,10 @@ class CampaignAssignRepository implements CampaignAssignInterface
                             } else {
                                 $result = $this->RATLRepository->store(array(
                                     'campaign_id' => $attributes['campaign_id'],
-                                    'user_id' => $user['user_id'],
+                                    'user_id' => $resultUser->reporting_user_id,
                                     'display_date' => date('Y-m-d', strtotime($attributes['display_date'])),
                                     'allocation' => $user['allocation'],
+                                    'started_at' => date('Y-m-d H:i:s'),
                                     'assigned_by' => Auth::id()
                                 ));
                                 if($result['status'] == TRUE) {

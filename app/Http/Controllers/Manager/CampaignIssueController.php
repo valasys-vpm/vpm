@@ -29,6 +29,25 @@ class CampaignIssueController extends Controller
         return view('manager.campaign_issue.list', $this->data);
     }
 
+    public function edit($id, Request $request)
+    {
+        $resultCampaignIssues = $this->issueRepository->find(base64_decode($id));
+
+        if($request->ajax()){
+            if(!empty($resultCampaignIssues->id)) {
+                return response()->json(array('status' => true, 'message' => 'Data fetched successfully', 'data' => $resultCampaignIssues));
+            } else {
+                return response()->json(array('status' => false, 'message' => 'Data not found'));
+            }
+        } else {
+            if(!empty($resultCampaignIssues->id)) {
+                return view('manager.campaign_issue.edit', $this->data);
+            } else {
+                return back()->withInput()->with('error', ['title' => 'Error while processing request', 'message' => 'Data not found']);
+            }
+        }
+    }
+
     public function update($id, Request $request)
     {
         $attributes = $request->all();

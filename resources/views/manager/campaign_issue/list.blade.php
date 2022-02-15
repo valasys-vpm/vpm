@@ -51,16 +51,17 @@
                                                 <table id="table-campaign-issues" class="display table nowrap table-striped table-hover">
                                                     <thead>
                                                     <tr>
+                                                        <th>Action</th>
                                                         <th>Campaign ID</th>
                                                         <th class="text-center">Priority</th>
                                                         <th class="text-center">Status</th>
                                                         <th>Title</th>
                                                         <th>Description</th>
+                                                        <th>Response</th>
                                                         <th>Raised By</th>
                                                         <th>Created At</th>
                                                         <th>Closed By</th>
                                                         <th>Closed At</th>
-                                                        <th>Action</th>
                                                     </tr>
                                                     </thead>
                                                     <tbody>
