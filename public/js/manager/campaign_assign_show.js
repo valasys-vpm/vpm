@@ -100,6 +100,22 @@ $(function(){
         });
     });
 
+    $('#user_list').on('change', function (e) {
+        if($(this).val()) {
+            let designation_array = [];
+            $.each($(this).val(), function (key, value) {
+                designation_array[key] = $('#user_list_'+value).data('designation');
+            });
+            if(designation_array.includes('research_analyst') || designation_array.includes('email_marketing_executive')) {
+                $('#div-select-work-type').css('display', 'block');
+                $('#div-select-work-type').find('select[name="agent_work_type_id"]').removeAttr('disabled');
+            } else {
+                $('#div-select-work-type').css('display', 'none');
+                $('#div-select-work-type').find('select[name="agent_work_type_id"]').attr('disabled', 'disabled');
+            }
+        }
+    });
+
 });
 
 function viewAssignmentDetails(id) {

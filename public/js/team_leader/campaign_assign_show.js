@@ -142,11 +142,9 @@ function viewAssignmentDetails(id) {
         url: URL + '/team-leader/campaign-assign/view-assignment-details/' + id,
         success: function (response){
             if(response.status === true) {
-                console.log(response.data);
                 let data = null;
                 let html = '';
                 if(response.data.length) {
-                    console.log(response.data)
                     $.each(response.data, function (key, value) {
                         let status = '-';
                         let buttons = '';
@@ -203,7 +201,6 @@ function viewAgentLeadDetails(_ca_agent_id) {
         url: $('meta[name="base-path"]').attr('content') + '/team-leader/campaign/view-agent-lead-details/' + _ca_agent_id,
         success: function (response){
             if(response.status === true) {
-                console.log(response.data);
                 let data = null;
                 let html = '';
 
@@ -268,10 +265,7 @@ function submitCampaign(_id) {
             dataType: 'json',
             success: function (response) {
                 if(response.status === true) {
-                    $('#div-submit-campaign').css('display', 'none');
-                    $('#div-manage-leads').css('display', 'none');
-                    $('#div-send-for-quality').css('display', 'none');
-                    $('#div-raise-issue').css('display', 'none');
+                    location.reload();
                     trigger_pnofify('success', 'Successful', response.message);
                 } else {
                     trigger_pnofify('error', 'Something went wrong', response.message);

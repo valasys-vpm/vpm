@@ -138,6 +138,7 @@ class CampaignAssignController extends Controller
         try {
             $this->data['resultCampaign'] = $this->campaignRepository->find(base64_decode($id), array('delivery_detail'));
             $this->data['resultCampaignIssues'] = $this->issueRepository->get(array('campaign_ids' => [base64_decode($id)]));
+            $this->data['resultWorkTypes'] = AgentWorkTypeRepository::get(array('status' => 1));
 
             $this->data['resultAssignedUsers'] = array();
             $resultCARATLs = CampaignAssignRATL::where('campaign_id', base64_decode($id))->get();
@@ -406,6 +407,7 @@ class CampaignAssignController extends Controller
         $attributes = $request->all();
         $new_attributes['campaign_id'] = base64_decode($attributes['campaign_id']);
         $new_attributes['display_date'] = $attributes['display_date'];
+        $new_attributes['agent_work_type_id'] = $attributes['agent_work_type_id'];
         foreach ($attributes['user_list'] as $user) {
             $new_attributes['users'][] = array('user_id' => $user, 'allocation' => $attributes['allocation']);
         }

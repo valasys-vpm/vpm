@@ -400,10 +400,12 @@ class CampaignAssignController extends Controller
     public function getData(Request $request): \Illuminate\Http\JsonResponse
     {
         $filters = $request->all();
-        //dd($filters);
         $campaign_id = base64_decode($filters['campaign_id']);
+
         $resultCARATL = $this->RATLRepository->find(base64_decode($filters['ca_ratl_id']));
+
         $filters['limit'] = $resultCARATL->allocation * 10;
+
         //get suppression lists
         $suppressionList = array();
         $suppressionList['suppression_email'] = $this->suppressionEmailRepository->get(array('campaign_id' => [$campaign_id]));

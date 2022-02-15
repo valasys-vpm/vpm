@@ -302,9 +302,9 @@ class CampaignAssignRepository implements CampaignAssignInterface
                             break;
 
                         case 'research_analyst' :
-                            $ca_ratl_id = 0;
                             //Find RATL entry
-                            $resultCARATL = CampaignAssignRATL::where('campaign_id', $attributes['campaign_id'])->where('user_id', $resultUser->reporting_user_id)->where('status', 1)->first();
+                            $resultCARATL = CampaignAssignRATL::where('campaign_id', $attributes['campaign_id'])->where('user_id', $resultUser->reporting_user_id)->first();
+
                             if(!empty($resultCARATL) && $resultCARATL->id) {
                                 $ca_ratl_id = $resultCARATL->id;
                             } else {
@@ -341,6 +341,8 @@ class CampaignAssignRepository implements CampaignAssignInterface
                             }
 
                             if($result['status'] == TRUE) {
+                                $resultCARATL->status = 1;
+                                $resultCARATL->save();
                                 $flag = 1;
                                 $user_names .= $resultUser->full_name.', ';
                             } else {
