@@ -407,7 +407,9 @@ class CampaignAssignController extends Controller
         $attributes = $request->all();
         $new_attributes['campaign_id'] = base64_decode($attributes['campaign_id']);
         $new_attributes['display_date'] = $attributes['display_date'];
-        $new_attributes['agent_work_type_id'] = $attributes['agent_work_type_id'];
+        if(isset($attributes['agent_work_type_id']) && !empty($attributes['agent_work_type_id'])) {
+            $new_attributes['agent_work_type_id'] = $attributes['agent_work_type_id'];
+        }
         foreach ($attributes['user_list'] as $user) {
             $new_attributes['users'][] = array('user_id' => $user, 'allocation' => $attributes['allocation']);
         }
