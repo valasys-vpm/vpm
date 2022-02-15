@@ -304,14 +304,14 @@
                                             @if(empty($resultCAAgent->submitted_at))
 
                                                 @if($countAgentData)
-                                                    <div class="col-md-3">
+                                                    <div id="div-view-data" class="col-md-3">
                                                         <a href="{{ route('agent.data.list', base64_encode($resultCAAgent->id)) }}">
                                                             <button type="button" class="btn btn-info btn-sm btn-square w-100">View Data</button>
                                                         </a>
                                                     </div>
                                                 @endif
 
-                                                <div id="div-submit-campaign"  class="col-md-3">
+                                                <div id="div-submit-campaign" class="col-md-3">
                                                     <button type="button" class="btn btn-danger btn-sm btn-square w-100" data-toggle="modal" data-target="#modal-submit-campaign" @if($resultCAAgent->agent_lead_count < 1) disabled @endif>Submit Campaign</button>
                                                 </div>
                                                 <div id="div-raise-issue" class="col-md-3">

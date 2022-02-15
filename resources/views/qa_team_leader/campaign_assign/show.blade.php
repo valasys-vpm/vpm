@@ -253,11 +253,11 @@
                                                 @endif
                                             @endforeach
                                         @endif
-                                        @if(isset($submitFlag) && $submitFlag)
-                                            <div id="div-submit-campaign" class="col-md-3">
-                                                <button type="button"  class="btn btn-danger btn-sm btn-square w-100" data-toggle="modal" data-target="#modal-submit-campaign">Submit Campaign</button>
-                                            </div>
-                                        @endif
+
+                                        <div id="div-submit-campaign" class="col-md-3">
+                                            <button type="button"  class="btn btn-danger btn-sm btn-square w-100" @if(isset($submitFlag) && $submitFlag) data-toggle="modal" data-target="#modal-submit-campaign" @else disabled title="Campaign not submitted by QA" @endif>Submit Campaign</button>
+                                        </div>
+
                                     </div>
                                 </div>
                                 <!-- [ task-detail ] end -->

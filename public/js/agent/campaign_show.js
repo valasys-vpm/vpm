@@ -32,6 +32,10 @@ $(function(){
             async : true,
             success: function (response) {
                 if(response.status === true) {
+                    $('#div-manage-leads').css('display', 'block');
+                    $('#div-view-data').css('display', 'none');
+                    $('#div-submit-campaign').css('display', 'block');
+                    $('#div-raise-issue').css('display', 'block');
                     $("#modal-submit-campaign").modal('hide');
                     trigger_pnofify('success', 'Successful', response.message);
                     window.location.reload();

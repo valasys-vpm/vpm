@@ -83,12 +83,14 @@ $(function (){
             {
                 orderable: false,
                 render: function (data, type, row) {
-                    let status_id  = row.campaign.campaign_status_id;
+                    let status_id  = parseInt(row.campaign.campaign_status_id);
                     let campaign_type = '';
+
                     if(row.campaign.parent_id) {
                         status_id = row.campaign.campaign_status_id;
                         campaign_type = ' (Incremental)'
                     }
+
                     switch (parseInt(status_id)) {
                         case 1: return '<span class="badge badge-pill badge-success" style="padding: 5px;min-width:50px;"> Live'+campaign_type+' </span>';
                         case 2: return '<span class="badge badge-pill badge-warning" style="padding: 5px;min-width:50px;"> Paused'+campaign_type+' </span>';
@@ -96,6 +98,15 @@ $(function (){
                         case 4: return '<span class="badge badge-pill badge-primary" style="padding: 5px;min-width:50px;"> Delivered'+campaign_type+' </span>';
                         case 5: return '<span class="badge badge-pill badge-success" style="padding: 5px;min-width:50px;"> Reactivated'+campaign_type+' </span>';
                         case 6: return '<span class="badge badge-pill badge-secondary" style="padding: 5px;min-width:50px;"> Shortfall'+campaign_type+' </span>';
+                    }
+                }
+            },
+            {
+                orderable: false,
+                render: function (data, type, row) {
+                    switch (parseInt(row.status)) {
+                        case 1: return '<span class="badge badge-pill badge-success" style="padding: 5px;min-width:50px;"> Active </span>';
+                        case 2: return '<span class="badge badge-pill badge-danger" style="padding: 5px;min-width:50px;"> Revoked </span>';
                     }
                 }
             },
@@ -128,11 +139,16 @@ $(function (){
             });
         },
         "createdRow": function(row, data, dataIndex){
-            let status_id  = data.campaign.campaign_status_id;
+            let status_id  = parseInt(data.campaign.campaign_status_id);
+
             if(data.campaign.children.length) {
                 status_id = data.campaign.children[0].campaign_status_id;
             }
-            switch (parseInt(status_id)) {
+            if(parseInt(data.status) === 2) {
+                status_id = 'revoked';
+            }
+
+            switch (status_id) {
                 case 1:
                     $(row).addClass('border-live');
                     break;
@@ -140,6 +156,7 @@ $(function (){
                     $(row).addClass('border-paused');
                     break;
                 case 3:
+                case 'revoked':
                     $(row).addClass('border-cancelled');
                     break;
                 case 4:
