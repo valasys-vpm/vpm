@@ -138,7 +138,7 @@ class GuestController extends Controller
 
     public function excelToArray()
     {
-        return view('excel_to_array');
+        return view('pages.extras.excel_to_array');
     }
 
     public function convertExcelToArray(Request $request)
@@ -197,5 +197,16 @@ class GuestController extends Controller
         echo '<pre>';
         echo $my_string;die;
         dd($my_string, $excelData[0]);
+    }
+
+    public function extractNumber(Request $request)
+    {
+        if($request->method() == 'GET') {
+            return view('pages.extras.extract_number');
+        } else {
+            preg_match_all('!\d+!', $request->string_to_extract, $matches);
+            $this->data['result'] = $matches[0];
+            return view('pages.extras.extract_number', $this->data);
+        }
     }
 }
