@@ -12,7 +12,7 @@ class CampaignAssignAgent extends Model
     protected $guarded = array();
     public $timestamps = true;
 
-    protected $appends = ['agent_lead_count'];
+    protected $appends = ['agent_lead_count', 'count_agent_leads_send_to_qc'];
 
     public function campaign()
     {
@@ -44,8 +44,18 @@ class CampaignAssignAgent extends Model
         return $this->hasMany(AgentLead::class, 'ca_agent_id', 'id');
     }
 
+    public function agent_leads_send_to_qc()
+    {
+        return $this->hasMany(AgentLead::class, 'ca_agent_id', 'id')->whereNotNull('send_date');
+    }
+
     public function getAgentLeadCountAttribute()
     {
         return $this->agentLeads->count();
+    }
+
+    public function getCountAgentLeadsSendToQcAttribute()
+    {
+        return $this->agent_leads_send_to_qc->count();
     }
 }

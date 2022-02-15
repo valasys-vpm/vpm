@@ -189,6 +189,8 @@ class CampaignAssignController extends Controller
     public function show($id)
     {
         try {
+            $this->data['resultCARATL'] = $this->RATLRepository->find(base64_decode($id));
+
             //Data for filter
             $this->data['resultFilterJobLevels'] = Data::distinct()->get(['job_level']);
             $this->data['resultFilterJobRoles'] = Data::distinct()->get(['job_role']);
@@ -197,7 +199,6 @@ class CampaignAssignController extends Controller
             $this->data['resultFilterCountries'] = Data::distinct()->get(['country']);
             $this->data['resultFilterStates'] = Data::distinct()->get(['state']);
 
-            $this->data['resultCARATL'] = $this->RATLRepository->find(base64_decode($id));
             $this->data['resultCampaign'] = $this->campaignRepository->find($this->data['resultCARATL']->campaign->id);
             $this->data['resultCampaignIssues'] = $this->issueRepository->get(array('campaign_ids' => [$this->data['resultCARATL']->campaign->id]));
             $this->data['resultCAQATL'] = CampaignAssignQATL::where('campaign_id', $this->data['resultCARATL']->campaign_id)->first();
@@ -230,7 +231,7 @@ class CampaignAssignController extends Controller
             //$this->data['resultUsers'] = $resultAgents->merge($resultEMEs);
             $this->data['resultAssignedUsers'] = $this->data['resultCARATL']->agents->pluck('user_id')->toArray();
 
-            //dd($this->data['resultCARATL']->agents->toArray());
+            //dd($this->data['resultCARATL']->toArray());
             return view('team_leader.campaign_assign.show', $this->data);
 
         } catch (\Exception $exception) {

@@ -12,7 +12,7 @@ class CampaignAssignRATL extends Model
     protected $guarded = array();
     public $timestamps = true;
 
-    protected $appends = ['agent_lead_total_count'];
+    protected $appends = ['agent_lead_total_count', 'count_agent_leads_send_to_qc'];
 
     public function campaign()
     {
@@ -39,6 +39,17 @@ class CampaignAssignRATL extends Model
         if(isset($this->agents) && !empty($this->agents)) {
             foreach ($this->agents as $ca_agent) {
                 $total_count = $total_count + $ca_agent->agent_lead_count;
+            }
+        }
+        return $total_count;
+    }
+
+    public function getCountAgentLeadsSendToQcAttribute()
+    {
+        $total_count = 0;
+        if(isset($this->agents) && !empty($this->agents)) {
+            foreach ($this->agents as $ca_agent) {
+                $total_count = $total_count + $ca_agent->agent_leads_send_to_qc->count();
             }
         }
         return $total_count;
