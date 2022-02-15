@@ -5,6 +5,7 @@ namespace App\Repository\CampaignAssignRepository\QualityAnalystRepository;
 use App\Models\Campaign;
 use App\Models\CampaignAssignQualityAnalyst;
 use App\Models\User;
+use App\Repository\Notification\QA\QANotificationRepository;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -70,6 +71,13 @@ class QualityAnalystRepository implements QualityAnalystInterface
                 add_history('Campaign assigned to QA', 'Campaign assigned to QA -'.$resultUser->full_name);
 
                 DB::commit();
+                //Send Notification
+                QANotificationRepository::store(array(
+                    'sender_id' => $ca_quality_analyst->assigned_by,
+                    'recipient_id' => $attributes['user_id'],
+                    'message' => 'New campaign assigned - '.$resultCampaign->name,
+                    'url' => route('quality_analyst.campaign.show', base64_encode($ca_quality_analyst->id))
+                ));
                 $response = array('status' => TRUE, 'message' => 'Campaign assigned successfully');
             } else {
                 throw new \Exception('Something went wrong, please try again.', 1);

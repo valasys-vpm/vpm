@@ -200,7 +200,7 @@ Route::prefix('email-marketing-executive')->middleware(['web', 'check.email_mark
     //My Campaign Routes
     include('email_marketing_executive/campaign_routes.php');
 
-    //Campaign Management Routes
+    //Lead Routes
     include('email_marketing_executive/lead_routes.php');
 
     //Data Routes

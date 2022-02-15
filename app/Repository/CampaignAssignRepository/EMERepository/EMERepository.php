@@ -6,6 +6,7 @@ use App\Models\Campaign;
 use App\Models\CampaignAssignEME;
 use App\Models\CampaignNPFFile;
 use App\Models\User;
+use App\Repository\Notification\EME\EMENotificationRepository;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -79,6 +80,14 @@ class EMERepository implements EMEInterface
                     add_history('Campaign sent for promotion', 'NPF File uploaded & Campaign sent for promotion to -'.$resultUser->full_name);
 
                     DB::commit();
+
+                    //Send Notification to EME
+                    EMENotificationRepository::store(array(
+                        'sender_id' => $campaign_assign_eme->assigned_by,
+                        'recipient_id' => $attributes['user_id'],
+                        'message' => 'New campaign assigned for promotion - '.$resultCampaign->name,
+                        'url' => route('email_marketing_executive.promotion_campaign.show', base64_encode($campaign_assign_eme->id))
+                    ));
                     $response = array('status' => TRUE, 'message' => 'NPF File(s) uploaded successfully');
                 } else {
                     throw new \Exception('Something went wrong, please try again.', 1);

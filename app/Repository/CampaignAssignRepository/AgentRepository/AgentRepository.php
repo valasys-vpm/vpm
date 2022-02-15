@@ -10,6 +10,7 @@ use App\Models\CampaignDeliveryDetail;
 use App\Models\User;
 use App\Repository\Notification\EME\EMENotificationRepository;
 use App\Repository\Notification\RA\RANotificationRepository;
+use App\Repository\Notification\VM\VMNotificationRepository;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -115,6 +116,9 @@ class AgentRepository implements AgentInterface
                         case 'email_marketing_executive':
                             $notificationURL = route('email_marketing_executive.campaign.show', base64_encode($ca_agent->id));
                             break;
+                        case 'sr_vendor_management_specialist':
+                            $notificationURL = route('vendor_manager.ra.campaign.show', base64_encode($ca_agent->id));
+                            break;
                     }
                     //Send Notification
                     switch ($resultUser->designation->slug) {
@@ -131,6 +135,14 @@ class AgentRepository implements AgentInterface
                                 'sender_id' => $attributes['assigned_by'],
                                 'recipient_id' => $attributes['user_id'],
                                 'message' => 'New campaign assigned - '.$resultCampaign->name,
+                                'url' => $notificationURL
+                            ));
+                            break;
+                        case 'sr_vendor_management_specialist':
+                            VMNotificationRepository::store(array(
+                                'sender_id' => $attributes['assigned_by'],
+                                'recipient_id' => $attributes['user_id'],
+                                'message' => 'New campaign(RA) assigned - '.$resultCampaign->name,
                                 'url' => $notificationURL
                             ));
                             break;

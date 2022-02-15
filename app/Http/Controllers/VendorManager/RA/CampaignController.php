@@ -63,9 +63,9 @@ class CampaignController extends Controller
                 $this->data['resultCampaignParent'] = $this->campaignRepository->find($this->data['resultCampaign']->parent_id);
             }
 
-            return view('vendor_manager.ra..campaign.show', $this->data);
+            return view('vendor_manager.ra.campaign.show', $this->data);
         } catch (\Exception $exception) {
-            return redirect()->route('vendor_manager.ra..campaign.list')->with('error', ['title' => 'Error while processing request', 'message' => 'Campaign details not found']);
+            return redirect()->route('vendor_manager.ra.campaign.list')->with('error', ['title' => 'Error while processing request', 'message' => 'Campaign details not found']);
         }
     }
 
