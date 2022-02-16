@@ -204,8 +204,17 @@ class GuestController extends Controller
         if($request->method() == 'GET') {
             return view('pages.extras.extract_number');
         } else {
-            preg_match_all('!\d+!', $request->string_to_extract, $matches);
+            
+            $string = $request->string_to_extract;
+
+            $position = strpos($string, 'result');
+
+            $string_to_extract = substr($string, $position+1, strlen($string));
+
+            preg_match_all('!\d+!', $string_to_extract, $matches);
+
             $this->data['result'] = $matches[0];
+
             return view('pages.extras.extract_number', $this->data);
         }
     }
