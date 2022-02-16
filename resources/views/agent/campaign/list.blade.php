@@ -7,6 +7,31 @@
     <!-- custom campaign table css -->
     <link rel="stylesheet" href="{{asset('public/css/campaign_table_custom.css')}}">
 
+    <style>
+        .dataTables_length select {
+            height: 32px !important;
+            padding: 0 20px;
+        }
+        .dataTables_filter input {
+            height: 32px !important;
+            /*padding: 0 20px;*/
+        }
+        .table {
+            margin-top: 0 !important;
+            width: 100% !important;
+        }
+        .table thead th {
+            vertical-align: middle !important;
+            padding: 10px 10px !important;
+        }
+        .table tbody {
+            color: #0d0e0f;
+        }
+        .table .font-size-11 {
+            font-size: 11px !important;
+        }
+    </style>
+
 @append
 
 @section('content')
@@ -41,7 +66,7 @@
                                         <div class="card-header">
                                             <h5>Campaigns</h5>
                                         </div>
-                                        <div class="card-block">
+                                        <div class="card-block" style="font-size: 13px;padding: 10px 10px 0 10px;">
                                             <div class="table-responsive">
                                                 <table id="table-campaigns" class="display table nowrap table-striped table-hover">
                                                     <thead>
@@ -52,7 +77,8 @@
                                                         <th>Start Date</th>
                                                         <th>End Date</th>
                                                         <th>Deliver Count /<br> Allocation</th>
-                                                        <th>Work Type</th>
+                                                        <th>Work<br>Type</th>
+                                                        <th>Campaign<br>Status</th>
                                                         <th>Status</th>
                                                         <th>Action</th>
                                                     </tr>

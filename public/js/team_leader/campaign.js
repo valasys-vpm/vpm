@@ -97,6 +97,15 @@ $(function (){
             {
                 orderable: false,
                 render: function (data, type, row) {
+                    switch (parseInt(row.status)) {
+                        case 1: return '<span class="badge badge-success" style="padding: 5px;min-width:50px;"> Active </span>';
+                        case 2: return '<span class="badge badge-danger" style="padding: 5px;min-width:50px;"> Revoked </span>';
+                    }
+                }
+            },
+            {
+                orderable: false,
+                render: function (data, type, row) {
                     let html = '';
                     html += '<a href="'+URL+'/team-leader/campaign/view-details/'+btoa(row.id)+'" class="btn btn-outline-info btn-rounded btn-sm" title="View Campaign Details"><i class="feather icon-eye mr-0"></i></a>';
                     return html;
@@ -121,11 +130,14 @@ $(function (){
             });
         },
         "createdRow": function(row, data, dataIndex){
-            let status_id  = data.campaign.campaign_status_id;
+            let status_id  = parseInt(data.campaign.campaign_status_id);
             if(data.campaign.children.length) {
-                status_id = data.campaign.children[0].campaign_status_id;
+                status_id = parseInt(data.campaign.children[0].campaign_status_id);
             }
-            switch (parseInt(status_id)) {
+            if(parseInt(data.status) === 2) {
+                status_id = 'revoked';
+            }
+            switch (status_id) {
                 case 1:
                     $(row).addClass('border-live');
                     break;
@@ -133,6 +145,7 @@ $(function (){
                     $(row).addClass('border-paused');
                     break;
                 case 3:
+                case 'revoked':
                     $(row).addClass('border-cancelled');
                     break;
                 case 4:

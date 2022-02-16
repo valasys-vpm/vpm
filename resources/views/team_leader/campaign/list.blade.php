@@ -53,6 +53,7 @@
                                                         <th>Start Date</th>
                                                         <th>End Date</th>
                                                         <th>Deliver Count /<br> Allocation</th>
+                                                        <th>Campaign<br>Status</th>
                                                         <th>Status</th>
                                                         <th>Action</th>
                                                     </tr>

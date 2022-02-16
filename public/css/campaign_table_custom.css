@@ -5,7 +5,7 @@
     box-shadow: 0 5px 8px -6px grey;
 }
 .table td {
-    padding: 5px 5px 0px 5px !important;
+    padding: 3px 5px 3px 5px !important;
     vertical-align: middle !important;
     border-top: 2px solid #dad9d9 !important;
     border-bottom: 2px solid #dad9d9 !important;

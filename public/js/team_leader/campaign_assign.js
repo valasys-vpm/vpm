@@ -105,8 +105,8 @@ $(function (){
                 orderable: false,
                 render: function (data, type, row) {
                     switch (parseInt(row.status)) {
-                        case 1: return '<span class="badge badge-pill badge-success" style="padding: 5px;min-width:50px;"> Active </span>';
-                        case 2: return '<span class="badge badge-pill badge-danger" style="padding: 5px;min-width:50px;"> Revoked </span>';
+                        case 1: return '<span class="badge badge-success" style="padding: 5px;min-width:50px;"> Active </span>';
+                        case 2: return '<span class="badge badge-danger" style="padding: 5px;min-width:50px;"> Revoked </span>';
                     }
                 }
             },
@@ -140,14 +140,12 @@ $(function (){
         },
         "createdRow": function(row, data, dataIndex){
             let status_id  = parseInt(data.campaign.campaign_status_id);
-
             if(data.campaign.children.length) {
-                status_id = data.campaign.children[0].campaign_status_id;
+                status_id = parseInt(data.campaign.children[0].campaign_status_id);
             }
             if(parseInt(data.status) === 2) {
                 status_id = 'revoked';
             }
-
             switch (status_id) {
                 case 1:
                     $(row).addClass('border-live');
