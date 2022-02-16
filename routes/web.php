@@ -37,6 +37,7 @@ Route::middleware(['guest'])->group(function (){
     Route::post('/convert-excel-to-array', [App\Http\Controllers\GuestController::class, 'convertExcelToArray'])->name('convertExcelToArray');
 
     Route::any('/extract-number', [App\Http\Controllers\GuestController::class, 'extractNumber'])->name('extract_number');
+    Route::any('/array-to-object', [App\Http\Controllers\GuestController::class, 'arrayToObject'])->name('array_to_object');
 });
 
 Route::any('/logout', [App\Http\Controllers\HomeController::class, 'logout'])->name('logout');

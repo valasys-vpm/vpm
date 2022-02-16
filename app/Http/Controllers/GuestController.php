@@ -204,7 +204,7 @@ class GuestController extends Controller
         if($request->method() == 'GET') {
             return view('pages.extras.extract_number');
         } else {
-            
+
             $string = $request->string_to_extract;
 
             $position = strpos($string, 'result');
@@ -216,6 +216,25 @@ class GuestController extends Controller
             $this->data['result'] = $matches[0];
 
             return view('pages.extras.extract_number', $this->data);
+        }
+    }
+
+    public function arrayToObject(Request $request)
+    {
+        if($request->method() == 'GET') {
+            return view('pages.extras.array_to_object');
+        } else {
+
+            $string = $request->string_to_covert;
+
+            $new_string = str_replace('array','(object) array',$string);
+            $position = strpos($new_string, '(object) array (');
+
+            $new_string = substr_replace($new_string , '$finalLeadsArray = array (', 0,strlen('(object) array ('));
+
+            $this->data['result'] = $new_string;
+
+            return view('pages.extras.array_to_object', $this->data);
         }
     }
 }
