@@ -216,11 +216,9 @@ function getCampaignCard_html(_campaign_id, _user_list) {
 
     let allocation = $("#campaign_list_"+_campaign_id).data('allocation')/(_user_list.length);
     let balance_allocation = $("#campaign_list_"+_campaign_id).data('allocation')%(_user_list.length);
-
     let end_date = new Date($("#campaign_list_"+_campaign_id).data('end-date'));
 
     allocation = allocation < 1 ? 1 : allocation;
-    balance_allocation = balance_allocation < 1 ? 1 : balance_allocation;
 
     html += '' +
         '<div class="card border border-info rounded">' +
