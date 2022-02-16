@@ -351,7 +351,7 @@ class CampaignRepository implements CampaignInterface
                 $campaign->name = $attributes['name'];
             }
 
-            if(isset($attributes['v_mail_campaign_id']) && !empty($attributes['v_mail_campaign_id'])) {
+            if(array_key_exists('v_mail_campaign_id', $attributes)) {
                 $campaign->v_mail_campaign_id = $attributes['v_mail_campaign_id'];
             }
 

@@ -6,6 +6,8 @@
     <link rel="stylesheet" href="{{ asset('public/template/assets/plugins/select2/css/select2.min.css') }}">
     <!-- material datetimepicker css -->
     <link rel="stylesheet" href="{{ asset('public/template/assets/plugins/material-datetimepicker/css/bootstrap-material-datetimepicker.css') }}">
+
+    <meta name="campaign-id" content="{{ base64_encode($resultCampaign->id) }}">
 @append
 
 @section('content')
@@ -20,11 +22,15 @@
                                 <div class="col-md-12">
                                     <div class="page-header-title">
                                         <h5 class="m-b-10">Campaign Management</h5>
+                                        <div class="card-header-right mb-1" style="float: right;">
+                                            <a href="{{ route('manager.campaign.show', base64_encode($resultCampaign->id)) }}" class="btn btn-outline-info btn-square btn-sm pt-1 pb-1" style="font-weight: bold;"><i class="feather icon-arrow-left"></i>Back</a>
+                                        </div>
                                     </div>
+
                                     <ul class="breadcrumb">
                                         <li class="breadcrumb-item"><a href="{{ route('manager.dashboard') }}"><i class="feather icon-home"></i></a></li>
                                         <li class="breadcrumb-item"><a href="{{ route('manager.campaign.list') }}">Campaign Management</a></li>
-                                        <li class="breadcrumb-item"><a href="{{ route('manager.campaign.show', base64_encode($resultCampaign->id)) }}">View Details</a></li>
+                                        <li class="breadcrumb-item"><a href="{{ route('manager.campaign.show', base64_encode($resultCampaign->id)) }}">{{ $resultCampaign->campaign_id }}</a></li>
                                         <li class="breadcrumb-item"><a href="javascript:void(0);">Edit Campaign</a></li>
                                     </ul>
                                 </div>

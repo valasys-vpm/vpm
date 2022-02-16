@@ -54,7 +54,9 @@ $(function (){
                 required: false,
                 remote : {
                     url : $('meta[name="base-path"]').attr('content')+'/manager/campaign/validate-v-mail-campaign-id',
-                    data: { campaign_id : $('#campaign_id').val() }
+                    data: {
+                        campaign_id : $('meta[name="campaign-id"]').attr('content')
+                    }
                 }
             },
             'campaign_filter_id' : { required : true },

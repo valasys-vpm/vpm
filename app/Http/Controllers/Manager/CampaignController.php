@@ -230,7 +230,7 @@ class CampaignController extends Controller
     public function validateVMailCampaignId(Request $request)
     {
         $campaign = Campaign::query();
-        $campaign = $campaign->where('v_mail_campaign_id',strtoupper($request->v_mail_campaign_id));
+        $campaign = $campaign->where('v_mail_campaign_id', $request->v_mail_campaign_id);
 
         if($request->has('campaign_id') || $request->has('parent_id')) {
             if($request->has('parent_id')) {
