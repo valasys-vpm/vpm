@@ -54,6 +54,7 @@ class LoginController extends Controller
             if (Auth::attempt($credentials)) {
                 $user = Auth::user();
                 $user->logged_on = date('Y-m-d H:i:s');
+                $user->remote_address = $request->getClientIp();
                 $user->save();
 
                 if($request->has('remember_me')) {
