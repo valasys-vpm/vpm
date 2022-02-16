@@ -342,6 +342,7 @@ class CampaignAssignRepository implements CampaignAssignInterface
                             if($result['status'] == TRUE) {
                                 $resultCARATL = CampaignAssignRATL::find($ca_ratl_id);
                                 $resultCARATL->status = 1;
+                                $resultCARATL->allocation = $resultCARATL->allocation + $user['allocation'];
                                 $resultCARATL->save();
                                 $flag = 1;
                                 $user_names .= $resultUser->full_name.', ';
