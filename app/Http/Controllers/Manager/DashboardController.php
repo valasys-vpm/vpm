@@ -34,7 +34,7 @@ class DashboardController extends Controller
 
     public function index(Request $request)
     {
-        dd($_SERVER['REMOTE_ADDR']);
+        //dd($_SERVER['REMOTE_ADDR']);
         return view('manager.dashboard', $this->data);
     }
 
