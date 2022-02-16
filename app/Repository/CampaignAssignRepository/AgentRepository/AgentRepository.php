@@ -61,8 +61,8 @@ class AgentRepository implements AgentInterface
         try {
             DB::beginTransaction();
 
-            $resultCAAgent = CampaignAssignAgent::where('campaign_assign_ratl_id', $attributes['campaign_assign_ratl_id'])
-                ->where('user_id', $attributes['user_id'])->first();
+            $resultCAAgent = CampaignAssignAgent::where('campaign_id', $attributes['campaign_id'])
+                ->where('user_id', $attributes['user_id'])->orderBy('created_at', 'desc')->first();
 
             if(empty($resultCAAgent->id)) {
                 $resultUser = User::findOrFail($attributes['user_id']);
@@ -78,9 +78,7 @@ class AgentRepository implements AgentInterface
                 $ca_agent->user_id = $attributes['user_id'];
                 $ca_agent->accounts_utilized = 0;
                 $ca_agent->display_date = $attributes['display_date'];
-                if(isset($attributes['allocation']) && !empty($attributes['allocation'])) {
-                    $ca_agent->allocation = $attributes['allocation'];
-                }
+                $ca_agent->allocation = $attributes['allocation'] <= 0 ? 1 : $attributes['allocation'];
 
                 //Save reporting file to storage
                 $filename = null;

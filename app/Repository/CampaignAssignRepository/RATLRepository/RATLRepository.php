@@ -61,7 +61,7 @@ class RATLRepository implements RATLInterface
             $ca_ratl->campaign_id = $attributes['campaign_id'];
             $ca_ratl->user_id = $attributes['user_id'];
             $ca_ratl->display_date = $attributes['display_date'];
-            
+
             $ca_ratl->allocation = $attributes['allocation'] <= 0 ? 1 : $attributes['allocation'];
 
             if(isset($attributes['started_at']) && !empty($attributes['started_at'])) {

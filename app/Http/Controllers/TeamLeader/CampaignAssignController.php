@@ -166,11 +166,11 @@ class CampaignAssignController extends Controller
                 if($result['status'] == TRUE) {
                     $response = array('status' => TRUE, 'message' => 'Campaign assigned successfully');
                 } else {
-                    throw new \Exception('Something went wrong, please try again.', 1);
+                    throw new \Exception($result['message'], 1);
                 }
             }
         } catch (\Exception $exception) {
-            $response = array('status' => FALSE, 'message' => 'Something went wrong, please try again.');
+            $response = array('status' => FALSE, 'message' => $exception->getMessage());
         }
 
         if($response['status'] == TRUE) {
