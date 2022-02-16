@@ -27,6 +27,8 @@ class CreateDailyReportLogsTable extends Migration
 
             $table->tinyInteger('cron_status')->default(0);
 
+            $table->string('remote_address', 15)->nullable();
+
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent();
             $table->softDeletes();

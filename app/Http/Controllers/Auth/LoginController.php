@@ -85,26 +85,29 @@ class LoginController extends Controller
 
                         $date = date('Y-m-d H:i:s');
                         if($date >= $shift_start && $date <= $shift_end) {
-
+                            DailyReportLogRepository::update($resultDailyReportLog->id, array(
+                                'sign_out' => date('Y-m-d H:i:s'),
+                                'remote_address' => $request->getClientIp()
+                            ));
                         } else {
                             DailyReportLogRepository::store(array(
                                 'user_id' => $user->id,
-                                'sign_in' => date('Y-m-d H:i:s')
+                                'sign_in' => date('Y-m-d H:i:s'),
+                                'remote_address' => $request->getClientIp()
                             ));
 
                             //Update Sign Out if missing
                             if(empty($resultDailyReportLog->sign_out)) {
                                 DailyReportLogRepository::update($resultDailyReportLog->id, array(
-                                    'sign_out' => $shift_end
+                                    'sign_out' => $shift_end,
                                 ));
                             }
                         }
-
-
                     } else{
                         DailyReportLogRepository::store(array(
                             'user_id' => $user->id,
-                            'sign_in' => date('Y-m-d H:i:s')
+                            'sign_in' => date('Y-m-d H:i:s'),
+                            'remote_address' => $request->getClientIp()
                         ));
                     }
 

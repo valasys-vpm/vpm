@@ -29,15 +29,16 @@ class HomeController extends Controller
         return view('home');
     }
 
-    public function logout()
+    public function logout(Request $request)
     {
         $user = Auth::user();
         $user->logged_on = null;
         $user->save();
 
-        $resultDailyReportLog = DailyReportLog::where('user_id', $user->id)->first();
+        $resultDailyReportLog = DailyReportLog::where('user_id', $user->id)->orderBy('created_at', 'DESC')->first();
         DailyReportLogRepository::update($resultDailyReportLog->id, array(
-            'sign_out' => date('Y-m-d H:i:s')
+            'sign_out' => date('Y-m-d H:i:s'),
+            'remote_address' => $request->getClientIp()
         ));
 
         Auth::logout();

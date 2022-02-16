@@ -57,6 +57,14 @@ class DailyReportLogRepository implements DailyReportLogInterface
                 $daily_report_log->quality = $attributes['quality'];
             }
 
+            if(array_key_exists('cron_status', $attributes)) {
+                $daily_report_log->quality = $attributes['cron_status'];
+            }
+
+            if(isset($attributes['remote_address']) && !empty($attributes['remote_address'])) {
+                $daily_report_log->remote_address = $attributes['remote_address'];
+            }
+
             $daily_report_log->save();
 
             if($daily_report_log->id) {
@@ -103,11 +111,17 @@ class DailyReportLogRepository implements DailyReportLogInterface
                 $daily_report_log->quality = $attributes['quality'];
             }
 
-            $daily_report_log->save();
+            if(array_key_exists('cron_status', $attributes)) {
+                $daily_report_log->quality = $attributes['cron_status'];
+            }
 
-            if($daily_report_log->id) {
+            if(isset($attributes['remote_address']) && !empty($attributes['remote_address'])) {
+                $daily_report_log->remote_address = $attributes['remote_address'];
+            }
+
+            if($daily_report_log->save()) {
                 DB::commit();
-                $response = array('status' => TRUE, 'message' => 'Daily Log added successfully');
+                $response = array('status' => TRUE, 'message' => 'Daily Log updated successfully');
             } else {
                 throw new \Exception('Something went wrong, please try again.', 1);
             }
