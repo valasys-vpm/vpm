@@ -32,8 +32,9 @@ class DashboardController extends Controller
         $this->campaignTypeRepository = $campaignTypeRepository;
     }
 
-    public function index()
+    public function index(Request $request)
     {
+        dd($_SERVER['REMOTE_ADDR']);
         return view('manager.dashboard', $this->data);
     }
 
