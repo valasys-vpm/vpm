@@ -4,9 +4,7 @@
             @csrf
             <label for="string_to_extract">Enter string to convert</label>
             <br>
-            <textarea name="string_to_extract" id="string_to_extract" cols="100" rows="10">
-
-            </textarea>
+            <textarea name="string_to_extract" id="string_to_extract" cols="100" rows="10"></textarea>
             <br><br>
             <input type="submit" value="Convert" name="submit">
         </form>
