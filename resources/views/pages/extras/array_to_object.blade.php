@@ -11,7 +11,7 @@
 
         @if(isset($result) && !empty($result))
         <div style="margin-top: 20px;width: 80%;word-wrap: break-word;">
-            <textarea cols="100" rows="100">{{ $result }}</textarea>
+            <textarea cols="100" rows="100">{{ $result.';' }}</textarea>
         </div>
         @endif
     </body>
