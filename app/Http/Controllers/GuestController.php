@@ -227,7 +227,7 @@ class GuestController extends Controller
 
             $string = $request->string_to_covert;
 
-            $new_string = str_replace('array','(object) array',$string);
+            $new_string = str_replace('array (','(object) array (',$string);
             $position = strpos($new_string, '(object) array (');
 
             $new_string = substr_replace($new_string , '$finalLeadsArray = array (', 0,strlen('(object) array ('));
