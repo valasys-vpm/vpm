@@ -37,6 +37,7 @@ class CreateUsersTable extends Migration
 
             $table->dateTime('logged_on')->nullable();
             $table->rememberToken();
+            $table->string('remote_address', '15')->nullable();
 
             $table->tinyInteger('status')->default('1')->comment('1-Active, 0-Inactive');
             $table->timestamp('created_at')->useCurrent();
