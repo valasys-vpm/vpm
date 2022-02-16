@@ -34,7 +34,6 @@ class DashboardController extends Controller
 
     public function index(Request $request)
     {
-        dd($request->getClientIp());
         return view('manager.dashboard', $this->data);
     }
 
