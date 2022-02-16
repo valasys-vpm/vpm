@@ -339,8 +339,8 @@ class CampaignAssignRepository implements CampaignAssignInterface
                                     'assigned_by' => Auth::id()
                                 ));
                             }
-
                             if($result['status'] == TRUE) {
+                                $resultCARATL = CampaignAssignRATL::find($ca_ratl_id);
                                 $resultCARATL->status = 1;
                                 $resultCARATL->save();
                                 $flag = 1;

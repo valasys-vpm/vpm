@@ -305,9 +305,7 @@ class CampaignAssignController extends Controller
             if(isset($filters['campaign_filter_id'])) {
                 $query->where('campaign_filter_id', $filters['campaign_filter_id']);
             }
-
         }
-
 
         //Order By
         $orderColumn = null;
