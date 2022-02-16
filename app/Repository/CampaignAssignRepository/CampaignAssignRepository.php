@@ -288,7 +288,7 @@ class CampaignAssignRepository implements CampaignAssignInterface
                                     'campaign_id' => $attributes['campaign_id'],
                                     'user_id' => $user['user_id'],
                                     'display_date' => date('Y-m-d', strtotime($attributes['display_date'])),
-                                    'allocation' => $user['allocation'],
+                                    'allocation' => $user['allocation'] <= 0 ? 1 : $user['allocation'],
                                     'assigned_by' => Auth::id()
                                 ));
                             }
