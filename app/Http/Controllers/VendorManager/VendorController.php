@@ -82,12 +82,13 @@ class VendorController extends Controller
 
         //Search Data
         if(isset($searchValue) && $searchValue != "") {
-            $query->where("name", "like", "%$searchValue%");
-            //$query->orWhere("slug", "like", "%$searchValue%");
+            $query->where("vendor_id", "like", "%$searchValue%");
+            $query->orWhere("name", "like", "%$searchValue%");
+            $query->orWhere("email", "like", "%$searchValue%");
+            $query->orWhere("designation", "like", "%$searchValue%");
         }
         //Filters
         if(!empty($filters)) { }
-
 
         //Order By
         $orderColumn = null;
@@ -96,10 +97,14 @@ class VendorController extends Controller
             $orderColumn = $order[0]['column'];
             $orderDirection = $order[0]['dir'];
         }
+
         switch ($orderColumn) {
             case '0': $query->orderBy('vendor_id', $orderDirection); break;
             case '1': $query->orderBy('name', $orderDirection); break;
-            default: $query->orderBy('vendor_id'); break;
+            case '2': $query->orderBy('email', $orderDirection); break;
+            case '3': $query->orderBy('designation', $orderDirection); break;
+            case '4': $query->orderBy('status', $orderDirection); break;
+            default: $query->orderBy('created_at', 'desc'); break;
         }
 
         $totalFilterRecords = $query->count();
@@ -108,6 +113,7 @@ class VendorController extends Controller
             $query->offset($offset);
             $query->limit($limit);
         }
+
         $result = $query->get();
 
         $ajaxData = array(
