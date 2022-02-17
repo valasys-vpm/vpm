@@ -85,6 +85,8 @@ $(function (){
 
     //update sub-allocation total count
     $("#allocation").on('keyup', function () {
+        $(this).prop('checked', false);
+        resetPacingDetails();
         let allocation = ($(this).val() > 0) ? $(this).val() : '0';
         $("#text-allocation").html(' / '+allocation);
     });
