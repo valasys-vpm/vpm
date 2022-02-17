@@ -447,6 +447,9 @@ class CampaignRepository implements CampaignInterface
                             if(array_key_exists('campaign_filter_id', $campaign_updated)) {
                                 $incrementCampaign->campaign_filter_id = $campaign_updated['campaign_filter_id'];
                             }
+                            if(array_key_exists('campaign_type_id', $campaign_updated)) {
+                                $incrementCampaign->campaign_type_id = $campaign_updated['campaign_type_id'];
+                            }
                             if(array_key_exists('v_mail_campaign_id', $campaign_updated)) {
                                 $incrementCampaign->v_mail_campaign_id = $campaign_updated['v_mail_campaign_id'];
                             }
