@@ -401,6 +401,7 @@ class CampaignRepository implements CampaignInterface
 
             if($campaign->id) {
                 $campaign_updated = $campaign->getChanges();
+
                 unset($campaign_updated['updated_at']);
 
                 //if end date updated the update CARATL and CAAgent display date
@@ -433,6 +434,41 @@ class CampaignRepository implements CampaignInterface
                 }
 
                 DB::commit();
+
+                //Update Incremental Campaigns if any changes
+                if(!empty($campaign_updated)) {
+                    $resultIncrements = Campaign::where('parent_id', $campaign->id)->get();
+                    //dd($campaign_updated, $insertCampaignCountries);
+                    if(!empty($resultIncrements)) {
+                        foreach ($resultIncrements as $incrementCampaign) {
+                            if(array_key_exists('name', $campaign_updated)) {
+                                $incrementCampaign->name = $campaign_updated['name'];
+                            }
+                            if(array_key_exists('campaign_filter_id', $campaign_updated)) {
+                                $incrementCampaign->campaign_filter_id = $campaign_updated['campaign_filter_id'];
+                            }
+                            if(array_key_exists('v_mail_campaign_id', $campaign_updated)) {
+                                $incrementCampaign->v_mail_campaign_id = $campaign_updated['v_mail_campaign_id'];
+                            }
+                            if(array_key_exists('note', $campaign_updated)) {
+                                $incrementCampaign->note = $campaign_updated['note'];
+                            }
+                            if(array_key_exists('country_id', $campaign_updated)) {
+                                CampaignCountry::whereCampaignId($incrementCampaign->id)->delete();
+                                $insertCampaignCountries = array();
+                                foreach ($attributes['country_id'] as $country) {
+                                    $resultCountry = Country::find($country);
+                                    $countryNames[] = $resultCountry->name;
+                                    $insertCampaignCountries[] = ['campaign_id' => $incrementCampaign->id, 'country_id' => $country];
+                                }
+                                if(!empty($insertCampaignCountries)) {
+                                    CampaignCountry::insert($insertCampaignCountries);
+                                }
+                            }
+                            $incrementCampaign->save();
+                        }
+                    }
+                }
 
                 //Add Campaign History
                 $oldData = $newData = array();
