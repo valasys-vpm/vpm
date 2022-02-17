@@ -283,6 +283,12 @@ class CampaignAssignRepository implements CampaignAssignInterface
 
                             if(isset($resultCARATL) && $resultCARATL->id) {
                                 $result['status'] = TRUE;
+                                $resultCARATL = CampaignAssignRATL::find($resultCARATL->id);
+                                $resultCARATL->status = 1;
+                                $resultCARATL->submitted_at = null;
+                                $resultCARATL->allocation = $resultCARATL->allocation + max($user['allocation'], 1);
+                                $resultCARATL->save();
+
                             } else {
                                 $result = $this->RATLRepository->store(array(
                                     'campaign_id' => $attributes['campaign_id'],
@@ -343,6 +349,7 @@ class CampaignAssignRepository implements CampaignAssignInterface
                             if($result['status'] == TRUE) {
                                 $resultCARATL = CampaignAssignRATL::find($ca_ratl_id);
                                 $resultCARATL->status = 1;
+                                $resultCARATL->submitted_at = null;
                                 $resultCARATL->allocation = $resultCARATL->allocation + $user['allocation'];
                                 $resultCARATL->save();
                                 $flag = 1;
