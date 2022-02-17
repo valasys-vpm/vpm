@@ -100,7 +100,7 @@ class NotificationController extends Controller
                 case 'email_marketing_executive':
                     $response = $this->EMENotificationRepository->update($id, $attributes);
                     break;
-                case 'vendor_management':
+                case 'vendor_manager':
                     $response = $this->VMNotificationRepository->update($id, $attributes);
                     break;
             }
