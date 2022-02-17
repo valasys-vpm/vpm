@@ -5,7 +5,7 @@ let BASE_URL = $('meta[name="base-path"]').attr('content');
 $(function (){
 
     VENDOR_TABLE = $('#table-roles').DataTable({
-        "lengthMenu": [ [5,10,20,30,'all'], [5,10,20,30,'All'] ],
+        "lengthMenu": [ [10,20,50,100,-1], [10,20,50,100,'All'] ],
         "processing": true,
         "serverSide": true,
         "ajax": {

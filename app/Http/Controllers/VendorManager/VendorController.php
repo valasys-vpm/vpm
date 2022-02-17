@@ -103,8 +103,11 @@ class VendorController extends Controller
         }
 
         $totalFilterRecords = $query->count();
-        $query->offset($offset);
-        $query->limit($limit);
+
+        if($limit > 0) {
+            $query->offset($offset);
+            $query->limit($limit);
+        }
         $result = $query->get();
 
         $ajaxData = array(
