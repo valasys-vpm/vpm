@@ -92,10 +92,12 @@ $(function(){
         format: 'D-MMM-YYYY',
         dropdownParent: $('#modal-edit-pacing-details'),
         switchOnClick : true,
+    }).on('change', function(e, date) {
+        $('#start_date').bootstrapMaterialDatePicker('setMaxDate', date);
     });
 
     //Update total sub-allocation count
-    $('body').on('keyup', ".sub-allocation",function () {
+    $('body').on('keyup, change', ".sub-allocation",function () {
         let total = 0;
 
         $('body').find('.sub-allocation').each(function(){
@@ -106,6 +108,7 @@ $(function(){
         total = (total > 0) ? total : 0;
         $("#total-sub-allocation").html(total);
         if(total > parseInt($("#campaign_allocation").val())) {
+            $("#total-sub-allocation").html(total - parseInt($(this).val()));
             $(this).val('');
             $(this).keyup();
         }

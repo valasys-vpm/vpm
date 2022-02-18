@@ -51,7 +51,7 @@ $(function (){
         switchOnClick : true,
     }).on('change', function(e, date) {
         $('#start_date').bootstrapMaterialDatePicker('setMaxDate', date);
-    });;
+    });
 
     $('body').on("input", ".only-non-zero-number", function (){
         if(this.value < 1) {
