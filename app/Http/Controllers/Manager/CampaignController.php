@@ -254,7 +254,7 @@ class CampaignController extends Controller
             $query->where('name', $request->name);
             $query->orWhere('name', trim($request->name));
         });
-        
+
         if($request->has('campaign_id') || $request->has('parent_id')) {
             if($request->has('parent_id')) {
                 $campaign = $campaign->where('id', '!=', base64_decode($request->parent_id));
@@ -306,10 +306,8 @@ class CampaignController extends Controller
     public function import(Request $request)
     {
         $attributes = $request->all();
-        //dd($attributes);
-        $response = $this->campaignRepository->import($attributes);
-
         if(isset($attributes['campaign_file']) && !empty($attributes['campaign_file'])) {
+            $response = $this->campaignRepository->import($attributes);
             if($response['status'] == TRUE) {
                 return response(json_encode(array('status' => true, 'message' => $response['message'])), 205);
             } else {

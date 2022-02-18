@@ -413,59 +413,110 @@ $(function (){
         }
     });
 
+    $("#form-import-campaigns").validate({
+        ignore: [],
+        focusInvalid: false,
+        rules: {
+            'campaign_file' : {
+                required : true,
+                extension: "xlsx",
+            },
+            'specification_file' : {
+                extension: "zip",
+            },
+        },
+        messages: {
+            'campaign_file' : {
+                required : "Please upload file",
+                extension: "Please upload valid file, [xlsx]",
+            },
+            'specification_file' : {
+                extension: "Please upload valid file [zip]",
+            },
+        },
+        errorPlacement: function errorPlacement(error, element) {
+            let $parent = $(element).parents('.form-group');
+
+            // Do not duplicate errors
+            if ($parent.find('.jquery-validation-error').length) {
+                return;
+            }
+
+            $parent.append(
+                error.addClass('jquery-validation-error small form-text invalid-feedback')
+            );
+        },
+        highlight: function(element) {
+            var $el = $(element);
+            var $parent = $el.parents('.form-group');
+
+            $el.addClass('is-invalid');
+
+            // Select2 and Tagsinput
+            if ($el.hasClass('select2-hidden-accessible') || $el.attr('data-role') === 'tagsinput') {
+                $el.parent().addClass('is-invalid');
+            }
+        },
+        unhighlight: function(element) {
+            $(element).parents('.form-group').find('.is-invalid').removeClass('is-invalid');
+        }
+    });
+
     $('#form-import-campaigns-submit').on('click', function (e) {
         e.preventDefault();
-        let form_data = new FormData($('#form-import-campaigns')[0]);
-        let url = '';
-        $.ajax({
-            url: URL +'/manager/campaign/import',
-            processData: false,
-            contentType: false,
-            data: form_data,
-            type: 'post',
-            xhr: function () {
-                let xhr = new XMLHttpRequest();
 
-                xhr.onreadystatechange = function () {
-                    if (xhr.readyState === 2) {
-                        if (xhr.status === 201) {
-                            xhr.responseType = "json";
-                        } else {
-                            xhr.responseType = "blob";
+        if($("#form-import-campaigns").valid()) {
+            let form_data = new FormData($('#form-import-campaigns')[0]);
+            $.ajax({
+                url: URL +'/manager/campaign/import',
+                processData: false,
+                contentType: false,
+                data: form_data,
+                type: 'post',
+                xhr: function () {
+                    let xhr = new XMLHttpRequest();
+
+                    xhr.onreadystatechange = function () {
+                        if (xhr.readyState === 2) {
+                            if (xhr.status === 201) {
+                                xhr.responseType = "json";
+                            } else {
+                                xhr.responseType = "blob";
+                            }
                         }
+                    };
+                    return xhr;
+                },
+                success: function(response, status, xhr) {
+                    console.log(xhr);
+                    switch (xhr.status) {
+                        case 205:
+                            trigger_pnofify('success', 'Successful', 'All Campaigns imported successfully');
+                            break;
+                        case 201:
+                            trigger_pnofify('error', 'Error while processing request', 'Something went wrong, please try again.');
+                            break;
+                        case 202:
+                            trigger_pnofify('error', 'Error while processing request', 'Please select valid file');
+                            break;
+                        default:
+                            let date = new Date();
+                            let blob = new Blob([response], {type: '' + xhr.getResponseHeader("content-type")})
+                            console.log(blob);
+                            let a = $('<a />'), url = window.URL.createObjectURL(blob);
+                            a.attr({
+                                'href': url,
+                                'download': 'Invalid_Campaigns_'+date.getTime()+'.xlsx',
+                                'text': "click"
+                            }).hide().appendTo("body")[0].click();
+                            trigger_pnofify('warning', 'Invalid Data', 'Campaigns imported with errors, please check excel file to invalid data.');
                     }
-                };
-                return xhr;
-            },
-            success: function(response, status, xhr) {
-                console.log(xhr);
-                switch (xhr.status) {
-                    case 205:
-                        trigger_pnofify('success', 'Successful', 'All Campaigns imported successfully');
-                        break;
-                    case 201:
-                        trigger_pnofify('error', 'Error while processing request', 'Something went wrong, please try again.');
-                        break;
-                    case 202:
-                        trigger_pnofify('error', 'Error while processing request', 'Please select valid file');
-                        break;
-                    default:
-                        let date = new Date();
-                        let blob = new Blob([response], {type: '' + xhr.getResponseHeader("content-type")})
-                        console.log(blob);
-                        let a = $('<a />'), url = window.URL.createObjectURL(blob);
-                        a.attr({
-                            'href': url,
-                            'download': 'Invalid_Campaigns_'+date.getTime()+'.xlsx',
-                            'text': "click"
-                        }).hide().appendTo("body")[0].click();
-                        trigger_pnofify('warning', 'Invalid Data', 'Campaigns imported with errors, please check excel file to invalid data.');
-                }
 
-                $('#modal-import-campaigns').modal('hide');
-                CAMPAIGN_TABLE.ajax.reload();
-            }
-        });
+                    $('#modal-import-campaigns').modal('hide');
+                    CAMPAIGN_TABLE.ajax.reload();
+                }
+            });
+        }
 
     });
 

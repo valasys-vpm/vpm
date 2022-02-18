@@ -765,6 +765,9 @@ class CampaignRepository implements CampaignInterface
 
             if(isset($attributes['specification_file']) && !empty($attributes['specification_file'])) {
                 $specification_file = $attributes['specification_file'];
+                if($specification_file->getClientOriginalExtension() != 'zip') {
+                    throw new \Exception('Please upload valid file [zip]', 1);
+                }
             }
             ini_set('memory_limit', '-1');
             ini_set('max_execution_time', '0');
