@@ -1,6 +1,7 @@
 /* ------------------------------------
     Campaign Create Custom Javascript
 ------------------------------------ */
+
 //Declarations
 let URL = $('meta[name="base-path"]').attr('content');
 
@@ -49,11 +50,19 @@ $(function (){
         ignore: [],
         focusInvalid: false,
         rules: {
-            'name' : { required : true },
+            'name' : {
+                required : true,
+                remote : {
+                    url : URL + '/manager/campaign/validate-campaign-name',
+                    data : {
+                        campaign_id : $('meta[name="campaign-id"]').attr('content')
+                    }
+                }
+            },
             'v_mail_campaign_id' : {
                 required: false,
                 remote : {
-                    url : $('meta[name="base-path"]').attr('content')+'/manager/campaign/validate-v-mail-campaign-id',
+                    url : URL + '/manager/campaign/validate-v-mail-campaign-id',
                     data: {
                         campaign_id : $('meta[name="campaign-id"]').attr('content')
                     }
@@ -64,7 +73,10 @@ $(function (){
             'country_id[]' : { required : true },
         },
         messages: {
-            'name' : { required : "Please enter campaign name" },
+            'name' : {
+                required : "Please enter campaign name",
+                remote : "Campaign name invalid or already exists"
+            },
             'v_mail_campaign_id' : {
                 remote : "V-Mail Campaign Id Invalid or already exists"
             },

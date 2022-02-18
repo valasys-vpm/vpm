@@ -247,6 +247,29 @@ class CampaignController extends Controller
         }
     }
 
+    public function validateCampaignName(Request $request)
+    {
+        $campaign = Campaign::query();
+        $campaign->where(function($query) use ($request){
+            $query->where('name', $request->name);
+            $query->orWhere('name', trim($request->name));
+        });
+        
+        if($request->has('campaign_id') || $request->has('parent_id')) {
+            if($request->has('parent_id')) {
+                $campaign = $campaign->where('id', '!=', base64_decode($request->parent_id));
+            } else {
+                $campaign = $campaign->where('id', '!=', base64_decode($request->campaign_id));
+            }
+        }
+
+        if($campaign->exists()) {
+            return 'false';
+        } else {
+            return 'true';
+        }
+    }
+
     public function attachSpecification($id, Request $request): \Illuminate\Http\JsonResponse
     {
         $attributes = $request->all();
