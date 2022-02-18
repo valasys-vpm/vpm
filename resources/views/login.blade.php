@@ -17,7 +17,8 @@
     <meta name="keywords" content="valasys media, program management, valasys crm, program management tool"/>
     <meta name="author" content="Valasys Media" />
 
-    <meta http-equiv="refresh" content="{{ config('session.lifetime') * 60 }}">
+    <meta name="csrf-token" content="{{ csrf_token() }}" />
+    <meta name="base-path" content="{{ url('/') }}" />
 
     <!-- Favicon icon -->
     <link rel="icon" href="{{ asset('public/template') }}/assets/images/favicon.png" type="image/x-icon">
@@ -84,6 +85,20 @@
 <!-- Required Js -->
 <script src="{{ asset('public/template') }}/assets/js/vendor-all.min.js"></script><script src="{{ asset('public/template') }}/assets/plugins/bootstrap/js/bootstrap.min.js"></script>
 <script src="{{ asset('public/template') }}/assets/js/pcoded.min.js"></script>
+
+<script>
+    $(function () {
+        let csrfToken = $('[name="csrf-token"]').attr('content');
+
+        setInterval(refreshToken, 600000); // 10 min
+
+        function refreshToken(){
+            $.get($('meta[name="base-path"]').attr('content')+'/refresh-csrf').done(function(data){
+                csrfToken = data; // the new token
+            });
+        }
+    });
+</script>
 
 </body>
 </html>

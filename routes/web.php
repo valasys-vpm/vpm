@@ -284,6 +284,10 @@ Route::middleware(['web', 'auth'])->group(function (){
 
 });
 
+Route::get('refresh-csrf', function(){
+    return csrf_token();
+});
+
 
 
 

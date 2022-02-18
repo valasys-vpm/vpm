@@ -1,3 +1,17 @@
+$(function () {
+    let csrfToken = $('[name="csrf-token"]').attr('content');
+
+    setInterval(refreshToken, 600000); // 10 min
+
+    function refreshToken(){
+        $.get($('meta[name="base-path"]').attr('content')+'/refresh-csrf').done(function(data){
+            csrfToken = data; // the new token
+        });
+    }
+
+    //setInterval(refreshToken, 600000); // 1 min
+});
+
 
 function checkSession(e){401==e.status&&location.reload()}
 
@@ -32,7 +46,7 @@ $(function () {
 
 });
 
-//Idle Time Functionality
+    //Idle Time Functionality
     // Set timeout variables.
     let timoutWarning = 840000; // Display warning in 14 Mins.
     let timoutNow = 840000; // Timeout in 15 mins.
@@ -58,6 +72,7 @@ $(function () {
 
     // Show idle timeout warning dialog.
     function IdleWarning() {
+        window.location.reload();
         //alert('Warning: No activity detected, session will be end soon.');
     }
 
@@ -123,6 +138,8 @@ jQuery(document).bind("keyup keydown", function(e){
         window.location = lockscreen;
     }
 });
+
+
 
 
 
