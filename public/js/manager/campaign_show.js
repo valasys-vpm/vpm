@@ -84,6 +84,13 @@ $(function(){
         switchOnClick : true,
     }).on('change', function(e, date) {
         $('#end_date').bootstrapMaterialDatePicker('setMinDate', date);
+        let d_sd = new Date(date);
+        let d_ed = new Date($('#end_date').val());
+        d_sd.setHours(0,0,0,0);
+        d_ed.setHours(0,0,0,0);
+        if(d_sd > d_ed) {
+            $('#end_date').val(d_sd.getDate() + '-' + MONTHS[d_sd.getMonth()] + '-' + d_sd.getFullYear());
+        }
     });
 
     $('#end_date').bootstrapMaterialDatePicker({
