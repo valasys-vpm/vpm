@@ -192,22 +192,66 @@ $(function (){
         order:[]
     });
 
-    $('#button-campaign-assign').on('click', function(e) {
-        let campaign_list = $("#campaign_list").val();
-        let user_list = $("#user_list").val();
-        let html = '';
+    //Validate Form
+    $("#form-campaign-assign").validate({
+        ignore: [],
+        focusInvalid: false,
+        rules: {
+            'campaign_id' : { required : true },
+            'user_list[]' : { required : true },
+        },
+        messages: {
+            'campaign_id' : { required : "Please select campaign" },
+            'user_list[]' : { required : "Please select user(s)" },
+        },
+        errorPlacement: function errorPlacement(error, element) {
+            var $parent = $(element).parents('.form-group');
 
-        if(!Array.isArray(campaign_list)) {
-            campaign_list = [campaign_list];
+            // Do not duplicate errors
+            if ($parent.find('.jquery-validation-error').length) {
+                return;
+            }
+
+            $parent.append(
+                error.addClass('jquery-validation-error small form-text invalid-feedback')
+            );
+        },
+        highlight: function(element) {
+            var $el = $(element);
+            var $parent = $el.parents('.form-group');
+
+            $el.addClass('is-invalid');
+
+            // Select2 and Tagsinput
+            if ($el.hasClass('select2-hidden-accessible') || $el.attr('data-role') === 'tagsinput') {
+                $el.parent().addClass('is-invalid');
+            }
+        },
+        unhighlight: function(element) {
+            $(element).parents('.form-group').find('.is-invalid').removeClass('is-invalid');
+        }
+    });
+
+    $('#button-campaign-assign').on('click', function(e) {
+
+        if($("#form-campaign-assign").valid()) {
+            let campaign_list = $("#campaign_list").val();
+            let user_list = $("#user_list").val();
+            let html = '';
+
+            if(!Array.isArray(campaign_list)) {
+                campaign_list = [campaign_list];
+            }
+
+            $("#modal-campaign-assign").find('.modal-body').html(html);
+
+            html = getCampaignCard_html(campaign_list, user_list);
+
+            $("#modal-campaign-assign").find('.modal-body').html(html);
+
+            $("#modal-campaign-assign").modal('show');
         }
 
-        $("#modal-campaign-assign").find('.modal-body').html(html);
-
-        html = getCampaignCard_html(campaign_list, user_list);
-
-        $("#modal-campaign-assign").find('.modal-body').html(html);
-
-        $("#modal-campaign-assign").modal('show');
     });
 
     $("#button-reset-form-campaign-assign").on('click', function(){
