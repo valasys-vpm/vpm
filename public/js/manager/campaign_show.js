@@ -165,7 +165,7 @@ $(function(){
                                         <i class="far fa-file f-28 text-muted"></i>\n\
                                     </div>\n\
                                     <div class="media-body">\n\
-                                        <a href="'+ $('meta[name="base-path"]').attr('content') + '/public/storage/campaigns/'+$('#campaign_campaign_id').val()+value.file_name+'" target="_blank" data-toggle="tooltip" data-placement="top" data-original-title="Click to view"><span class="m-b-5 d-block text-primary">'+value.file_name+'</span></a>\n\
+                                        <a href="'+ $('meta[name="base-path"]').attr('content') + '/public/storage/campaigns/'+$('meta[name="campaign-campaign-id"]').attr('content')+'/'+encodeURIComponent(value.file_name)+'" target="_blank" data-toggle="tooltip" data-placement="top" data-original-title="Click to view"><span class="m-b-5 d-block text-primary">'+value.file_name+'</span></a>\n\
                                     </div>\n\
                                     <div class="float-right text-muted">\n\
                                         <a href="javascript:void(0);" onclick="removeSpecification(this, \''+btoa(value.id)+'\');"><i class="fas fa-times f-24 text-danger"></i></a>\n\

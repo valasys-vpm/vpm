@@ -3,6 +3,7 @@
 @section('stylesheet')
     @parent
     <meta name="campaign-id" content="{{ base64_encode($resultCampaign->id) }}">
+    <meta name="campaign-campaign-id" content="{{ $resultCampaign->campaign_id }}">
     <!-- footable css -->
     <link rel="stylesheet" href="{{ asset('public/template/') }}/assets/plugins/footable/css/footable.bootstrap.min.css">
     <link rel="stylesheet" href="{{ asset('public/template/') }}/assets/plugins/footable/css/footable.standalone.min.css">
@@ -58,7 +59,7 @@
                                         <div class="card-block p-0">
                                             <div class="row align-items-center justify-content-center">
                                                 <div class="col">
-                                                    <h5><span class="text-muted">ID: </span><span id="campaign_campaign_id">{{ $resultCampaign->campaign_id }}</span></h5>
+                                                    <h5><span class="text-muted">ID: </span><span>{{ $resultCampaign->campaign_id }}</span></h5>
                                                     <h6><span><span class="text-muted">Name: </span>{{ $resultCampaign->name }}</span></h6>
                                                     @if($resultCampaign->v_mail_campaign_id)
                                                         <h6><span><span class="text-muted">V-Mail Campaign ID: </span>{{ $resultCampaign->v_mail_campaign_id }}</span></h6>
