@@ -198,7 +198,6 @@ class CampaignAssignController extends Controller
     {
 
         $this->data['resultAssignedCampaigns'] = $this->campaignAssignRepository->getAssignedCampaigns();
-        //dd($this->data['resultAssignedCampaigns']->pluck('id')->toArray());
 
         $filters = array_filter(json_decode($request->get('filters'), true));
         $search_data = $request->get('search');
@@ -339,8 +338,6 @@ class CampaignAssignController extends Controller
 
         $result = $query->get();
 
-        //dd($result->toArray());
-
         $ajaxData = array(
             "draw" => intval($draw),
             "iTotalRecords" => $totalRecords,
@@ -360,8 +357,6 @@ class CampaignAssignController extends Controller
         //$resultRATLs = CampaignAssignRATL::where('campaign_id', $campaign_id)->get();
 
         //$result['resultUsers'] = $resultRATLs->merge($resultCAVMs);
-
-        //dd($result['resultUsers']->toArray());
 
         if(!empty($result)) {
             return response()->json(array('status' => true, 'data' => $result));

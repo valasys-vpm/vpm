@@ -152,7 +152,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-primary" id="btn-submit-campaign-user-assign">Assign</button>
+                        <input type="submit" class="btn btn-primary" id="btn-submit-campaign-user-assign" value="Assign">
                     </div>
                 </form>
             </div>

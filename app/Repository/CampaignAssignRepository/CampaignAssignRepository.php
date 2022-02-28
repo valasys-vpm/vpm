@@ -223,11 +223,9 @@ class CampaignAssignRepository implements CampaignAssignInterface
         if(!empty($result['VM'])) {
             $resultAssignedCampaigns = array_unique (array_merge ($resultAssignedCampaigns, $result['VM']->pluck('campaign_id')->toArray()));
         }
-        //dd($resultAssignedCampaigns);
         $resultCampaignIds = array();
         //get campaign with live incremental
         $resultCampaigns = Campaign::whereNotIn('id', $resultAssignedCampaigns)->get();
-        //dd($resultCampaigns->pluck('id')->toArray());
 
         if(!empty($resultCampaigns)) {
             foreach ($resultCampaigns as $campaign) {
@@ -245,7 +243,6 @@ class CampaignAssignRepository implements CampaignAssignInterface
 
         $query = Campaign::query();
         $query->whereIn('id', $resultCampaignIds);
-        //dd($query->get()->pluck('id')->toArray());
         return $query->get();
     }
 
@@ -341,7 +338,7 @@ class CampaignAssignRepository implements CampaignAssignInterface
                                     'campaign_assign_ratl_id' => $ca_ratl_id,
                                     'user_id' => $user['user_id'],
                                     'display_date' => date('Y-m-d', strtotime($attributes['display_date'])),
-                                    'allocation' => $user['allocation'],
+                                    'allocation' => max($user['allocation'], 1),
                                     'reporting_file' => null,
                                     'assigned_by' => Auth::id()
                                 ));
@@ -350,7 +347,7 @@ class CampaignAssignRepository implements CampaignAssignInterface
                                 $resultCARATL = CampaignAssignRATL::find($ca_ratl_id);
                                 $resultCARATL->status = 1;
                                 $resultCARATL->submitted_at = null;
-                                $resultCARATL->allocation = $resultCARATL->allocation + $user['allocation'];
+                                $resultCARATL->allocation = $resultCARATL->allocation + max($user['allocation'], 1);
                                 $resultCARATL->save();
                                 $flag = 1;
                                 $user_names .= $resultUser->full_name.', ';
@@ -452,7 +449,6 @@ class CampaignAssignRepository implements CampaignAssignInterface
         $response = array('status' => FALSE, 'message' => 'Something went wrong, please try again.');
         try {
             DB::beginTransaction();
-            dd($attributes);
             if(0) {
                 DB::commit();
                 $response = array('status' => TRUE, 'message' => 'Campaign revoke successfully');

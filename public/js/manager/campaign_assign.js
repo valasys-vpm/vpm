@@ -232,6 +232,37 @@ $(function (){
         }
     });
 
+    $("#form-campaign-user-assignment").validate({
+        ignore: [],
+        focusInvalid: false,
+        errorPlacement: function errorPlacement(error, element) {
+            var $parent = $(element).parents('.form-group');
+
+            // Do not duplicate errors
+            if ($parent.find('.jquery-validation-error').length) {
+                return;
+            }
+
+            $parent.append(
+                error.addClass('jquery-validation-error small form-text invalid-feedback')
+            );
+        },
+        highlight: function(element) {
+            var $el = $(element);
+            var $parent = $el.parents('.form-group');
+
+            $el.addClass('is-invalid');
+
+            // Select2 and Tagsinput
+            if ($el.hasClass('select2-hidden-accessible') || $el.attr('data-role') === 'tagsinput') {
+                $el.parent().addClass('is-invalid');
+            }
+        },
+        unhighlight: function(element) {
+            $(element).parents('.form-group').find('.is-invalid').removeClass('is-invalid');
+        }
+    });
+
     $('#button-campaign-assign').on('click', function(e) {
 
         if($("#form-campaign-assign").valid()) {
@@ -250,6 +281,21 @@ $(function (){
             $("#modal-campaign-assign").find('.modal-body').html(html);
 
             $("#modal-campaign-assign").modal('show');
+
+            $.each(user_list, function (key, value){
+                //Dynamic Validation
+                $("#form-campaign-user-assignment").find('input[name="users['+key+'][allocation]"]').rules( "add", {
+                    required: true,
+                    min: 1,
+                    number: true,
+                    messages: {
+                        required: "Please enter allocation",
+                        min: "Please enter allocation greater than 0",
+                        number: "Please enter valid allocation"
+                    }
+                });
+
+            });
         }
 
     });
@@ -324,8 +370,8 @@ function getUserAssignCard_html(_key, _user_list, allocation, balance_allocation
         html += '<div class="row p-1">' +
             '   <div class="col-md-5"><h6 class="card-title">'+$("#user_list_"+value).data('name')+'</h6></div>' +
             '   <input type="hidden" name="users['+key+'][user_id]" value="'+value+'">' +
-            '   <div class="col-md-7">' +
-            '       <input type="text" name="users['+key+'][allocation]" class="form-control form-control-sm" value="'+ ( (key === (_user_list.length -1)) ? Math.floor((allocation + balance_allocation)) : Math.floor(allocation) ) +'" style="height: 30px;">' +
+            '   <div class="col-md-7 form-group">' +
+            '       <input type="number" id="user_allocation_'+key+'" name="users['+key+'][allocation]" class="form-control form-control-sm" required value="'+ ( (key === (_user_list.length -1)) ? Math.floor((allocation + balance_allocation)) : Math.floor(allocation) ) +'" style="height: 30px;">' +
             '   </div>' +
             '</div>';
 
