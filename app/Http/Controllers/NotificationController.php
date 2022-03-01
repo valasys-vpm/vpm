@@ -163,7 +163,7 @@ class NotificationController extends Controller
                         $response = $this->EMENotificationRepository->update($notification->id, $attributes);
                     }
                     break;
-                case 'vendor_management':
+                case 'vendor_manager':
                     $resultNotifications = $this->VMNotificationRepository->get(array('read_status' => 0));
                     foreach ($resultNotifications as $notification) {
                         $response = $this->VMNotificationRepository->update($notification->id, $attributes);

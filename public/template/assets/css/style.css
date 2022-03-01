@@ -234,7 +234,7 @@ p.text-muted {
 }
 @media only screen and (max-width: 575px) {
   .card .card-header .card-header-right {
-    display: none;
+    /*display: none;*/
   }
 }
 .card .card-header .card-header-right .dropdown-menu {
@@ -6211,7 +6211,7 @@ body.layout-1 .pcoded-navbar.hide-sidemenu .toggle-sidemenu i {
   .card-customer i {
     width: 80px;
     height: 80px;
-    font-size: 50px;
+    font-size: 25px !important;
   }
 }
 

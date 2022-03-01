@@ -1,10 +1,7 @@
 <header class="navbar pcoded-header navbar-expand-lg navbar-light">
     <div class="m-header">
-        <a class="mobile-menu" id="mobile-collapse1" href="{{route($module->route_name)}}"><span></span></a>
-        <a href="#" class="b-brand">
-            <div class="b-bg">
-                <i class="feather icon-trending-up"></i>
-            </div>
+        <a class="mobile-menu" id="mobile-collapse1" href="javascript:void(0);"><span></span></a>
+        <a href="{{route($module->route_name)}}" class="b-brand">
             <span class="b-title">Valasys Media - CRM</span>
         </a>
     </div>
