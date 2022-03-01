@@ -823,8 +823,6 @@
     <script src="{{ asset('public/template/assets/plugins/material-datetimepicker/js/bootstrap-material-datetimepicker.js') }}"></script>
     <!-- Ckeditor js -->
     <script src="{{ asset('public/template/assets/plugins/ckeditor/js/ckeditor.js') }}"></script>
-    <!-- jquery-validation Js -->
-    <script src="{{ asset('public/template/assets/plugins/jquery-validation/js/jquery.validate.min.js') }}"></script>
 
     <script src="{{ asset('public/js/manager/campaign_show.js?='.time()) }}"></script>
 @append
