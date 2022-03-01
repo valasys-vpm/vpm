@@ -333,14 +333,18 @@
                                                             {{ $ca_agent->agent_lead_count.' / '.$ca_agent->allocation }}
                                                         </td>
                                                         <td>
-                                                            @if(empty($ca_agent->started_at) && empty($ca_agent->submitted_at))
-                                                                <span class="badge badge-pill badge-danger" style="padding: 5px;min-width: 70px;">Campaign Assigned</span>
+                                                            @if($ca_agent->status == 2)
+                                                                <span class="badge badge-pill badge-danger" style="padding: 5px;min-width: 70px;">Campaign Revoked</span>
                                                             @else
-                                                                @if(!empty($ca_agent->started_at) && empty($ca_agent->submitted_at))
-                                                                    <span class="badge badge-pill badge-warning" style="padding: 5px;min-width: 70px;">Campaign In Progress</span>
+                                                                @if(empty($ca_agent->started_at) && empty($ca_agent->submitted_at))
+                                                                    <span class="badge badge-pill badge-danger" style="padding: 5px;min-width: 70px;">Campaign Assigned</span>
                                                                 @else
-                                                                    @php $total_submitted++; @endphp
-                                                                    <span class="badge badge-pill badge-success" style="padding: 5px;min-width: 70px;">Campaign Submit</span>
+                                                                    @if(!empty($ca_agent->started_at) && empty($ca_agent->submitted_at))
+                                                                        <span class="badge badge-pill badge-warning" style="padding: 5px;min-width: 70px;">Campaign In Progress</span>
+                                                                    @else
+                                                                        @php $total_submitted++; @endphp
+                                                                        <span class="badge badge-pill badge-success" style="padding: 5px;min-width: 70px;">Campaign Submit</span>
+                                                                    @endif
                                                                 @endif
                                                             @endif
                                                         </td>
