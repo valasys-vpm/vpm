@@ -165,13 +165,13 @@
                                                     <thead>
                                                     <tr class="text-uppercase">
                                                         <th class="text-center">#</th>
-                                                        <th class="text-center">Assign Status</th>
+                                                        <th class="text-center">Status</th>
                                                         <th class="text-center">Start Date</th>
                                                         <th class="text-center">End Date</th>
                                                         <th class="text-center">Pacing</th>
                                                         <th class="text-center">Completion</th>
                                                         <th class="text-center">Deliver Count / <br>Allocation</th>
-                                                        <th class="text-center">Status</th>
+                                                        <th class="text-center">Campaign<br>Status</th>
                                                         <th class="text-center">Action</th>
                                                     </tr>
                                                     </thead>

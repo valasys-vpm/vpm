@@ -39,14 +39,24 @@ function viewAssignmentDetails(id) {
                 let html = '';
                 if(response.data.length) {
                     $.each(response.data, function (key, value) {
+                        let status;
+
+                        switch(parseInt(value.status)) {
+                            case 1: status = 'Active';break;
+                            case 0: status = 'Inactive';break;
+                            case 2: status = 'Revoked';break;
+                            default: status = '-';
+                        }
+
                         html += '' +
                             '<tr>\n' +
-                            '   <td><i class="feather icon-plus-square toggle-pacing-details" style="cursor: pointer;font-size: 17px;"></i></td>\n' +
+                            //'   <td><i class="feather icon-plus-square toggle-pacing-details" style="cursor: pointer;font-size: 17px;"></i></td>\n' +
+                            '   <td> ' + (key+1) + ' </td>\n' +
                             '   <td>'+ value.user.first_name +' '+ value.user.last_name +'</td>\n' +
                             '   <td>'+ value.display_date +'</td>\n' +
                             '   <td>'+ value.allocation +'</td>\n' +
                             '   <td>'+ value.user_assigned_by.first_name +' '+ value.user_assigned_by.last_name +'</td>\n' +
-                            '   <td></td>\n' +
+                            '   <td>'+ status +'</td>\n' +
                             '</tr>';
                         '';
                     });
