@@ -58,12 +58,10 @@ $(function(){
             type: 'post',
             success: function(response) {
                 if(response.status === true) {
-                    $('#div-download-file').css('display', 'none');
-                    $('#div-download-npf-file').css('display', 'none');
-                    $('#div-upload-NPF').css('display', 'none');
-                    $('#div-submit-campaign').css('display', 'none');
                     $('#modal-submit-campaign').modal('hide');
                     trigger_pnofify('success', 'Successful', response.message);
+
+                    window.location.reload();
                 } else {
                     $('#modal-submit-campaign').modal('hide');
                     trigger_pnofify('error', 'Error while processing request', response.message);
