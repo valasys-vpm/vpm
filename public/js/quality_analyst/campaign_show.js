@@ -26,25 +26,76 @@ $(function(){
 
 $(function(){
 
+    $("#form-upload-npf").validate({
+        ignore: [],
+        focusInvalid: false,
+        rules: {
+            'npf_file[]': {
+                required: true,
+                extension: "xlsx",
+            },
+            'user_id': {
+                required: true,
+            }
+        },
+        messages: {
+            'npf_file[]' : {
+                required : "Please upload file(s)",
+                extension: "Please upload valid file(s), (xlsx)",
+            },
+            'user_id' : {
+                required : "Please select user",
+            },
+        },
+        errorPlacement: function errorPlacement(error, element) {
+            var $parent = $(element).parents('.form-group');
+
+            // Do not duplicate errors
+            if ($parent.find('.jquery-validation-error').length) {
+                return;
+            }
+
+            $parent.append(
+                error.addClass('jquery-validation-error small form-text invalid-feedback')
+            );
+        },
+        highlight: function(element) {
+            var $el = $(element);
+            var $parent = $el.parents('.form-group');
+
+            $el.addClass('is-invalid');
+
+            // Select2 and Tagsinput
+            if ($el.hasClass('select2-hidden-accessible') || $el.attr('data-role') === 'tagsinput') {
+                $el.parent().addClass('is-invalid');
+            }
+        },
+        unhighlight: function(element) {
+            $(element).parents('.form-group').find('.is-invalid').removeClass('is-invalid');
+        }
+    });
+
     $('#form-upload-npf-submit').on('click', function (e) {
         e.preventDefault();
-        let form_data = new FormData($('#form-upload-npf')[0]);
-        $.ajax({
-            url: URL +'/quality-analyst/campaign/upload-npf-file/' + $('meta[name="ca-qa-id"]').attr('content'),
-            processData: false,
-            contentType: false,
-            data: form_data,
-            type: 'post',
-            success: function(response) {
-                if(response.status === true) {
-                    $('#modal-upload-npf').modal('hide');
-                    trigger_pnofify('success', 'Successful', response.message);
-                } else {
-                    $('#modal-upload-npf').modal('hide');
-                    trigger_pnofify('error', 'Error while processing request', response.message);
+        if($("#form-upload-npf").valid()) {
+            let form_data = new FormData($('#form-upload-npf')[0]);
+            $.ajax({
+                url: URL +'/quality-analyst/campaign/upload-npf-file/' + $('meta[name="ca-qa-id"]').attr('content'),
+                processData: false,
+                contentType: false,
+                data: form_data,
+                type: 'post',
+                success: function(response) {
+                    if(response.status === true) {
+                        $('#modal-upload-npf').modal('hide');
+                        trigger_pnofify('success', 'Successful', response.message);
+                    } else {
+                        $('#modal-upload-npf').modal('hide');
+                        trigger_pnofify('error', 'Error while processing request', response.message);
+                    }
                 }
-            }
-        });
+            });
+        }
     });
 
     $('#form-submit-campaign-submit').on('click', function (e) {

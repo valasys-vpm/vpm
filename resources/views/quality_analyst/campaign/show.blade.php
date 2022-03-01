@@ -331,7 +331,7 @@
                             <div class="row">
                                 <div class="col-md-12 form-group">
                                     <label for="npf_file">NPF File <span class="text-danger">*</span></label>
-                                    <input type="file" class="form-control-file" id="npf_file" name="npf_file[]" multiple required>
+                                    <input type="file" class="form-control-file" id="npf_file" name="npf_file[]" multiple required=""/>
                                 </div>
                             </div>
                             <div class="row">
@@ -390,8 +390,6 @@
     <script src="{{ asset('public/template/assets/plugins/material-datetimepicker/js/bootstrap-material-datetimepicker.js') }}"></script>
     <!-- Ckeditor js -->
     <script src="{{ asset('public/template/assets/plugins/ckeditor/js/ckeditor.js') }}"></script>
-    <!-- jquery-validation Js -->
-    <script src="{{ asset('public/template/assets/plugins/jquery-validation/js/jquery.validate.min.js') }}"></script>
 
     <script src="{{ asset('public/js/quality_analyst/campaign_show.js?='.time()) }}"></script>
 @append

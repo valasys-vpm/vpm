@@ -80,8 +80,6 @@
     <script src="{{ asset('public/template/assets/plugins/data-tables/js/datatables.min.js') }}"></script>
     <!-- toolbar Js -->
     <script src="{{ asset('public/template/assets/plugins/toolbar/js/jquery.toolbar.min.js') }}"></script>
-    <!-- jquery-validation Js -->
-    <script src="{{ asset('public/template/assets/plugins/jquery-validation/js/jquery.validate.min.js') }}"></script>
 
     <script src="{{ asset('public/js/quality_analyst/campaign.js?='.time()) }}"></script>
 @append

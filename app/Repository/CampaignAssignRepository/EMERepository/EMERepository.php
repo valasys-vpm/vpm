@@ -59,19 +59,26 @@ class EMERepository implements EMEInterface
                 $resultCampaign = Campaign::findOrFail($attributes['campaign_id']);
                 $path = 'public/campaigns/'.$resultCampaign->campaign_id.'/quality/npf';
                 $dataCampaignNPFFiles = array();
+                $failedFiles = array();
                 foreach ($attributes['npf_file'] as $file) {
                     $extension = $file->getClientOriginalExtension();
-                    //$filename  = $campaign->campaign_id.'-' . str_shuffle(time()) . '.' . $extension;
                     $filename  = $file->getClientOriginalName();
-                    $result  = $file->storeAs($path, $filename);
-                    $dataCampaignNPFFiles[] = array(
-                        'ca_eme_id' => $campaign_assign_eme->id,
-                        'campaign_id' => $attributes['campaign_id'],
-                        'asset' => NULL,
-                        'file_name' => $filename,
-                        'extension' => $extension
-                    );
+                    if($extension == 'xlsx') {
+                        //$filename  = $campaign->campaign_id.'-' . str_shuffle(time()) . '.' . $extension;
+
+                        $result  = $file->storeAs($path, $filename);
+                        $dataCampaignNPFFiles[] = array(
+                            'ca_eme_id' => $campaign_assign_eme->id,
+                            'campaign_id' => $attributes['campaign_id'],
+                            'asset' => NULL,
+                            'file_name' => $filename,
+                            'extension' => $extension
+                        );
+                    } else {
+                        throw new \Exception('Please upload valid file(s), and try again.', 1);
+                    }
                 }
+
                 if(count($dataCampaignNPFFiles) && CampaignNPFFile::insert($dataCampaignNPFFiles)) {
                     //Add Campaign History
                     $resultCampaign = Campaign::findOrFail($campaign_assign_eme->campaign_id);
@@ -97,7 +104,7 @@ class EMERepository implements EMEInterface
             }
         } catch (\Exception $exception) {
             DB::rollBack();
-            $response = array('status' => FALSE, 'message' => 'Something went wrong, please try again.');
+            $response = array('status' => FALSE, 'message' => $exception->getMessage());
         }
         return $response;
     }
