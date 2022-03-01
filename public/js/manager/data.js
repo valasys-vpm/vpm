@@ -158,17 +158,18 @@ $(function (){
                 type: 'post',
                 success: function(response) {
                     console.log(response);
+                    console.log(response.data);
                     let message = response.message;
                     if(response.status === true) {
                         let type = 'success';
-                        if(typeof response.data.failed_data !== 'undefined') {
+                        if(typeof response.data !== 'undefined' && typeof response.data.failed_data !== 'undefined') {
                             message = response.message + '\n' + response.data.failed_data.length + ' row not inserted.';
                             type = 'warning';
                         }
                         $('#modal-import-data').modal('hide');
                         trigger_pnofify(type, 'Successful', message);
                     } else {
-                        if(typeof response.data.failed_data !== 'undefined') {
+                        if(typeof response.data !== 'undefined' && typeof response.data.failed_data !== 'undefined') {
                             message = response.message + '\n' + response.data.failed_data.length + ' row not inserted.';
                         }
                         trigger_pnofify('error', 'Error while processing request', response.message);

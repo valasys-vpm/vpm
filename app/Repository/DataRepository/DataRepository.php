@@ -232,71 +232,77 @@ class DataRepository implements DataInterface
             DB::beginTransaction();
             ini_set('memory_limit', '-1');
             ini_set('max_execution_time', '0');
+
             $excelData = Excel::toArray('', $file);
-            //dd($excelData);
+            $inputExcelFormat = implode(',', $excelData[0][0]);
+            $excelFormat = "first_name,last_name,company_name,email_address,specific_title,job_level,job_role,phone_number,address_1,address_2,city,state,zipcode,country,industry,employee_size,revenue,company_domain,website,company_linkedin_url,linkedin_profile_link,linkedin_profile_sn_link";
 
-            array_shift($excelData[0]);
-            $totalDataCount = count($excelData[0]);
+            if($inputExcelFormat == $excelFormat) {
+                array_shift($excelData[0]);
+                $totalDataCount = count($excelData[0]);
 
-            if($totalDataCount < 25000) {
-                $failedData = array();
-                $validData = array();
-                $updated_by = Auth::id();
-                foreach ($excelData[0] as $key => $row) {
-                    $leadData = array(
-                        'first_name' => trim($row[0]),
-                        'last_name' => trim($row[1]),
-                        'company_name' => trim($row[2]),
-                        'email_address' => trim($row[3]),
-                        'specific_title' => trim($row[4]),
-                        'job_level' => trim($row[5]),
-                        'job_role' => trim($row[6]),
-                        'phone_number' => trim($row[7]),
-                        'address_1' => trim($row[8]),
-                        'address_2' => trim($row[9]),
-                        'city' => trim($row[10]),
-                        'state' => trim($row[11]),
-                        'zipcode' => trim($row[12]),
-                        'country' => trim($row[13]),
-                        'industry' => trim($row[14]),
-                        'employee_size' => trim($row[15]),
-                        'revenue' => trim($row[16]),
-                        'company_domain' => trim($row[17]),
-                        'website' => trim($row[18]),
-                        'company_linkedin_url' => trim($row[19]),
-                        'linkedin_profile_link' => trim($row[20]),
-                        'linkedin_profile_sn_link' => trim($row[21]),
-                        'updated_by' => $updated_by,
-                        'status' => 1,
-                    );
-                    $resultValidate = $this->validateLeadData($leadData);
-                    if(empty($resultValidate)) {
-                        $validData[] = $leadData;
-                    } else {
-                        $failedData[] = $leadData;
-                    }
-                }
-
-                //dd($validData);
-
-                if(count($validData)) {
-                    DB::disableQueryLog();
-                    $finalData = array_chunk($validData, 2500);
-                    foreach ($finalData as $key => $chunk) {
-                        if(!DB::table('data')->insert($chunk)) {
-                            throw new \Exception('Something went wrong, please try again.', 1);
+                if($totalDataCount < 25000) {
+                    $failedData = array();
+                    $validData = array();
+                    $updated_by = Auth::id();
+                    foreach ($excelData[0] as $key => $row) {
+                        $leadData = array(
+                            'first_name' => trim($row[0]),
+                            'last_name' => trim($row[1]),
+                            'company_name' => trim($row[2]),
+                            'email_address' => trim($row[3]),
+                            'specific_title' => trim($row[4]),
+                            'job_level' => trim($row[5]),
+                            'job_role' => trim($row[6]),
+                            'phone_number' => trim($row[7]),
+                            'address_1' => trim($row[8]),
+                            'address_2' => trim($row[9]),
+                            'city' => trim($row[10]),
+                            'state' => trim($row[11]),
+                            'zipcode' => trim($row[12]),
+                            'country' => trim($row[13]),
+                            'industry' => trim($row[14]),
+                            'employee_size' => trim($row[15]),
+                            'revenue' => trim($row[16]),
+                            'company_domain' => trim($row[17]),
+                            'website' => trim($row[18]),
+                            'company_linkedin_url' => trim($row[19]),
+                            'linkedin_profile_link' => trim($row[20]),
+                            'linkedin_profile_sn_link' => trim($row[21]),
+                            'updated_by' => $updated_by,
+                            'status' => 1,
+                        );
+                        $resultValidate = $this->validateLeadData($leadData);
+                        if(empty($resultValidate)) {
+                            $validData[] = $leadData;
+                        } else {
+                            $failedData[] = $leadData;
                         }
-                        //Data::insert($validData);
                     }
-                    DB::commit();
-                    $response = array('status' => TRUE, 'message' => 'Data imported successfully', 'data' => ['success_count' => count($validData), 'failed_data' => $failedData]);
-                } else {
-                    $response = array('status' => FALSE, 'message' => 'Please check data and try again.', 'data' => ['failed_data' => $failedData]);
-                }
-            } else {
-                $response = array('status' => FALSE, 'message' => 'Max row limit 25000, please check data.');
-            }
 
+                    //dd($validData);
+
+                    if(count($validData)) {
+                        DB::disableQueryLog();
+                        $finalData = array_chunk($validData, 2500);
+                        foreach ($finalData as $key => $chunk) {
+                            if(!DB::table('data')->insert($chunk)) {
+                                throw new \Exception('Something went wrong, please try again.', 1);
+                            }
+                            //Data::insert($validData);
+                        }
+                        DB::commit();
+                        $response = array('status' => TRUE, 'message' => 'Data imported successfully', 'data' => ['success_count' => count($validData), 'failed_data' => $failedData]);
+                    } else {
+                        $response = array('status' => FALSE, 'message' => 'Please check data and try again.', 'data' => ['failed_data' => $failedData]);
+                    }
+                } else {
+                    $response = array('status' => FALSE, 'message' => 'Max row limit 25000, please check data.');
+                }
+
+            } else {
+                $response = array('status' => FALSE, 'message' => 'Invalid data file, please upload valid file.');
+            }
 
         } catch (\Exception $exception) {
             DB::rollBack();
