@@ -170,6 +170,7 @@ function viewAssignmentDetails(id) {
                             '                   <th class="text-center">End Date</th>\n' +
                             '                   <th class="text-center">Allocation</th>\n' +
                             '                   <th class="text-center">Assigned By</th>\n' +
+                            '                   <th class="text-center">Status</th>\n' +
                             '               </tr>\n' +
                             '           </thead>' +
                             '           <tbody>' +
@@ -204,6 +205,7 @@ function viewAssignmentDetails(id) {
                             '                   <th class="text-center">End Date</th>\n' +
                             '                   <th class="text-center">Allocation</th>\n' +
                             '                   <th class="text-center">Assigned By</th>\n' +
+                            '                   <th class="text-center">Status</th>\n' +
                             '               </tr>\n' +
                             '           </thead>' +
                             '           <tbody>' +
@@ -240,12 +242,30 @@ function getAssignedAgents(_id, _this) {
 
                     if(response.data.length) {
                         $.each(response.data, function (key, value) {
+                            let status;
+
+                            switch(parseInt(value.status)) {
+                                case 1:
+                                    status = 'Active';
+                                    break;
+                                case 0:
+                                    status = 'Inactive';
+                                    break;
+                                case 2:
+                                    status = 'Revoked';
+                                    break;
+                                default:
+                                    status = '-';
+                                    break;
+                            }
+
                             html += '' +
                                 '<tr>\n' +
                                 '   <td>'+ value.user.first_name +' '+ value.user.last_name +'</td>\n' +
                                 '   <td>'+ value.display_date +'</td>\n' +
                                 '   <td>'+ value.allocation +'</td>\n' +
                                 '   <td>'+ value.user_assigned_by.first_name +' '+ value.user_assigned_by.last_name +'</td>\n' +
+                                '   <td>'+ status +'</td>\n' +
                                 '</tr>' +
                                 '';
                         });
