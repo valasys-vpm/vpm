@@ -108,11 +108,11 @@ function viewAssignmentDetails(_id) {
                     $.each(response.data, function (key, value) {
                         let status = '-';
                         let buttons = '';
-
+                        let ca_qa_id = $('meta[name="ca-qa-id"]').attr('content');
                         switch(parseInt(value.status)) {
                             case 1:
                                 status = 'Active';
-                                if($('meta[name="ca-qa-id"]').attr('content').length > 0) {
+                                if(ca_qa_id.length > 0 && (parseInt(atob(ca_qa_id)) !== value.id)) {
                                     buttons += '<a href="javascript:void(0);" onclick="revokeCampaign(\''+btoa(value.id)+'\');" class="btn btn-outline-danger btn-sm btn-rounded mb-0" title="Revoke Campaign" style="padding: 5px 8px;"><i class="feather icon-refresh-cw mr-0"></i></a>';
                                 }
                                 break;
@@ -121,7 +121,7 @@ function viewAssignmentDetails(_id) {
                                 break;
                             case 2:
                                 status = 'Revoked';
-                                if($('meta[name="ca-qa-id"]').attr('content').length > 0) {
+                                if(ca_qa_id.length > 0 && (parseInt(atob(ca_qa_id)) !== value.id)) {
 
                                 } else {
                                     buttons += '<a href="javascript:void(0);" onclick="reAssignCampaign(\''+btoa(value.id)+'\');" class="btn btn-outline-success btn-sm btn-rounded mb-0" title="Re-Assign Campaign" style="padding: 5px 8px;"><i class="feather icon-refresh-cw mr-0"></i></a>';

@@ -66,7 +66,9 @@ class CampaignAssignController extends Controller
     public function show($id)
     {
         $this->data['resultCAQATL'] = $this->QATLRepository->find(base64_decode($id));
-        $this->data['resultCAQA'] = CampaignAssignQualityAnalyst::where('campaign_assign_qatl_id', $this->data['resultCAQATL']->id)->where('campaign_id', $this->data['resultCAQATL']->campaign_id)->where('status', 1)->first();
+
+        $this->data['resultActiveCAQA'] = CampaignAssignQualityAnalyst::where('campaign_assign_qatl_id', $this->data['resultCAQATL']->id)->where('campaign_id', $this->data['resultCAQATL']->campaign_id)->where('status', 1)->first();
+
         $this->data['resultCampaign'] = $this->campaignRepository->find($this->data['resultCAQATL']->campaign_id);
         $resultAssignedUsers = CampaignAssignQualityAnalyst::where('campaign_assign_qatl_id', base64_decode($id))->get()->pluck('user_id')->toArray();
         $this->data['resultUsers'] = User::where('status', 1)

@@ -3,7 +3,7 @@
 @section('stylesheet')
     @parent
     <meta name="ca-qatl-id" content="{{ base64_encode($resultCAQATL->id) }}">
-    <meta name="ca-qa-id" content="{{ $resultCAQA ? base64_encode($resultCAQA->id) : NULL }}">
+    <meta name="ca-qa-id" content="{{ $resultActiveCAQA ? base64_encode($resultActiveCAQA->id) : NULL }}">
 
     <!-- footable css -->
     <link rel="stylesheet" href="{{ asset('public/template/') }}/assets/plugins/footable/css/footable.bootstrap.min.css">
@@ -275,7 +275,7 @@
             <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title">Campaign Assignment Details</h5>
-                        @if(!isset($resultCAQA) || empty($resultCAQA->id))
+                        @if((!isset($resultActiveCAQA) && empty($resultActiveCAQA->id)) || !empty($resultActiveCAQA->submitted_at))
                         <div class="float-right">
                             <a id="button-assign-campaign" href="javascript:void(0);" onclick="assignCampaign();" class="btn btn-outline-dark btn-sm mb-0 float-right" title="Assign Campaign" style="padding: 5px 8px;position: absolute;right: 50px;"><i class="feather icon-user-plus mr-0"></i></a>
                         </div>
