@@ -194,16 +194,30 @@
                                                     <thead>
                                                     <tr class="text-uppercase">
                                                         <th class="text-center">#</th>
+                                                        <th class="text-center">Status</th>
                                                         <th class="text-center">Start Date</th>
                                                         <th class="text-center">End Date</th>
                                                         <th class="text-center">Pacing</th>
                                                         <th class="text-center">Allocation</th>
-                                                        <th class="text-center">Status</th>
+                                                        <th class="text-center">Campaign<br>Status</th>
                                                     </tr>
                                                     </thead>
                                                     <tbody class="text-center text-muted">
                                                     <tr>
                                                         <td><i class="feather icon-plus-square toggle-pacing-details" style="cursor: pointer;font-size: 17px;"></i></td>
+                                                        <td>
+                                                            @switch($resultCAQA->status)
+                                                                @case(0)
+                                                                <span class="badge badge-warning" style="padding: 5px;min-width: 70px;">Inactive</span>
+                                                                @break
+                                                                @case(1)
+                                                                <span class="badge badge-success" style="padding: 5px;min-width: 70px;">Active</span>
+                                                                @break
+                                                                @case(2)
+                                                                <span class="badge badge-danger" style="padding: 5px;min-width: 70px;">Revoked</span>
+                                                                @break
+                                                            @endswitch
+                                                        </td>
                                                         <td>{{ date('d-M-Y', strtotime($resultCAQA->campaign->start_date)) }}</td>
                                                         <td>{{ date('d-M-Y', strtotime($resultCAQA->display_date)) }}</td>
                                                         <td>{{ ucfirst($resultCAQA->campaign->pacing) }}</td>
@@ -219,22 +233,22 @@
                                                             @endphp
                                                             @switch($resultCAQA->campaign->campaign_status_id)
                                                                 @case(1)
-                                                                <span class="badge badge-pill badge-success" style="padding: 5px;min-width: 70px;">Live{{ $campaign_type }}</span>
+                                                                <span class="badge badge-success" style="padding: 5px;min-width: 70px;">Live{{ $campaign_type }}</span>
                                                                 @break
                                                                 @case(2)
-                                                                <span class="badge badge-pill badge-warning" style="padding: 5px;min-width: 70px;">Paused{{ $campaign_type }}</span>
+                                                                <span class="badge badge-warning" style="padding: 5px;min-width: 70px;">Paused{{ $campaign_type }}</span>
                                                                 @break
                                                                 @case(3)
-                                                                <span class="badge badge-pill badge-danger" style="padding: 5px;min-width: 70px;">Cancelled{{ $campaign_type }}</span>
+                                                                <span class="badge badge-danger" style="padding: 5px;min-width: 70px;">Cancelled{{ $campaign_type }}</span>
                                                                 @break
                                                                 @case(4)
-                                                                <span class="badge badge-pill badge-primary" style="padding: 5px;min-width: 70px;">Delivered{{ $campaign_type }}</span>
+                                                                <span class="badge badge-primary" style="padding: 5px;min-width: 70px;">Delivered{{ $campaign_type }}</span>
                                                                 @break
                                                                 @case(5)
-                                                                <span class="badge badge-pill badge-success" style="padding: 5px;min-width: 70px;">Reactivated{{ $campaign_type }}</span>
+                                                                <span class="badge badge-success" style="padding: 5px;min-width: 70px;">Reactivated{{ $campaign_type }}</span>
                                                                 @break
                                                                 @case(6)
-                                                                <span class="badge badge-pill badge-secondary" style="padding: 5px;min-width: 80px;">Shortfall{{ $campaign_type }}</span>
+                                                                <span class="badge badge-secondary" style="padding: 5px;min-width: 80px;">Shortfall{{ $campaign_type }}</span>
                                                                 @break
                                                             @endswitch
                                                         </td>
