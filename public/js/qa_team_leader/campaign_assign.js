@@ -157,50 +157,92 @@ $(function (){
         order:[]
     });
 
-    $('#button-campaign-assign').on('click', function(e) {
-        let campaign_id = $("#campaign_list").val();
-        let user_id = $("#user_list").val();
-        let html = '';
+    //Validate Form
+    $("#form-campaign-assign").validate({
+        ignore: [],
+        focusInvalid: false,
+        rules: {
+            'campaign_list' : { required : true },
+            'user_list' : { required : true },
+        },
+        messages: {
+            'campaign_list' : { required : "Please select campaign" },
+            'user_list' : { required : "Please select user" },
+        },
+        errorPlacement: function errorPlacement(error, element) {
+            var $parent = $(element).parents('.form-group');
 
-        if(campaign_id.length !== 0 || user_id.length !== 0) {
+            // Do not duplicate errors
+            if ($parent.find('.jquery-validation-error').length) {
+                return;
+            }
 
-            $("#modal-campaign-assign").find('.modal-body').html(html);
+            $parent.append(
+                error.addClass('jquery-validation-error small form-text invalid-feedback')
+            );
+        },
+        highlight: function(element) {
+            var $el = $(element);
+            var $parent = $el.parents('.form-group');
 
-            html = '<div class="card border border-info rounded">' +
-                '   <h5 class="card-header" style="padding: 10px 25px;">'+$("#campaign_list_"+campaign_id).data('name')+'</h5>' +
-                '   <input type="hidden" name="ca_qatl_id" value="'+$("#campaign_list_"+campaign_id).data('caqatl-id')+'">' +
-                '   <input type="hidden" name="campaign_id" value="'+campaign_id+'">' +
-                '   <input type="hidden" name="display_date" value="'+ $("#campaign_list_"+campaign_id).data('end-date') +'">' +
-                '   <input type="hidden" name="user_id" value="'+user_id+'">' +
-                '   <div class="card-body" style="padding: 15px 25px;">' +
-                '       <div class="row">' +
-                '           <div class="col-md-6">' +
-                '               <div class="row">' +
-                '                   <div class="col-md-5"><h6 class="card-title">Allocation</h6></div>' +
-                '                   <div class="col-md-7"><h6 class="card-title">: '+$("#campaign_list_"+campaign_id).data('allocation')+'</h6></div>' +
-                '               </div>' +
-                '               <div class="row">' +
-                '                   <div class="col-md-5"><h6 class="card-title">End Date</h6></div>' +
-                '                   <div class="col-md-7"><h6 class="card-title">: '+$("#campaign_list_"+campaign_id).data('end-date')+'</h6></div>' +
-                '               </div>' +
-                '           </div>' +
-                '           <div class="col-md-6 border-left">' +
-                '               <h5 class="card-title mb-2">User to Assign</h5>' +
-                '               <hr class="m-0" style="margin-bottom: 5px !important;">' +
-                '               <div class="row p-1">' +
-                '                   <div class="col-md-12"><h6 class="card-title">'+$("#user_list_"+user_id).data('name')+'</h6></div>' +
-                '               </div>' +
-                '           </div>' +
-                '       </div>' +
-                '   </div>' +
-                '</div>';
-            $("#modal-campaign-assign").find('.modal-body').html(html);
+            $el.addClass('is-invalid');
 
-            $("#modal-campaign-assign").modal('show');
-        } else {
-            trigger_pnofify('error', 'Invalid data', 'Please select campaign and user to assign');
+            // Select2 and Tagsinput
+            if ($el.hasClass('select2-hidden-accessible') || $el.attr('data-role') === 'tagsinput') {
+                $el.parent().addClass('is-invalid');
+            }
+        },
+        unhighlight: function(element) {
+            $(element).parents('.form-group').find('.is-invalid').removeClass('is-invalid');
         }
+    });
 
+    $('#button-campaign-assign').on('click', function(e) {
+        e.preventDefault();
+        if($("#form-campaign-assign").valid()) {
+            let campaign_id = $("#campaign_list").val();
+            let user_id = $("#user_list").val();
+            let html = '';
+
+            if(campaign_id.length !== 0 || user_id.length !== 0) {
+
+                $("#modal-campaign-assign").find('.modal-body').html(html);
+
+                html = '<div class="card border border-info rounded">' +
+                    '   <h5 class="card-header" style="padding: 10px 25px;">'+$("#campaign_list_"+campaign_id).data('name')+'</h5>' +
+                    '   <input type="hidden" name="ca_qatl_id" value="'+$("#campaign_list_"+campaign_id).data('caqatl-id')+'">' +
+                    '   <input type="hidden" name="campaign_id" value="'+campaign_id+'">' +
+                    '   <input type="hidden" name="display_date" value="'+ $("#campaign_list_"+campaign_id).data('end-date') +'">' +
+                    '   <input type="hidden" name="user_id" value="'+user_id+'">' +
+                    '   <div class="card-body" style="padding: 15px 25px;">' +
+                    '       <div class="row">' +
+                    '           <div class="col-md-6">' +
+                    '               <div class="row">' +
+                    '                   <div class="col-md-5"><h6 class="card-title">Allocation</h6></div>' +
+                    '                   <div class="col-md-7"><h6 class="card-title">: '+$("#campaign_list_"+campaign_id).data('allocation')+'</h6></div>' +
+                    '               </div>' +
+                    '               <div class="row">' +
+                    '                   <div class="col-md-5"><h6 class="card-title">End Date</h6></div>' +
+                    '                   <div class="col-md-7"><h6 class="card-title">: '+$("#campaign_list_"+campaign_id).data('end-date')+'</h6></div>' +
+                    '               </div>' +
+                    '           </div>' +
+                    '           <div class="col-md-6 border-left">' +
+                    '               <h5 class="card-title mb-2">User to Assign</h5>' +
+                    '               <hr class="m-0" style="margin-bottom: 5px !important;">' +
+                    '               <div class="row p-1">' +
+                    '                   <div class="col-md-12"><h6 class="card-title">'+$("#user_list_"+user_id).data('name')+'</h6></div>' +
+                    '               </div>' +
+                    '           </div>' +
+                    '       </div>' +
+                    '   </div>' +
+                    '</div>';
+                $("#modal-campaign-assign").find('.modal-body').html(html);
+
+                $("#modal-campaign-assign").modal('show');
+            } else {
+                trigger_pnofify('error', 'Invalid data', 'Please select campaign and user to assign');
+            }
+        }
     });
 
     $("#form-campaign-assign-reset").on('click', function(){
