@@ -49,6 +49,7 @@ $(function (){
         time: false,
         format: 'D-MMM-YYYY',
         switchOnClick : true,
+        minDate: new Date($('#start_date').val()),
     });
 
     $('body').on("input", ".only-non-zero-number", function (){
