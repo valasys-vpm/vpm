@@ -83,7 +83,9 @@ $(function (){
     });
 
     //update sub-allocation total count
-    $("#allocation").on('keyup', function () {
+    $("#allocation").on('keyup change', function () {
+        $('input[name="pacing"]').prop('checked', false);
+        resetPacingDetails();
         let allocation = ($(this).val() > 0) ? $(this).val() : '0';
         $("#text-allocation").html(' / '+allocation);
     });
@@ -210,7 +212,7 @@ $(function (){
     });
 
     //Update total sub-allocation count
-    $('body').on('keyup', ".sub-allocation",function () {
+    $('body').on('keyup change', ".sub-allocation",function () {
         let total = 0;
 
         $('body').find('.sub-allocation').each(function(){

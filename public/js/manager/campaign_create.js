@@ -84,7 +84,7 @@ $(function (){
     });
 
     //update sub-allocation total count
-    $("#allocation").on('keyup, change', function () {
+    $("#allocation").on('keyup change', function () {
         $('input[name="pacing"]').prop('checked', false);
         resetPacingDetails();
         let allocation = ($(this).val() > 0) ? $(this).val() : '0';
