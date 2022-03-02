@@ -731,7 +731,7 @@
                                     </select>
                                 </div>
                             </div>
-                            <button id="form-raise-issue-submit" type="submit" class="btn btn-primary btn-square float-right">Raise Issue</button>
+                            <button id="form-raise-issue-submit" type="button" class="btn btn-primary btn-square float-right">Raise Issue</button>
                             <button type="reset" class="btn btn-secondary btn-square float-right" data-dismiss="modal">Cancel</button>
                         </form>
                     </div>
