@@ -101,6 +101,7 @@ class LeadController extends Controller
                     default: $filters = array(); break;
                 }
             }
+
             if(Excel::store(new RATLLeadExport($resultCARATL->id, $filters), $path.$filename)) {
                 $response = array('status' => true, 'message' => 'Successful', 'file_name' => $path_to_download.$filename);
             } else {

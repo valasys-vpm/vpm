@@ -39,53 +39,56 @@ class RATLLeadExport implements FromCollection, WithHeadings, WithEvents, WithCo
                 //convert to final array
                 if($agent->agentLeads->count()) {
                     foreach($agent->agentLeads as $agentLead) {
+                        $filterFlag = 1;
                         if(array_key_exists('send_date', $this->filters)) {
+
                             switch ($this->filters['send_date']) {
                                 case 'NULL':
                                     if($agentLead->send_date != NULL) {
-                                        continue;
+                                        $filterFlag = 0;
                                     }
                                     break;
                                 case 'NOT_NULL':
                                     if($agentLead->send_date == NULL) {
-                                        continue;
+                                        $filterFlag = 0;
                                     }
                                     break;
                             }
                         }
 
-                        $key++;
-                        $exportData[$key]['RA'] = $agent->user->full_name;
-                        $exportData[$key]['Date'] = date('d-M-Y', strtotime($agentLead->created_at));
-                        $exportData[$key]['Campaign'] = $resultCARATL->campaign->name;
-                        $exportData[$key]['First Name'] = $agentLead->first_name;
-                        $exportData[$key]['Last Name'] = $agentLead->last_name;
-                        $exportData[$key]['Company Name'] = $agentLead->company_name;
-                        $exportData[$key]['Email Address'] = $agentLead->email_address;
-                        $exportData[$key]['Specific Title'] = $agentLead->specific_title;
-                        $exportData[$key]['Job Level'] = $agentLead->job_level;
-                        $exportData[$key]['Job Role'] = $agentLead->job_role;
-                        $exportData[$key]['Phone Number'] = $agentLead->phone_number;
-                        $exportData[$key]['Address 1'] = $agentLead->address_1;
-                        $exportData[$key]['Address 2'] = $agentLead->address_2;
-                        $exportData[$key]['City'] = $agentLead->city;
-                        $exportData[$key]['State'] = $agentLead->state;
-                        $exportData[$key]['Zipcode'] = $agentLead->zipcode;
-                        $exportData[$key]['Country'] = $agentLead->country;
-                        $exportData[$key]['Industry'] = $agentLead->industry;
-                        $exportData[$key]['Employee Size'] = $agentLead->employee_size;
-                        $exportData[$key]['Employee Size 2'] = $agentLead->employee_size_2;
-                        $exportData[$key]['Revenue'] = $agentLead->revenue;
-                        $exportData[$key]['Company Domain'] = $agentLead->company_domain;
-                        $exportData[$key]['Website'] = $agentLead->website;
-                        $exportData[$key]['Company Linkedin URL'] = $agentLead->company_linkedin_url;
-                        $exportData[$key]['LinkedIn Profile Link'] = $agentLead->linkedin_profile_link;
-                        $exportData[$key]['LinkedIn Profile Link SN'] = $agentLead->linkedin_profile_sn_link;
-                        $exportData[$key]['Comment'] = $agentLead->comment;
-                        $exportData[$key]['RATL Comment'] = $agentLead->comment_2;
-                        $exportData[$key]['QC Comment'] = $agentLead->qc_comment;
-                        $exportData[$key]['Status'] = $agentLead->status ? 'Ok' : 'Rejected';
-
+                        if($filterFlag) {
+                            $key++;
+                            $exportData[$key]['RA'] = $agent->user->full_name;
+                            $exportData[$key]['Date'] = date('d-M-Y', strtotime($agentLead->created_at));
+                            $exportData[$key]['Campaign'] = $resultCARATL->campaign->name;
+                            $exportData[$key]['First Name'] = $agentLead->first_name;
+                            $exportData[$key]['Last Name'] = $agentLead->last_name;
+                            $exportData[$key]['Company Name'] = $agentLead->company_name;
+                            $exportData[$key]['Email Address'] = $agentLead->email_address;
+                            $exportData[$key]['Specific Title'] = $agentLead->specific_title;
+                            $exportData[$key]['Job Level'] = $agentLead->job_level;
+                            $exportData[$key]['Job Role'] = $agentLead->job_role;
+                            $exportData[$key]['Phone Number'] = $agentLead->phone_number;
+                            $exportData[$key]['Address 1'] = $agentLead->address_1;
+                            $exportData[$key]['Address 2'] = $agentLead->address_2;
+                            $exportData[$key]['City'] = $agentLead->city;
+                            $exportData[$key]['State'] = $agentLead->state;
+                            $exportData[$key]['Zipcode'] = $agentLead->zipcode;
+                            $exportData[$key]['Country'] = $agentLead->country;
+                            $exportData[$key]['Industry'] = $agentLead->industry;
+                            $exportData[$key]['Employee Size'] = $agentLead->employee_size;
+                            $exportData[$key]['Employee Size 2'] = $agentLead->employee_size_2;
+                            $exportData[$key]['Revenue'] = $agentLead->revenue;
+                            $exportData[$key]['Company Domain'] = $agentLead->company_domain;
+                            $exportData[$key]['Website'] = $agentLead->website;
+                            $exportData[$key]['Company Linkedin URL'] = $agentLead->company_linkedin_url;
+                            $exportData[$key]['LinkedIn Profile Link'] = $agentLead->linkedin_profile_link;
+                            $exportData[$key]['LinkedIn Profile Link SN'] = $agentLead->linkedin_profile_sn_link;
+                            $exportData[$key]['Comment'] = $agentLead->comment;
+                            $exportData[$key]['RATL Comment'] = $agentLead->comment_2;
+                            $exportData[$key]['QC Comment'] = $agentLead->qc_comment;
+                            $exportData[$key]['Status'] = $agentLead->status ? 'Ok' : 'Rejected';
+                        }
                     }
                 }
             }
