@@ -188,6 +188,7 @@ $(function (){
             success: function (response) {
                 if(response.status === true) {
                     trigger_pnofify('success', 'Successful', 'Agent\'s lead rejected successfully');
+                    document.getElementById("comment_2").value = "";
                     $('#modal-reject-lead').modal('hide');
                     LEAD_TABLE.ajax.reload();
                 } else {
@@ -201,7 +202,8 @@ $(function (){
 
 function rejectLead(_agent_lead_id) {
     if(confirm('Are you sure to reject this lead?')) {
-        $('#form-reject-lead').find('input[name="agent_lead_id"]').val(_agent_lead_id)
+        document.getElementById("comment_2").value = "";
+        $('#form-reject-lead').find('input[name="agent_lead_id"]').val(_agent_lead_id);
         $('#modal-reject-lead').modal('show');
     }
 }
