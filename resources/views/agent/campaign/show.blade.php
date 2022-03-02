@@ -451,7 +451,7 @@
                                     </select>
                                 </div>
                             </div>
-                            <button id="form-raise-issue-submit" type="submit" class="btn btn-primary btn-square float-right">Raise Issue</button>
+                            <button id="form-raise-issue-submit" type="button" class="btn btn-primary btn-square float-right">Raise Issue</button>
                             <button type="reset" class="btn btn-secondary btn-square float-right" data-dismiss="modal">Cancel</button>
                         </form>
                     </div>
@@ -505,8 +505,6 @@
     <script src="{{ asset('public/template/assets/plugins/material-datetimepicker/js/bootstrap-material-datetimepicker.js') }}"></script>
     <!-- Ckeditor js -->
     <script src="{{ asset('public/template/assets/plugins/ckeditor/js/ckeditor.js') }}"></script>
-    <!-- jquery-validation Js -->
-    <script src="{{ asset('public/template/assets/plugins/jquery-validation/js/jquery.validate.min.js') }}"></script>
     <!-- Page Custom Js -->
     <script src="{{ asset('public/js/agent/campaign_show.js?='.time()) }}"></script>
 @append
