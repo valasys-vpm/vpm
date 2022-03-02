@@ -98,27 +98,73 @@ $(function(){
         }
     });
 
+    $("#form-submit-campaign").validate({
+        ignore: [],
+        focusInvalid: false,
+        rules: {
+            'final_file': {
+                required: true,
+                extension: "xlsx",
+            }
+        },
+        messages: {
+            'final_file' : {
+                required : "Please upload file",
+                extension: "Please upload valid file(s), (xlsx)",
+            }
+        },
+        errorPlacement: function errorPlacement(error, element) {
+            var $parent = $(element).parents('.form-group');
+
+            // Do not duplicate errors
+            if ($parent.find('.jquery-validation-error').length) {
+                return;
+            }
+
+            $parent.append(
+                error.addClass('jquery-validation-error small form-text invalid-feedback')
+            );
+        },
+        highlight: function(element) {
+            var $el = $(element);
+            var $parent = $el.parents('.form-group');
+
+            $el.addClass('is-invalid');
+
+            // Select2 and Tagsinput
+            if ($el.hasClass('select2-hidden-accessible') || $el.attr('data-role') === 'tagsinput') {
+                $el.parent().addClass('is-invalid');
+            }
+        },
+        unhighlight: function(element) {
+            $(element).parents('.form-group').find('.is-invalid').removeClass('is-invalid');
+        }
+    });
+
     $('#form-submit-campaign-submit').on('click', function (e) {
         e.preventDefault();
-        let form_data = new FormData($('#form-submit-campaign')[0]);
-        $.ajax({
-            url: URL +'/quality-analyst/campaign/submit-campaign/' + $('meta[name="ca-qa-id"]').attr('content'),
-            processData: false,
-            contentType: false,
-            data: form_data,
-            type: 'post',
-            success: function(response) {
-                if(response.status === true) {
-                    $('#modal-submit-campaign').modal('hide');
-                    trigger_pnofify('success', 'Successful', response.message);
 
-                    window.location.reload();
-                } else {
-                    $('#modal-submit-campaign').modal('hide');
-                    trigger_pnofify('error', 'Error while processing request', response.message);
+        if($("#form-submit-campaign").valid()) {
+            let form_data = new FormData($('#form-submit-campaign')[0]);
+            $.ajax({
+                url: URL +'/quality-analyst/campaign/submit-campaign/' + $('meta[name="ca-qa-id"]').attr('content'),
+                processData: false,
+                contentType: false,
+                data: form_data,
+                type: 'post',
+                success: function(response) {
+                    if(response.status === true) {
+                        $('#modal-submit-campaign').modal('hide');
+                        trigger_pnofify('success', 'Successful', response.message);
+
+                        window.location.reload();
+                    } else {
+                        $('#modal-submit-campaign').modal('hide');
+                        trigger_pnofify('error', 'Error while processing request', response.message);
+                    }
                 }
-            }
-        });
+            });
+        }
     });
 
 });

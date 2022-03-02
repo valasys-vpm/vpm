@@ -127,7 +127,6 @@ if(!function_exists('send_mail')) {
             $email_data['to'] = ['vpm@valasys.com'];
         }
 
-
         if(array_key_exists('cc', $details) && !empty($details['cc'])) {
             $email_data['cc'] = $details['cc'];
         }
