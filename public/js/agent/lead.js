@@ -190,7 +190,7 @@ $(function (){
         messages: {
             'leads_file' : {
                 required : "Please upload file",
-                extension: "Please upload valid file, [xlsx]",
+                extension: "Please upload valid file, (xlsx)",
                 filesize: "File size should be less than 500 kb"
             },
         },
