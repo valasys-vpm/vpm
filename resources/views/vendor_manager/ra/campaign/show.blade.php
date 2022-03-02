@@ -53,43 +53,69 @@
                             <div class="row">
                                 <!-- [ task-detail ] start -->
                                 <div class="col-xl-4 col-md-4 task-detail-right">
+
                                     <div class="card" style="word-break: break-all;">
-                                        <div class="card-block pb-3">
-                                            <h6 class="font-weight-bolder">ID: <span class="float-right font-weight-bolder">{{ $resultCampaign->campaign_id }}</span></h6>
-                                            <div style="border-bottom: 1px solid #e2dada;font-size: 4px;margin-bottom: 10px;">&nbsp;</div>
-                                            <h6 class="text-muted f-w-400">Name: <span class="float-right">{{ $resultCampaign->name }}</span></h6>
+                                        <div class="card-block pt-3 pb-0">
+                                            <div class="row col-md-12 m-0 p-0 border-bottom">
+                                                <div class="col-md-5 text-left" style="color: #292c2f;padding: 10px 0 !important;">ID: </div>
+                                                <div class="col-md-7 text-right" style="color: #292c2f;padding: 10px 0 !important;">
+                                                    <span id="campaign_campaign_id">{{ $resultCampaign->campaign_id }}</span>
+                                                </div>
+                                            </div>
+                                            @if($resultCampaign->v_mail_campaign_id)
+                                                <div class="row col-md-12 m-0 p-0 border-bottom">
+                                                    <div class="col-md-5 text-left" style="color: #292c2f;padding: 10px 0 !important;">Name: </div>
+                                                    <div class="col-md-7 text-right" style="color: #6c757d;padding: 10px 0 !important;">{{ $resultCampaign->name }}</div>
+                                                </div>
+                                                <div class="row col-md-12 m-0 p-0">
+                                                    <div class="col-md-5 text-left" style="color: #292c2f;padding: 10px 0 !important;">V-Mail Campaign ID: </div>
+                                                    <div class="col-md-7 text-right" style="color: #6c757d;padding: 10px 0 !important;">{{ $resultCampaign->v_mail_campaign_id }}</div>
+                                                </div>
+                                            @else
+                                                <div class="row col-md-12 m-0 p-0">
+                                                    <div class="col-md-5 text-left" style="color: #292c2f;padding: 10px 0 !important;">Name: </div>
+                                                    <div class="col-md-7 text-right" style="color: #6c757d;padding: 10px 0 !important;">{{ $resultCampaign->name }}</div>
+                                                </div>
+                                            @endif
                                         </div>
-                                        <div class="card-header pb-3">
+                                        <div class="card-header">
                                             <h5>Campaign Details</h5>
-                                            <div class="card-header-right"></div>
                                         </div>
                                         <div class="card-block pt-3">
-                                            <h6 class="text-muted f-w-400">Campaign Type: <span class="float-right">{{ $resultCampaign->campaignType->name }}</span></h6>
-                                            <div style="border-bottom: 1px solid #e2dada;font-size: 4px;margin-bottom: 10px;">&nbsp;</div>
-                                            <h6 class="text-muted f-w-400">Campaign Filter: <span class="float-right">{{ $resultCampaign->campaignFilter->name }}</span></h6>
-                                            <div style="border-bottom: 1px solid #e2dada;font-size: 4px;margin-bottom: 10px;">&nbsp;</div>
-                                            <h6 class="text-muted f-w-400">Country(s): <span class="float-right">
+                                            <div class="row col-md-12 m-0 p-0 border-bottom">
+                                                <div class="col-md-5 text-left" style="color: #292c2f;padding: 10px 0 !important;">Campaign Type: </div>
+                                                <div class="col-md-7 text-right" style="color: #6c757d;padding: 10px 0 !important;">{{ $resultCampaign->campaignType->name }}</div>
+                                            </div>
+                                            <div class="row col-md-12 m-0 p-0 border-bottom">
+                                                <div class="col-md-5 text-left" style="color: #292c2f;padding: 10px 0 !important;">Campaign Filter: </div>
+                                                <div class="col-md-7 text-right" style="color: #6c757d;padding: 10px 0 !important;">{{ $resultCampaign->campaignFilter->name }}</div>
+                                            </div>
+                                            <div class="row col-md-12 m-0 p-0 border-bottom">
+                                                <div class="col-md-12 text-left" style="color: #292c2f;padding: 10px 0 5px 0 !important;">Region(s): </div>
+                                                <div class="col-md-12 text-right" style="color: #6c757d;padding: 0 0 10px 0 !important;">
                                                     @foreach($resultCampaign->countries->pluck('country.name')->toArray() as $country)
                                                         <span class="badge badge-info m-1" style="padding: 5px 15px;">{{$country}}</span>
                                                     @endforeach
-                                                </span></h6>
-                                            <div style="border-bottom: 1px solid #e2dada;font-size: 4px;margin-bottom: 10px;">&nbsp;</div>
-                                            <h6 class="text-muted f-w-400">Region(s): <span class="float-right">
+                                                </div>
+                                            </div>
+                                            <div class="row col-md-12 m-0 p-0 border-bottom">
+                                                <div class="col-md-12 text-left" style="color: #292c2f;padding: 10px 0 5px 0 !important;">Country(s): </div>
+                                                <div class="col-md-12 text-right" style="color: #6c757d;padding: 0 0 10px 0 !important;">
                                                     @foreach($resultCampaign->countries->pluck('country.region.name')->unique()->toArray() as $region)
                                                         <span class="badge badge-dark m-1" style="padding: 5px 15px;">{{$region}}</span>
                                                     @endforeach
-                                                </span></h6>
-                                            <div style="border-bottom: 1px solid #e2dada;font-size: 4px;margin-bottom: 10px;">&nbsp;</div>
-                                            <h6 class="text-muted f-w-300">
-                                                Note: <br><br>
-                                                <span class="float-right">
+                                                </div>
+                                            </div>
+                                            <div class="row col-md-12 m-0 p-0">
+                                                <div class="col-md-12 text-left" style="color: #292c2f;padding: 10px 0 5px 0 !important;">Note: </div>
+                                                <div class="col-md-12 text-right" style="color: #6c757d;padding: 0 !important;">
                                                     @if(strlen($resultCampaign->note) > 200)
                                                         <button type="button" class="btn btn-link p-0" data-toggle="modal" data-target="#modal-campaign-note">View Note</button>
                                                     @else
                                                         {!! $resultCampaign->note !!}
                                                     @endif
-                                                </span>
-                                            </h6>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
 
@@ -97,7 +123,6 @@
                                         <div class="card-header">
                                             <h5>Specifications</h5>
                                             <div class="card-header-right">
-
                                             </div>
                                         </div>
                                         <div class="card-block task-attachment">
