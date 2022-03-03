@@ -225,7 +225,7 @@ $(function (){
 });
 
 function closeCampaignIssue(_issue_id) {
-    if(confirm('Are you sure to delete this campaign?')) {
+    if(confirm('Are you sure to close the issue?')) {
         $.ajax({
             type: 'post',
             url: URL + '/manager/campaign-issue/edit/'+_issue_id,
