@@ -66,9 +66,11 @@ $(function(){
     });
 
     $('#form-raise-issue-submit').on('click', function (e) {
-        $(this).attr('disabled', 'disabled');
-        $(this).html('<span class="spinner-border spinner-border-sm" role="status"></span> Processing...');
-        $("#form-raise-issue").submit();
+        if($("#form-raise-issue").valid()) {
+            $(this).attr('disabled', 'disabled');
+            $(this).html('<span class="spinner-border spinner-border-sm" role="status"></span> Processing...');
+            $("#form-raise-issue").submit();
+        }
     });
 
     $('#form-submit-campaign-submit').on('click', function (e) {
