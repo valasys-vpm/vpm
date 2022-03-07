@@ -228,7 +228,8 @@
                                                     <span>
                                                         @php
                                                             if($resultCampaign->children->count()) {
-                                                                if($resultCampaign->children[0]->campaign_status_id == 4) {
+                                                                $key = $resultCampaign->children->count() - 1;
+                                                                if($resultCampaign->children[$key]->campaign_status_id == 4) {
                                                                     $flagIncremental = true;
                                                                 } else {
                                                                     $flagIncremental = false;
