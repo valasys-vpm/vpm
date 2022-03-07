@@ -113,6 +113,9 @@ $(function (){
                         email_address : function(){
                             return $("#email_address").val();
                         },
+                        lead_id : function () {
+                            return $('meta[name="lead-id"]').attr('content');
+                        }
                     }
                 }
             },
