@@ -49,11 +49,19 @@ $(function (){
         ignore: [],
         focusInvalid: false,
         rules: {
-            'name' : { required : true },
+            'name' : {
+                required : true,
+                remote : {
+                    url : URL + '/email-marketing-executive/campaign-management/validate-campaign-name',
+                    data : {
+                        campaign_id : $('#campaign_id').val()
+                    }
+                }
+            },
             'v_mail_campaign_id' : {
                 required: false,
                 remote : {
-                    url : $('meta[name="base-path"]').attr('content')+'/email-marketing-executive/campaign-management/validate-v-mail-campaign-id',
+                    url : URL + '/email-marketing-executive/campaign-management/validate-v-mail-campaign-id',
                     data: { campaign_id : $('#campaign_id').val() }
                 }
             },

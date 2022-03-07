@@ -24,6 +24,7 @@ Route::prefix('campaign-management')->name('campaign_management.')->group(functi
     Route::any('/destroy/{id}', [App\Http\Controllers\EmailMarketingExecutive\CampaignManagementController::class, 'destroy'])->name('destroy');
 
     Route::any('/validate-v-mail-campaign-id', [App\Http\Controllers\EmailMarketingExecutive\CampaignManagementController::class, 'validateVMailCampaignId'])->name('validate.v_mail_campaign_id');
+    Route::any('/validate-campaign-name', [App\Http\Controllers\EmailMarketingExecutive\CampaignManagementController::class, 'validateCampaignName'])->name('validate.campaign_name');
 
     Route::any('/attach-specification/{id}', [App\Http\Controllers\EmailMarketingExecutive\CampaignManagementController::class, 'attachSpecification'])->name('attach_specification');
     Route::any('/remove-specification/{id}', [App\Http\Controllers\EmailMarketingExecutive\CampaignManagementController::class, 'removeSpecification'])->name('remove_specification');

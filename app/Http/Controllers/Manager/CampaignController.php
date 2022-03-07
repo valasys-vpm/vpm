@@ -233,11 +233,21 @@ class CampaignController extends Controller
         $campaign = $campaign->where('v_mail_campaign_id', $request->v_mail_campaign_id);
 
         if($request->has('campaign_id') || $request->has('parent_id')) {
+            $campaignIds = array();
+            $campaign_id = 0;
             if($request->has('parent_id')) {
-                $campaign = $campaign->where('id', '!=', base64_decode($request->parent_id));
+                $campaign_id = base64_decode($request->parent_id);
+                //$campaign = $campaign->where('id', '!=', base64_decode($request->parent_id));
             } else {
-                $campaign = $campaign->where('id', '!=', base64_decode($request->campaign_id));
+                $campaign_id = base64_decode($request->campaign_id);
+                //$campaign = $campaign->where('id', '!=', base64_decode($request->campaign_id));
             }
+            $resultCampaign = Campaign::find($campaign_id);
+            if(isset($resultCampaign->children) ) {
+                $campaignIds = $resultCampaign->children->pluck('id')->toArray();
+            }
+            $campaignIds[] = $resultCampaign->id;
+            $campaign = $campaign->whereNotIn('id', $campaignIds);
         }
 
         if($campaign->exists()) {
@@ -256,11 +266,21 @@ class CampaignController extends Controller
         });
 
         if($request->has('campaign_id') || $request->has('parent_id')) {
+            $campaignIds = array();
+            $campaign_id = 0;
             if($request->has('parent_id')) {
-                $campaign = $campaign->where('id', '!=', base64_decode($request->parent_id));
+                $campaign_id = base64_decode($request->parent_id);
+                //$campaign = $campaign->where('id', '!=', base64_decode($request->parent_id));
             } else {
-                $campaign = $campaign->where('id', '!=', base64_decode($request->campaign_id));
+                $campaign_id = base64_decode($request->campaign_id);
+                //$campaign = $campaign->where('id', '!=', base64_decode($request->campaign_id));
             }
+            $resultCampaign = Campaign::find($campaign_id);
+            if(isset($resultCampaign->children) ) {
+                $campaignIds = $resultCampaign->children->pluck('id')->toArray();
+            }
+            $campaignIds[] = $resultCampaign->id;
+            $campaign = $campaign->whereNotIn('id', $campaignIds);
         }
 
         if($campaign->exists()) {
