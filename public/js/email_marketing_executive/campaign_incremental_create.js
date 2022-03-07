@@ -231,12 +231,12 @@ $(function (){
         focusInvalid: false,
         rules: {
             'name' : { required : true },
-            'v_mail_campaign_id' : {
+            /*'v_mail_campaign_id' : {
                 required: false,
                 remote : {
-                    url : $('meta[name="base-path"]').attr('content')+'/email-marketing-executive/campaign-management/validate-v-mail-campaign-id'
+                    url : URL + '/email-marketing-executive/campaign-management/validate-v-mail-campaign-id',
                 }
-            },
+            },*/
             'campaign_filter_id' : { required : true },
             'campaign_type_id' : { required : true },
             'country_id[]' : { required : true },
@@ -249,9 +249,9 @@ $(function (){
         },
         messages: {
             'name' : { required : "Please enter campaign name" },
-            'v_mail_campaign_id' : {
+            /*'v_mail_campaign_id' : {
                 remote : "V-Mail Campaign Id already exists"
-            },
+            },*/
             'campaign_filter_id' : { required : "Please select campaign filter" },
             'campaign_type_id' : { required : "Please select campaign tye" },
             'country_id[]' : { required : "Please select country(s)" },
