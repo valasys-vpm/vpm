@@ -23,8 +23,8 @@
                                     </div>
                                     <ul class="breadcrumb">
                                         <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}"><i class="feather icon-home"></i></a></li>
-                                        <li class="breadcrumb-item"><a href="{{ route('manager.campaign.list') }}">Campaign Management</a></li>
-                                        <li class="breadcrumb-item"><a href="{{ route('manager.campaign.show', base64_encode($resultCampaign->id)) }}">{{ $resultCampaign->campaign_id }}</a></li>
+                                        <li class="breadcrumb-item"><a href="{{ route('email_marketing_executive.campaign_management.list') }}">Campaign Management</a></li>
+                                        <li class="breadcrumb-item"><a href="{{ route('email_marketing_executive.campaign_management.show', base64_encode($resultCampaign->id)) }}">{{ $resultCampaign->campaign_id }}</a></li>
                                         <li class="breadcrumb-item"><a href="javascript:void(0);">Add Incremental</a></li>
                                     </ul>
                                 </div>
@@ -45,7 +45,7 @@
                                         <div class="card-block">
                                             <div class="row">
                                                 <div class="col-md-12">
-                                                    <form id="form-campaign-create" method="post" action="{{ route('manager.campaign.store') }}" enctype="multipart/form-data">
+                                                    <form id="form-campaign-create" method="post" action="{{ route('email_marketing_executive.campaign_management.store') }}" enctype="multipart/form-data">
                                                         @csrf
                                                         <input type="hidden" name="parent_id" value="{{ base64_encode($resultCampaign->id) }}">
                                                         <div class="row">
@@ -196,8 +196,6 @@
     <script src="{{ asset('public/template/assets/plugins/material-datetimepicker/js/bootstrap-material-datetimepicker.js') }}"></script>
     <!-- Ckeditor js -->
     <script src="{{ asset('public/template/assets/plugins/ckeditor/js/ckeditor.js') }}"></script>
-    <!-- jquery-validation Js -->
-    <script src="{{ asset('public/template/assets/plugins/jquery-validation/js/jquery.validate.min.js') }}"></script>
     <!-- page custom Js -->
     <script src="{{ asset('public/js/email_marketing_executive/campaign_incremental_create.js?='.time()) }}"></script>
 @append

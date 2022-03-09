@@ -6,6 +6,8 @@
     <link rel="stylesheet" href="{{ asset('public/template/assets/plugins/select2/css/select2.min.css') }}">
     <!-- material datetimepicker css -->
     <link rel="stylesheet" href="{{ asset('public/template/assets/plugins/material-datetimepicker/css/bootstrap-material-datetimepicker.css') }}">
+
+    <meta name="campaign-id" content="{{ base64_encode($resultCampaign->id) }}">
 @append
 
 @section('content')
@@ -106,7 +108,7 @@
                                                                 </textarea>
                                                             </div>
                                                         </div>
-                                                        <button type="submit" class="btn btn-primary btn-square float-right">Update</button>
+                                                        <button id="form-campaign-edit-submit" type="button" class="btn btn-primary btn-square float-right">Update</button>
                                                     </form>
                                                 </div>
                                             </div>

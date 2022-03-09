@@ -54,7 +54,7 @@ $(function (){
                 remote : {
                     url : URL + '/email-marketing-executive/campaign-management/validate-campaign-name',
                     data : {
-                        campaign_id : $('#campaign_id').val()
+                        campaign_id : $('meta[name="campaign-id"]').attr('content')
                     }
                 }
             },
@@ -62,7 +62,9 @@ $(function (){
                 required: false,
                 remote : {
                     url : URL + '/email-marketing-executive/campaign-management/validate-v-mail-campaign-id',
-                    data: { campaign_id : $('#campaign_id').val() }
+                    data: {
+                        campaign_id : $('meta[name="campaign-id"]').attr('content')
+                    }
                 }
             },
             'campaign_filter_id' : { required : true },
@@ -70,7 +72,10 @@ $(function (){
             'country_id[]' : { required : true },
         },
         messages: {
-            'name' : { required : "Please enter campaign name" },
+            'name' : {
+                required : "Please enter campaign name",
+                remote : "Campaign name Invalid or already exists"
+            },
             'v_mail_campaign_id' : {
                 remote : "V-Mail Campaign Id Invalid or already exists"
             },
@@ -105,6 +110,14 @@ $(function (){
         unhighlight: function(element) {
             $(element).parents('.form-group').find('.is-invalid').removeClass('is-invalid');
         }
+    });
+
+    $("#form-campaign-edit-submit").on('click',function (e) {
+        e.preventDefault();
+        if($("#form-campaign-edit").valid()) {
+            $('#form-campaign-edit').submit();
+        }
+
     });
 
 });
