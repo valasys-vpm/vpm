@@ -681,6 +681,7 @@
                                 <th>Comment</th>
                                 <th>TL Comment</th>
                                 <th>QC Comment</th>
+                                <th>Status</th>
                                 <th>Date</th>
                             </tr>
                             </thead>

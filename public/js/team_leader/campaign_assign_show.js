@@ -276,7 +276,7 @@ function viewAgentLeadDetails(_ca_agent_id) {
                             '   <td>' + value.zipcode + '</td>\n' +
                             '   <td>' + value.country + '</td>\n' +
                             '   <td>' + value.employee_size + '</td>\n' +
-                            '   <td>' + value.employee_size_2 + '</td>\n' +
+                            '   <td>' + ((value.employee_size_2) ? value.employee_size_2 : '-') + '</td>\n' +
                             '   <td>' + value.revenue + '</td>\n' +
                             '   <td>' + value.company_domain + '</td>\n' +
                             '   <td>' + value.website + '</td>\n' +
