@@ -142,25 +142,68 @@ $(function(){
         document.getElementById("modal-form-attach-campaign-file").reset();
     });
 
+    $("#modal-form-attach-specification").validate({
+        ignore: [],
+        focusInvalid: false,
+        rules: {
+            'specifications[]' : {
+                required: true,
+            }
+        },
+        messages: {
+            'specifications[]' : {
+                required: "Please upload file",
+            }
+        },
+        errorPlacement: function errorPlacement(error, element) {
+            var $parent = $(element).parents('.form-group');
+
+            // Do not duplicate errors
+            if ($parent.find('.jquery-validation-error').length) {
+                return;
+            }
+
+            $parent.append(
+                error.addClass('jquery-validation-error small form-text invalid-feedback')
+            );
+        },
+        highlight: function(element) {
+            var $el = $(element);
+            var $parent = $el.parents('.form-group');
+
+            $el.addClass('is-invalid');
+
+            // Select2 and Tagsinput
+            if ($el.hasClass('select2-hidden-accessible') || $el.attr('data-role') === 'tagsinput') {
+                $el.parent().addClass('is-invalid');
+            }
+        },
+        unhighlight: function(element) {
+            $(element).parents('.form-group').find('.is-invalid').removeClass('is-invalid');
+        }
+    });
+
     $('#modal-form-attach-specification-submit').on('click', function (e) {
         e.preventDefault();
-        let form_data = new FormData($('#modal-form-attach-specification')[0]);
 
-        $.ajax({
-            url: URL +'/manager/campaign/attach-specification/'+$('#campaign_id').val(),
-            processData: false,
-            contentType: false,
-            data: form_data,
-            type: 'post',
-            success: function(response) {
-                if(response.status === true) {
-                    //If no specification remove all list
-                    if($('.specification-li').length === 0) {
-                        $('#specification_ul').html('');
-                    }
-                    let html = '';
-                    $.each(response.data, function(key, value){
-                        html += '<li class="media d-flex m-b-15 specification-li">\n\
+        if($("#modal-form-attach-specification").valid()) {
+            let form_data = new FormData($('#modal-form-attach-specification')[0]);
+
+            $.ajax({
+                url: URL +'/manager/campaign/attach-specification/'+$('#campaign_id').val(),
+                processData: false,
+                contentType: false,
+                data: form_data,
+                type: 'post',
+                success: function(response) {
+                    if(response.status === true) {
+                        //If no specification remove all list
+                        if($('.specification-li').length === 0) {
+                            $('#specification_ul').html('');
+                        }
+                        let html = '';
+                        $.each(response.data, function(key, value){
+                            html += '<li class="media d-flex m-b-15 specification-li">\n\
                                     <div class="m-r-20 file-attach">\n\
                                         <i class="far fa-file f-28 text-muted"></i>\n\
                                     </div>\n\
@@ -171,17 +214,19 @@ $(function(){
                                         <a href="javascript:void(0);" onclick="removeSpecification(this, \''+btoa(value.id)+'\');"><i class="fas fa-times f-24 text-danger"></i></a>\n\
                                     </div>\n\
                                 </li>';
-                    });
-                    $('#specification_ul').append(html);
-                    $('#modal-attach-specification').modal('hide');
-                    trigger_pnofify('success', 'Successful', response.message);
-                } else {
-                    trigger_pnofify('error', 'Error while processing request', response.message);
+                        });
+                        $('#specification_ul').append(html);
+                        $('#modal-attach-specification').modal('hide');
+                        trigger_pnofify('success', 'Successful', response.message);
+                    } else {
+                        trigger_pnofify('error', 'Error while processing request', response.message);
+                    }
                 }
-            }
-        });
+            });
 
-        document.getElementById("modal-form-attach-specification").reset();
+            document.getElementById("modal-form-attach-specification").reset();
+        }
+
 
     });
 
