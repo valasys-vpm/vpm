@@ -104,7 +104,7 @@
                                                 <div class="col-md-7 text-right" style="color: #6c757d;padding: 10px 0 !important;">{{ $resultCampaign->campaignFilter->name }}</div>
                                             </div>
                                             <div class="row col-md-12 m-0 p-0 border-bottom">
-                                                <div class="col-md-12 text-left" style="color: #292c2f;padding: 10px 0 5px 0 !important;">Region(s): </div>
+                                                <div class="col-md-12 text-left" style="color: #292c2f;padding: 10px 0 5px 0 !important;">Country(s): </div>
                                                 <div class="col-md-12 text-right" style="color: #6c757d;padding: 0 0 10px 0 !important;">
                                                     @foreach($resultCampaign->countries->pluck('country.name')->toArray() as $country)
                                                         <span class="badge badge-info m-1" style="padding: 5px 15px;">{{$country}}</span>
@@ -112,7 +112,7 @@
                                                 </div>
                                             </div>
                                             <div class="row col-md-12 m-0 p-0 border-bottom">
-                                                <div class="col-md-12 text-left" style="color: #292c2f;padding: 10px 0 5px 0 !important;">Country(s): </div>
+                                                <div class="col-md-12 text-left" style="color: #292c2f;padding: 10px 0 5px 0 !important;">Region(s): </div>
                                                 <div class="col-md-12 text-right" style="color: #6c757d;padding: 0 0 10px 0 !important;">
                                                     @foreach($resultCampaign->countries->pluck('country.region.name')->unique()->toArray() as $region)
                                                         <span class="badge badge-dark m-1" style="padding: 5px 15px;">{{$region}}</span>
