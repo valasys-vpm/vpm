@@ -218,27 +218,93 @@ $(function(){
         }
     });
 
+    $("#modal-form-attach-campaign-file").validate({
+        ignore: [],
+        focusInvalid: false,
+        rules: {
+            'suppression_email' : {
+                extension: "xlsx"
+            },
+            'suppression_domain' : {
+                extension: "xlsx"
+            },
+            'suppression_account_name' : {
+                extension: "xlsx"
+            },
+            'target_domain' : {
+                extension: "xlsx"
+            },
+            'target_account_name' : {
+                extension: "xlsx"
+            },
+        },
+        messages: {
+            'suppression_email' : {
+                extension: "Please upload valid file, (xlsx)"
+            },
+            'suppression_domain' : {
+                extension: "Please upload valid file, (xlsx)"
+            },
+            'suppression_account_name' : {
+                extension: "Please upload valid file, (xlsx)"
+            },
+            'target_domain' : {
+                extension: "Please upload valid file, (xlsx)"
+            },
+            'target_account_name' : {
+                extension: "Please upload valid file, (xlsx)"
+            },
+        },
+        errorPlacement: function errorPlacement(error, element) {
+            var $parent = $(element).parents('.form-group');
+
+            // Do not duplicate errors
+            if ($parent.find('.jquery-validation-error').length) {
+                return;
+            }
+
+            $parent.append(
+                error.addClass('jquery-validation-error small form-text invalid-feedback')
+            );
+        },
+        highlight: function(element) {
+            var $el = $(element);
+            var $parent = $el.parents('.form-group');
+
+            $el.addClass('is-invalid');
+
+            // Select2 and Tagsinput
+            if ($el.hasClass('select2-hidden-accessible') || $el.attr('data-role') === 'tagsinput') {
+                $el.parent().addClass('is-invalid');
+            }
+        },
+        unhighlight: function(element) {
+            $(element).parents('.form-group').find('.is-invalid').removeClass('is-invalid');
+        }
+    });
+
     $('#modal-form-attach-campaign-file-submit').on('click', function (e) {
         e.preventDefault();
-        let form_data = new FormData($('#modal-form-attach-campaign-file')[0]);
+        if($("#modal-form-attach-campaign-file").valid()) {
+            let form_data = new FormData($('#modal-form-attach-campaign-file')[0]);
 
-        $.ajax({
-            url: $('meta[name="base-path"]').attr('content') +'/email-marketing-executive/campaign-management/attach-campaign-file/'+$('#campaign_id').val(),
-            processData: false,
-            contentType: false,
-            data: form_data,
-            type: 'post',
-            success: function(response) {
-                if(response.status === true) {
-                    //If no suppression remove all list
-                    if($('.campaign-file-li').length === 0) {
-                        $('#campaign-file-ul').html('');
-                    }
-                    let html = '';
+            $.ajax({
+                url: $('meta[name="base-path"]').attr('content') +'/email-marketing-executive/campaign-management/attach-campaign-file/'+$('#campaign_id').val(),
+                processData: false,
+                contentType: false,
+                data: form_data,
+                type: 'post',
+                success: function(response) {
+                    if(response.status === true) {
+                        //If no suppression remove all list
+                        if($('.campaign-file-li').length === 0) {
+                            $('#campaign-file-ul').html('');
+                        }
+                        let html = '';
 
-                    if(response.data.suppression_email) {
-                        let value = response.data.suppression_email;
-                        html += '<li class="media d-flex m-b-15 campaign-file-li">\n\
+                        if(response.data.suppression_email) {
+                            let value = response.data.suppression_email;
+                            html += '<li class="media d-flex m-b-15 campaign-file-li">\n\
                                     <div class="m-r-20 file-attach">\n\
                                         <i class="far fa-file f-28 text-muted"></i>\n\
                                     </div>\n\
@@ -249,11 +315,11 @@ $(function(){
                                         <a href="javascript:void(0);" onclick="removeSuppression(this, \''+btoa(value.id)+'\');"><i class="fas fa-times f-24 text-danger"></i></a>\n\
                                     </div>\n\
                                 </li>';
-                    }
+                        }
 
-                    if(response.data.suppression_domain) {
-                        let value = response.data.suppression_domain;
-                        html += '<li class="media d-flex m-b-15 campaign-file-li">\n\
+                        if(response.data.suppression_domain) {
+                            let value = response.data.suppression_domain;
+                            html += '<li class="media d-flex m-b-15 campaign-file-li">\n\
                                     <div class="m-r-20 file-attach">\n\
                                         <i class="far fa-file f-28 text-muted"></i>\n\
                                     </div>\n\
@@ -264,11 +330,11 @@ $(function(){
                                         <a href="javascript:void(0);" onclick="removeSuppression(this, \''+btoa(value.id)+'\');"><i class="fas fa-times f-24 text-danger"></i></a>\n\
                                     </div>\n\
                                 </li>';
-                    }
+                        }
 
-                    if(response.data.suppression_account_name) {
-                        let value = response.data.suppression_account_name;
-                        html += '<li class="media d-flex m-b-15 campaign-file-li">\n\
+                        if(response.data.suppression_account_name) {
+                            let value = response.data.suppression_account_name;
+                            html += '<li class="media d-flex m-b-15 campaign-file-li">\n\
                                     <div class="m-r-20 file-attach">\n\
                                         <i class="far fa-file f-28 text-muted"></i>\n\
                                     </div>\n\
@@ -279,11 +345,11 @@ $(function(){
                                         <a href="javascript:void(0);" onclick="removeSuppression(this, \''+btoa(value.id)+'\');"><i class="fas fa-times f-24 text-danger"></i></a>\n\
                                     </div>\n\
                                 </li>';
-                    }
+                        }
 
-                    if(response.data.target_domain) {
-                        let value = response.data.target_domain;
-                        html += '<li class="media d-flex m-b-15 campaign-file-li">\n\
+                        if(response.data.target_domain) {
+                            let value = response.data.target_domain;
+                            html += '<li class="media d-flex m-b-15 campaign-file-li">\n\
                                     <div class="m-r-20 file-attach">\n\
                                         <i class="far fa-file f-28 text-muted"></i>\n\
                                     </div>\n\
@@ -294,11 +360,11 @@ $(function(){
                                         <a href="javascript:void(0);" onclick="removeSuppression(this, \''+btoa(value.id)+'\');"><i class="fas fa-times f-24 text-danger"></i></a>\n\
                                     </div>\n\
                                 </li>';
-                    }
+                        }
 
-                    if(response.data.target_account_name) {
-                        let value = response.data.target_account_name;
-                        html += '<li class="media d-flex m-b-15 campaign-file-li">\n\
+                        if(response.data.target_account_name) {
+                            let value = response.data.target_account_name;
+                            html += '<li class="media d-flex m-b-15 campaign-file-li">\n\
                                     <div class="m-r-20 file-attach">\n\
                                         <i class="far fa-file f-28 text-muted"></i>\n\
                                     </div>\n\
@@ -309,19 +375,20 @@ $(function(){
                                         <a href="javascript:void(0);" onclick="removeSuppression(this, \''+btoa(value.id)+'\');"><i class="fas fa-times f-24 text-danger"></i></a>\n\
                                     </div>\n\
                                 </li>';
-                    }
+                        }
 
-                    $('#campaign-file-ul').append(html);
-                    $('#modal-attach-campaign-file').modal('hide');
-                    trigger_pnofify('success', 'Successful', response.message);
-                } else {
-                    $('#modal-attach-campaign-file').modal('hide');
-                    trigger_pnofify('error', 'Error while processing request', response.message);
+                        $('#campaign-file-ul').append(html);
+                        $('#modal-attach-campaign-file').modal('hide');
+                        trigger_pnofify('success', 'Successful', response.message);
+                    } else {
+                        $('#modal-attach-campaign-file').modal('hide');
+                        trigger_pnofify('error', 'Error while processing request', response.message);
+                    }
                 }
-            }
-        });
+            });
 
-        document.getElementById("modal-form-attach-campaign-file").reset();
+            document.getElementById("modal-form-attach-campaign-file").reset();
+        }
 
     });
 
