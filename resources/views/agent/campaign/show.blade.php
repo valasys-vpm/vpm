@@ -514,7 +514,7 @@
                                 </div>
                             </div>
                             @endif
-                            <button id="form-submit-campaign-submit" type="submit" class="btn btn-primary btn-square float-right">Submit</button>
+                            <button id="form-submit-campaign-submit" type="button" class="btn btn-primary btn-square float-right">Submit</button>
                             <button type="reset" class="btn btn-secondary btn-square float-right" data-dismiss="modal">Cancel</button>
                         </form>
                     </div>
