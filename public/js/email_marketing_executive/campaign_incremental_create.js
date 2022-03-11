@@ -49,6 +49,7 @@ $(function (){
         time: false,
         format: 'D-MMM-YYYY',
         switchOnClick : true,
+        minDate: new Date($('#start_date').val()),
     });
 
     $('body').on("input", ".only-non-zero-number", function (){
@@ -82,7 +83,9 @@ $(function (){
     });
 
     //update sub-allocation total count
-    $("#allocation").on('keyup', function () {
+    $("#allocation").on('keyup change', function () {
+        $('input[name="pacing"]').prop('checked', false);
+        resetPacingDetails();
         let allocation = ($(this).val() > 0) ? $(this).val() : '0';
         $("#text-allocation").html(' / '+allocation);
     });
