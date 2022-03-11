@@ -266,6 +266,11 @@ $(function (){
             'allocation' : { required : true },
             'campaign_status_id' : { required : true },
             'pacing' : { required : true },
+            'suppression_email' : { extension: "xlsx" },
+            'suppression_domain' : { extension: "xlsx" },
+            'suppression_account_name' : { extension: "xlsx" },
+            'target_domain' : { extension: "xlsx" },
+            'target_account_name' : { extension: "xlsx" },
 
         },
         messages: {
@@ -284,6 +289,11 @@ $(function (){
             'allocation' : { required : "Please enter allocation" },
             'campaign_status_id' : { required : "Please select campaign status" },
             'pacing' : { required : "Please select pacing" },
+            'suppression_email' : {  extension: "Please upload valid file, (xlsx)" },
+            'suppression_domain' : { extension: "Please upload valid file, (xlsx)" },
+            'suppression_account_name' : { extension: "Please upload valid file, (xlsx)" },
+            'target_domain' : { extension: "Please upload valid file, (xlsx)" },
+            'target_account_name' : { extension: "Please upload valid file, (xlsx)" },
 
         },
         errorPlacement: function errorPlacement(error, element) {
