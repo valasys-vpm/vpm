@@ -49,6 +49,8 @@ $(function (){
         time: false,
         format: 'D-MMM-YYYY',
         switchOnClick : true,
+    }).on('change', function(e, date) {
+        $('#start_date').bootstrapMaterialDatePicker('setMaxDate', date);
     });
 
     $('body').on("input", ".only-non-zero-number", function (){
