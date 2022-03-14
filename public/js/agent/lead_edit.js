@@ -209,4 +209,12 @@ $(function (){
         }
     });
 
+    $('#form-lead-edit-submit').on('click', function (e) {
+        if($("#form-lead-edit").valid()) {
+            $(this).attr('disabled', 'disabled');
+            $(this).html('<span class="spinner-border spinner-border-sm" role="status"></span> Processing...');
+            $("#form-lead-edit").submit();
+        }
+    });
+
 });

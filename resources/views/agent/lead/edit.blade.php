@@ -178,7 +178,7 @@
                                                             </div>
                                                         </div>
 
-                                                        <button id="btn-submit" type="submit" class="btn btn-primary btn-square float-right">Update</button>
+                                                        <button id="form-lead-edit-submit" type="button" class="btn btn-primary btn-square float-right">Update</button>
                                                     </form>
                                                 </div>
                                             </div>
@@ -198,8 +198,6 @@
 
 @section('javascript')
     @parent
-    <!-- jquery-validation Js -->
-    <script src="{{ asset('public/template/assets/plugins/jquery-validation/js/jquery.validate.min.js') }}"></script>
     <!-- page custom Js -->
     <script src="{{ asset('public/js/agent/lead_edit.js?='.time()) }}"></script>
 @append
