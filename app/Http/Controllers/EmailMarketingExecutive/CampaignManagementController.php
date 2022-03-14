@@ -113,7 +113,6 @@ class CampaignManagementController extends Controller
     public function store(Request $request): \Illuminate\Http\RedirectResponse
     {
         $attributes = $request->all();
-        dd($attributes);
         $response = $this->campaignRepository->store($attributes);
         if($response['status'] == TRUE) {
             if($request->has('parent_id')) {
