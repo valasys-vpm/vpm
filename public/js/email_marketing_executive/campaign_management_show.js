@@ -221,6 +221,8 @@ $(function(){
                     } else {
                         trigger_pnofify('error', 'Error while processing request', response.message);
                     }
+
+                    $("#reload-campaign-history").click();
                 }
             });
 
@@ -394,6 +396,8 @@ $(function(){
                         $('#modal-attach-campaign-file').modal('hide');
                         trigger_pnofify('error', 'Error while processing request', response.message);
                     }
+
+                    $("#reload-campaign-history").click();
                 }
             });
 
@@ -528,6 +532,8 @@ function removeSpecification(_this, specification_id) {
                 } else {
                     trigger_pnofify('error', 'Error while processing request', response.message);
                 }
+
+                $("#reload-campaign-history").click();
             }
         });
     }

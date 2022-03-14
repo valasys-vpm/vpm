@@ -569,6 +569,11 @@ class CampaignRepository implements CampaignInterface
                 $lastInserted = CampaignSpecification::whereIn('file_name', $fileNames)->get();
                 $response = array('status' => TRUE, 'message' => 'Campaign specification added successfully', 'data' => $lastInserted);
                 DB::commit();
+
+                $historyMessage = implode(',', $fileNames);
+                add_campaign_history($campaign->id, $campaign->parent_id, 'Campaign specification(s) updated - '.$historyMessage);
+                add_history('Campaign specification(s) updated', 'Campaign specification(s) updated - '.$historyMessage);
+
             } else {
                 throw new \Exception('Something went wrong, please try again.', 1);
             }

@@ -43,6 +43,9 @@ class CampaignSpecificationRepository implements CampaignSpecificationInterface
 
             $campaignSpecification = CampaignSpecification::findOrFail($id);
             $file_path = 'public/campaigns/'.$campaignSpecification->campaign->campaign_id.'/'.$campaignSpecification->file_name;
+            $file_name = $campaignSpecification->file_name;
+            $campaign_id = $campaignSpecification->campaign->id;
+            $campaign_parent_id = $campaignSpecification->campaign->parent_id;
             //--Campaign Specifications
             if(Storage::exists($file_path)) {
                 Storage::delete($file_path);
@@ -54,6 +57,8 @@ class CampaignSpecificationRepository implements CampaignSpecificationInterface
                 $response = array('status' => TRUE, 'message' => 'Campaign specification removed successfully');
                 DB::commit();
             }
+            add_campaign_history($campaign_id, $campaign_parent_id, 'Campaign specification removed - '.$file_name);
+            add_history('Campaign specification(s) updated', 'Campaign specification removed - '.$file_name);
         } catch (\Exception $exception) {
             DB::rollBack();
             $response = array('status' => FALSE, 'message' => 'Something went wrong, please try again.');

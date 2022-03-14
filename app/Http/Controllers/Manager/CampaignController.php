@@ -295,6 +295,7 @@ class CampaignController extends Controller
         $attributes = $request->all();
         $response = $this->campaignRepository->updateSpecification(base64_decode($id), $attributes);
         if($response['status'] == TRUE) {
+
             return response()->json(array('status' => true, 'message' => $response['message'], 'data' => $response['data']));
         } else {
             return response()->json(array('status' => false, 'message' => $response['message']));
