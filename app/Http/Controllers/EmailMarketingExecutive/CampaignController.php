@@ -60,6 +60,7 @@ class CampaignController extends Controller
             if(isset($this->data['resultCampaign']->parent_id) && !empty($this->data['resultCampaign']->parent_id)) {
                 $this->data['resultCampaignParent'] = $this->campaignRepository->find($this->data['resultCampaign']->parent_id);
             }
+            dd($this->data['resultCampaign']->toArray());
             return view('email_marketing_executive.campaign.show', $this->data);
         } catch (\Exception $exception) {
             return redirect()->route('email_marketing_executive.campaign.list')->with('error', ['title' => 'Error while processing request', 'message' => 'Campaign details not found']);
