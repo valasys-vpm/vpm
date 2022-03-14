@@ -104,7 +104,7 @@ $(function(){
     });
 
     //Update total sub-allocation count
-    $('body').on('keyup, change', ".sub-allocation",function () {
+    $('body').on('keyup change', ".sub-allocation",function () {
         let total = 0;
 
         $('body').find('.sub-allocation').each(function(){
@@ -498,6 +498,8 @@ function editSubAllocations(id) {
                         $('#v-pills-tabContent').append(html_tabs_content);
                         $('#v-pills-tab-month-list').append(html_month_list_tabs);
                     });
+
+                    $('.sub-allocation').trigger('keyup');
 
                 } else {
 
