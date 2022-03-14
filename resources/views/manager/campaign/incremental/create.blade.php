@@ -80,7 +80,7 @@
                                                                     <span class="badge badge-info m-1" style="padding: 5px 15px;">{{$country}}</span>
                                                                 @endforeach
                                                                 @foreach($resultCampaign->countries as $country)
-                                                                    <input type="hidden" name="country_id[]" value="{{ $country->id }}">
+                                                                    <input type="hidden" name="country_id[]" value="{{ $country->country_id }}">
                                                                 @endforeach
                                                             </div>
 
