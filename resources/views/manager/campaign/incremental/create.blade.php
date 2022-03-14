@@ -170,7 +170,7 @@
                                                                 <textarea id="note" name="note" class="form-control classic-editor" placeholder="Enter note here..." rows="3"></textarea>
                                                             </div>
                                                         </div>
-                                                        <button type="submit" class="btn btn-primary btn-square float-right">Save</button>
+                                                        <button id="form-campaign-create-submit" type="button" class="btn btn-primary btn-square float-right">Save</button>
                                                     </form>
                                                 </div>
                                             </div>
@@ -196,8 +196,6 @@
     <script src="{{ asset('public/template/assets/plugins/material-datetimepicker/js/bootstrap-material-datetimepicker.js') }}"></script>
     <!-- Ckeditor js -->
     <script src="{{ asset('public/template/assets/plugins/ckeditor/js/ckeditor.js') }}"></script>
-    <!-- jquery-validation Js -->
-    <script src="{{ asset('public/template/assets/plugins/jquery-validation/js/jquery.validate.min.js') }}"></script>
     <!-- page custom Js -->
     <script src="{{ asset('public/js/manager/campaign_incremental_create.js?='.time()) }}"></script>
 @append
