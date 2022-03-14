@@ -153,10 +153,10 @@ class CampaignRepository implements CampaignInterface
                 //Save Campaign's Countries
                 if(!empty($attributes['country_id']) && count($attributes['country_id'])) {
                     $insertCampaignCountries = array();
-                    dd($attributes['country_id']);
                     foreach ($attributes['country_id'] as $country) {
                         array_push($insertCampaignCountries, ['campaign_id' => $campaign->id, 'country_id' => $country]);
                     }
+                    dd($insertCampaignCountries);
                     CampaignCountry::insert($insertCampaignCountries);
                 }
 
