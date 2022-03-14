@@ -153,7 +153,6 @@
                                         </div>
                                         <div class="card-block task-attachment">
                                             <ul class="media-list p-0" id="specification_ul">
-                                                {{ dd($resultCampaign->campaign_id) }}
                                                 @forelse($resultCampaign->specifications as $specification)
                                                     <li class="media d-flex m-b-15 specification-li">
                                                         <div class="m-r-20 file-attach">
