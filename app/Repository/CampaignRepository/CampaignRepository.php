@@ -328,6 +328,7 @@ class CampaignRepository implements CampaignInterface
             }
         } catch (\Exception $exception) {
             DB::rollBack();
+            dd($exception->getMessage());
             $response = array('status' => FALSE, 'message' => $exception->getMessage());
         }
         return $response;
