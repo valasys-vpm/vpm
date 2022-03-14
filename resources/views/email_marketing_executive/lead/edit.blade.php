@@ -31,7 +31,7 @@
                                     </div>
                                     <ul class="breadcrumb">
                                         <li class="breadcrumb-item"><a href="{{ route('email_marketing_executive.dashboard') }}"><i class="feather icon-home"></i></a></li>
-                                        <li class="breadcrumb-item"><a href="{{ route('email_marketing_executive.campaign.list') }}">Campaign Management</a></li>
+                                        <li class="breadcrumb-item"><a href="{{ route('email_marketing_executive.campaign.list') }}">My Campaigns</a></li>
                                         <li class="breadcrumb-item"><a href="{{ route('email_marketing_executive.campaign.show', base64_encode($resultAgentLead->campaign_id)) }}">Campaign Details</a></li>
                                         <li class="breadcrumb-item"><a href="{{ route('email_marketing_executive.lead.list', base64_encode($resultAgentLead->ca_agent_id)) }}">Manage Leads</a></li>
                                         <li class="breadcrumb-item"><a href="javascript:void(0);">Edit Lead Details</a></li>
