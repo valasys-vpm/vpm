@@ -197,8 +197,6 @@
 
 @section('javascript')
     @parent
-    <!-- jquery-validation Js -->
-    <script src="{{ asset('public/template/assets/plugins/jquery-validation/js/jquery.validate.min.js') }}"></script>
     <!-- page custom Js -->
     <script src="{{ asset('public/js/team_leader/lead_edit.js?='.time()) }}"></script>
 @append
