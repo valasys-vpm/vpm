@@ -96,7 +96,7 @@ $(function (){
     $("#form-lead-edit").validate({
         onfocusout: false,
         onkeyup: false,
-        onclick: false,
+        // onclick: true,
         ignore: [],
         focusInvalid: false,
         rules: {
@@ -210,7 +210,7 @@ $(function (){
     });
 
     $('#form-lead-edit-submit').on('click', function (e) {
-        alert();
+        e.preventDefault();
         if($("#form-lead-edit").valid()) {
             $(this).attr('disabled', 'disabled');
             $(this).html('<span class="spinner-border spinner-border-sm" role="status"></span> Processing...');
