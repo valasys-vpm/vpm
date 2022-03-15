@@ -500,6 +500,8 @@ function editSubAllocations(id) {
                         $('#v-pills-tab-month-list').append(html_month_list_tabs);
                     });
 
+                    $('.sub-allocation').trigger('keyup');
+
                 } else {
 
                 }
