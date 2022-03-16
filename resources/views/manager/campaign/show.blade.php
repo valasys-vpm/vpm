@@ -320,8 +320,12 @@
                                                             @endswitch
                                                         </td>
                                                         <td>
-                                                            <a href="javascript:;" onclick="editPacingDetails('{{ base64_encode($resultCampaign->id) }}');" class="btn btn-outline-primary btn-sm btn-rounded mb-0" title="Edit pacing details" style="padding: 5px 8px;"><i class="feather icon-edit mr-0"></i></a>
-                                                            <a href="javascript:;" onclick="editSubAllocations('{{ base64_encode($resultCampaign->id) }}');" class="btn btn-outline-secondary btn-sm btn-rounded mb-0" title="Edit Sub-Allocations" style="padding: 5px 8px;"><i class="feather icon-edit mr-0"></i></a>
+                                                            @if($resultCampaign->campaign_status_id != 4)
+                                                                <a href="javascript:;" onclick="editPacingDetails('{{ base64_encode($resultCampaign->id) }}');" class="btn btn-outline-primary btn-sm btn-rounded mb-0" title="Edit pacing details" style="padding: 5px 8px;"><i class="feather icon-edit mr-0"></i></a>
+                                                                <a href="javascript:;" onclick="editSubAllocations('{{ base64_encode($resultCampaign->id) }}');" class="btn btn-outline-secondary btn-sm btn-rounded mb-0" title="Edit Sub-Allocations" style="padding: 5px 8px;"><i class="feather icon-edit mr-0"></i></a>
+                                                            @else
+                                                                -
+                                                            @endif
                                                         </td>
                                                     </tr>
                                                     <tr class="pacing-details" style="display: none;">
@@ -406,8 +410,12 @@
                                                                 @endswitch
                                                             </td>
                                                             <td>
-                                                                <a href="javascript:;" onclick="editPacingDetails('{{ base64_encode($children->id) }}');" class="btn btn-outline-primary btn-sm btn-rounded mb-0" title="Edit pacing details" style="padding: 5px 8px;"><i class="feather icon-edit mr-0"></i></a>
-                                                                <a href="javascript:;" onclick="editSubAllocations('{{ base64_encode($children->id) }}');" class="btn btn-outline-secondary btn-sm btn-rounded mb-0" title="Edit Sub-Allocations" style="padding: 5px 8px;"><i class="feather icon-edit mr-0"></i></a>
+                                                                @if($children->campaign_status_id != 4)
+                                                                    <a href="javascript:;" onclick="editPacingDetails('{{ base64_encode($children->id) }}');" class="btn btn-outline-primary btn-sm btn-rounded mb-0" title="Edit pacing details" style="padding: 5px 8px;"><i class="feather icon-edit mr-0"></i></a>
+                                                                    <a href="javascript:;" onclick="editSubAllocations('{{ base64_encode($children->id) }}');" class="btn btn-outline-secondary btn-sm btn-rounded mb-0" title="Edit Sub-Allocations" style="padding: 5px 8px;"><i class="feather icon-edit mr-0"></i></a>
+                                                                @else
+                                                                    -
+                                                                @endif
                                                             </td>
                                                         </tr>
                                                         <tr class="pacing-details" style="display: none;">
