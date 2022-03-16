@@ -106,7 +106,6 @@ $(function (){
                 }
             },
             'email_address' : {
-                email: true,
                 required : true,
                 non_empty_value: true,
                 is_email_address: true,
@@ -147,8 +146,7 @@ $(function (){
                 remote: "Client suppression! Target another prospect"
             },
             'email_address' : {
-                email : "Please enter email address",
-                is_email_address : "Please enter email address",
+                is_email_address : "Please enter valid email address",
                 required : "Please enter email address",
                 remote: "Client suppression! Target another prospect"
             },
@@ -182,6 +180,10 @@ $(function (){
             $parent.append(
                 error.addClass('jquery-validation-error small form-text invalid-feedback')
             );
+
+            if(error.text().length) {
+                error.css('display', 'block');
+            }
         },
         highlight: function(element) {
             var $el = $(element);
