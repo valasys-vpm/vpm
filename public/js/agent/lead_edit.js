@@ -96,7 +96,7 @@ $(function (){
     $("#form-lead-edit").validate({
         onfocusout: false,
         onkeyup: false,
-        // onclick: true,
+        onclick: false,
         ignore: [],
         focusInvalid: false,
         rules: {
@@ -115,7 +115,6 @@ $(function (){
                 }
             },
             'email_address' : {
-                email: true,
                 required : true,
                 non_empty_value: true,
                 is_email_address: true,
@@ -160,6 +159,7 @@ $(function (){
             },
             'email_address' : {
                 required : "Please enter email address",
+                is_email_address : "Please enter valid email address",
                 remote: "Client suppression! Target another prospect"
             },
             'specific_title' : { required : "Please enter title" },
@@ -182,7 +182,7 @@ $(function (){
 
         },
         errorPlacement: function errorPlacement(error, element) {
-            var $parent = $(element).parents('.form-group');
+            let $parent = $(element).parents('.form-group');
 
             // Do not duplicate errors
             if ($parent.find('.jquery-validation-error').length) {
@@ -192,10 +192,15 @@ $(function (){
             $parent.append(
                 error.addClass('jquery-validation-error small form-text invalid-feedback')
             );
+
+            if(error.text().length) {
+                error.css('display', 'block');
+            }
+
         },
         highlight: function(element) {
-            var $el = $(element);
-            var $parent = $el.parents('.form-group');
+            let $el = $(element);
+            let $parent = $el.parents('.form-group');
 
             $el.addClass('is-invalid');
 
@@ -210,16 +215,10 @@ $(function (){
     });
 
     $('#form-lead-edit-submit').on('click', function (e) {
-        e.preventDefault();
         if($("#form-lead-edit").valid()) {
-            alert('here');
-            $(this).attr('disabled', 'disabled');
-            $(this).html('<span class="spinner-border spinner-border-sm" role="status"></span> Processing...');
+            $("#form-lead-edit-submit").attr('disabled', 'disabled');
+            $("#form-lead-edit-submit").html('<span class="spinner-border spinner-border-sm" role="status"></span> Processing...');
             $("#form-lead-edit").submit();
-            return true;
-        } else {
-            return false;
-            alert('there');
         }
 
     });
