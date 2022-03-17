@@ -29,10 +29,10 @@
                                         </div>
                                     </div>
                                     <ul class="breadcrumb">
-                                        <li class="breadcrumb-item"><a href="{{ route('team_leader.dashboard') }}"><i class="feather icon-home"></i></a></li>
-                                        <li class="breadcrumb-item"><a href="{{ route('team_leader.campaign_assign.list') }}">Campaign Management</a></li>
-                                        <li class="breadcrumb-item"><a href="{{ route('team_leader.campaign_assign.show', base64_encode($resultCAAgent->campaign_assign_ratl_id)) }}">Campaign Details</a></li>
-                                        <li class="breadcrumb-item"><a href="{{ route('team_leader.lead.list', base64_encode($resultCAAgent->campaign_assign_ratl_id)) }}">Manage Leads</a></li>
+                                        <li class="breadcrumb-item"><a href="{{ route('quality_analyst.dashboard') }}"><i class="feather icon-home"></i></a></li>
+                                        <li class="breadcrumb-item"><a href="{{ route('quality_analyst.campaign.list') }}">My Campaigns</a></li>
+                                        <li class="breadcrumb-item"><a href="{{ route('quality_analyst.campaign.show', base64_encode($resultCAQA->id)) }}">Campaign Details</a></li>
+                                        <li class="breadcrumb-item"><a href="{{ route('quality_analyst.lead.list', base64_encode($resultCAQA->id)) }}">Manage Leads</a></li>
                                         <li class="breadcrumb-item"><a href="javascript:void(0);">Edit Lead Details</a></li>
                                     </ul>
                                 </div>
