@@ -183,7 +183,6 @@ $(function (){
 
             if(error.text().length) {
                 error.css('display', 'block');
-                
             }
         },
         highlight: function(element) {
