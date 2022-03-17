@@ -32,7 +32,7 @@
                                     </div>
                                     <ul class="breadcrumb">
                                         <li class="breadcrumb-item"><a href="{{ route('vendor_manager.dashboard') }}"><i class="feather icon-home"></i></a></li>
-                                        <li class="breadcrumb-item"><a href="{{ route('vendor_manager.campaign_assign.list') }}">Campaign Management</a></li>
+                                        <li class="breadcrumb-item"><a href="{{ route('vendor_manager.campaign_assign.list') }}">My Campaigns</a></li>
                                         <li class="breadcrumb-item"><a href="{{ route('vendor_manager.campaign_assign.show', base64_encode($resultCAVM->id)) }}">Campaign Details</a></li>
                                         <li class="breadcrumb-item"><a href="javascript:void(0);">Manage Leads</a></li>
                                     </ul>

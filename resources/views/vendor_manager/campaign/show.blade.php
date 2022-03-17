@@ -31,7 +31,7 @@
                             <div class="row align-items-center">
                                 <div class="col-md-12">
                                     <div class="page-header-title">
-                                        <h5 class="m-b-10">Campaign Management</h5>
+                                        <h5 class="m-b-10">My Campaigns</h5>
                                         <div class="card-header-right mb-1" style="float: right;">
                                             <a href="{{ route('vendor_manager.campaign.list') }}" class="btn btn-outline-info btn-square btn-sm pt-1 pb-1" style="font-weight: bold;"><i class="feather icon-arrow-left"></i>Back</a>
                                         </div>

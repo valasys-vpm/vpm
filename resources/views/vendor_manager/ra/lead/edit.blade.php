@@ -31,7 +31,7 @@
                                     </div>
                                     <ul class="breadcrumb">
                                         <li class="breadcrumb-item"><a href="{{ route('vendor_manager.dashboard') }}"><i class="feather icon-home"></i></a></li>
-                                        <li class="breadcrumb-item"><a href="{{ route('vendor_manager.ra.campaign.list') }}">Campaign Management</a></li>
+                                        <li class="breadcrumb-item"><a href="{{ route('vendor_manager.ra.campaign.list') }}">My Campaigns</a></li>
                                         <li class="breadcrumb-item"><a href="{{ route('vendor_manager.ra.campaign.show', base64_encode($resultAgentLead->campaign_id)) }}">Campaign Details</a></li>
                                         <li class="breadcrumb-item"><a href="{{ route('vendor_manager.ra.lead.list', base64_encode($resultAgentLead->ca_agent_id)) }}">Manage Leads</a></li>
                                         <li class="breadcrumb-item"><a href="javascript:void(0);">Edit Lead Details</a></li>
