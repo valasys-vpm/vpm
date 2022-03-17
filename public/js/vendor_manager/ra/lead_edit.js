@@ -82,6 +82,16 @@ $(function (){
         }
     );
 
+    jQuery.validator.addMethod("is_email_address", function(value, element) {
+
+        /* Define the recommended regular expression. */
+        var emailExp = new RegExp(/^\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,15}\b$/i);
+
+        /* Test the email given against the expression and return the result. */
+        return emailExp.test(value);
+
+    }, "Please enter valid email address");
+
     //Validate Form
     $("#form-lead-edit").validate({
         onfocusout: false,
@@ -107,6 +117,7 @@ $(function (){
             'email_address' : {
                 required : true,
                 non_empty_value: true,
+                is_email_address: true,
                 remote : {
                     url : URL + '/vendor-manager/ra/lead/check-suppression-email/' + $('meta[name="ca-agent-id"]').attr('content'),
                     data : {
@@ -147,6 +158,7 @@ $(function (){
                 remote: "Client suppression! Target another prospect"
             },
             'email_address' : {
+                is_email_address : "Please enter valid email address",
                 required : "Please enter email address",
                 remote: "Client suppression! Target another prospect"
             },
@@ -180,6 +192,10 @@ $(function (){
             $parent.append(
                 error.addClass('jquery-validation-error small form-text invalid-feedback')
             );
+
+            if(error.text().length) {
+                error.css('display', 'block');
+            }
         },
         highlight: function(element) {
             var $el = $(element);
